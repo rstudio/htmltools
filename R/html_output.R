@@ -1,17 +1,17 @@
 
 #' Create HTML output
 #'
-#' Create HTML output for display within an R Markdown document, the RStudio
-#' Viewer pane, or an external web browser.
+#' Create HTML output for display within an R Markdown document, an IDE viewer
+#' pane, or an external web browser.
 #'
 #' @param html HTML output
-#' @param dependencies List of HTML output dependencies (creating using
+#' @param dependencies List of HTML output dependencies (created using
 #'   \code{\link{html_dependency}})
 #' @param x Object to print as HTML
 #'
-#' @return Object of class \code{html_output} that when printed will render in a
-#'   browser (either in RStudio or extenally) and when printed from within an R
-#'   Markdown document will render inline.
+#' @return Object of class \code{html_output} that when printed from within an R
+#'   Markdown document will render inline and when printed from the console will
+#'   render in an IDE viewer or external browser.
 #'
 #' @details See the documentation on
 #'   \href{http://rmarkdown.rstudio.com/developer_custom_html_output.html}{R

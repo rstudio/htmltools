@@ -11,20 +11,19 @@ knit_print.html_output(x)
   \item{html}{HTML output}
 
   \item{dependencies}{List of HTML output dependencies
-  (creating using \code{\link{html_dependency}})}
+  (created using \code{\link{html_dependency}})}
 
   \item{x}{Object to print as HTML}
 }
 \value{
-Object of class \code{html_output} that when printed will
-render in a browser (either in RStudio or extenally) and
-when printed from within an R Markdown document will render
-inline.
+Object of class \code{html_output} that when printed from
+within an R Markdown document will render inline and when
+printed from the console will render in an IDE viewer or
+external browser.
 }
 \description{
 Create HTML output for display within an R Markdown
-document, the RStudio Viewer pane, or an external web
-browser.
+document, an IDE viewer pane, or an external web browser.
 }
 \details{
 See the documentation on
