@@ -3,5 +3,3 @@ export(html_dependencies_as_character)
 export(html_dependency)
 export(html_output)
 export(knit_print.html_output)
-
-
