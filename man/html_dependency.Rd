@@ -38,8 +38,7 @@ JavaScript within the document head to render correctly.
 }
 \details{
 See the documentation on
-\href{http://rmarkdown.rstudio.com/developer_custom_html_output.html}{R
-Markdown Custom HTML Output} for examples and additional
-details.
+\href{http://rmarkdown.rstudio.com/developer_html_widgets.html}{R
+Markdown HTML Widgets} for examples and additional details.
 }
 
