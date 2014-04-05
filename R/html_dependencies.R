@@ -43,20 +43,8 @@ html_dependency <- function(name,
 }
 
 
-#' Generate HTML for dependencies
-#'
-#' Given a list of HTML dependencies produce a character representation suitable
-#' for inclusion within the head of an HTML document.
-#'
-#' @param dependencies List of dependencies created using
-#'   \code{\link{html_dependency}}.
-#' @param lib_dir Optional directory to copy the libraries into (generated
-#'   HTML will include relative links to the dependencies which presume that
-#'   the \code{lib_dir} exists in the same directory as the HTML document).
-#'
-#' @return Character vector with generated HTML for the dependencies
-#'
-#' @export
+# Given a list of HTML dependencies produce a character representation
+# suitable for inclusion within the head of an HTML document
 html_dependencies_as_character <- function(dependencies, lib_dir = NULL) {
 
   html <- c()
