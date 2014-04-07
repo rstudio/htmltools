@@ -1,3 +1,4 @@
 export(html_dependency)
+export(html_escape)
 export(html_knit_print)
 export(html_print)
