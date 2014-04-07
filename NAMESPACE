@@ -1,4 +1,3 @@
-S3method(print,html_output)
 export(html_dependency)
-export(html_output)
-export(knit_print.html_output)
+export(html_knit_print)
+export(html_print)

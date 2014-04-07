@@ -17,7 +17,7 @@
 #' @param head Arbitrary lines of HTML to insert into the document head
 #'
 #' @return An object that can be included in the list of dependencies passed to
-#'   \code{\link{html_output}}.
+#'   \code{\link{html_print}} or \code{\link{html_knit_print}}.
 #'
 #' @details See the documentation on
 #'   \href{http://rmarkdown.rstudio.com/developer_html_widgets.html}{R

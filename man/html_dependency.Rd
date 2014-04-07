@@ -28,7 +28,8 @@ html_dependency(name, version, path, meta = NULL, script = NULL,
 }
 \value{
 An object that can be included in the list of dependencies
-passed to \code{\link{html_output}}.
+passed to \code{\link{html_print}} or
+\code{\link{html_knit_print}}.
 }
 \description{
 Define an HTML dependency (e.g. CSS or Javascript and
