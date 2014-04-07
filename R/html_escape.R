@@ -34,7 +34,7 @@ html_escape <- local({
       .htmlSpecialsPattern
 
     # Short circuit in the common case that there's nothing to escape
-    if (!grepl(pattern, text))
+    if (!any(grepl(pattern, text)))
       return(text)
 
     specials <- if(attribute)
