@@ -65,25 +65,29 @@ html_dependencies_as_character <- function(dependencies, lib_dir = NULL) {
     }
 
     # add meta content
-    for (name in names(dep$meta)) {
-      html <- c(html, paste("<meta name=\"", name,
-                            "\" content=\"", dep$meta[[name]], "\" />",
-                            sep = ""))
+    if (length(dep$meta) > 0) {
+      html <- c(html, paste(
+        "<meta name=\"", html_escape(names(dep$meta)), "\" content=\"",
+        html_escape(dep$meta), "\" />",
+        sep = ""
+      ))
     }
 
     # add stylesheets
-    for (stylesheet in dep$stylesheet) {
-      stylesheet <- file.path(dep$path, stylesheet)
-      html <- c(html, paste("<link href=\"", stylesheet, "\" ",
-                            "rel=\"stylesheet\" />",
-                            sep = ""))
+    if (length(dep$stylesheet) > 0) {
+      html <- c(html, paste(
+        "<link href=\"", html_escape(file.path(dep$path, dep$stylesheet)),
+        "\" rel=\"stylesheet\" />",
+        sep = ""
+      ))
     }
 
     # add scripts
-    for (script in dep$script) {
-      script <- file.path(dep$path, script)
-      html <- c(html,
-                paste("<script src=\"", script, "\"></script>", sep = ""))
+    if (length(dep$script) > 0) {
+      html <- c(html, paste(
+        "<script src=\"", file.path(dep$path, dep$script), "\"></script>",
+        sep = ""
+      ))
     }
 
     # add raw head content
