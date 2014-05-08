@@ -1,5 +1,3 @@
-
-
 #' Define an HTML dependency
 #'
 #' Define an HTML dependency (e.g. CSS or Javascript and related library). HTML
@@ -24,6 +22,11 @@
 #'   Markdown HTML Widgets} for examples and additional details.
 #'
 #' @export
+#' @examples
+#' d3 <- html_dependency(name = "d3", version = "3.4.1", path = "lib/d3",
+#'   script = "d3.min.js")
+#' cat(format(d3), "\n")
+#'
 html_dependency <- function(name,
                             version,
                             path,
@@ -42,58 +45,67 @@ html_dependency <- function(name,
   ))
 }
 
+#' @export
+format.html_dependency <- function(x, ...) {
+  html <- list()
 
-# Given a list of HTML dependencies produce a character representation
-# suitable for inclusion within the head of an HTML document
-html_dependencies_as_character <- function(dependencies, lib_dir = NULL) {
-
-  html <- c()
-
-  for (dep in dependencies) {
-
-    # copy library files if necessary
-    if (!is.null(lib_dir)) {
-
-      if (!file.exists(lib_dir))
-        dir.create(lib_dir)
-
-      target_dir <- file.path(lib_dir, basename(dep$path))
-      if (!file.exists(target_dir))
-        file.copy(from = dep$path, to = lib_dir, recursive = TRUE)
-
-      dep$path <- file.path(basename(lib_dir), basename(target_dir))
-    }
-
-    # add meta content
-    if (length(dep$meta) > 0) {
-      html <- c(html, paste(
-        "<meta name=\"", html_escape(names(dep$meta)), "\" content=\"",
-        html_escape(dep$meta), "\" />",
-        sep = ""
-      ))
-    }
-
-    # add stylesheets
-    if (length(dep$stylesheet) > 0) {
-      html <- c(html, paste(
-        "<link href=\"", html_escape(file.path(dep$path, dep$stylesheet)),
-        "\" rel=\"stylesheet\" />",
-        sep = ""
-      ))
-    }
-
-    # add scripts
-    if (length(dep$script) > 0) {
-      html <- c(html, paste(
-        "<script src=\"", file.path(dep$path, dep$script), "\"></script>",
-        sep = ""
-      ))
-    }
-
-    # add raw head content
-    html <- c(html, dep$head)
+  # add meta content
+  if (length(x$meta) > 0) {
+    html$meta <- paste(
+      "<meta name=\"", html_escape(names(x$meta)), "\" content=\"",
+      html_escape(x$meta), "\" />",
+      sep = ""
+    )
   }
 
-  html
+  # add stylesheets
+  if (length(x$stylesheet) > 0) {
+    html$stylesheet <- paste(
+      "<link href=\"", html_escape(file.path(x$path, x$stylesheet)),
+      "\" rel=\"stylesheet\" />",
+      sep = ""
+    )
+  }
+
+  # add scripts
+  if (length(x$script) > 0) {
+    html$script <- paste(
+      "<script src=\"", file.path(x$path, x$script), "\"></script>",
+      sep = ""
+    )
+  }
+
+  # add raw head content
+  html$head <- x$head
+
+  unlist(html)
 }
 
+#' Copy dependencies to directory
+#'
+#' @param dependencies List of \code{\link{html_dependency}}s.
+#' @param src Base directory to use for location of files.
+#' @param dest Destination directory
+#' @export
+#' @examples
+#' \dontrun{
+#' d3 <- html_dependency(name = "d3", version = "3.4.1", path = "lib/d3",
+#'   script = "d3.min.js")
+#' copy_deps(list(d3), system.file("www", package = "ggvis"), "~/Desktop")
+#' }
+copy_deps <- function(dependencies, src = ".", dest = NULL) {
+  stopifnot(is.list(dependencies))
+
+  if (is.null(dest)) return()
+
+  if (!file.exists(dest))
+    dir.create(dest)
+
+  paths <- unlist(lapply(dependencies, "[[", "path"))
+  src_paths <- file.path(src, paths)
+  dest_paths <- file.path(dest, dirname(paths))
+
+  # Ugly code to get file.copy + recursive = TRUE to work
+  dir.create(dest_paths, showWarnings = FALSE)
+  Map(file.copy, src_paths, dest_paths, recursive = TRUE)
+}
