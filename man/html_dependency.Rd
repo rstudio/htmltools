@@ -37,4 +37,9 @@ See the documentation on
   \href{http://rmarkdown.rstudio.com/developer_html_widgets.html}{R
   Markdown HTML Widgets} for examples and additional details.
 }
+\examples{
+d3 <- html_dependency(name = "d3", version = "3.4.1", path = "lib/d3",
+  script = "d3.min.js")
+cat(format(d3), "\\n")
+}
 
