@@ -12,3 +12,4 @@ Imports:
     utils
 Enhances: knitr
 License: GPL-2
+Roxygen: list(wrap = FALSE)
