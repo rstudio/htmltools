@@ -4,12 +4,10 @@
 #' Convenience method that provides an implementation of the
 #' \code{\link[base:print]{print}} method for HTML content.
 #'
-#' @param html HTML content to print
-#' @param dependencies List of HTML dependencies created using
-#' the \code{\link{html_dependency}} function.
+#' @param html Object of class "html" to print
 #'
 #' @export
-html_print <- function(html, dependencies) {
+html_print <- function(html) {
 
   # define temporary directory for output
   www_dir <- tempfile("viewhtml")
@@ -28,7 +26,7 @@ html_print <- function(html, dependencies) {
             "<html>",
             "<head>",
             "<meta charset=\"utf-8\"/>",
-            html_dependencies_as_character(dependencies, "lib"),
+            html_dependencies_as_character(html$dependencies, "lib"),
             "</head>",
             "<body>",
             html,

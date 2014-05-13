@@ -3,13 +3,10 @@
 \alias{html_knit_print}
 \title{Implementation of the knit_print method for HTML}
 \usage{
-html_knit_print(html, dependencies)
+html_knit_print(html)
 }
 \arguments{
-\item{html}{HTML content to print}
-
-\item{dependencies}{List of HTML dependencies created using the
-  \code{\link{html_dependency}} function.}
+\item{html}{Object of class "html" to knit print}
 }
 \description{
 Convenience method that provides an implementation of the

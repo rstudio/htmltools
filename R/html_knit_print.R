@@ -4,9 +4,7 @@
 #' Convenience method that provides an implementation of the
 #' \code{\link[knitr:knit_print]{knit_print}} method for HTML content.
 #'
-#' @param html HTML content to print
-#' @param dependencies List of HTML dependencies created using the
-#'   \code{\link{html_dependency}} function.
+#' @param html Object of class "html" to knit print
 #'
 #' @details HTML content that is inlined into R Markdown documents should not
 #'   indent HTML tags and content (because that may cause content indented at 4
@@ -17,9 +15,9 @@
 #'   HTML Widgets} for examples and additional details.
 #'
 #' @export
-html_knit_print <- function(html, dependencies) {
+html_knit_print <- function(html) {
   structure(class = "knit_asis",
     html,
-    knit_meta = dependencies
+    knit_meta = html$dependencies
   )
 }
