@@ -26,7 +26,7 @@ html_print <- function(html) {
             "<html>",
             "<head>",
             "<meta charset=\"utf-8\"/>",
-            html_dependencies_as_character(html$dependencies, "lib"),
+            html_dependencies_as_character(attr(html, "dependencies"), "lib"),
             "</head>",
             "<body>",
             html,

@@ -18,6 +18,6 @@
 html_knit_print <- function(html) {
   structure(class = "knit_asis",
     html,
-    knit_meta = html$dependencies
+    knit_meta = attr(html, "dependencies")
   )
 }
