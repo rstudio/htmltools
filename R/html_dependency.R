@@ -51,6 +51,11 @@ html_dependency <- function(name,
   ))
 }
 
+#' @export
+attach_dependency <- function(x, dependency) {
+  structure(x, html_dependency = dependency)
+}
+
 dir_path <- function(dependency) {
   if ("dir" %in% names(dependency$src))
     return(dependency$src[["dir"]])

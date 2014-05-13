@@ -9,7 +9,11 @@ Description: Tools for HTML generation and output
 Depends:
     R (>= 2.14.1)
 Imports:
-    utils
+    utils,
+    digest
+Suggests:
+    markdown,
+    testthat
 Enhances: knitr
 License: GPL-2
 Roxygen: list(wrap = FALSE)
