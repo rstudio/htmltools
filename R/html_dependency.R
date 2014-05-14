@@ -82,7 +82,8 @@ href_path <- function(dependency) {
     return(NULL)
 }
 
-url_encode <- function(x) {
+#' @export
+urlEncode <- function(x) {
   gsub("%2[Ff]", "/", URLencode(x, TRUE))
 }
 
@@ -120,22 +121,23 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
 # suitable for inclusion within the head of an HTML document
 #' @export
 renderDependencies <- function(dependencies,
-  src_type = c("file", "href")) {
+  srcType = c("file", "href"),
+  encodeFunc = urlEncode,
+  pathFilter = identity) {
 
   html <- c()
 
   for (dep in dependencies) {
 
-    dir <- dep$src[[src_type]]
+    dir <- dep$src[[srcType]]
 
     if (is.null(dir)) {
       stop("Dependency ", dep$name, " ", dep$version,
         " does not have a usable source")
     }
 
-    srcpath <- if (src_type == "file") {
-      # URL encode, then unencode /
-      url_encode(dir)
+    srcpath <- if (srcType == "file") {
+      encodeFunc(dir)
     } else {
       # Assume that href is already URL encoded
       href_path(dep)
@@ -157,7 +159,7 @@ renderDependencies <- function(dependencies,
     if (length(dep$stylesheet) > 0) {
       html <- c(html, paste(
         "<link href=\"",
-        htmlEscape(file.path(srcpath, url_encode(dep$stylesheet))),
+        htmlEscape(pathFilter(file.path(srcpath, encodeFunc(dep$stylesheet)))),
         "\" rel=\"stylesheet\" />",
         sep = ""
       ))
@@ -167,7 +169,7 @@ renderDependencies <- function(dependencies,
     if (length(dep$script) > 0) {
       html <- c(html, paste(
         "<script src=\"",
-        htmlEscape(file.path(srcpath, url_encode(dep$script))),
+        htmlEscape(pathFilter(file.path(srcpath, encodeFunc(dep$script)))),
         "\"></script>",
         sep = ""
       ))
