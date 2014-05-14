@@ -651,10 +651,19 @@ flattenTags <- function(x) {
   } else {
     # For other items, coerce to character and wrap them into a list (which
     # will be unwrapped by caller). Note that this will strip attributes.
-    list(as.character(x))
+    flattenTags(as.tags(x))
   }
 }
 
+#' @export
+as.tags <- function(x) {
+  UseMethod("as.tags")
+}
+
+#' @export
+as.tags.default <- function(x) {
+  as.character(x)
+}
 
 #' @export
 htmlPreserve <- function(x) {
