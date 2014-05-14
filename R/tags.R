@@ -665,21 +665,49 @@ as.tags.default <- function(x) {
   as.character(x)
 }
 
+#' Preserve HTML regions
+#'
+#' Use "magic" HTML comments to protect regions of HTML from being modified by
+#' text processing tools.
+#'
+#' Text processing tools like markdown and pandoc are designed to turn
+#' human-friendly markup into common output formats like HTML. This works well
+#' for most prose, but components that generate their own HTML may break if
+#' their markup is interpreted as the input language. The \code{htmlPreserve}
+#' function is used to mark regions of an input document as containing pure HTML
+#' that must not be modified. This is achieved by substituting each such region
+#' with a benign but unique string before processing, and undoing those
+#' substitutions after processing.
+#'
+#' @param x A character vector of HTML to be preserved.
+#'
+#' @return \code{htmlPreserve} returns a single-element character vector with
+#'   "magic" HTML comments surrounding the original text (unless the original
+#'   text was empty, in which case an empty string is returned).
+#'
+#' @examples
+#' # htmlPreserve will prevent "<script>alert(10*2*3);</script>"
+#' # from getting an <em> tag inserted in the middle
+#' markup <- paste(sep = "\n",
+#'   "This is *emphasized* text in markdown.",
+#'   htmlPreserve("<script>alert(10*2*3);</script>"),
+#'   "Here is some more *emphasized text*."
+#' )
+#' extracted <- extractPreserveChunks(markup)
+#' markup <- extracted$value
+#' # Just think of this next line as Markdown processing
+#' output <- gsub("\\*(.*?)\\*", "<em>\\1</em>", markup)
+#' output <- restorePreserveChunks(output, extracted$chunks)
+#' output
+#'
 #' @export
 htmlPreserve <- function(x) {
   x <- paste(x, collapse = "\r\n")
   if (nzchar(x))
-    sprintf("<!--htmlPreserve-->%s<!--/htmlPreserve-->", x)
+    sprintf("<!--html_preserve-->%s<!--/html_preserve-->", x)
   else
     x
 }
-
-# htmlPreserve, extractPreserveChunks, and restorePreserveChunks comprise a
-# mechanism for ensuring that arbitrary regions of HTML are protected from any
-# transformation by processors like markdown or pandoc. This is achieved by
-# replacing such regions with a benign but unique string (like a GUID) before
-# pandoc processing, and restoring those regions after pandoc processing.
-
 
 # extract_preserve_chunks looks for regions in strval marked by
 # <!--html_preserve-->...<!--/html_preserve--> and replaces each such region
@@ -690,6 +718,12 @@ htmlPreserve <- function(x) {
 # Nested regions are handled appropriately; the outermost region is what's used
 # and any inner regions simply have their boundaries removed before the values
 # are stashed in $chunks.
+
+#' @return \code{extractPreserveChunks} returns a list with two named elements:
+#'   \code{value} is the string with the regions replaced, and \code{chunks} is
+#'   a named character vector where the names are the IDs and the values are the
+#'   regions that were extracted.
+#' @rdname htmlPreserve
 #' @export
 extractPreserveChunks <- function(strval) {
 
@@ -748,7 +782,10 @@ extractPreserveChunks <- function(strval) {
     end_inner <- top_level_matches[[i+1]]
     end_outer <- end_inner + endmarker_len
 
-    id <- createUniqueId(16)
+    id <- paste(
+      format(as.hexmode(sample(256, 8, replace = TRUE)-1), width=2),
+      collapse = "")
+
     preserved[id] <- gsub(pattern, "", substr(strval, start_inner, end_inner-1))
 
     strval <- paste(
@@ -762,6 +799,12 @@ extractPreserveChunks <- function(strval) {
   list(value = strval, chunks = preserved)
 }
 
+#' @param strval Input string from which to extract/restore chunks.
+#' @param chunks The \code{chunks} element of the return value of
+#'   \code{extractPreserveChunks}.
+#' @return \code{restorePreserveChunks} returns a character vector with the
+#'   chunk IDs replaced with their original values.
+#' @rdname htmlPreserve
 #' @export
 restorePreserveChunks <- function(strval, chunks) {
   for (id in names(chunks))
