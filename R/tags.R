@@ -3,7 +3,8 @@ NULL
 
 # Given a list of dependencies, choose the latest versions and return them as a
 # named list in the correct order.
-getNewestDeps <- function(dependencies) {
+#' @export
+resolveDependencies <- function(dependencies) {
   result <- list()
   for (dep in dependencies) {
     if (!is.null(dep)) {
@@ -23,7 +24,8 @@ getNewestDeps <- function(dependencies) {
 # remove is a named list of dependencies that take priority.
 # If warnOnConflict, then warn when a dependency is being removed because of an
 # older version already being loaded.
-removeDeps <- function(dependencies, remove, warnOnConflict = TRUE) {
+#' @export
+removeDependencies <- function(dependencies, remove, warnOnConflict = TRUE) {
   matches <- names(dependencies) %in% names(remove)
   if (warnOnConflict) {
     for (depname in names(dependencies)[matches]) {
@@ -101,7 +103,7 @@ normalizeText <- function(text) {
   if (!is.null(attr(text, "html")))
     text
   else
-    html_escape(text, attribute=FALSE)
+    htmlEscape(text, attribute=FALSE)
 
 }
 
@@ -238,7 +240,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     if (!is.na(attribValue)) {
       if (is.logical(attribValue))
         attribValue <- tolower(attribValue)
-      text <- html_escape(attribValue, attribute=TRUE)
+      text <- htmlEscape(attribValue, attribute=TRUE)
       textWriter(paste(" ", attrib,"=\"", text, "\"", sep=""))
     }
     else {
@@ -277,6 +279,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   }
 }
 
+#' @export
 doRenderTags <- function(ui, indent = 0) {
   # Render the body--the bodyHtml variable will be created
   conn <- file(open="w+")
@@ -296,7 +299,7 @@ renderTags <- function(ui, singletons = character(0), indent = 0) {
   # Do singleton and head processing before rendering
   singletonInfo <- takeSingletons(ui, singletons)
   headInfo <- takeHeads(singletonInfo$ui)
-  deps <- getNewestDeps(findDependencies(singletonInfo$ui))
+  deps <- resolveDependencies(findDependencies(singletonInfo$ui))
 
   headIndent <- if (is.numeric(indent)) indent + 1 else indent
   headHtml <- doRenderTags(headInfo$head, indent = headIndent)
@@ -394,6 +397,7 @@ takeHeads <- function(ui) {
   return(list(ui=result, head=headItems))
 }
 
+#' @export
 findDependencies <- function(ui) {
   dep <- attr(ui, "html_dependency")
   if (!is.null(dep) && inherits(dep, "html_dependency"))
@@ -653,10 +657,10 @@ flattenTags <- function(x) {
 
 
 #' @export
-html_preserve <- function(x) {
+htmlPreserve <- function(x) {
   x <- paste(x, collapse = "\r\n")
   if (nzchar(x))
-    sprintf("<!--html_preserve-->%s<!--/html_preserve-->", x)
+    sprintf("<!--htmlPreserve-->%s<!--/htmlPreserve-->", x)
   else
     x
 }
@@ -676,7 +680,7 @@ NULL
 #' @export
 knit_print.shiny.tag <- function(x, ...) {
   output <- surroundSingletons(x)
-  deps <- getNewestDeps(findDependencies(x))
+  deps <- resolveDependencies(findDependencies(x))
   content <- takeHeads(output)
   head_content <- doRenderTags(tagList(content$head))
 
@@ -685,12 +689,14 @@ knit_print.shiny.tag <- function(x, ...) {
   }
   meta <- c(meta, deps)
 
-  knitr::asis_output(html_preserve(format(content$ui, indent=FALSE)), meta = meta)
+  knitr::asis_output(
+    htmlPreserve(format(content$ui, indent=FALSE)),
+    meta = meta)
 }
 
 knit_print.html <- function(x, ...) {
-  deps <- getNewestDeps(findDependencies(x))
-  knitr::asis_output(html_preserve(as.character(x)),
+  deps <- resolveDependencies(findDependencies(x))
+  knitr::asis_output(htmlPreserve(as.character(x)),
     meta = if (length(deps)) list(deps))
 }
 
@@ -848,4 +854,54 @@ includeScript <- function(path, ...) {
 singleton <- function(x) {
   class(x) <- c(class(x), 'shiny.singleton')
   return(x)
+}
+
+
+#' Validate proper CSS formatting of a unit
+#'
+#' Checks that the argument is valid for use as a CSS unit of length.
+#'
+#' \code{NULL} and \code{NA} are returned unchanged.
+#'
+#' Single element numeric vectors are returned as a character vector with the
+#' number plus a suffix of \code{"px"}.
+#'
+#' Single element character vectors must be \code{"auto"} or \code{"inherit"},
+#' or a number. If the number has a suffix, it must be valid: \code{px},
+#' \code{\%}, \code{em}, \code{pt}, \code{in}, \code{cm}, \code{mm}, \code{ex},
+#' or \code{pc}. If the number has no suffix, the suffix \code{"px"} is
+#' appended.
+#'
+#' Any other value will cause an error to be thrown.
+#'
+#' @param x The unit to validate. Will be treated as a number of pixels if a
+#'   unit is not specified.
+#' @return A properly formatted CSS unit of length, if possible. Otherwise, will
+#'   throw an error.
+#' @examples
+#' validateCssUnit("10%")
+#' validateCssUnit(400)  #treated as '400px'
+#' @export
+validateCssUnit <- function(x) {
+  if (is.null(x) || is.na(x))
+    return(x)
+
+  if (length(x) > 1 || (!is.character(x) && !is.numeric(x)))
+    stop('CSS units must be a single-element numeric or character vector')
+
+  # if the input is a character vector consisting only of digits (e.g. "960"),
+  # coerce it to a numeric value
+  if (is.character(x) && nchar(x) > 0 && gsub("\\d*", "", x) == "")
+    x <- as.numeric(x)
+
+  pattern <-
+    "^(auto|inherit|((\\.\\d+)|(\\d+(\\.\\d+)?))(%|in|cm|mm|em|ex|pt|pc|px))$"
+
+  if (is.character(x) &&
+      !grepl(pattern, x)) {
+    stop('"', x, '" is not a valid CSS unit (e.g., "100%", "400px", "auto")')
+  } else if (is.numeric(x)) {
+    x <- paste(x, "px", sep = "")
+  }
+  x
 }

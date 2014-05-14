@@ -6,7 +6,7 @@
 #'
 #' @param html HTML content to print
 #' @param dependencies List of HTML dependencies created using
-#' the \code{\link{html_dependency}} function.
+#' the \code{\link{htmlDependency}} function.
 #'
 #' @export
 html_print <- function(html, dependencies) {

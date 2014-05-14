@@ -33,13 +33,20 @@
 #'   HTML Widgets} for examples and additional details.
 #'
 #' @export
-html_dependency <- function(name,
-                            version,
-                            src,
-                            meta = NULL,
-                            script = NULL,
-                            stylesheet = NULL,
-                            head = NULL) {
+htmlDependency <- function(name,
+                           version,
+                           src,
+                           meta = NULL,
+                           script = NULL,
+                           stylesheet = NULL,
+                           head = NULL) {
+  srcNames <- names(src)
+  if (is.null(srcNames))
+    srcNames <- rep.int("", length(src))
+  srcNames[!nzchar(srcNames)] <- "file"
+  names(src) <- srcNames
+  src <- as.list(src)
+
   structure(class = "html_dependency", list(
     name = name,
     version = version,
@@ -52,7 +59,9 @@ html_dependency <- function(name,
 }
 
 #' @export
-attach_dependency <- function(x, dependency) {
+attachDependency <- function(x, dependency) {
+  if (inherits(dependency, "html_dependency"))
+    dependency <- list(dependency)
   structure(x, html_dependency = dependency)
 }
 
@@ -73,75 +82,58 @@ href_path <- function(dependency) {
     return(NULL)
 }
 
-# Given a list of dependencies, choose the latest versions and return them as a
-# named list in the correct order.
-get_newest_dependencies <- function(dependencies) {
-  result <- list()
-  for (dep in dependencies) {
-    if (!is.null(dep)) {
-      other <- result[[dep$name]]
-      if (is.null(other) || compareVersion(dep$version, other$version) > 0) {
-        # Note that if the dep was already in the result list, then this
-        # assignment preserves its position in the list
-        result[[dep$name]] <- dep
-      }
-    }
-  }
-  return(result)
-}
-
-# Remove `remove` from `dependencies` if the name matches.
-# dependencies is a named list of dependencies.
-# remove is a named list of dependencies that take priority.
-# If warnOnConflict, then warn when a dependency is being removed because of an
-# older version already being loaded.
-remove_dependencies <- function(dependencies, remove, warnOnConflict = TRUE) {
-  matches <- names(dependencies) %in% names(remove)
-  if (warnOnConflict) {
-    for (depname in names(dependencies)[matches]) {
-      loser <- dependencies[[depname]]
-      winner <- remove[[depname]]
-      if (compareVersion(loser$version, winner$version) > 0) {
-        warning(sprintf(paste("The dependency %s %s conflicts with",
-          "version %s"), loser$name, loser$version, winner$version
-        ))
-      }
-    }
-  }
-
-  # Return only deps that weren't in remove
-  return(dependencies[!matches])
-}
-
 url_encode <- function(x) {
   gsub("%2[Ff]", "/", URLencode(x, TRUE))
 }
 
+#' @export
+copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
+
+  dir <- dependency$src$file
+
+  if (is.null(dir)) {
+    if (mustWork) {
+      stop("Dependency ", dependency$name, " ", dependency$version,
+           " is not disk-based")
+    } else {
+      return(dependency)
+    }
+  }
+
+  if (!file.exists(outputDir))
+    dir.create(outputDir)
+
+  target_dir <- file.path(outputDir,
+    paste(dependency$name, dependency$version, sep = "-"))
+
+  if (!file.exists(target_dir)) {
+    file.copy(from = dir, to = outputDir, recursive = TRUE)
+  }
+
+  dir <- file.path(basename(outputDir), basename(target_dir))
+  dependency$src$file <- dir
+
+  dependency
+}
+
 # Given a list of HTML dependencies produce a character representation
 # suitable for inclusion within the head of an HTML document
-html_dependencies_as_character <- function(dependencies, lib_dir = NULL) {
+#' @export
+renderDependencies <- function(dependencies,
+  src_type = c("file", "href")) {
 
   html <- c()
 
   for (dep in dependencies) {
 
-    dir <- dir_path(dep)
+    dir <- dep$src[[src_type]]
 
-    # copy library files if necessary
-    if (!is.null(lib_dir) && !is.null(dir)) {
-
-      if (!file.exists(lib_dir))
-        dir.create(lib_dir)
-
-      target_dir <- file.path(lib_dir, paste(dep$name, dep$version, sep = "-"))
-      if (!file.exists(target_dir)) {
-        file.copy(from = dir, to = lib_dir, recursive = TRUE)
-      }
-
-      dir <- file.path(basename(lib_dir), basename(target_dir))
+    if (is.null(dir)) {
+      stop("Dependency ", dep$name, " ", dep$version,
+        " does not have a usable source")
     }
 
-    srcpath <- if (!is.null(dir)) {
+    srcpath <- if (src_type == "file") {
       # URL encode, then unencode /
       url_encode(dir)
     } else {
@@ -155,8 +147,8 @@ html_dependencies_as_character <- function(dependencies, lib_dir = NULL) {
     # add meta content
     if (length(dep$meta) > 0) {
       html <- c(html, paste(
-        "<meta name=\"", html_escape(names(dep$meta)), "\" content=\"",
-        html_escape(dep$meta), "\" />",
+        "<meta name=\"", htmlEscape(names(dep$meta)), "\" content=\"",
+        htmlEscape(dep$meta), "\" />",
         sep = ""
       ))
     }
@@ -165,7 +157,7 @@ html_dependencies_as_character <- function(dependencies, lib_dir = NULL) {
     if (length(dep$stylesheet) > 0) {
       html <- c(html, paste(
         "<link href=\"",
-        html_escape(file.path(srcpath, url_encode(dep$stylesheet))),
+        htmlEscape(file.path(srcpath, url_encode(dep$stylesheet))),
         "\" rel=\"stylesheet\" />",
         sep = ""
       ))
@@ -175,7 +167,7 @@ html_dependencies_as_character <- function(dependencies, lib_dir = NULL) {
     if (length(dep$script) > 0) {
       html <- c(html, paste(
         "<script src=\"",
-        html_escape(file.path(srcpath, url_encode(dep$script))),
+        htmlEscape(file.path(srcpath, url_encode(dep$script))),
         "\"></script>",
         sep = ""
       ))
@@ -185,37 +177,37 @@ html_dependencies_as_character <- function(dependencies, lib_dir = NULL) {
     html <- c(html, dep$head)
   }
 
-  html
+  HTML(paste(html, collapse = "\n"))
 }
 
 # html_dependencies_as_character(list(
-#   html_dependency("foo", "1.0",
+#   htmlDependency("foo", "1.0",
 #     c(href="http://foo.com/bar%20baz/"),
 #     stylesheet="x y z.css"
 #   )
 # ))
-# [1] "<link href=\"http://foo.com/bar%20baz/x%20y%20z.css\" rel=\"stylesheet\" />"
+# <link href=\"http://foo.com/bar%20baz/x%20y%20z.css\" rel=\"stylesheet\" />
 
 # html_dependencies_as_character(list(
-#   html_dependency("foo", "1.0",
+#   htmlDependency("foo", "1.0",
 #     c(href="http://foo.com/bar%20baz"),
 #     stylesheet="x y z.css"
 #   )
 # ))
-# [1] "<link href=\"http://foo.com/bar%20baz/x%20y%20z.css\" rel=\"stylesheet\" />"
+# <link href=\"http://foo.com/bar%20baz/x%20y%20z.css\" rel=\"stylesheet\" />
 
 # html_dependencies_as_character(list(
-#   html_dependency("foo", "1.0",
+#   htmlDependency("foo", "1.0",
 #     "foo bar/baz",
 #     stylesheet="x y z.css"
 #   )
 # ))
-# [1] "<link href=\"foo%20bar/baz/x%20y%20z.css\" rel=\"stylesheet\" />"
+# <link href=\"foo%20bar/baz/x%20y%20z.css\" rel=\"stylesheet\" />
 
 # html_dependencies_as_character(list(
-#   html_dependency("foo", "1.0",
+#   htmlDependency("foo", "1.0",
 #     "foo bar/baz/",
 #     stylesheet="x y z.css"
 #   )
 # ))
-# [1] "<link href=\"foo%20bar/baz/x%20y%20z.css\" rel=\"stylesheet\" />"
+# <link href=\"foo%20bar/baz/x%20y%20z.css\" rel=\"stylesheet\" />

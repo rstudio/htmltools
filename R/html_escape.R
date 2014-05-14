@@ -10,7 +10,7 @@
 #' @return Character vector with escaped text.
 #'
 #' @export
-html_escape <- local({
+htmlEscape <- local({
 
   .htmlSpecials <- list(
     `&` = '&amp;',
