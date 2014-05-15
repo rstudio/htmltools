@@ -6,7 +6,7 @@
 #'
 #' @param html HTML content to print
 #' @param dependencies List of HTML dependencies created using the
-#'   \code{\link{html_dependency}} function.
+#'   \code{\link{htmlDependency}} function.
 #'
 #' @details HTML content that is inlined into R Markdown documents should not
 #'   indent HTML tags and content (because that may cause content indented at 4

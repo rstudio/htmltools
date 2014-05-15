@@ -9,7 +9,7 @@ html_print(html, dependencies)
 \item{html}{HTML content to print}
 
 \item{dependencies}{List of HTML dependencies created using
-the \code{\link{html_dependency}} function.}
+the \code{\link{htmlDependency}} function.}
 }
 \description{
 Convenience method that provides an implementation of the
