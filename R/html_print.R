@@ -23,6 +23,10 @@ html_print <- function(html, dependencies) {
   oldwd <- setwd(www_dir)
   on.exit(setwd(oldwd), add = TRUE)
 
+  dependencies <- lapply(dependencies, function(dep) {
+    copyDependencyToDir(dep, "lib", FALSE)
+  })
+
   # build the web-page
   html <- c("<!DOCTYPE html>",
             "<html>",

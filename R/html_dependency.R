@@ -136,11 +136,55 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
     paste(dependency$name, dependency$version, sep = "-"))
 
   if (!file.exists(target_dir)) {
-    file.copy(from = dir, to = outputDir, recursive = TRUE)
+    dir.create(target_dir)
+
+    srcfiles <- file.path(dir, list.files(dir))
+    destfiles <- file.path(target_dir, list.files(dir))
+    mapply(function(from, to, recursive) {
+      if (recursive && !file.exists(to))
+        dir.create(to)
+      file.copy(from, to, recursive=recursive)
+    }, srcfiles, destfiles, file.info(srcfiles)$isdir)
   }
 
-  dir <- file.path(basename(outputDir), basename(target_dir))
-  dependency$src$file <- dir
+  dependency$src$file <- target_dir
+
+  dependency
+}
+
+# given a directory and a file, return a relative path from the directory to the
+# file, or the unmodified file path if the file does not appear to be in the
+# directory
+relativeTo <- function(dir, file) {
+  # ensure directory ends with a /
+  if (!identical(substr(dir, nchar(dir), nchar(dir)), "/")) {
+    dir <- paste(dir, "/", sep="")
+  }
+
+  # if the file is prefixed with the directory, return a relative path
+  if (identical(substr(file, 1, nchar(dir)), dir))
+    file <- substr(file, nchar(dir) + 1, nchar(file))
+
+  # simplify ./
+  if (identical(substr(file, 1, 2), "./"))
+    file <- substr(file, 3, nchar(file))
+
+  file
+}
+
+#' @export
+makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
+  dir <- dependency$src$file
+  if (is.null(dir)) {
+    if (!mustWork)
+      return(dependency)
+    else
+      stop("Could not make dependency ", dependency$name, " ",
+           dependency$version, " relative; it is not file-based")
+  }
+
+  dependency$src <- c(file=relativeTo(basepath, dir))
+  # TODO: If mustWork=TRUE then make sure relativeTo actually worked!
 
   dependency
 }
