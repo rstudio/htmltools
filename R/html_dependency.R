@@ -58,11 +58,32 @@ htmlDependency <- function(name,
   ))
 }
 
+#' HTML dependency metadata
+#'
+#' Gets or sets the HTML dependencies associated with an object (such as a tag).
+#'
+#' @param x An object which has (or should have) HTML dependencies.
+#' @param value An HTML dependency, or a list of HTML dependencies.
+#'
 #' @export
-attachDependency <- function(x, dependency) {
-  if (inherits(dependency, "html_dependency"))
-    dependency <- list(dependency)
-  structure(x, html_dependency = dependency)
+htmlDependencies <- function(x) {
+  attr(x, "html_dependencies")
+}
+
+#' @rdname htmlDependencies
+#' @export
+`htmlDependencies<-` <- function(x, value) {
+  if (inherits(value, "html_dependency"))
+    value <- list(value)
+  attr(x, "html_dependencies") <- value
+  x
+}
+
+#' @rdname htmlDependencies
+#' @export
+attachDependencies <- function(x, value) {
+  htmlDependencies(x) <- value
+  return(x)
 }
 
 dir_path <- function(dependency) {
@@ -82,8 +103,15 @@ href_path <- function(dependency) {
     return(NULL)
 }
 
+#' Encode a URL path
+#'
+#' Encode characters in a URL path. This is the same as
+#' \code{\link[utils]{URLencode}} with \code{reserved = TRUE} except that
+#' \code{/} is preserved.
+#'
+#' @param x A character string.
 #' @export
-urlEncode <- function(x) {
+urlEncodePath <- function(x) {
   gsub("%2[Ff]", "/", URLencode(x, TRUE))
 }
 
@@ -122,7 +150,7 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
 #' @export
 renderDependencies <- function(dependencies,
   srcType = c("file", "href"),
-  encodeFunc = urlEncode,
+  encodeFunc = urlEncodePath,
   pathFilter = identity) {
 
   html <- c()

@@ -1,22 +1,36 @@
 #' @import digest
 NULL
 
-# Given a list of dependencies, choose the latest versions and return them as a
-# named list in the correct order.
+depListToNamedDepList <- function(dependencies) {
+  if (inherits(dependencies, "html_dependency"))
+    dependencies <- list(dependencies)
+
+  if (is.null(names(dependencies))) {
+    names(dependencies) <- sapply(dependencies, `[[`, "name")
+  }
+  return(dependencies)
+}
+
+# Given a list of dependencies, choose only the latest versions.
 #' @export
 resolveDependencies <- function(dependencies) {
-  result <- list()
-  for (dep in dependencies) {
-    if (!is.null(dep)) {
-      other <- result[[dep$name]]
-      if (is.null(other) || compareVersion(dep$version, other$version) > 0) {
-        # Note that if the dep was already in the result list, then this
-        # assignment preserves its position in the list
-        result[[dep$name]] <- dep
-      }
-    }
-  }
-  return(result)
+  # Remove nulls
+  deps <- dependencies[!sapply(dependencies, is.null)]
+
+  # Get names and numeric versions in vector/list form
+  depnames <- sapply(deps, `[[`, "name")
+  depvers <- numeric_version(sapply(deps, `[[`, "version"))
+
+  # Get latest version of each dependency. `unique` uses the first occurrence of
+  # each dependency name, which is important for inter-dependent libraries.
+  return(lapply(unique(depnames), function(depname) {
+    # Sort by depname equality, then by version. Since na.last=NA, all elements
+    # whose names do not match will not be included in the sorted vector.
+    sorted <- order(ifelse(depnames == depname, TRUE, NA), depvers,
+      na.last = NA, decreasing = TRUE)
+    # The first element in the list is the one with the largest version.
+    deps[[sorted[[1]]]]
+  }))
 }
 
 # Remove `remove` from `dependencies` if the name matches.
@@ -25,7 +39,7 @@ resolveDependencies <- function(dependencies) {
 # If warnOnConflict, then warn when a dependency is being removed because of an
 # older version already being loaded.
 #' @export
-removeDependencies <- function(dependencies, remove, warnOnConflict = TRUE) {
+subtractDependencies <- function(dependencies, remove, warnOnConflict = TRUE) {
   matches <- names(dependencies) %in% names(remove)
   if (warnOnConflict) {
     for (depname in names(dependencies)[matches]) {
@@ -339,6 +353,9 @@ rewriteTags <- function(ui, func, preorder) {
 # before inner singletons (otherwise the processing of inner
 # singletons would cause the sha1 of the outer singletons to be
 # different).
+#' Singleton manipulation functions
+#'
+#' @rdname singleton-manipulation
 #' @export
 surroundSingletons <- local({
   surroundSingleton <- function(uiObj) {
@@ -363,6 +380,7 @@ surroundSingletons <- local({
 # Given a tag object, apply singleton logic (allow singleton objects
 # to appear no more than once per signature) and return the processed
 # HTML objects and also the list of known singletons.
+#' @rdname singleton-manipulation
 #' @export
 takeSingletons <- function(ui, singletons=character(0), desingleton=TRUE) {
   result <- rewriteTags(ui, function(uiObj) {
@@ -399,7 +417,7 @@ takeHeads <- function(ui) {
 
 #' @export
 findDependencies <- function(ui) {
-  dep <- attr(ui, "html_dependency")
+  dep <- attr(ui, "html_dependencies")
   if (!is.null(dep) && inherits(dep, "html_dependency"))
     dep <- list(dep)
   children <- if (is.list(ui)) {
@@ -655,6 +673,14 @@ flattenTags <- function(x) {
   }
 }
 
+#' Convert a value to tags
+#'
+#' An S3 method for converting arbitrary values to a value that can be used as
+#' the child of a tag or \code{tagList}. The default implementation simply calls
+#' \code{\link[base]{as.character}}.
+#'
+#' @param x Object to be converted.
+#'
 #' @export
 as.tags <- function(x) {
   UseMethod("as.tags")
@@ -708,6 +734,46 @@ htmlPreserve <- function(x) {
   else
     x
 }
+
+# Temporarily set x in env to value, evaluate expr, and
+# then restore x to its original state
+withTemporary <- function(env, x, value, expr, unset = FALSE) {
+
+  if (exists(x, envir = env, inherits = FALSE)) {
+    oldValue <- get(x, envir = env, inherits = FALSE)
+    on.exit(
+      assign(x, oldValue, envir = env, inherits = FALSE),
+      add = TRUE)
+  } else {
+    on.exit(
+      rm(list = x, envir = env, inherits = FALSE),
+      add = TRUE
+    )
+  }
+
+  if (!missing(value) && !isTRUE(unset))
+    assign(x, value, envir = env, inherits = FALSE)
+  else {
+    if (exists(x, envir = env, inherits = FALSE))
+      rm(list = x, envir = env, inherits = FALSE)
+  }
+  force(expr)
+}
+
+# Evaluate an expression using Shiny's own private stream of
+# randomness (not affected by set.seed).
+withPrivateSeed <- local({
+  ownSeed <- NULL
+  function(expr) {
+    withTemporary(.GlobalEnv, ".Random.seed",
+      ownSeed, unset=is.null(ownSeed), {
+        tryCatch({
+          expr
+        }, finally = {ownSeed <<- .Random.seed})
+      }
+    )
+  }
+})
 
 # extract_preserve_chunks looks for regions in strval marked by
 # <!--html_preserve-->...<!--/html_preserve--> and replaces each such region
@@ -782,9 +848,12 @@ extractPreserveChunks <- function(strval) {
     end_inner <- top_level_matches[[i+1]]
     end_outer <- end_inner + endmarker_len
 
-    id <- paste(
-      format(as.hexmode(sample(256, 8, replace = TRUE)-1), width=2),
-      collapse = "")
+    id <- withPrivateSeed(
+      paste("preserve", paste(
+        format(as.hexmode(sample(256, 8, replace = TRUE)-1), width=2),
+        collapse = ""),
+        sep = "")
+    )
 
     preserved[id] <- gsub(pattern, "", substr(strval, start_inner, end_inner-1))
 
