@@ -1,7 +1,7 @@
 Package: htmltools
 Type: Package
 Title: Tools for HTML
-Version: 0.2.0
+Version: 0.2.1
 Date: 2014-03-03
 Author: RStudio, Inc.
 Maintainer: JJ Allaire <jj@rstudio.com>
