@@ -344,20 +344,26 @@ rewriteTags <- function(ui, func, preorder) {
   return(ui)
 }
 
-# Preprocess a tag object by changing any singleton X into
-# <!--SHINY.SINGLETON[sig]-->X'<!--/SHINY.SINGLETON[sig]-->
-# where sig is the sha1 of X, and X' is X minus the singleton
-# attribute.
-#
-# In the case of nested singletons, outer singletons are processed
-# before inner singletons (otherwise the processing of inner
-# singletons would cause the sha1 of the outer singletons to be
-# different).
 #' Singleton manipulation functions
 #'
-#' @rdname singleton-manipulation
+#' Functions for manipulating \code{\link{singleton}} objects in tag
+#' hierarchies. Intended for framework authors.
+#'
+#' @rdname singleton_tools
+#' @name singleton_tools
+NULL
+
+#' @param ui Tag object or lists of tag objects. See \link{builder} topic.
+#' @return \code{surroundSingletons} preprocesses a tag object by changing any
+#'   singleton X into <!--SHINY.SINGLETON[sig]-->X'<!--/SHINY.SINGLETON[sig]-->
+#'   where sig is the sha1 of X, and X' is X minus the singleton attribute.
+#' @rdname singleton_tools
 #' @export
 surroundSingletons <- local({
+  # In the case of nested singletons, outer singletons are processed
+  # before inner singletons (otherwise the processing of inner
+  # singletons would cause the sha1 of the outer singletons to be
+  # different).
   surroundSingleton <- function(uiObj) {
     if (inherits(uiObj, "shiny.singleton")) {
       sig <- digest(uiObj, "sha1")
@@ -377,10 +383,15 @@ surroundSingletons <- local({
   }
 })
 
-# Given a tag object, apply singleton logic (allow singleton objects
-# to appear no more than once per signature) and return the processed
-# HTML objects and also the list of known singletons.
-#' @rdname singleton-manipulation
+#' @param singletons Character vector of singleton signatures that have already
+#'   been encountered (i.e. returned from previous calls to
+#'   \code{takeSingletons}).
+#' @param desingleton Logical value indicating whether singletons that are
+#'   encountered should have the singleton attribute removed.
+#' @return \code{takeSingletons} returns a list with the elements \code{ui} (the
+#'   processed tag objects with any duplicate singleton objects removed) and
+#'   \code{singletons} (the list of known singleton signatures).
+#' @rdname singleton_tools
 #' @export
 takeSingletons <- function(ui, singletons=character(0), desingleton=TRUE) {
   result <- rewriteTags(ui, function(uiObj) {
@@ -1055,13 +1066,12 @@ includeScript <- function(path, ...) {
   return(tags$script(HTML(paste(lines, collapse='\r\n')), ...))
 }
 
-#' Include Content Only Once
+#' Include content only once
 #'
 #' Use \code{singleton} to wrap contents (tag, text, HTML, or lists) that should
 #' be included in the generated document only once, yet may appear in the
 #' document-generating code more than once. Only the first appearance of the
-#' content (in document order) will be used. Useful for custom components that
-#' have JavaScript files or stylesheets.
+#' content (in document order) will be used.
 #'
 #' @param x A \code{\link{tag}}, text, \code{\link{HTML}}, or list.
 #'
