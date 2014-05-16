@@ -220,13 +220,17 @@ tag <- function(`_tag_name`, varArgs) {
   )
 }
 
+isTagList <- function(x) {
+  is.list(x) && (inherits(x, "shiny.tag.list") || identical(class(x), "list"))
+}
+
 tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   if (length(tag) == 0)
     return (NULL)
 
   # optionally process a list of tags
-  if (!isTag(tag) && is.list(tag)) {
+  if (!isTag(tag) && isTagList(tag)) {
     tag <- dropNullsOrEmpty(flattenTags(tag))
     lapply(tag, tagWrite, textWriter, indent)
     return (NULL)
@@ -316,6 +320,7 @@ doRenderTags <- function(ui, indent = 0) {
 
 #' @export
 renderTags <- function(ui, singletons = character(0), indent = 0) {
+  ui <- tagify(ui)
   # Do singleton and head processing before rendering
   singletonInfo <- takeSingletons(ui, singletons)
   headInfo <- takeHeads(singletonInfo$ui)
@@ -340,7 +345,7 @@ rewriteTags <- function(ui, func, preorder) {
 
   if (isTag(ui)) {
     ui$children[] <- lapply(ui$children, rewriteTags, func, preorder)
-  } else if (is.list(ui)) {
+  } else if (isTagList(ui)) {
     ui[] <- lapply(ui, rewriteTags, func, preorder)
   }
 
@@ -371,9 +376,9 @@ surroundSingletons <- local({
   # singletons would cause the sha1 of the outer singletons to be
   # different).
   surroundSingleton <- function(uiObj) {
-    if (inherits(uiObj, "shiny.singleton")) {
+    if (is.singleton(uiObj)) {
       sig <- digest(uiObj, "sha1")
-      class(uiObj) <- class(uiObj)[class(uiObj) != "shiny.singleton"]
+      uiObj <- singleton(uiObj, FALSE)
       return(tagList(
         HTML(sprintf("<!--SHINY.SINGLETON[%s]-->", sig)),
         uiObj,
@@ -401,13 +406,13 @@ surroundSingletons <- local({
 #' @export
 takeSingletons <- function(ui, singletons=character(0), desingleton=TRUE) {
   result <- rewriteTags(ui, function(uiObj) {
-    if (inherits(uiObj, "shiny.singleton")) {
+    if (is.singleton(uiObj)) {
       sig <- digest(uiObj, "sha1")
       if (sig %in% singletons)
         return(NULL)
       singletons <<- append(singletons, sig)
       if (desingleton)
-        class(uiObj) <- class(uiObj)[class(uiObj) != "shiny.singleton"]
+        uiObj <- singleton(uiObj, FALSE)
       return(uiObj)
     } else {
       return(uiObj)
@@ -662,6 +667,15 @@ withTags <- function(code) {
   eval(substitute(code), envir = as.list(tags), enclos = parent.frame())
 }
 
+# Make sure any objects in the tree that can be converted to tags, have been
+tagify <- function(x) {
+  rewriteTags(x, function(uiObj) {
+    if (isTag(uiObj) || isTagList(uiObj) || is.character(uiObj))
+      return(uiObj)
+    else
+      return(tagify(as.tags(uiObj)))
+  }, FALSE)
+}
 
 # Given a list of tags, lists, and other items, return a flat list, where the
 # items from the inner, nested lists are pulled to the top level, recursively.
@@ -669,7 +683,7 @@ flattenTags <- function(x) {
   if (isTag(x)) {
     # For tags, wrap them into a list (which will be unwrapped by caller)
     list(x)
-  } else if (is.list(x)) {
+  } else if (isTagList(x)) {
     if (length(x) == 0) {
       # Empty lists are simply returned
       x
@@ -705,7 +719,10 @@ as.tags <- function(x) {
 
 #' @export
 as.tags.default <- function(x) {
-  as.character(x)
+  if (is.list(x) && !isTagList(x))
+    unclass(x)
+  else
+    as.character(x)
 }
 
 #' Preserve HTML regions
@@ -911,6 +928,7 @@ NULL
 #' @rdname knitr_methods
 #' @export
 knit_print.shiny.tag <- function(x, ...) {
+  x <- tagify(x)
   output <- surroundSingletons(x)
   deps <- resolveDependencies(findDependencies(x))
   content <- takeHeads(output)
@@ -1081,11 +1099,18 @@ includeScript <- function(path, ...) {
 #' content (in document order) will be used.
 #'
 #' @param x A \code{\link{tag}}, text, \code{\link{HTML}}, or list.
+#' @param value Whether the object should be a singleton.
 #'
 #' @export
-singleton <- function(x) {
-  class(x) <- c(class(x), 'shiny.singleton')
+singleton <- function(x, value = TRUE) {
+  attr(x, "htmltools.singleton") <- if (isTRUE(value)) TRUE else NULL
   return(x)
+}
+
+#' @rdname singleton
+#' @export
+is.singleton <- function(x) {
+  isTRUE(attr(x, "htmltools.singleton"))
 }
 
 

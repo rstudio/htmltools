@@ -311,7 +311,7 @@ test_that("Head and singleton behavior", {
 
   expect_identical(result$html, HTML(""))
   expect_identical(result$head, HTML("  hello"))
-  expect_identical(result$singletons, "60eed8231e688bcba7c275c58dd2e3b4dacb61f0")
+  expect_identical(result$singletons, "089cce0335cf2bae2bcb08cc753ba56f8e1ea8ed")
 
   # Ensure that "hello" actually behaves like a singleton
   result2 <- renderTags(tagList(
@@ -330,8 +330,11 @@ test_that("Head and singleton behavior", {
 
   # Ensure that singleton can be applied to lists, not just tags
   result4 <- renderTags(list(singleton(list("hello")), singleton(list("hello"))))
-  expect_identical(result4$singletons, "d7319e3f14167c4c056dd7aa0b274c83fe2291f6")
+  expect_identical(result4$singletons, "110d1f0ef6762db2c6863523a7c379a697b43ea3")
   expect_identical(result4$html, renderTags(HTML("hello"))$html)
+
+  result5 <- renderTags(tagList(singleton(list(list("hello")))))
+  expect_identical(result5$html, renderTags("hello")$html)
 })
 
 test_that("Factors are treated as characters, not numbers", {
@@ -364,7 +367,7 @@ test_that("Low-level singleton manipulation methods", {
   ))
 
   expect_identical(result1$ui$children[[2]], NULL)
-  expect_false(is(result1$ui$children[[1]], "shiny.singleton"))
+  expect_false(is.singleton(result1$ui$children[[1]]))
 
   # desingleton=FALSE means drop duplicates but don't strip the
   # singleton bit
@@ -374,7 +377,7 @@ test_that("Low-level singleton manipulation methods", {
   ), desingleton=FALSE)
 
   expect_identical(result2$ui$children[[2]], NULL)
-  expect_is(result2$ui$children[[1]], "shiny.singleton")
+  expect_true(is.singleton(result2$ui$children[[1]]))
 
   result3 <- surroundSingletons(tags$div(
     singleton(tags$script("foo")),
@@ -384,12 +387,12 @@ test_that("Low-level singleton manipulation methods", {
   expect_identical(
     renderTags(result3)$html,
     HTML("<div>
-  <!--SHINY.SINGLETON[58b302d493b50acb75e4a5606687cadccdf902d8]-->
+  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
   <script>foo</script>
-  <!--/SHINY.SINGLETON[58b302d493b50acb75e4a5606687cadccdf902d8]-->
-  <!--SHINY.SINGLETON[58b302d493b50acb75e4a5606687cadccdf902d8]-->
+  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
+  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
   <script>foo</script>
-  <!--/SHINY.SINGLETON[58b302d493b50acb75e4a5606687cadccdf902d8]-->
+  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
 </div>")
     )
 })
@@ -432,98 +435,25 @@ test_that("Indenting can be controlled/suppressed", {
   )
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+test_that("Non-tag objects can be coerced", {
+
+  .GlobalEnv$as.tags.testcoerce1 <- function(x) {
+    list(singleton(list("hello")))
+  }
+  on.exit(rm("as.tags.testcoerce1", pos = .GlobalEnv), add = TRUE)
+
+  # Make sure tag-coerceable objects are tagified
+  result1 <- renderTags(structure(TRUE, class = "testcoerce1"))
+  expect_identical(result1$html, HTML("hello"))
+  expect_identical(result1$singletons, "110d1f0ef6762db2c6863523a7c379a697b43ea3")
+
+  # Make sure tag-coerceable objects are tagified before singleton handling
+  # occurs, but that over-flattening doesn't happen
+  result2 <- renderTags(tagList(
+    singleton(list("hello")),
+    structure(TRUE, class = "testcoerce1")
+  ))
+  expect_identical(result2$html, HTML("hello"))
+  expect_identical(result2$singletons, "110d1f0ef6762db2c6863523a7c379a697b43ea3")
+
+})
