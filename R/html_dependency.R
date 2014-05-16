@@ -49,7 +49,7 @@ htmlDependency <- function(name,
 
   structure(class = "html_dependency", list(
     name = name,
-    version = version,
+    version = as.character(version),
     src = src,
     meta = meta,
     script = script,
