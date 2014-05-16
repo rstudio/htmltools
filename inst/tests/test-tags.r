@@ -133,11 +133,11 @@ test_that("Adding child tags", {
 
   # tagSetChildren preserves attributes
   x <- tagSetChildren(div(), HTML("text"))
-  expect_identical(attr(x$children[[1]], "html"), TRUE)
+  expect_identical(attr(x$children[[1]], "html", TRUE), TRUE)
 
   # tagAppendChildren preserves attributes
   x <- tagAppendChildren(div(), HTML("text"))
-  expect_identical(attr(x$children[[1]], "html"), TRUE)
+  expect_identical(attr(x$children[[1]], "html", TRUE), TRUE)
 })
 
 
@@ -254,19 +254,19 @@ test_that("Attributes are preserved", {
   # HTML() adds an attribute to the data structure (note that this is
   # different from the 'attribs' field in the list)
   x <- HTML("<tag>&&</tag>")
-  expect_identical(attr(x, "html"), TRUE)
+  expect_identical(attr(x, "html", TRUE), TRUE)
   expect_equivalent(format(x), "<tag>&&</tag>")
 
   # Make sure attributes are preserved when wrapped in other tags
   x <- div(HTML("<tag>&&</tag>"))
   expect_equivalent(x$children[[1]], HTML("<tag>&&</tag>"))
-  expect_identical(attr(x$children[[1]], "html"), TRUE)
+  expect_identical(attr(x$children[[1]], "html", TRUE), TRUE)
   expect_equivalent(format(x), "<div><tag>&&</tag></div>")
 
   # Deeper nesting
   x <- div(p(HTML("<tag>&&</tag>")))
   expect_equivalent(x$children[[1]]$children[[1]], HTML("<tag>&&</tag>"))
-  expect_identical(attr(x$children[[1]]$children[[1]], "html"), TRUE)
+  expect_identical(attr(x$children[[1]]$children[[1]], "html", TRUE), TRUE)
   expect_equivalent(format(x), "<div>\n  <p><tag>&&</tag></p>\n</div>")
 })
 

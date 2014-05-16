@@ -1,3 +1,29 @@
+#' Make an HTML object browsable
+#'
+#' By default, HTML objects display their HTML markup at the console when
+#' printed. \code{browsable} can be used to make specific objects render as HTML
+#' by default when printed at the console.
+#'
+#' You can override the default browsability of an HTML object by explicitly
+#' passing \code{browse = TRUE} (or \code{FALSE}) to the \code{print} function.
+#'
+#' @param x The object to make browsable or not.
+#' @param value Whether the object should be considered browsable.
+#' @return \code{browsable} returns \code{x} with an extra attribute to indicate
+#'   that the value is browsable.
+#' @export
+browsable <- function(x, value = TRUE) {
+  attr(x, "browsable_html") <- if (isTRUE(value)) TRUE else NULL
+  return(x)
+}
+
+#' @return \code{is.browsable} returns \code{TRUE} if the value is browsable, or
+#'   \code{FALSE} if not.
+#' @rdname browsable
+#' @export
+is.browsable <- function(x) {
+  return(isTRUE(attr(x, "browsable_html", exact=TRUE)))
+}
 
 #' Implementation of the print method for HTML
 #'
@@ -9,7 +35,7 @@
 #' the \code{\link{htmlDependency}} function.
 #'
 #' @export
-html_print <- function(html, dependencies) {
+html_print <- function(html) {
 
   # define temporary directory for output
   www_dir <- tempfile("viewhtml")
@@ -23,8 +49,12 @@ html_print <- function(html, dependencies) {
   oldwd <- setwd(www_dir)
   on.exit(setwd(oldwd), add = TRUE)
 
-  dependencies <- lapply(dependencies, function(dep) {
-    copyDependencyToDir(dep, "lib", FALSE)
+  rendered <- renderTags(html)
+
+  deps <- lapply(rendered$dependencies, function(dep) {
+    dep <- copyDependencyToDir(dep, "lib", FALSE)
+    dep <- makeDependencyRelative(dep, www_dir)
+    dep
   })
 
   # build the web-page
@@ -32,10 +62,11 @@ html_print <- function(html, dependencies) {
             "<html>",
             "<head>",
             "<meta charset=\"utf-8\"/>",
-            html_dependencies_as_character(dependencies, "lib"),
+            renderDependencies(deps, "file"),
+            rendered$head,
             "</head>",
             "<body>",
-            html,
+            rendered$html,
             "</body>",
             "</html>")
 

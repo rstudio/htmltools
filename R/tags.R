@@ -76,8 +76,11 @@ isTag <- function(x) {
 }
 
 #' @export
-print.shiny.tag <- function(x, ...) {
-  print(as.character(x), ...)
+print.shiny.tag <- function(x, browse = is.browsable(x), ...) {
+  if (browse)
+    html_print(x)
+  else
+    print(as.character(x), ...)
   invisible(x)
 }
 
@@ -103,8 +106,11 @@ format.shiny.tag.list <- format.shiny.tag
 as.character.shiny.tag.list <- as.character.shiny.tag
 
 #' @export
-print.html <- function(x, ...) {
-  cat(x, "\n")
+print.html <- function(x, browse = is.browsable(x), ...) {
+  if (browse)
+    html_print(HTML(x))
+  else
+    cat(x, "\n")
   invisible(x)
 }
 
@@ -114,7 +120,7 @@ format.html <- function(x, ...) {
 }
 
 normalizeText <- function(text) {
-  if (!is.null(attr(text, "html")))
+  if (!is.null(attr(text, "html", TRUE)))
     text
   else
     htmlEscape(text, attribute=FALSE)
@@ -428,7 +434,7 @@ takeHeads <- function(ui) {
 
 #' @export
 findDependencies <- function(ui) {
-  dep <- attr(ui, "html_dependencies")
+  dep <- htmlDependencies(ui)
   if (!is.null(dep) && inherits(dep, "html_dependency"))
     dep <- list(dep)
   children <- if (is.list(ui)) {
@@ -819,7 +825,7 @@ extractPreserveChunks <- function(strval) {
 
   # matches contains the index of all the start and end markers
   matches <- gregexpr(pattern, strval)[[1]]
-  lengths <- attr(matches, "match.length")
+  lengths <- attr(matches, "match.length", TRUE)
 
   # No markers? Just return.
   if (matches[[1]] == -1)
@@ -920,6 +926,7 @@ knit_print.shiny.tag <- function(x, ...) {
     meta = meta)
 }
 
+#' @export
 knit_print.html <- function(x, ...) {
   deps <- resolveDependencies(findDependencies(x))
   knitr::asis_output(htmlPreserve(as.character(x)),

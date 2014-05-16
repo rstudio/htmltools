@@ -67,7 +67,7 @@ htmlDependency <- function(name,
 #'
 #' @export
 htmlDependencies <- function(x) {
-  attr(x, "html_dependencies")
+  attr(x, "html_dependencies", TRUE)
 }
 
 #' @rdname htmlDependencies
@@ -140,11 +140,14 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
 
     srcfiles <- file.path(dir, list.files(dir))
     destfiles <- file.path(target_dir, list.files(dir))
+    isdir <- file.info(srcfiles)$isdir
+    destfiles <- ifelse(isdir, dirname(destfiles), destfiles)
+
     mapply(function(from, to, recursive) {
       if (recursive && !file.exists(to))
         dir.create(to)
       file.copy(from, to, recursive=recursive)
-    }, srcfiles, destfiles, file.info(srcfiles)$isdir)
+    }, srcfiles, destfiles, isdir)
   }
 
   dependency$src$file <- target_dir

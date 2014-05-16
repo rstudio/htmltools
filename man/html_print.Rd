@@ -3,7 +3,7 @@
 \alias{html_print}
 \title{Implementation of the print method for HTML}
 \usage{
-html_print(html, dependencies)
+html_print(html)
 }
 \arguments{
 \item{html}{HTML content to print}
