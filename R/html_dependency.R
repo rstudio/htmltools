@@ -242,8 +242,8 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
 
 #' Create HTML for dependencies
 #'
-#' Create the appropriate HTML markup for including these dependencies in an
-#' HTML document.
+#' Create the appropriate HTML markup for including dependencies in an HTML
+#' document.
 #'
 #' @param dependencies A list of \code{htmlDependency} objects.
 #' @param srcType The type of src paths to use; valid values are \code{file} or
@@ -252,6 +252,9 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
 #'   default should generally be used.
 #' @param hrefFilter A function used to transform the final, encoded URLs of
 #'   script and stylsheet files. The default should generally be used.
+#'
+#' @return An \code{\link{HTML}} object suitable for inclusion in the head of an
+#'   HTML document.
 #'
 #' @export
 renderDependencies <- function(dependencies,
