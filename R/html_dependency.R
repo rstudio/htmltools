@@ -62,6 +62,10 @@ htmlDependency <- function(name,
 #'
 #' Gets or sets the HTML dependencies associated with an object (such as a tag).
 #'
+#' \code{attachDependencies} provides an alternate syntax for setting
+#' dependencies and is essentially equivalent to
+#' \code{local(\{htmlDependencies(x) <- value; x\})}.
+#'
 #' @param x An object which has (or should have) HTML dependencies.
 #' @param value An HTML dependency, or a list of HTML dependencies.
 #'
@@ -115,6 +119,34 @@ urlEncodePath <- function(x) {
   gsub("%2[Ff]", "/", URLencode(x, TRUE))
 }
 
+#' Copy an HTML dependency to a directory
+#'
+#' Copies an HTML dependency to a subdirectory of the given directory. The
+#' subdirectory name will be \emph{name}-\emph{version} (for example,
+#' "outputDir/jquery-1.11.0").
+#'
+#' In order for disk-based dependencies to work with static HTML files, it's
+#' generally necessary to copy them to either the directory of the referencing
+#' HTML file, or to a subdirectory of that directory. This function makes it
+#' easier to perform that copy.
+#'
+#' If a subdirectory named \emph{name}-\emph{version} already exists in
+#' \code{outputDir}, then copying is not performed; the existing contents are
+#' assumed to be up-to-date.
+#'
+#' @param dependency A single HTML dependency object.
+#' @param outputDir The directory in which a subdirectory should be created for
+#'   this dependency.
+#' @param mustWork If \code{TRUE} and \code{dependency} does not point to a
+#'   directory on disk (but rather a URL location), an error is raised. If
+#'   \code{FALSE} then non-disk dependencies are returned without modification.
+#'
+#' @return The dependency with its \code{src} value updated to the new
+#'   location's absolute path.
+#'
+#' @seealso \code{\link{makeDependencyRelative}} can be used with the returned
+#'   value to make the path relative to a specific directory.
+#'
 #' @export
 copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
 
@@ -150,7 +182,7 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
     }, srcfiles, destfiles, isdir)
   }
 
-  dependency$src$file <- target_dir
+  dependency$src$file <- normalizePath(target_dir, "/", TRUE)
 
   dependency
 }
@@ -166,17 +198,34 @@ relativeTo <- function(dir, file) {
 
   # if the file is prefixed with the directory, return a relative path
   if (identical(substr(file, 1, nchar(dir)), dir))
-    file <- substr(file, nchar(dir) + 1, nchar(file))
-
-  # simplify ./
-  if (identical(substr(file, 1, 2), "./"))
-    file <- substr(file, 3, nchar(file))
-
-  file
+    return(substr(file, nchar(dir) + 1, nchar(file)))
+  else
+    stop("The path ", file, " does not appear to be a descendant of ", dir)
 }
 
+#' Make an absolute dependency relative
+#'
+#' Change a dependency's absolute path to be relative to one of its parent
+#' directories.
+#'
+#' @param dependency A single HTML dependency with an absolute path.
+#' @param basepath The path to the directory that \code{dependency} should be
+#'   made relative to.
+#' @param mustWork If \code{TRUE} and \code{dependency} does not point to a
+#'   directory on disk (but rather a URL location), an error is raised. If
+#'   \code{FALSE} then non-disk dependencies are returned without modification.
+#'
+#' @return The dependency with its \code{src} value updated to the new
+#' location's relative path.
+#'
+#' If \code{baspath} did not appear to be a parent directory of the dependency's
+#' directory, an error is raised (regardless of the value of \code{mustWork}).
+#'
+#' @seealso \code{\link{copyDependencyToDir}}
+#'
 #' @export
 makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
+  basepath <- normalizePath(basepath, "/", TRUE)
   dir <- dependency$src$file
   if (is.null(dir)) {
     if (!mustWork)
@@ -187,18 +236,30 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
   }
 
   dependency$src <- c(file=relativeTo(basepath, dir))
-  # TODO: If mustWork=TRUE then make sure relativeTo actually worked!
 
   dependency
 }
 
-# Given a list of HTML dependencies produce a character representation
-# suitable for inclusion within the head of an HTML document
+#' Create HTML for dependencies
+#'
+#' Create the appropriate HTML markup for including these dependencies in an
+#' HTML document.
+#'
+#' @param dependencies A list of \code{htmlDependency} objects.
+#' @param srcType The type of src paths to use; valid values are \code{file} or
+#'   \code{href}.
+#' @param encodeFunc The function to use to encode the path part of a URL. The
+#'   default should generally be used.
+#' @param hrefFilter A function used to transform the final, encoded URLs of
+#'   script and stylsheet files. The default should generally be used.
+#'
 #' @export
 renderDependencies <- function(dependencies,
   srcType = c("file", "href"),
   encodeFunc = urlEncodePath,
-  pathFilter = identity) {
+  hrefFilter = identity) {
+
+  srcType <- match.arg(srcType)
 
   html <- c()
 
@@ -234,7 +295,7 @@ renderDependencies <- function(dependencies,
     if (length(dep$stylesheet) > 0) {
       html <- c(html, paste(
         "<link href=\"",
-        htmlEscape(pathFilter(file.path(srcpath, encodeFunc(dep$stylesheet)))),
+        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$stylesheet)))),
         "\" rel=\"stylesheet\" />",
         sep = ""
       ))
@@ -244,7 +305,7 @@ renderDependencies <- function(dependencies,
     if (length(dep$script) > 0) {
       html <- c(html, paste(
         "<script src=\"",
-        htmlEscape(pathFilter(file.path(srcpath, encodeFunc(dep$script)))),
+        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$script)))),
         "\"></script>",
         sep = ""
       ))

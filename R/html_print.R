@@ -31,8 +31,6 @@ is.browsable <- function(x) {
 #' \code{\link[base:print]{print}} method for HTML content.
 #'
 #' @param html HTML content to print
-#' @param dependencies List of HTML dependencies created using
-#' the \code{\link{htmlDependency}} function.
 #'
 #' @export
 html_print <- function(html) {

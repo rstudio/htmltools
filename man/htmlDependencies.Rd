@@ -19,4 +19,9 @@ attachDependencies(x, value)
 \description{
 Gets or sets the HTML dependencies associated with an object (such as a tag).
 }
+\details{
+\code{attachDependencies} provides an alternate syntax for setting
+dependencies and is essentially equivalent to
+\code{local(\{htmlDependencies(x) <- value; x\})}.
+}
 

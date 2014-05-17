@@ -7,9 +7,6 @@ html_print(html)
 }
 \arguments{
 \item{html}{HTML content to print}
-
-\item{dependencies}{List of HTML dependencies created using
-the \code{\link{htmlDependency}} function.}
 }
 \description{
 Convenience method that provides an implementation of the
