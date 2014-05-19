@@ -258,7 +258,7 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
 #'
 #' @export
 renderDependencies <- function(dependencies,
-  srcType = c("file", "href"),
+  srcType = c("href", "file"),
   encodeFunc = urlEncodePath,
   hrefFilter = identity) {
 
@@ -268,7 +268,7 @@ renderDependencies <- function(dependencies,
 
   for (dep in dependencies) {
 
-    dir <- dep$src[[srcType]]
+    dir <- head(dep$src[srcType], 1)
 
     if (is.null(dir)) {
       stop("Dependency ", dep$name, " ", dep$version,

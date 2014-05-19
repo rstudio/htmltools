@@ -3,7 +3,7 @@
 \alias{renderDependencies}
 \title{Create HTML for dependencies}
 \usage{
-renderDependencies(dependencies, srcType = c("file", "href"),
+renderDependencies(dependencies, srcType = c("href", "file"),
   encodeFunc = urlEncodePath, hrefFilter = identity)
 }
 \arguments{

@@ -11,7 +11,16 @@ depListToNamedDepList <- function(dependencies) {
   return(dependencies)
 }
 
-# Given a list of dependencies, choose only the latest versions.
+#' Resolve a list of dependencies
+#'
+#' Given a list of dependencies, removes any redundant dependencies (based on
+#' name equality). If multiple versions of a dependency are found, the copy with
+#' the latest version number is used.
+#'
+#' @param dependencies A list of \code{\link{htmlDependency}} objects.
+#' @return dependencies A list of \code{\link{htmlDependency}} objects with
+#'   redundancies removed.
+#'
 #' @export
 resolveDependencies <- function(dependencies) {
   # Remove nulls
@@ -38,13 +47,40 @@ resolveDependencies <- function(dependencies) {
 # remove is a named list of dependencies that take priority.
 # If warnOnConflict, then warn when a dependency is being removed because of an
 # older version already being loaded.
+
+#' Subtract dependencies
+#'
+#' Remove a set of dependencies from another list of dependencies. The set of
+#' dependencies to remove can be expressed as either a character vector or a
+#' list; if the latter, a warning can be emitted if the version of the
+#' dependency being removed is later than the version of the dependency object
+#' that is causing the removal.
+#'
+#' @param dependencies A list of \code{\link{htmlDependency}} objects from which
+#'   dependencies should be removed.
+#' @param remove A list of \code{\link{htmlDependency}} objects indicating which
+#'   dependencies should be removed, or a character vector indicating dependency
+#'   names.
+#' @param warnOnConflict If \code{TRUE}, a warning is emitted for each
+#'   dependency that is removed if the corresponding dependency in \code{remove}
+#'   has a lower version number. Has no effect if \code{remove} is provided as a
+#'   character vector.
+#'
+#' @return A list of \code{\link{htmlDependency}} objects that don't intersect
+#'   with \code{remove}.
+#'
 #' @export
 subtractDependencies <- function(dependencies, remove, warnOnConflict = TRUE) {
-  matches <- names(dependencies) %in% names(remove)
-  if (warnOnConflict) {
-    for (depname in names(dependencies)[matches]) {
-      loser <- dependencies[[depname]]
-      winner <- remove[[depname]]
+  depnames <- sapply(dependencies, `[[`, "name")
+  rmnames <- if (is.character(remove))
+    remove
+  else
+    sapply(remove, `[[`, "name")
+
+  matches <- depnames %in% rmnames
+  if (warnOnConflict && !is.character(remove)) {
+    for (loser in dependencies[matches]) {
+      winner <- remove[[head(rmnames == loser$name, 1)]]
       if (compareVersion(loser$version, winner$version) > 0) {
         warning(sprintf(paste("The dependency %s %s conflicts with",
           "version %s"), loser$name, loser$version, winner$version
@@ -303,6 +339,9 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   }
 }
 
+#' @details \code{doRenderTags} ignores singleton, head, and dependency
+#'   handling, and simply renders the given tag objects as HTML.
+#' @rdname renderTags
 #' @export
 doRenderTags <- function(ui, indent = 0) {
   # Render the body--the bodyHtml variable will be created
@@ -318,6 +357,32 @@ doRenderTags <- function(ui, indent = 0) {
   return(HTML(paste(htmlResult, collapse = "\n")))
 }
 
+#' Render tags into HTML
+#'
+#' Renders tags and objects that can be converted into tags into HTML.
+#'
+#' @param ui Tag object(s) to render
+#' @param singletons A list of \link{singleton} signatures to consider already
+#'   rendered; any matching singletons will be dropped instead of rendered.
+#' @param indent Initial indent level, or \code{FALSE} if no indentation should
+#'   be used.
+#'
+#' @return Returns a list with the following variables:
+#' \describe{
+#'   \item{\code{head}}{An \code{\link{HTML}} string that should be included in
+#'     \code{<head>}.
+#'   }
+#'   \item{\code{singletons}}{Character vector of singleton signatures that are
+#'     known after rendering.
+#'   }
+#'   \item{\code{dependencies}}{A list of \link[=resolveDependencies]{resolved}
+#'     \code{\link{htmlDependency}} objects.
+#'   }
+#'   \item{\code{html}}{An \code{\link{HTML}} string that represents the main
+#'     HTML that was rendered.
+#'   }
+#' }
+#'
 #' @export
 renderTags <- function(ui, singletons = character(0), indent = 0) {
   ui <- tagify(ui)
@@ -437,6 +502,14 @@ takeHeads <- function(ui) {
   return(list(ui=result, head=headItems))
 }
 
+#' Collect attached dependencies from HTML tag object
+#'
+#' Walks a hierarchy of tags looking for attached dependencies.
+#'
+#' @param ui A tag-like object to search for dependencies.
+#'
+#' @return A list of \code{\link{htmlDependency}} objects.
+#'
 #' @export
 findDependencies <- function(ui) {
   dep <- htmlDependencies(ui)
@@ -711,14 +784,15 @@ flattenTags <- function(x) {
 #' \code{\link[base]{as.character}}.
 #'
 #' @param x Object to be converted.
+#' @param ... Any additional parameters.
 #'
 #' @export
-as.tags <- function(x) {
+as.tags <- function(x, ...) {
   UseMethod("as.tags")
 }
 
 #' @export
-as.tags.default <- function(x) {
+as.tags.default <- function(x, ...) {
   if (is.list(x) && !isTagList(x))
     unclass(x)
   else
@@ -944,6 +1018,7 @@ knit_print.shiny.tag <- function(x, ...) {
     meta = meta)
 }
 
+#' @rdname knitr_methods
 #' @export
 knit_print.html <- function(x, ...) {
   deps <- resolveDependencies(findDependencies(x))

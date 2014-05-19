@@ -51,7 +51,7 @@ html_print <- function(html) {
 
   deps <- lapply(rendered$dependencies, function(dep) {
     dep <- copyDependencyToDir(dep, "lib", FALSE)
-    dep <- makeDependencyRelative(dep, www_dir)
+    dep <- makeDependencyRelative(dep, www_dir, FALSE)
     dep
   })
 
@@ -60,7 +60,7 @@ html_print <- function(html) {
             "<html>",
             "<head>",
             "<meta charset=\"utf-8\"/>",
-            renderDependencies(deps, "file"),
+            renderDependencies(deps, c("href", "file")),
             rendered$head,
             "</head>",
             "<body>",

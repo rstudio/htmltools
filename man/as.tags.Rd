@@ -3,10 +3,12 @@
 \alias{as.tags}
 \title{Convert a value to tags}
 \usage{
-as.tags(x)
+as.tags(x, ...)
 }
 \arguments{
 \item{x}{Object to be converted.}
+
+\item{...}{Any additional parameters.}
 }
 \description{
 An S3 method for converting arbitrary values to a value that can be used as
