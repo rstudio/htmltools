@@ -1,10 +1,9 @@
-
-
 #' Define an HTML dependency
 #'
-#' Define an HTML dependency (e.g. CSS or Javascript and related library). HTML
-#' dependency definitions are required for \code{\link{html_output}} that
-#' require CSS or JavaScript within the document head to render correctly.
+#' Define an HTML dependency (i.e. CSS and/or JavaScript bundled in a
+#' directory). HTML dependencies make it possible to use libraries like jQuery,
+#' Bootstrap, and d3 in a more composable and portable way than simply using
+#' script, link, and style tags.
 #'
 #' @param name Library name
 #' @param version Library version
@@ -19,8 +18,8 @@
 #'   specified relative to the \code{path} parameter).
 #' @param head Arbitrary lines of HTML to insert into the document head
 #'
-#' @return An object that can be included in the list of dependencies passed to
-#'   \code{\link{html_print}} or \code{\link{html_knit_print}}.
+#' @return An object that can be included in a list of dependencies passed to
+#'   \code{\link{attachDependencies}}.
 #'
 #' @details Each dependency can be located on the filesystem, at a relative or
 #'   absolute URL, or both. The location types are indicated using the names of
@@ -28,9 +27,8 @@
 #'   \code{href} for URL. For example, a dependency that was both on disk and
 #'   at a URL might use \code{src = c(file=filepath, href=url)}.
 #'
-#'   See the documentation on
-#'   \href{http://rmarkdown.rstudio.com/developer_html_widgets.html}{R Markdown
-#'   HTML Widgets} for examples and additional details.
+#' @seealso Use \code{\link{attachDependencies}} to associate a list of
+#'   dependencies with the HTML it belongs with.
 #'
 #' @export
 htmlDependency <- function(name,

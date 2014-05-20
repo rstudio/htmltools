@@ -111,6 +111,7 @@ isTag <- function(x) {
   inherits(x, "shiny.tag")
 }
 
+#' @rdname print.html
 #' @export
 print.shiny.tag <- function(x, browse = is.browsable(x), ...) {
   if (browse)
@@ -141,8 +142,20 @@ format.shiny.tag.list <- format.shiny.tag
 #' @export
 as.character.shiny.tag.list <- as.character.shiny.tag
 
+#' Print method for HTML/tags
+#'
+#' S3 method for printing HTML that prints markup or renders HTML in a web
+#' browser.
+#'
+#' @param x The value to print.
+#' @param browse If \code{TRUE}, the HTML will be rendered and displayed in a
+#'   browser (or possibly another HTML viewer supplied by the environment via
+#'   the \code{viewer} option). If \code{FALSE} then the HTML object's markup
+#'   will be rendered at the console.
+#' @param ... Additional arguments passed to print.
+#'
 #' @export
-print.html <- function(x, browse = is.browsable(x), ...) {
+print.html <- function(x, ..., browse = is.browsable(x)) {
   if (browse)
     html_print(HTML(x))
   else
@@ -339,35 +352,21 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   }
 }
 
-#' @details \code{doRenderTags} ignores singleton, head, and dependency
-#'   handling, and simply renders the given tag objects as HTML.
-#' @rdname renderTags
-#' @export
-doRenderTags <- function(ui, indent = 0) {
-  # Render the body--the bodyHtml variable will be created
-  conn <- file(open="w+")
-  connWriter <- function(text) writeChar(text, conn, eos = NULL)
-  htmlResult <- tryCatch({
-    tagWrite(ui, connWriter, indent)
-    flush(conn)
-    readLines(conn)
-  },
-    finally = close(conn)
-  )
-  return(HTML(paste(htmlResult, collapse = "\n")))
-}
-
 #' Render tags into HTML
 #'
-#' Renders tags and objects that can be converted into tags into HTML.
+#' Renders tags (and objects that can be converted into tags using
+#' \code{\link{as.tags}}) into HTML. (Generally intended to be called from web
+#' framework libraries, not directly by most users--see
+#' \code{\link{print.html}(browse=TRUE)} for higher level rendering.)
 #'
-#' @param ui Tag object(s) to render
+#' @param x Tag object(s) to render
 #' @param singletons A list of \link{singleton} signatures to consider already
 #'   rendered; any matching singletons will be dropped instead of rendered.
+#'   (This is useful (only?) for incremental rendering.)
 #' @param indent Initial indent level, or \code{FALSE} if no indentation should
 #'   be used.
 #'
-#' @return Returns a list with the following variables:
+#' @return \code{renderTags} returns a list with the following variables:
 #' \describe{
 #'   \item{\code{head}}{An \code{\link{HTML}} string that should be included in
 #'     \code{<head>}.
@@ -384,10 +383,10 @@ doRenderTags <- function(ui, indent = 0) {
 #' }
 #'
 #' @export
-renderTags <- function(ui, singletons = character(0), indent = 0) {
-  ui <- tagify(ui)
+renderTags <- function(x, singletons = character(0), indent = 0) {
+  x <- tagify(x)
   # Do singleton and head processing before rendering
-  singletonInfo <- takeSingletons(ui, singletons)
+  singletonInfo <- takeSingletons(x, singletons)
   headInfo <- takeHeads(singletonInfo$ui)
   deps <- resolveDependencies(findDependencies(singletonInfo$ui))
 
@@ -399,6 +398,26 @@ renderTags <- function(ui, singletons = character(0), indent = 0) {
     singletons = singletonInfo$singletons,
     dependencies = deps,
     html = bodyHtml))
+}
+
+#' @details \code{doRenderTags} is intended for very low-level use; it ignores
+#'   singleton, head, and dependency handling, and simply renders the given tag
+#'   objects as HTML.
+#' @return \code{doRenderTags} returns a simple \code{\link{HTML}} string.
+#' @rdname renderTags
+#' @export
+doRenderTags <- function(x, indent = 0) {
+  # Render the body--the bodyHtml variable will be created
+  conn <- file(open="w+")
+  connWriter <- function(text) writeChar(text, conn, eos = NULL)
+  htmlResult <- tryCatch({
+    tagWrite(x, connWriter, indent)
+    flush(conn)
+    readLines(conn)
+  },
+    finally = close(conn)
+  )
+  return(HTML(paste(htmlResult, collapse = "\n")))
 }
 
 # Walk a tree of tag objects, rewriting objects according to func.
@@ -506,20 +525,20 @@ takeHeads <- function(ui) {
 #'
 #' Walks a hierarchy of tags looking for attached dependencies.
 #'
-#' @param ui A tag-like object to search for dependencies.
+#' @param tags A tag-like object to search for dependencies.
 #'
 #' @return A list of \code{\link{htmlDependency}} objects.
 #'
 #' @export
-findDependencies <- function(ui) {
-  dep <- htmlDependencies(ui)
+findDependencies <- function(tags) {
+  dep <- htmlDependencies(tags)
   if (!is.null(dep) && inherits(dep, "html_dependency"))
     dep <- list(dep)
-  children <- if (is.list(ui)) {
-    if (isTag(ui)) {
-      ui$children
+  children <- if (is.list(tags)) {
+    if (isTag(tags)) {
+      tags$children
     } else {
-      ui
+      tags
     }
   }
   childDeps <- unlist(lapply(children, findDependencies), recursive = FALSE)
@@ -704,7 +723,7 @@ HTML <- function(text, ...) {
   htmlText
 }
 
-#' Evaluate an expression using the \code{tags}
+#' Evaluate an expression using \code{tags}
 #'
 #' This function makes it simpler to write HTML-generating code. Instead of
 #' needing to specify \code{tags} each time a tag function is used, as in
@@ -796,7 +815,19 @@ as.tags.default <- function(x, ...) {
   if (is.list(x) && !isTagList(x))
     unclass(x)
   else
-    as.character(x)
+    tagList(as.character(x))
+}
+
+#' @export
+as.tags.html <- function(x, ...) {
+  x
+}
+
+#' @export
+as.tags.character <- function(x, ...) {
+  # For printing as.tags("<strong>") directly at console, without dropping any
+  # attached dependencies
+  tagList(x)
 }
 
 #' Preserve HTML regions
@@ -1102,20 +1133,11 @@ hr <- function(...) tags$hr(...)
 
 #' Include Content From a File
 #'
-#' Include HTML, text, or rendered Markdown into a \link[=shinyUI]{Shiny UI}.
+#' Load HTML, text, or rendered Markdown from a file and turn into HTML.
 #'
 #' These functions provide a convenient way to include an extensive amount of
 #' HTML, textual, Markdown, CSS, or JavaScript content, rather than using a
 #' large literal R string.
-#'
-#' @note \code{includeText} escapes its contents, but does no other processing.
-#'   This means that hard breaks and multiple spaces will be rendered as they
-#'   usually are in HTML: as a single space character. If you are looking for
-#'   preformatted text, wrap the call with \code{\link{pre}}, or consider using
-#'   \code{includeMarkdown} instead.
-#'
-#' @note The \code{includeMarkdown} function requires the \code{markdown}
-#'   package.
 #'
 #' @param path The path of the file to be included. It is highly recommended to
 #'   use a relative path (the base path being the Shiny application directory),
@@ -1130,6 +1152,12 @@ includeHTML <- function(path) {
   return(HTML(paste(lines, collapse='\r\n')))
 }
 
+#' @note \code{includeText} escapes its contents, but does no other processing.
+#'   This means that hard breaks and multiple spaces will be rendered as they
+#'   usually are in HTML: as a single space character. If you are looking for
+#'   preformatted text, wrap the call with \code{\link{pre}}, or consider using
+#'   \code{includeMarkdown} instead.
+#'
 #' @rdname include
 #' @export
 includeText <- function(path) {
@@ -1137,6 +1165,8 @@ includeText <- function(path) {
   return(paste(lines, collapse='\r\n'))
 }
 
+#' @note The \code{includeMarkdown} function requires the \code{markdown}
+#'   package.
 #' @rdname include
 #' @export
 includeMarkdown <- function(path) {

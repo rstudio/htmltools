@@ -3,10 +3,10 @@
 \alias{findDependencies}
 \title{Collect attached dependencies from HTML tag object}
 \usage{
-findDependencies(ui)
+findDependencies(tags)
 }
 \arguments{
-\item{ui}{A tag-like object to search for dependencies.}
+\item{tags}{A tag-like object to search for dependencies.}
 }
 \value{
 A list of \code{\link{htmlDependency}} objects.
