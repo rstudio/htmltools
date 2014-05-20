@@ -260,20 +260,18 @@ renderDependencies <- function(dependencies,
   encodeFunc = urlEncodePath,
   hrefFilter = identity) {
 
-  srcType <- match.arg(srcType)
-
   html <- c()
 
   for (dep in dependencies) {
 
-    dir <- head(dep$src[srcType], 1)
-
-    if (is.null(dir)) {
+    usableType <- srcType[which(srcType %in% names(dep$src))]
+    if (length(usableType) == 0)
       stop("Dependency ", dep$name, " ", dep$version,
         " does not have a usable source")
-    }
 
-    srcpath <- if (srcType == "file") {
+    dir <- dep$src[head(usableType, 1)]
+
+    srcpath <- if (usableType == "file") {
       encodeFunc(dir)
     } else {
       # Assume that href is already URL encoded
