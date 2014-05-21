@@ -1,10 +1,10 @@
 Package: htmltools
 Type: Package
 Title: Tools for HTML
-Version: 0.2.3
-Date: 2014-05-16
+Version: 0.2.4
+Date: 2014-05-21
 Author: RStudio, Inc.
-Maintainer: JJ Allaire <jj@rstudio.com>
+Maintainer: Joe Cheng <joe@rstudio.com>
 Description: Tools for HTML generation and output
 Depends:
     R (>= 2.14.1)
@@ -15,5 +15,5 @@ Suggests:
     markdown,
     testthat
 Enhances: knitr
-License: GPL-2
+License: GPL (>= 2)
 Roxygen: list(wrap = FALSE)
