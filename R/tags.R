@@ -176,6 +176,7 @@ normalizeText <- function(text) {
 
 }
 
+#' @name tag
 #' @rdname tag
 #' @export
 tagList <- function(...) {
