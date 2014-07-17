@@ -114,7 +114,8 @@ href_path <- function(dependency) {
 #' @param x A character string.
 #' @export
 urlEncodePath <- function(x) {
-  gsub("%2[Ff]", "/", URLencode(x, TRUE))
+  vURLEncode <- Vectorize(URLencode, USE.NAMES = F)
+  gsub("%2[Ff]", "/", vURLEncode(x, TRUE))
 }
 
 #' Copy an HTML dependency to a directory
