@@ -111,10 +111,10 @@ href_path <- function(dependency) {
 #' \code{\link[utils]{URLencode}} with \code{reserved = TRUE} except that
 #' \code{/} is preserved.
 #'
-#' @param x A character string.
+#' @param x A character vector.
 #' @export
 urlEncodePath <- function(x) {
-  vURLEncode <- Vectorize(URLencode, USE.NAMES = F)
+  vURLEncode <- Vectorize(URLencode, USE.NAMES = FALSE)
   gsub("%2[Ff]", "/", vURLEncode(x, TRUE))
 }
 

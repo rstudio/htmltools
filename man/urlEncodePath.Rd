@@ -6,7 +6,7 @@
 urlEncodePath(x)
 }
 \arguments{
-\item{x}{A character string.}
+\item{x}{A character vector.}
 }
 \description{
 Encode characters in a URL path. This is the same as
