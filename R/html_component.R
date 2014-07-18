@@ -23,10 +23,12 @@ print.html_component <- function(x, ...) {
   #
   # (For now we just use a hard-coded width and height)
   #
-  div <- tags$div(x$generator(), width = 400, height = 300)
+  #style <- pixelSizeStyle(400, 300)
+  style <- fillParentSizeStyle()
+  html <- x$generator(style)
 
   # print it
-  html_print(div)
+  html_print(html)
 }
 
 #' @export
@@ -41,12 +43,11 @@ knit_print.html_component <- function(x, options, inline, ...) {
   #
   # (For now we just respect the kntir chunk option sizes)
   #
-  div <- tags$div(x$generator(),
-                  width = options$out.width.px,
-                  height = options$out.height.px)
+  style <- pixelSizeStyle(options$out.width.px, options$out.height.px)
+  html <- x$generator(style)
 
   # knit print it
-  knit_print(div, options, inline, ...)
+  knit_print.html(html, options, inline, ...)
 }
 
 #' @export
@@ -61,7 +62,8 @@ as.tags.html_component <- function(x, ...) {
   # (for now just used hard coded width and height)
   #
 
-  tags$div(x$generator(), width = "100%", height = 400)
+  style <- pixelSizeStyle(400, 300)
+  tags$div(x$generator(style))
 }
 
 #
@@ -74,6 +76,13 @@ as.tags.html_component <- function(x, ...) {
 #
 #
 
+pixelSizeStyle <- function(width, height) {
+  paste("width:", width, "px;", "height:", height, "px;", sep = "")
+}
+
+fillParentSizeStyle <- function() {
+  "position: absolute; top: 0; bottom: 0; left: 0; right: 0;"
+}
 
 
 
