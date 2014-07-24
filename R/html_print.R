@@ -17,12 +17,18 @@ browsable <- function(x, value = TRUE) {
   return(x)
 }
 
+
 #' @return \code{is.browsable} returns \code{TRUE} if the value is browsable, or
 #'   \code{FALSE} if not.
 #' @rdname browsable
 #' @export
 is.browsable <- function(x) {
   return(isTRUE(attr(x, "browsable_html", exact=TRUE)))
+}
+
+#' @export
+is.selfcontained <- function(x){
+  return(isTRUE(attr(x, "selfcontained", exact = TRUE)))
 }
 
 #' Implementation of the print method for HTML
@@ -34,6 +40,12 @@ is.browsable <- function(x) {
 #'
 #' @export
 html_print <- function(html) {
+
+  hrefFilter = if (is.selfcontained(html)){
+    makeDataURI
+  } else {
+    function(x, ...){ return(x) }
+  }
 
   # define temporary directory for output
   www_dir <- tempfile("viewhtml")
@@ -60,7 +72,8 @@ html_print <- function(html) {
             "<html>",
             "<head>",
             "<meta charset=\"utf-8\"/>",
-            renderDependencies(deps, c("href", "file")),
+            renderDependencies(deps, c("href", "file"),
+              hrefFilter = hrefFilter),
             rendered$head,
             "</head>",
             "<body>",

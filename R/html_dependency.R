@@ -118,6 +118,13 @@ urlEncodePath <- function(x) {
   gsub("%2[Ff]", "/", vURLEncode(x, TRUE))
 }
 
+makeDataURI <- function(x, mime){
+  if (!require(base64enc)){
+    stop("You need to install the base64enc package.", call. = FALSE)
+  }
+  dataURI(file = x, mime = mime)
+}
+
 #' Copy an HTML dependency to a directory
 #'
 #' Copies an HTML dependency to a subdirectory of the given directory. The
@@ -259,7 +266,7 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
 renderDependencies <- function(dependencies,
   srcType = c("href", "file"),
   encodeFunc = urlEncodePath,
-  hrefFilter = identity) {
+  hrefFilter = function(x, ...){x}) {
 
   html <- c()
 
@@ -295,7 +302,7 @@ renderDependencies <- function(dependencies,
     if (length(dep$stylesheet) > 0) {
       html <- c(html, paste(
         "<link href=\"",
-        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$stylesheet)))),
+        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$stylesheet)), mime = 'text/css')),
         "\" rel=\"stylesheet\" />",
         sep = ""
       ))
@@ -305,7 +312,7 @@ renderDependencies <- function(dependencies,
     if (length(dep$script) > 0) {
       html <- c(html, paste(
         "<script src=\"",
-        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$script)))),
+        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$script)),mime = 'text/javascript')),
         "\"></script>",
         sep = ""
       ))

@@ -6,7 +6,8 @@
 \usage{
 \method{print}{shiny.tag}(x, browse = is.browsable(x), ...)
 
-\method{print}{html}(x, ..., browse = is.browsable(x))
+\method{print}{html}(x, ..., selfcontained = FALSE,
+  browse = is.browsable(x))
 }
 \arguments{
 \item{x}{The value to print.}
