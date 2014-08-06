@@ -31,9 +31,13 @@ is.browsable <- function(x) {
 #' \code{\link[base:print]{print}} method for HTML content.
 #'
 #' @param html HTML content to print
+#' @param viewer A function to be called with the URL or path to the generated
+#'   HTML page. Can be \code{NULL}, in which case no viewer will be invoked.
+#'
+#' @return Invisibly returns the URL or path of the generated HTML page.
 #'
 #' @export
-html_print <- function(html) {
+html_print <- function(html, viewer = getOption("viewer", utils::browseURL)) {
 
   # define temporary directory for output
   www_dir <- tempfile("viewhtml")
@@ -73,11 +77,8 @@ html_print <- function(html) {
   writeLines(html, index_html, useBytes = TRUE)
 
   # show it
-  viewer <- getOption("viewer")
   if (!is.null(viewer))
     viewer(index_html)
-  else
-    utils::browseURL(index_html)
 
-  invisible(NULL)
+  invisible(index_html)
 }

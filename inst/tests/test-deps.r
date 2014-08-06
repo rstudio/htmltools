@@ -5,6 +5,7 @@ format.html_dependency <- function(x, ...) {
 }
 print.html_dependency <- function(x, ...) {
   cat(format(x), "\n")
+  invisible(x)
 }
 
 test_that("Dependency resolution works", {
