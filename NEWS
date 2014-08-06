@@ -1,0 +1,11 @@
+htmltools 0.2.5
+--------------------------------------------------------------------------------
+
+* Explicit library(htmltools) is no longer required for tags to be rendered in 
+  knitr/rmarkdown documents.
+
+
+htmltools 0.2.4
+--------------------------------------------------------------------------------
+
+Initial release
