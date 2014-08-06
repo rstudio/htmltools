@@ -4,7 +4,7 @@
 \title{Define an HTML dependency}
 \usage{
 htmlDependency(name, version, src, meta = NULL, script = NULL,
-  stylesheet = NULL, head = NULL)
+  stylesheet = NULL, head = NULL, includeSrcDir = TRUE)
 }
 \arguments{
 \item{name}{Library name}
@@ -25,6 +25,10 @@ specified relative to the \code{path} parameter).}
 specified relative to the \code{path} parameter).}
 
 \item{head}{Arbitrary lines of HTML to insert into the document head}
+
+\item{includeSrcDir}{Whether to copy the entire dir indicated by \code{src},
+  or only the specific files in the \code{script} and \code{stylesheet}
+  arguments.}
 }
 \value{
 An object that can be included in a list of dependencies passed to
