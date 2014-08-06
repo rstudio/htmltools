@@ -3,10 +3,12 @@
 \alias{html_print}
 \title{Implementation of the print method for HTML}
 \usage{
-html_print(html)
+html_print(html, background = "white")
 }
 \arguments{
 \item{html}{HTML content to print}
+
+\item{background}{Background color for web page}
 }
 \description{
 Convenience method that provides an implementation of the

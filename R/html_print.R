@@ -31,9 +31,10 @@ is.browsable <- function(x) {
 #' \code{\link[base:print]{print}} method for HTML content.
 #'
 #' @param html HTML content to print
+#' @param background Background color for web page
 #'
 #' @export
-html_print <- function(html) {
+html_print <- function(html, background = "white") {
 
   # define temporary directory for output
   www_dir <- tempfile("viewhtml")
@@ -63,7 +64,7 @@ html_print <- function(html) {
             renderDependencies(deps, c("href", "file")),
             rendered$head,
             "</head>",
-            "<body>",
+            sprintf("<body style=\"background-color:%s;\">", background),
             rendered$html,
             "</body>",
             "</html>")
