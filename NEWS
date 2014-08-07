@@ -6,11 +6,6 @@ htmltools 0.2.5
 
 * Added "viewer" parameter to html_print.
 
-* Added "includeSrcDir" parameter to htmlDependency. Lets the caller specify
-  that the HTML dependency doesn't require its entire directory, just the
-  individual script and/or stylesheet files that are named.
-
-
 
 htmltools 0.2.4
 --------------------------------------------------------------------------------

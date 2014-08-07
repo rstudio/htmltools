@@ -17,9 +17,6 @@
 #' @param stylesheet Stylesheet(s) to include within the document (should be
 #'   specified relative to the \code{path} parameter).
 #' @param head Arbitrary lines of HTML to insert into the document head
-#' @param includeSrcDir Whether to copy the entire dir indicated by \code{src},
-#'   or only the specific files in the \code{script} and \code{stylesheet}
-#'   arguments.
 #'
 #' @return An object that can be included in a list of dependencies passed to
 #'   \code{\link{attachDependencies}}.
@@ -40,8 +37,7 @@ htmlDependency <- function(name,
                            meta = NULL,
                            script = NULL,
                            stylesheet = NULL,
-                           head = NULL,
-                           includeSrcDir = TRUE) {
+                           head = NULL) {
   srcNames <- names(src)
   if (is.null(srcNames))
     srcNames <- rep.int("", length(src))
@@ -56,8 +52,7 @@ htmlDependency <- function(name,
     meta = meta,
     script = script,
     stylesheet = stylesheet,
-    head = head,
-    includeSrcDir = includeSrcDir
+    head = head
   ))
 }
 
@@ -174,13 +169,8 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   if (!file.exists(target_dir)) {
     dir.create(target_dir)
 
-    files <- if (is.null(dependency$includeSrcDir) || isTRUE(dependency$includeSrcDir)) {
-      list.files(dir)
-    } else {
-      c(dependency$script, dependency$stylesheet)
-    }
-    srcfiles <- file.path(dir, files)
-    destfiles <- file.path(target_dir, files)
+    srcfiles <- file.path(dir, list.files(dir))
+    destfiles <- file.path(target_dir, list.files(dir))
     isdir <- file.info(srcfiles)$isdir
     destfiles <- ifelse(isdir, dirname(destfiles), destfiles)
 
