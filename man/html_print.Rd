@@ -3,10 +3,16 @@
 \alias{html_print}
 \title{Implementation of the print method for HTML}
 \usage{
-html_print(html)
+html_print(html, viewer = getOption("viewer", utils::browseURL))
 }
 \arguments{
 \item{html}{HTML content to print}
+
+\item{viewer}{A function to be called with the URL or path to the generated
+  HTML page. Can be \code{NULL}, in which case no viewer will be invoked.}
+}
+\value{
+Invisibly returns the URL or path of the generated HTML page.
 }
 \description{
 Convenience method that provides an implementation of the

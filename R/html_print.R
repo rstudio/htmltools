@@ -37,9 +37,13 @@ is.selfcontained <- function(x){
 #' \code{\link[base:print]{print}} method for HTML content.
 #'
 #' @param html HTML content to print
+#' @param viewer A function to be called with the URL or path to the generated
+#'   HTML page. Can be \code{NULL}, in which case no viewer will be invoked.
+#'
+#' @return Invisibly returns the URL or path of the generated HTML page.
 #'
 #' @export
-html_print <- function(html) {
+html_print <- function(html, viewer = getOption("viewer", utils::browseURL)) {
 
   hrefFilter = if (is.selfcontained(html)){
     makeDataURI
@@ -51,19 +55,42 @@ html_print <- function(html) {
   www_dir <- tempfile("viewhtml")
   dir.create(www_dir)
 
-  # we want to re-use the html_dependencies_as_string function and also
+  # define output file
+  index_html <- file.path(www_dir, "index.html")
+
+  # save file
+  save_html(html, file = index_html, libdir = "lib")
+
+  # show it
+  if (!is.null(viewer))
+    viewer(index_html)
+
+  invisible(index_html)
+}
+
+#' Save an HTML object to a file
+#'
+#' Save the specified HTML object to a file, copying all of it's
+#' dependencies to the directory specified via \code{libdir}.
+#'
+#' @param html HTML content to print
+#' @param file File to write content to
+#' @param libdir Directory to copy dependenies to
+#'
+#' @export
+save_html <- function(html, file, libdir = "lib") {
+
   # ensure that the paths to dependencies are relative to the base
-  # directory where the temp index.html is being built. to affect
-  # this we setwd to the www_dir for the duration of this function
-  # to a relative path
-  oldwd <- setwd(www_dir)
+  # directory where the webpage is being built.
+  dir <- dirname(file)
+  oldwd <- setwd(dir)
   on.exit(setwd(oldwd), add = TRUE)
 
   rendered <- renderTags(html)
 
   deps <- lapply(rendered$dependencies, function(dep) {
-    dep <- copyDependencyToDir(dep, "lib", FALSE)
-    dep <- makeDependencyRelative(dep, www_dir, FALSE)
+    dep <- copyDependencyToDir(dep, libdir, FALSE)
+    dep <- makeDependencyRelative(dep, dir, FALSE)
     dep
   })
 
@@ -82,15 +109,7 @@ html_print <- function(html) {
             "</html>")
 
   # write it
-  index_html <- file.path(www_dir, "index.html")
-  writeLines(html, index_html, useBytes = TRUE)
-
-  # show it
-  viewer <- getOption("viewer")
-  if (!is.null(viewer))
-    viewer(index_html)
-  else
-    utils::browseURL(index_html)
-
-  invisible(NULL)
+  writeLines(html, file, useBytes = TRUE)
 }
+
+
