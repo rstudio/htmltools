@@ -1,7 +1,14 @@
+htmltools 0.2.6
+--------------------------------------------------------------------------------
+
+* Add "attachment" parameter to htmlDependency, which can be used to allow any
+  file in the dependency directory to be available via URL at runtime.
+
+
 htmltools 0.2.5
 --------------------------------------------------------------------------------
 
-* Explicit library(htmltools) is no longer required for tags to be rendered in 
+* Explicit library(htmltools) is no longer required for tags to be rendered in
   knitr/rmarkdown documents.
 
 * Added "viewer" parameter to html_print.
