@@ -64,7 +64,7 @@ html_print <- function(html, background = "white") {
             renderDependencies(deps, c("href", "file")),
             rendered$head,
             "</head>",
-            sprintf("<body style=\"background-color:%s;\">", background),
+            sprintf("<body style=\"background-color:%s;\">", htmlEscape(background)),
             rendered$html,
             "</body>",
             "</html>")
