@@ -31,13 +31,14 @@ is.browsable <- function(x) {
 #' \code{\link[base:print]{print}} method for HTML content.
 #'
 #' @param html HTML content to print
+#' @param background Background color for web page
 #' @param viewer A function to be called with the URL or path to the generated
 #'   HTML page. Can be \code{NULL}, in which case no viewer will be invoked.
 #'
 #' @return Invisibly returns the URL or path of the generated HTML page.
 #'
 #' @export
-html_print <- function(html, viewer = getOption("viewer", utils::browseURL)) {
+html_print <- function(html, background = "white", viewer = getOption("viewer", utils::browseURL)) {
 
   # define temporary directory for output
   www_dir <- tempfile("viewhtml")
@@ -90,7 +91,7 @@ save_html <- function(html, file, libdir = "lib") {
             renderDependencies(deps, c("href", "file")),
             rendered$head,
             "</head>",
-            "<body>",
+            sprintf("<body style=\"background-color:%s;\">", htmlEscape(background)),
             rendered$html,
             "</body>",
             "</html>")
