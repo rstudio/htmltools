@@ -3,10 +3,12 @@
 \alias{save_html}
 \title{Save an HTML object to a file}
 \usage{
-save_html(html, file, libdir = "lib")
+save_html(html, file, background = "white", libdir = "lib")
 }
 \arguments{
 \item{html}{HTML content to print}
+
+\item{background}{Background color for web page}
 
 \item{file}{File to write content to}
 

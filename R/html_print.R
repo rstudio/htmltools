@@ -48,7 +48,7 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
   index_html <- file.path(www_dir, "index.html")
 
   # save file
-  save_html(html, file = index_html, libdir = "lib")
+  save_html(html, file = index_html, background = background, libdir = "lib")
 
   # show it
   if (!is.null(viewer))
@@ -63,11 +63,12 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
 #' dependencies to the directory specified via \code{libdir}.
 #'
 #' @param html HTML content to print
+#' @param background Background color for web page
 #' @param file File to write content to
 #' @param libdir Directory to copy dependenies to
 #'
 #' @export
-save_html <- function(html, file, libdir = "lib") {
+save_html <- function(html, file, background = "white", libdir = "lib") {
 
   # ensure that the paths to dependencies are relative to the base
   # directory where the webpage is being built.
