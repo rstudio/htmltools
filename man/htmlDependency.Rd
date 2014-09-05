@@ -4,7 +4,7 @@
 \title{Define an HTML dependency}
 \usage{
 htmlDependency(name, version, src, meta = NULL, script = NULL,
-  stylesheet = NULL, head = NULL)
+  stylesheet = NULL, head = NULL, attachment = NULL)
 }
 \arguments{
 \item{name}{Library name}
@@ -25,6 +25,9 @@ specified relative to the \code{path} parameter).}
 specified relative to the \code{path} parameter).}
 
 \item{head}{Arbitrary lines of HTML to insert into the document head}
+
+\item{attachment}{Attachment(s) to include within the document head. See
+  Details.}
 }
 \value{
 An object that can be included in a list of dependencies passed to
@@ -42,6 +45,17 @@ Each dependency can be located on the filesystem, at a relative or
   the \code{src} character vector: \code{file} for filesystem directory,
   \code{href} for URL. For example, a dependency that was both on disk and
   at a URL might use \code{src = c(file=filepath, href=url)}.
+
+  \code{attachment} can be used to make the indicated files available to the
+  JavaScript on the page via URL. For each element of \code{attachment}, an
+  element \code{<link id="DEPNAME-ATTACHINDEX-attachment" rel="attachment"
+  href="...">} is inserted, where \code{DEPNAME} is \code{name}. The value of
+  \code{ATTACHINDEX} depends on whether \code{attachment} is named or not; if
+  so, then it's the name of the element, and if not, it's the 1-based index
+  of the element. JavaScript can retrieve the URL using something like
+  \code{document.getElementById(depname + "-" + index + "-attachment").href}.
+  Note that depending on the rendering context, the runtime value of the
+  href may be an absolute, relative, or data URI.
 }
 \seealso{
 Use \code{\link{attachDependencies}} to associate a list of
