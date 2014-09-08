@@ -1,4 +1,4 @@
-#' @import digest
+#' @import utils digest
 NULL
 
 # Reusable function for registering a set of methods with S3 manually. The
