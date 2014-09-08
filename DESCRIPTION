@@ -9,6 +9,7 @@ Description: Tools for HTML generation and output
 Depends:
     R (>= 2.14.1)
 Imports:
+    utils,
     digest
 Suggests:
     markdown,
