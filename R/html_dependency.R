@@ -17,6 +17,8 @@
 #' @param stylesheet Stylesheet(s) to include within the document (should be
 #'   specified relative to the \code{path} parameter).
 #' @param head Arbitrary lines of HTML to insert into the document head
+#' @param attachment Attachment(s) to include within the document head. See
+#'   Details.
 #'
 #' @return An object that can be included in a list of dependencies passed to
 #'   \code{\link{attachDependencies}}.
@@ -26,6 +28,17 @@
 #'   the \code{src} character vector: \code{file} for filesystem directory,
 #'   \code{href} for URL. For example, a dependency that was both on disk and
 #'   at a URL might use \code{src = c(file=filepath, href=url)}.
+#'
+#'   \code{attachment} can be used to make the indicated files available to the
+#'   JavaScript on the page via URL. For each element of \code{attachment}, an
+#'   element \code{<link id="DEPNAME-ATTACHINDEX-attachment" rel="attachment"
+#'   href="...">} is inserted, where \code{DEPNAME} is \code{name}. The value of
+#'   \code{ATTACHINDEX} depends on whether \code{attachment} is named or not; if
+#'   so, then it's the name of the element, and if not, it's the 1-based index
+#'   of the element. JavaScript can retrieve the URL using something like
+#'   \code{document.getElementById(depname + "-" + index + "-attachment").href}.
+#'   Note that depending on the rendering context, the runtime value of the
+#'   href may be an absolute, relative, or data URI.
 #'
 #' @seealso Use \code{\link{attachDependencies}} to associate a list of
 #'   dependencies with the HTML it belongs with.
@@ -37,7 +50,8 @@ htmlDependency <- function(name,
                            meta = NULL,
                            script = NULL,
                            stylesheet = NULL,
-                           head = NULL) {
+                           head = NULL,
+                           attachment = NULL) {
   srcNames <- names(src)
   if (is.null(srcNames))
     srcNames <- rep.int("", length(src))
@@ -52,7 +66,8 @@ htmlDependency <- function(name,
     meta = meta,
     script = script,
     stylesheet = stylesheet,
-    head = head
+    head = head,
+    attachment = attachment
   ))
 }
 
@@ -316,6 +331,18 @@ renderDependencies <- function(dependencies,
         "\"></script>",
         sep = ""
       ))
+    }
+
+    if (length(dep$attachment) > 0) {
+      if (is.null(names(dep$attachment)))
+        names(dep$attachment) <- as.character(1:length(dep$attachment))
+      html <- c(html,
+        sprintf("<link id=\"%s-%s-attachment\" rel=\"attachment\" href=\"%s\"/>",
+          htmlEscape(dep$name),
+          htmlEscape(names(dep$attachment)),
+          htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$attachment))))
+        )
+      )
     }
 
     # add raw head content
