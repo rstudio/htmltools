@@ -1,3 +1,6 @@
+* Add "append" parameter to attachDependencies, to allow adding dependencies,
+  instead of replacing them.
+
 htmltools 0.2.6
 --------------------------------------------------------------------------------
 

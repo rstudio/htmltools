@@ -76,11 +76,14 @@ htmlDependency <- function(name,
 #' Gets or sets the HTML dependencies associated with an object (such as a tag).
 #'
 #' \code{attachDependencies} provides an alternate syntax for setting
-#' dependencies and is essentially equivalent to
-#' \code{local(\{htmlDependencies(x) <- value; x\})}.
+#' dependencies. It is similar to \code{local(\{htmlDependencies(x) <- value;
+#' x\})}, except that if there are any existing dependencies,
+#' \code{attachDependencies} will add to them, instead of replacing them.
 #'
 #' @param x An object which has (or should have) HTML dependencies.
 #' @param value An HTML dependency, or a list of HTML dependencies.
+#' @param append If FALSE (the default), replace any existing dependencies. If
+#'   TRUE, add the new dependencies to the existing ones.
 #'
 #' @export
 htmlDependencies <- function(x) {
@@ -98,8 +101,17 @@ htmlDependencies <- function(x) {
 
 #' @rdname htmlDependencies
 #' @export
-attachDependencies <- function(x, value) {
-  htmlDependencies(x) <- value
+attachDependencies <- function(x, value, append = FALSE) {
+  if (append) {
+    if (inherits(value, "html_dependency"))
+      value <- list(value)
+
+    old <- attr(x, "html_dependencies", TRUE)
+    htmlDependencies(x) <- c(old, value)
+
+  } else {
+    htmlDependencies(x) <- value
+  }
   return(x)
 }
 
