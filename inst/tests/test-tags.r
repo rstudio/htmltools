@@ -459,8 +459,10 @@ test_that("Non-tag objects can be coerced", {
 })
 
 test_that("Latin1 and system encoding are converted to UTF-8", {
-  expect_identical(Encoding("\377"), "latin1")
-  divLatin1 <- as.character(tags$div("\377"))
+  latin1_str <- rawToChar(as.raw(0xFF))
+  Encoding(latin1_str) <- "latin1"
+
+  divLatin1 <- as.character(tags$div(latin1_str))
   expect_identical(
     charToRaw(divLatin1),
     as.raw(c(0x3c, 0x64, 0x69, 0x76, 0x3e, 0xc3, 0xbf, 0x3c, 0x2f,
@@ -478,8 +480,8 @@ test_that("Latin1 and system encoding are converted to UTF-8", {
   expect_identical(Encoding(divUTF8), "UTF-8")
 
   divMixed <- format(tags$div(
-    tags$span(a="\u4E11", "\377"),
-    tags$span(b="\377", HTML("\u4E11"))
+    tags$span(a="\u4E11", latin1_str),
+    tags$span(b=latin1_str, HTML("\u4E11"))
   ))
   expect_identical(
     charToRaw(divMixed),
@@ -493,7 +495,10 @@ test_that("Latin1 and system encoding are converted to UTF-8", {
   )
   expect_identical(Encoding(divMixed), "UTF-8")
 
-  expect_identical(Encoding(HTML("\377")), "latin1")
-  expect_identical(Encoding(format(HTML("\377"))), "UTF-8")
-  expect_identical(Encoding(format(tagList("\377"))), "UTF-8")
+  # Encoding(HTML(latin1_str)) is "UTF-8" on Linux; even just
+  # paste(latin1_str) returns a UTF-8 encoded string
+  #expect_identical(Encoding(HTML(latin1_str)), "latin1")
+
+  expect_identical(Encoding(format(HTML(latin1_str))), "UTF-8")
+  expect_identical(Encoding(format(tagList(latin1_str))), "UTF-8")
 })

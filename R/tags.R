@@ -465,9 +465,7 @@ doRenderTags <- function(x, indent = 0) {
   connWriter <- function(text) {
     text <- enc2utf8(text)
     # This is actually writing UTF-8 bytes, not chars
-    writeChar(text, conn,
-      nchar = nchar(text, type = "bytes"),
-      eos = NULL, useBytes = TRUE)
+    writeBin(charToRaw(text), conn)
   }
   htmlResult <- tryCatch({
     tagWrite(x, connWriter, indent)
