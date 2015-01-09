@@ -4,6 +4,9 @@ htmltools 0.2.8
 * Add check that `htmlDependency()` isn't called with an absolute path when a
   binary package is built. (#22)
 
+* Allow HTML content to include UTF-8, Latin1, and system encoded content. All
+  will be converted to UTF-8 using enc2utf8() at render time.
+
 
 htmltools 0.2.7
 --------------------------------------------------------------------------------

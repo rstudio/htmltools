@@ -171,6 +171,11 @@ as.character.shiny.tag <- function(x, ...) {
 }
 
 #' @export
+as.character.html <- function(x, ...) {
+  as.vector(enc2utf8(x))
+}
+
+#' @export
 print.shiny.tag.list <- print.shiny.tag
 
 #' @export
@@ -445,13 +450,29 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
-  # Render the body--the bodyHtml variable will be created
-  conn <- file(open="w+")
-  connWriter <- function(text) writeChar(text, conn, eos = NULL)
+  # The text that is written to this connWriter will be converted to
+  # UTF-8 using enc2utf8. The rendered output will always be UTF-8
+  # encoded.
+  #
+  # We use a file() here instead of textConnection() or paste/c to
+  # avoid the overhead of copying, which is huge for moderately
+  # large numbers of calls to connWriter(). Generally when you want
+  # to incrementally build up a long string out of immutable ones,
+  # you want to use a mutable/growable string buffer of some kind;
+  # since R doesn't have something like that (that I know of),
+  # file() is the next best thing.
+  conn <- file(open="w+b", encoding = "UTF-8")
+  connWriter <- function(text) {
+    text <- enc2utf8(text)
+    # This is actually writing UTF-8 bytes, not chars
+    writeChar(text, conn,
+      nchar = nchar(text, type = "bytes"),
+      eos = NULL, useBytes = TRUE)
+  }
   htmlResult <- tryCatch({
     tagWrite(x, connWriter, indent)
     flush(conn)
-    readLines(conn)
+    readLines(conn, encoding = "UTF-8")
   },
     finally = close(conn)
   )
