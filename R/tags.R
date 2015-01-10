@@ -1,6 +1,31 @@
 #' @import utils digest
 NULL
 
+# Like base::paste, but converts all string args to UTF-8 first.
+paste8 <- function(..., sep = " ", collapse = NULL) {
+  args <- c(
+    lapply(list(...), enc2utf8),
+    list(
+      sep = if (is.null(sep)) sep else enc2utf8(sep),
+      collapse = if (is.null(collapse)) collapse else enc2utf8(collapse)
+    )
+  )
+
+  # The easy thing would be to call `do.call("paste", args)`, but according to
+  # http://rpubs.com/hadley/do-call2 this will inline the values, which could be
+  # potentially large strings.
+  #
+  # These lines are basically the equivalent of (for a single unnamed arg):
+  # paste(args[[1L]], sep = args[["sep"]], collapse = args[["collapse"]])
+  argNames <- ifelse(nzchar(names(args)), as.list(names(args)), 1:length(args))
+  argz <- lapply(argNames, function(x) {
+    eval(substitute(quote(args[[x]]), list(x=x)))
+  })
+  names(argz) <- names(args)
+
+  do.call("paste", argz)
+}
+
 # Reusable function for registering a set of methods with S3 manually. The
 # methods argument is a list of character vectors, each of which has the form
 # c(package, genname, class).
@@ -336,12 +361,14 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   # Check if it's just text (may either be plain-text or HTML)
   if (is.character(tag)) {
-    textWriter(paste(indentText, normalizeText(tag), eol, sep=""))
+    textWriter(indentText)
+    textWriter(normalizeText(tag))
+    textWriter(eol)
     return (NULL)
   }
 
   # write tag name
-  textWriter(paste(indentText, "<", tag$name, sep=""))
+  textWriter(paste8(indentText, "<", tag$name, sep=""))
 
   # Convert all attribs to chars explicitly; prevents us from messing up factors
   attribs <- lapply(tag$attribs, as.character)
@@ -357,10 +384,10 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       if (is.logical(attribValue))
         attribValue <- tolower(attribValue)
       text <- htmlEscape(attribValue, attribute=TRUE)
-      textWriter(paste(" ", attrib,"=\"", text, "\"", sep=""))
+      textWriter(paste8(" ", attrib,"=\"", text, "\"", sep=""))
     }
     else {
-      textWriter(paste(" ", attrib, sep=""))
+      textWriter(paste8(" ", attrib, sep=""))
     }
   }
 
@@ -371,14 +398,14 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
     # special case for a single child text node (skip newlines and indentation)
     if ((length(children) == 1) && is.character(children[[1]]) ) {
-      textWriter(paste(normalizeText(children[[1]]), "</", tag$name, ">", eol,
+      textWriter(paste8(normalizeText(children[[1]]), "</", tag$name, ">", eol,
         sep=""))
     }
     else {
       textWriter("\n")
       for (child in children)
         tagWrite(child, textWriter, nextIndent)
-      textWriter(paste(indentText, "</", tag$name, ">", eol, sep=""))
+      textWriter(paste8(indentText, "</", tag$name, ">", eol, sep=""))
     }
   }
   else {
@@ -387,10 +414,10 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     if (tag$name %in% c("area", "base", "br", "col", "command", "embed", "hr",
       "img", "input", "keygen", "link", "meta", "param",
       "source", "track", "wbr")) {
-      textWriter(paste("/>", eol, sep=""))
+      textWriter(paste8("/>", eol, sep=""))
     }
     else {
-      textWriter(paste("></", tag$name, ">", eol, sep=""))
+      textWriter(paste8("></", tag$name, ">", eol, sep=""))
     }
   }
 }
@@ -774,7 +801,7 @@ tags <- list(
 #' @export
 HTML <- function(text, ...) {
   htmlText <- c(text, as.character(list(...)))
-  htmlText <- paste(htmlText, collapse=" ")
+  htmlText <- paste8(htmlText, collapse=" ")
   attr(htmlText, "html") <- TRUE
   class(htmlText) <- c("html", "character")
   htmlText
@@ -1206,7 +1233,7 @@ hr <- function(...) tags$hr(...)
 #' @export
 includeHTML <- function(path) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
-  return(HTML(paste(lines, collapse='\r\n')))
+  return(HTML(paste8(lines, collapse='\r\n')))
 }
 
 #' @note \code{includeText} escapes its contents, but does no other processing.
@@ -1219,7 +1246,7 @@ includeHTML <- function(path) {
 #' @export
 includeText <- function(path) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
-  return(paste(lines, collapse='\r\n'))
+  return(paste8(lines, collapse='\r\n'))
 }
 
 #' @note The \code{includeMarkdown} function requires the \code{markdown}
@@ -1243,14 +1270,14 @@ includeCSS <- function(path, ...) {
   if (is.null(args$type))
     args$type <- 'text/css'
   return(do.call(tags$style,
-    c(list(HTML(paste(lines, collapse='\r\n'))), args)))
+    c(list(HTML(paste8(lines, collapse='\r\n'))), args)))
 }
 
 #' @rdname include
 #' @export
 includeScript <- function(path, ...) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
-  return(tags$script(HTML(paste(lines, collapse='\r\n')), ...))
+  return(tags$script(HTML(paste8(lines, collapse='\r\n')), ...))
 }
 
 #' Include content only once
