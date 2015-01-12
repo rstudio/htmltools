@@ -11,19 +11,7 @@ paste8 <- function(..., sep = " ", collapse = NULL) {
     )
   )
 
-  # The easy thing would be to call `do.call("paste", args)`, but according to
-  # http://rpubs.com/hadley/do-call2 this will inline the values, which could be
-  # potentially large strings.
-  #
-  # These lines are basically the equivalent of (for a single unnamed arg):
-  # paste(args[[1L]], sep = args[["sep"]], collapse = args[["collapse"]])
-  argNames <- ifelse(nzchar(names(args)), as.list(names(args)), 1:length(args))
-  argz <- lapply(argNames, function(x) {
-    eval(substitute(quote(args[[x]]), list(x=x)))
-  })
-  names(argz) <- names(args)
-
-  do.call("paste", argz)
+  do.call("paste", args)
 }
 
 # Reusable function for registering a set of methods with S3 manually. The
