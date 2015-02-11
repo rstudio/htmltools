@@ -1,3 +1,10 @@
+htmltools 0.2.8
+--------------------------------------------------------------------------------
+
+* Add check that `htmlDependency()` isn't called with an absolute path when a
+  binary package is built. (#22)
+
+
 htmltools 0.2.7
 --------------------------------------------------------------------------------
 
