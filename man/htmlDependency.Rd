@@ -20,10 +20,10 @@ Details.}
 \item{meta}{Named list of meta tags to insert into document head}
 
 \item{script}{Script(s) to include within the document head (should be
-specified relative to the \code{path} parameter).}
+specified relative to the \code{src} parameter).}
 
 \item{stylesheet}{Stylesheet(s) to include within the document (should be
-specified relative to the \code{path} parameter).}
+specified relative to the \code{src} parameter).}
 
 \item{head}{Arbitrary lines of HTML to insert into the document head}
 
