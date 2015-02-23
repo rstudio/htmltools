@@ -455,7 +455,18 @@ doRenderTags <- function(x, indent = 0) {
   },
     finally = close(conn)
   )
-  return(HTML(paste(htmlResult, collapse = "\n")))
+  if (length(htmlResult) <= 2) {
+    return(HTML(paste(htmlResult, collapse = "\n")))
+  }
+  return(HTML(paste0(collapse = "",
+                     htmlResult[1],
+                     "\n",
+                     paste0(htmlResult[c(-1, -length(htmlResult))], collapse = ""),
+                     "\n",
+                     htmlResult[length(htmlResult)]
+                    )
+             )
+        )
 }
 
 # Walk a tree of tag objects, rewriting objects according to func.

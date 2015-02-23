@@ -10,7 +10,7 @@ test_that("Basic tag writing works", {
     HTML("<b>one</b>"))
   expect_equal(
     as.character(tags$b("one", "two")),
-    HTML("<b>\n  one\n  two\n</b>"))
+    HTML("<b>\n  one  two\n</b>"))
   expect_equal(
     as.character(tagList(list("one"))),
     HTML("one"))
@@ -387,12 +387,7 @@ test_that("Low-level singleton manipulation methods", {
   expect_identical(
     renderTags(result3)$html,
     HTML("<div>
-  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
-  <script>foo</script>
-  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
-  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
-  <script>foo</script>
-  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
+  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->  <script>foo</script>  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->  <script>foo</script>  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
 </div>")
     )
 })
@@ -400,38 +395,38 @@ test_that("Low-level singleton manipulation methods", {
 test_that("Indenting can be controlled/suppressed", {
   expect_identical(
     renderTags(tags$div("a", "b"))$html,
-    HTML("<div>\n  a\n  b\n</div>")
+    HTML("<div>\n  a  b\n</div>")
   )
   expect_identical(
     format(tags$div("a", "b")),
-    "<div>\n  a\n  b\n</div>"
+    "<div>\n  a  b\n</div>"
   )
 
   expect_identical(
     renderTags(tags$div("a", "b"), indent = 2)$html,
-    HTML("    <div>\n      a\n      b\n    </div>")
+    HTML("    <div>\n      a      b\n    </div>")
   )
   expect_identical(
     format(tags$div("a", "b"), indent = 2),
-    "    <div>\n      a\n      b\n    </div>"
+    "    <div>\n      a      b\n    </div>"
   )
 
   expect_identical(
     renderTags(tags$div("a", "b"), indent = FALSE)$html,
-    HTML("<div>\na\nb\n</div>")
+    HTML("<div>\nab\n</div>")
   )
   expect_identical(
     format(tags$div("a", "b"), indent = FALSE),
-    "<div>\na\nb\n</div>"
+    "<div>\nab\n</div>"
   )
 
   expect_identical(
     renderTags(tagList(tags$div("a", "b")), indent = FALSE)$html,
-    HTML("<div>\na\nb\n</div>")
+    HTML("<div>\nab\n</div>")
   )
   expect_identical(
     format(tagList(tags$div("a", "b")), indent = FALSE),
-    "<div>\na\nb\n</div>"
+    "<div>\nab\n</div>"
   )
 })
 
