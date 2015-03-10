@@ -11,7 +11,7 @@ paste8 <- function(..., sep = " ", collapse = NULL) {
     )
   )
 
-  do.call("paste", args)
+  do.call(paste, args)
 }
 
 # Reusable function for registering a set of methods with S3 manually. The
