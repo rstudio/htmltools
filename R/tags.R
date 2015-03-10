@@ -1208,8 +1208,6 @@ includeText <- function(path) {
 #' @rdname include
 #' @export
 includeMarkdown <- function(path) {
-  library(markdown)
-
   html <- markdown::markdownToHTML(path, fragment.only=TRUE)
   Encoding(html) <- 'UTF-8'
   return(HTML(html))
