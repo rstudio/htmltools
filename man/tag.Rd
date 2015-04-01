@@ -5,6 +5,8 @@
 \alias{tagAppendAttributes}
 \alias{tagAppendChild}
 \alias{tagAppendChildren}
+\alias{tagGetAttribute}
+\alias{tagHasAttribute}
 \alias{tagList}
 \alias{tagSetChildren}
 \title{HTML Tag Object}
@@ -12,6 +14,10 @@
 tagList(...)
 
 tagAppendAttributes(tag, ...)
+
+tagHasAttribute(tag, attr)
+
+tagGetAttribute(tag, attr)
 
 tagAppendChild(tag, child)
 

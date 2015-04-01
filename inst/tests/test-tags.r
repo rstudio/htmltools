@@ -270,6 +270,141 @@ test_that("Attributes are preserved", {
   expect_equivalent(format(x), "<div>\n  <p><tag>&&</tag></p>\n</div>")
 })
 
+test_that("Adding attributes to tags", {
+  t1 <- tags$div("foo")
+
+  # Adding attributes to empty tag
+  expect_identical(t1$attribs, list())
+  expect_identical(
+    tagAppendAttributes(t1, class = "c1")$attribs,
+    list(class = "c1")
+  )
+
+  # Adding attribute with multiple values
+  expect_identical(
+    tagAppendAttributes(t1, class = "c1 c2")$attribs,
+    list(class = "c1 c2")
+  )
+
+  # Adding two different attributes
+  expect_identical(
+    tagAppendAttributes(t1, class = "c1", id = "foo")$attribs,
+    list(class = "c1", id = "foo")
+  )
+
+  # Adding attributes in two successive calls
+  expect_identical(
+    tagAppendAttributes(
+      tagAppendAttributes(t1, class = "c1 c2"), class = "c3")$attribs,
+    list(class = "c1 c2", class = "c3")
+  )
+
+  t2 <- tags$div("foo", class = "c1")
+
+  # Adding attributes on a tag with other attributes
+  expect_identical(
+    tagAppendAttributes(t2, id = "foo")$attribs,
+    list(class = "c1", id = "foo")
+  )
+
+  # Adding attributes on a tag with the same attribute
+  expect_identical(
+    tagAppendAttributes(t2, class = "c2")$attribs,
+    list(class = "c1", class = "c2")
+  )
+})
+
+test_that("Testing for attributes on tags", {
+  t1 <- tags$div("foo", class = "c1", class = "c2", id = "foo")
+
+  # Testing for attribute that does not exist
+  expect_identical(
+    tagHasAttribute(t1, "nope"),
+    FALSE
+  )
+
+  # Testing for an attribute that exists once
+  expect_identical(
+    tagHasAttribute(t1, "id"),
+    TRUE
+  )
+
+  # Testing for an attribute that exists multiple times
+  expect_identical(
+    tagHasAttribute(t1, "class"),
+    TRUE
+  )
+
+  # Testing for substring of an attribute that exists
+  expect_identical(
+    tagHasAttribute(t1, "clas"),
+    FALSE
+  )
+
+  # Testing for superstring of an attribute that exists
+  expect_identical(
+    tagHasAttribute(t1, "classes"),
+    FALSE
+  )
+
+  # Testing for attribute with empty value
+  t2 <- tags$div("foo", foo = "")
+  expect_identical(
+    tagHasAttribute(t2, "foo"),
+    TRUE
+  )
+
+  # Testing for attribute with NULL value
+  t3 <- tags$div("foo", foo = NULL)
+  expect_identical(
+    tagHasAttribute(t3, "foo"),
+    FALSE
+  )
+})
+
+test_that("Getting attributes from tags", {
+  # Getting an attribute from a tag with no attributes
+  t1 <- tags$div("foo")
+  expect_identical(
+    tagGetAttribute(t1, "class"),
+    NULL
+  )
+
+  t2 <- tags$div("foo", class = "c1")
+
+  # Getting an attribute from a tag without the correct attribute
+  expect_identical(
+    tagGetAttribute(t2, "id"),
+    NULL
+  )
+
+  # Getting an attribute from a tag with the a single value for the attribute
+  expect_identical(
+    tagGetAttribute(t2, "class"),
+    "c1"
+  )
+
+  # Getting an attribute from a tag with multiple matching attributes
+  t3 <- tags$div("foo", class = "c1", id = "foo", class = "c2")
+  expect_identical(
+    tagGetAttribute(t3, "class"),
+    "c1 c2"
+  )
+
+  # Getting an attribute from a tag where the attributes were factors
+  t4 <- tags$div("foo", class = as.factor("c1"), class = as.factor("c2"))
+  expect_identical(
+    tagGetAttribute(t4, "class"),
+    "c1 c2"
+  )
+
+  # Getting a numeric attribute from a tag
+  t5 <- tags$div("foo", class = 78)
+  expect_identical(
+    tagGetAttribute(t5, "class"),
+    "78"
+  )
+})
 
 test_that("Flattening a list of tags", {
   # Flatten a nested list
