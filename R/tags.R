@@ -331,7 +331,10 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   # Check if it's just text (may either be plain-text or HTML)
   if (is.character(tag)) {
-    textWriter(paste(indentText, normalizeText(tag), eol, sep=""))
+    text <- normalizeText(tag)
+    if (nchar(text) > 0) {
+      textWriter(text)
+    }
     return (NULL)
   }
 
@@ -366,14 +369,23 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
     # special case for a single child text node (skip newlines and indentation)
     if ((length(children) == 1) && is.character(children[[1]]) ) {
-      textWriter(paste(normalizeText(children[[1]]), "</", tag$name, ">", eol,
-        sep=""))
+      textWriter(paste(normalizeText(children[[1]]), "</", tag$name, ">",
+                       sep=""))
     }
     else {
-      textWriter("\n")
+      if (isBlockLevel(tag)) {
+        textWriter(eol)
+      }
       for (child in children)
         tagWrite(child, textWriter, nextIndent)
-      textWriter(paste(indentText, "</", tag$name, ">", eol, sep=""))
+
+      if (isBlockLevel(tag)) {
+        textWriter(paste(eol, indentText, sep=""))
+      }
+      textWriter(paste("</", tag$name, ">", sep=""))
+      if (isBlockLevel(tag)) {
+        textWriter(eol)
+      }
     }
   }
   else {
@@ -382,10 +394,10 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     if (tag$name %in% c("area", "base", "br", "col", "command", "embed", "hr",
       "img", "input", "keygen", "link", "meta", "param",
       "source", "track", "wbr")) {
-      textWriter(paste("/>", eol, sep=""))
+      textWriter(paste("/>", sep=""))
     }
     else {
-      textWriter(paste("></", tag$name, ">", eol, sep=""))
+      textWriter(paste("></", tag$name, ">", sep=""))
     }
   }
 }
@@ -451,7 +463,7 @@ doRenderTags <- function(x, indent = 0) {
   htmlResult <- tryCatch({
     tagWrite(x, connWriter, indent)
     flush(conn)
-    readLines(conn)
+    readLines(conn, warn = FALSE)
   },
     finally = close(conn)
   )
@@ -1303,3 +1315,43 @@ validateCssUnit <- function(x) {
   }
   x
 }
+
+isBlockLevel <- function(tag) {
+  tag$name %in% .block_level_tags
+}
+.block_level_tags <- c("address",
+                  "article",
+                  "aside",
+                  "audio",
+                  "blockquote",
+                  "canvas",
+                  "dd",
+                  "div",
+                  "dl",
+                  "fieldset",
+                  "figcaption",
+                  "figure",
+                  "footer",
+                  "form",
+                  "h1",
+                  "h2",
+                  "h3",
+                  "h4",
+                  "h5",
+                  "h6",
+                  "header",
+                  "hgroup",
+                  "hr",
+                  "main",
+                  "nav",
+                  "noscript",
+                  "ol",
+                  "output",
+                  "p",
+                  "pre",
+                  "p",
+                  "section",
+                  "table",
+                  "tfoot",
+                  "ul",
+                  "video")

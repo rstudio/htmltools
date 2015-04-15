@@ -4,13 +4,13 @@ test_that("Basic tag writing works", {
   expect_equal(as.character(tagList("hi")), HTML("hi"))
   expect_equal(
     as.character(tagList("one", "two", tagList("three"))),
-    HTML("one\ntwo\nthree"))
+    HTML("onetwothree"))
   expect_equal(
     as.character(tags$b("one")),
     HTML("<b>one</b>"))
   expect_equal(
     as.character(tags$b("one", "two")),
-    HTML("<b>\n  one\n  two\n</b>"))
+    HTML("<b>onetwo</b>"))
   expect_equal(
     as.character(tagList(list("one"))),
     HTML("one"))
@@ -19,7 +19,7 @@ test_that("Basic tag writing works", {
     HTML("one"))
   expect_equal(
     as.character(tagList(tags$br(), "one")),
-    HTML("<br/>\none"))
+    HTML("<br/>one"))
 })
 
 
@@ -310,7 +310,7 @@ test_that("Head and singleton behavior", {
   ))
 
   expect_identical(result$html, HTML(""))
-  expect_identical(result$head, HTML("  hello"))
+  expect_identical(result$head, HTML("hello"))
   expect_identical(result$singletons, "089cce0335cf2bae2bcb08cc753ba56f8e1ea8ed")
 
   # Ensure that "hello" actually behaves like a singleton
@@ -326,7 +326,7 @@ test_that("Head and singleton behavior", {
     tags$head(singleton("hello"), singleton("hello"))
   ))
   expect_identical(result$singletons, result3$singletons)
-  expect_identical(result3$head, HTML("  hello"))
+  expect_identical(result3$head, HTML("hello"))
 
   # Ensure that singleton can be applied to lists, not just tags
   result4 <- renderTags(list(singleton(list("hello")), singleton(list("hello"))))
@@ -387,12 +387,7 @@ test_that("Low-level singleton manipulation methods", {
   expect_identical(
     renderTags(result3)$html,
     HTML("<div>
-  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
-  <script>foo</script>
-  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
-  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
-  <script>foo</script>
-  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
+<!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->  <script>foo</script><!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]--><!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->  <script>foo</script><!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
 </div>")
     )
 })
@@ -400,38 +395,38 @@ test_that("Low-level singleton manipulation methods", {
 test_that("Indenting can be controlled/suppressed", {
   expect_identical(
     renderTags(tags$div("a", "b"))$html,
-    HTML("<div>\n  a\n  b\n</div>")
+    HTML("<div>\nab\n</div>")
   )
   expect_identical(
     format(tags$div("a", "b")),
-    "<div>\n  a\n  b\n</div>"
+    "<div>\nab\n</div>"
   )
 
   expect_identical(
     renderTags(tags$div("a", "b"), indent = 2)$html,
-    HTML("    <div>\n      a\n      b\n    </div>")
+    HTML("    <div>\nab\n    </div>")
   )
   expect_identical(
     format(tags$div("a", "b"), indent = 2),
-    "    <div>\n      a\n      b\n    </div>"
+    "    <div>\nab\n    </div>"
   )
 
   expect_identical(
     renderTags(tags$div("a", "b"), indent = FALSE)$html,
-    HTML("<div>\na\nb\n</div>")
+    HTML("<div>\nab\n</div>")
   )
   expect_identical(
     format(tags$div("a", "b"), indent = FALSE),
-    "<div>\na\nb\n</div>"
+    "<div>\nab\n</div>"
   )
 
   expect_identical(
     renderTags(tagList(tags$div("a", "b")), indent = FALSE)$html,
-    HTML("<div>\na\nb\n</div>")
+    HTML("<div>\nab\n</div>")
   )
   expect_identical(
     format(tagList(tags$div("a", "b")), indent = FALSE),
-    "<div>\na\nb\n</div>"
+    "<div>\nab\n</div>"
   )
 })
 
