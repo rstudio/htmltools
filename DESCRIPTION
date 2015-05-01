@@ -16,4 +16,3 @@ Suggests:
     testthat
 Enhances: knitr
 License: GPL (>= 2)
-Roxygen: list(wrap = FALSE)
