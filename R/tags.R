@@ -896,6 +896,16 @@ as.tags.html <- function(x, ...) {
 }
 
 #' @export
+as.tags.shiny.tag <- function(x, ...) {
+  x
+}
+
+#' @export
+as.tags.shiny.tag.list <- function(x, ...) {
+  x
+}
+
+#' @export
 as.tags.character <- function(x, ...) {
   # For printing as.tags("<strong>") directly at console, without dropping any
   # attached dependencies
