@@ -249,6 +249,31 @@ tagAppendAttributes <- function(tag, ...) {
 
 #' @rdname tag
 #' @export
+tagHasAttribute <- function(tag, attr) {
+  result <- attr %in% names(tag$attribs)
+  result
+}
+
+#' @rdname tag
+#' @export
+tagGetAttribute <- function(tag, attr) {
+  # Find out which positions in the attributes list correspond to the given attr
+  attribs <- tag$attribs
+  attrIdx <- which(attr == names(attribs))
+
+  if (length(attrIdx) == 0) {
+    return (NULL)
+  }
+
+  # Convert all attribs to chars explicitly; prevents us from messing up factors
+  result <- lapply(attribs[attrIdx], as.character)
+  # Separate multiple attributes with the same name
+  result <- paste(result, collapse  = " ")
+  result
+}
+
+#' @rdname tag
+#' @export
 tagAppendChild <- function(tag, child) {
   tag$children[[length(tag$children)+1]] <- child
   tag
