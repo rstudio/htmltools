@@ -1,3 +1,10 @@
+htmltools 0.2.10
+--------------------------------------------------------------------------------
+
+* Add template support, with the `htmlTemplate()`, `renderDocument()`, and
+  `suppresDependencies()` functions.
+
+
 htmltools 0.2.9
 --------------------------------------------------------------------------------
 
