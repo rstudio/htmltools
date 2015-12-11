@@ -53,7 +53,7 @@ htmlTemplate <- function(filename, ..., document_ = "auto") {
 
   result <- tagList(pieces)
 
-  if (document_ == "auto"  ) {
+  if (document_ == "auto") {
     document_ = grepl("<HTML>", html, ignore.case = TRUE)
   }
   if (document_) {
