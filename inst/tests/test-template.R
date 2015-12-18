@@ -20,6 +20,17 @@ test_that("Code blocks are evaluated and rendered correctly", {
   expect_true(grepl('<div class="foo">bar</div>', html))
 })
 
+test_that("UTF-8 characters in templates", {
+  template <- htmlTemplate("template-document.html", x = "")
+  html <- renderDocument(template)
+
+  # Create the string 'Δ★😎', making sure it's UTF-8 encoded on all platforms.
+  # These characters are 2, 3, and 4 bytes long, respectively.
+  pat <- rawToChar(as.raw(c(0xce, 0x94, 0xe2, 0x98, 0x85, 0xf0, 0x9f, 0x98, 0x8e)))
+  Encoding(pat) <- "UTF-8"
+  expect_true(grepl(pat, html))
+})
+
 
 test_that("Dependencies are added properly", {
   dep <- htmlDependency("d3", "3.5.10", c(href="shared"), script = "d3.js")
