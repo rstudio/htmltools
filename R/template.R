@@ -16,6 +16,7 @@
 #' @export
 htmlTemplate <- function(filename, ..., document_ = "auto") {
   html <- readChar(filename, file.info(filename)$size, useBytes = TRUE)
+  Encoding(html) <- "UTF-8"
 
   pieces <- strsplit(html, "{{", fixed = TRUE)[[1]]
   pieces <- strsplit(pieces, "}}", fixed = TRUE)
