@@ -327,7 +327,7 @@ tagSetChildren <- function(tag, ..., list = NULL) {
 #'           tags$h2("Header text"),
 #'           tags$p("Text here"))
 #' tagList(x)
-tag <- function(`_tag_name`, varArgs) {
+tag <- function(`_tag_name`, varArgs, `_block` = FALSE) {
   # Get arg names; if not a named list, use vector of empty strings
   varArgsNames <- names(varArgs)
   if (is.null(varArgsNames))
@@ -344,10 +344,15 @@ tag <- function(`_tag_name`, varArgs) {
 
   # Return tag data structure
   structure(
-    list(name = `_tag_name`,
+    list(
+      name = `_tag_name`,
       attribs = attribs,
-      children = children),
-    class = "shiny.tag"
+      children = children
+    ),
+    class = c(
+      if (`_block`) "block.shiny.tag",
+      "shiny.tag"
+    )
   )
 }
 
@@ -355,7 +360,20 @@ isTagList <- function(x) {
   is.list(x) && (inherits(x, "shiny.tag.list") || identical(class(x), "list"))
 }
 
-tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
+isBlockTag <- function(x) {
+  inherits(x, "block.shiny.tag")
+}
+
+# @param tag A tag object.
+# @param textWriter The text writer function.
+# @param indent A number representing the indentation leve, or FALSE, if the
+#   output is not to be indented.
+# @param useIndent Specifies whether the current tag should be rendered with
+#   indentation. If FALSE, no spaces will be emitted before the tag, but the
+#   value of \code{indent} will still be passed along to children so that they
+#   can be properly indented.
+# @param eol End of line character.
+tagWrite <- function(tag, textWriter, indent=0, useIndent = TRUE, eol = "\n") {
 
   if (length(tag) == 0)
     return (NULL)
@@ -363,21 +381,27 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   # optionally process a list of tags
   if (!isTag(tag) && isTagList(tag)) {
     tag <- dropNullsOrEmpty(flattenTags(tag))
-    lapply(tag, tagWrite, textWriter, indent)
+    lapply(tag, tagWrite, textWriter, indent, eol = eol)
     return (NULL)
   }
 
-  nextIndent <- if (is.numeric(indent)) indent + 1 else indent
-  indent <- if (is.numeric(indent)) indent else 0
 
-  # compute indent text
-  indentText <- paste(rep(" ", indent*2), collapse="")
+  # Compute indent text. We only need to indent of useIndent is TRUE. But even
+  # if useIndent is FALSE, we still need to keep track of `indent`, to pass it
+  # along to child nodes.
+  if (useIndent) {
+    # Allow for indent=FALSE
+    indentNum <- if (is.numeric(indent)) indent else 0
+    indentText <- paste(rep(" ", indentNum*2), collapse="")
+  } else {
+    indentText <- ""
+  }
+
 
   # Check if it's just text (may either be plain-text or HTML)
   if (is.character(tag)) {
     textWriter(indentText)
     textWriter(normalizeText(tag))
-    textWriter(eol)
     return (NULL)
   }
 
@@ -412,14 +436,60 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
     # special case for a single child text node (skip newlines and indentation)
     if ((length(children) == 1) && is.character(children[[1]]) ) {
-      textWriter(paste8(normalizeText(children[[1]]), "</", tag$name, ">", eol,
-        sep=""))
-    }
-    else {
-      textWriter("\n")
-      for (child in children)
-        tagWrite(child, textWriter, nextIndent)
-      textWriter(paste8(indentText, "</", tag$name, ">", eol, sep=""))
+      textWriter(paste8(normalizeText(children[[1]]), "</", tag$name, ">", sep=""))
+
+    } else {
+
+      # The strategy here is to tell a child tag to indent if any of the
+      # following are true:
+      # * The child is a block tag. This covers cases like `div(div("x"))` and
+      #   `span(div("x"))`: the inner divs should be indented.
+      # * The child tag's previous sibling is a block tag. This covers cases
+      #   like `span(span("x"), div("y"), span("z"))`: the span("z") should be
+      #   indented the same as the div.
+      # * The current tag is a block tag and the child is the first child tag.
+      #   This covers cases like `div(span("x"))`: the span should be indented.
+
+      # Need to keep track of the previous child
+      prevChild <- NULL
+      # If any child was indented, we'll need an eol before the closing tag.
+      anyChildUseIndent <- FALSE
+
+      for (i in seq_along(children)) {
+        child <- children[[i]]
+
+        if (isBlockTag(child) ||
+            isBlockTag(prevChild) ||
+            (i == 1 && isBlockTag(tag)))
+        {
+          # Indent the current child, and increment the indentation level.
+          childUseIndent <- TRUE
+          childIndent <- if (is.numeric(indent)) indent + 1 else indent
+          anyChildUseIndent <- TRUE
+
+          # Put the child on a new line.
+          textWriter(eol)
+
+        } else {
+          # Don't indent the child, but pass along the current indentation
+          # value so its children can be indented properly.
+          childUseIndent <- FALSE
+          childIndent <- indent
+        }
+
+        tagWrite(child, textWriter, childIndent, childUseIndent, eol)
+
+        # Keep track of previous child
+        prevChild <- child
+      }
+
+      # If any child was indented, that means they were printed on a separate
+      # line(s), so we'll need to put the closing tag on its own line.
+      if (anyChildUseIndent) {
+        textWriter(eol)
+      }
+
+      textWriter(paste8(indentText, "</", tag$name, ">", sep=""))
     }
   }
   else {
@@ -519,9 +589,6 @@ doRenderTags <- function(x, indent = 0) {
       tagWrite(x, connWriter, indent)
       flush(conn)
 
-      # Strip off trailing \n (which is always there) but make sure not to
-      # specify a negative number of chars.
-      bytes <- max(bytes - 1, 0)
       readChar(conn, bytes, useBytes = TRUE)
     },
     finally = close(conn)
@@ -699,20 +766,20 @@ NULL
 tags <- list(
   a = function(...) tag("a", list(...)),
   abbr = function(...) tag("abbr", list(...)),
-  address = function(...) tag("address", list(...)),
+  address = function(...) tag("address", list(...), TRUE),
   area = function(...) tag("area", list(...)),
-  article = function(...) tag("article", list(...)),
-  aside = function(...) tag("aside", list(...)),
+  article = function(...) tag("article", list(...), TRUE),
+  aside = function(...) tag("aside", list(...), TRUE),
   audio = function(...) tag("audio", list(...)),
   b = function(...) tag("b", list(...)),
   base = function(...) tag("base", list(...)),
   bdi = function(...) tag("bdi", list(...)),
   bdo = function(...) tag("bdo", list(...)),
-  blockquote = function(...) tag("blockquote", list(...)),
+  blockquote = function(...) tag("blockquote", list(...), TRUE),
   body = function(...) tag("body", list(...)),
   br = function(...) tag("br", list(...)),
   button = function(...) tag("button", list(...)),
-  canvas = function(...) tag("canvas", list(...)),
+  canvas = function(...) tag("canvas", list(...), TRUE),
   caption = function(...) tag("caption", list(...)),
   cite = function(...) tag("cite", list(...)),
   code = function(...) tag("code", list(...)),
@@ -721,31 +788,31 @@ tags <- list(
   command = function(...) tag("command", list(...)),
   data = function(...) tag("data", list(...)),
   datalist = function(...) tag("datalist", list(...)),
-  dd = function(...) tag("dd", list(...)),
+  dd = function(...) tag("dd", list(...), TRUE),
   del = function(...) tag("del", list(...)),
   details = function(...) tag("details", list(...)),
   dfn = function(...) tag("dfn", list(...)),
-  div = function(...) tag("div", list(...)),
-  dl = function(...) tag("dl", list(...)),
+  div = function(...) tag("div", list(...), TRUE),
+  dl = function(...) tag("dl", list(...), TRUE),
   dt = function(...) tag("dt", list(...)),
   em = function(...) tag("em", list(...)),
   embed = function(...) tag("embed", list(...)),
   eventsource = function(...) tag("eventsource", list(...)),
-  fieldset = function(...) tag("fieldset", list(...)),
-  figcaption = function(...) tag("figcaption", list(...)),
-  figure = function(...) tag("figure", list(...)),
-  footer = function(...) tag("footer", list(...)),
-  form = function(...) tag("form", list(...)),
-  h1 = function(...) tag("h1", list(...)),
-  h2 = function(...) tag("h2", list(...)),
-  h3 = function(...) tag("h3", list(...)),
-  h4 = function(...) tag("h4", list(...)),
-  h5 = function(...) tag("h5", list(...)),
-  h6 = function(...) tag("h6", list(...)),
+  fieldset = function(...) tag("fieldset", list(...), TRUE),
+  figcaption = function(...) tag("figcaption", list(...), TRUE),
+  figure = function(...) tag("figure", list(...), TRUE),
+  footer = function(...) tag("footer", list(...), TRUE),
+  form = function(...) tag("form", list(...), TRUE),
+  h1 = function(...) tag("h1", list(...), TRUE),
+  h2 = function(...) tag("h2", list(...), TRUE),
+  h3 = function(...) tag("h3", list(...), TRUE),
+  h4 = function(...) tag("h4", list(...), TRUE),
+  h5 = function(...) tag("h5", list(...), TRUE),
+  h6 = function(...) tag("h6", list(...), TRUE),
   head = function(...) tag("head", list(...)),
-  header = function(...) tag("header", list(...)),
-  hgroup = function(...) tag("hgroup", list(...)),
-  hr = function(...) tag("hr", list(...)),
+  header = function(...) tag("header", list(...), TRUE),
+  hgroup = function(...) tag("hgroup", list(...), TRUE),
+  hr = function(...) tag("hr", list(...), TRUE),
   html = function(...) tag("html", list(...)),
   i = function(...) tag("i", list(...)),
   iframe = function(...) tag("iframe", list(...)),
@@ -756,23 +823,23 @@ tags <- list(
   keygen = function(...) tag("keygen", list(...)),
   label = function(...) tag("label", list(...)),
   legend = function(...) tag("legend", list(...)),
-  li = function(...) tag("li", list(...)),
+  li = function(...) tag("li", list(...), TRUE),
   link = function(...) tag("link", list(...)),
   mark = function(...) tag("mark", list(...)),
   map = function(...) tag("map", list(...)),
   menu = function(...) tag("menu", list(...)),
   meta = function(...) tag("meta", list(...)),
   meter = function(...) tag("meter", list(...)),
-  nav = function(...) tag("nav", list(...)),
-  noscript = function(...) tag("noscript", list(...)),
+  nav = function(...) tag("nav", list(...), TRUE),
+  noscript = function(...) tag("noscript", list(...), TRUE),
   object = function(...) tag("object", list(...)),
-  ol = function(...) tag("ol", list(...)),
+  ol = function(...) tag("ol", list(...), TRUE),
   optgroup = function(...) tag("optgroup", list(...)),
   option = function(...) tag("option", list(...)),
-  output = function(...) tag("output", list(...)),
-  p = function(...) tag("p", list(...)),
+  output = function(...) tag("output", list(...), TRUE),
+  p = function(...) tag("p", list(...), TRUE),
   param = function(...) tag("param", list(...)),
-  pre = function(...) tag("pre", list(...)),
+  pre = function(...) tag("pre", list(...), TRUE),
   progress = function(...) tag("progress", list(...)),
   q = function(...) tag("q", list(...)),
   ruby = function(...) tag("ruby", list(...)),
@@ -781,7 +848,7 @@ tags <- list(
   s = function(...) tag("s", list(...)),
   samp = function(...) tag("samp", list(...)),
   script = function(...) tag("script", list(...)),
-  section = function(...) tag("section", list(...)),
+  section = function(...) tag("section", list(...), TRUE),
   select = function(...) tag("select", list(...)),
   small = function(...) tag("small", list(...)),
   source = function(...) tag("source", list(...)),
@@ -791,10 +858,10 @@ tags <- list(
   sub = function(...) tag("sub", list(...)),
   summary = function(...) tag("summary", list(...)),
   sup = function(...) tag("sup", list(...)),
-  table = function(...) tag("table", list(...)),
+  table = function(...) tag("table", list(...), TRUE),
   tbody = function(...) tag("tbody", list(...)),
   td = function(...) tag("td", list(...)),
-  textarea = function(...) tag("textarea", list(...)),
+  textarea = function(...) tag("textarea", list(...), TRUE),
   tfoot = function(...) tag("tfoot", list(...)),
   th = function(...) tag("th", list(...)),
   thead = function(...) tag("thead", list(...)),
@@ -803,9 +870,9 @@ tags <- list(
   tr = function(...) tag("tr", list(...)),
   track = function(...) tag("track", list(...)),
   u = function(...) tag("u", list(...)),
-  ul = function(...) tag("ul", list(...)),
+  ul = function(...) tag("ul", list(...), TRUE),
   var = function(...) tag("var", list(...)),
-  video = function(...) tag("video", list(...)),
+  video = function(...) tag("video", list(...), TRUE),
   wbr = function(...) tag("wbr", list(...))
 )
 
