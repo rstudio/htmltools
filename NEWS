@@ -7,6 +7,8 @@ htmltools 0.2.9
 * Allow HTML content to include UTF-8, Latin1, and system encoded content. All
   will be converted to UTF-8 using enc2utf8() at render time. (#21)
 
+* Add `css` function for conveniently forming CSS declaration strings.
+
 
 htmltools 0.2.7
 --------------------------------------------------------------------------------

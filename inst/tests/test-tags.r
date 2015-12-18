@@ -570,6 +570,32 @@ test_that("Indenting can be controlled/suppressed", {
   )
 })
 
+test_that("cssList tests", {
+  expect_identical("", css())
+  expect_identical("", css())
+  expect_identical(
+    css(
+      font.family = 'Helvetica, "Segoe UI"',
+      font_size = "12px",
+      `font-style` = "italic",
+      font.variant = NULL,
+      "font-weight!" = factor("bold"),
+      padding = c("10px", "9px", "8px")
+    ),
+    "font-family:Helvetica, \"Segoe UI\";font-size:12px;font-style:italic;font-weight:bold !important;padding:10px 9px 8px;"
+  )
+
+  # Unnamed args not allowed
+  expect_error(css("10"))
+  expect_error(css(1, b=2))
+
+  # NULL and empty string are dropped
+  expect_identical(css(a="", b = NULL, "c!" = NULL), "")
+
+  # We are dumb about duplicated properties. Probably don't do that.
+  expect_identical(css(a=1, a=2), "a:1;a:2;")
+})
+
 test_that("Non-tag objects can be coerced", {
 
   .GlobalEnv$as.tags.testcoerce1 <- function(x) {

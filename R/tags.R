@@ -1372,3 +1372,74 @@ validateCssUnit <- function(x) {
   }
   x
 }
+
+#' CSS string helper
+#'
+#' Convenience function for building CSS style declarations (i.e. the string
+#' that goes into a style attribute, or the parts that go inside curly braces in
+#' a full stylesheet).
+#'
+#' CSS uses \code{'-'} (minus) as a separator character in property names, but
+#' this is an inconvenient character to use in an R function argument name.
+#' Instead, you can use \code{'.'} (period) and/or \code{'_'} (underscore) as
+#' separator characters. For example, \code{css(font.size = "12px")} yields
+#' \code{"font-size:12px;"}.
+#'
+#' To mark a property as \code{!important}, add a \code{'!'} character to the end
+#' of the property name. (Since \code{'!'} is not normally a character that can be
+#' used in an identifier in R, you'll need to put the name in double quotes or
+#' backticks.)
+#'
+#' Argument values will be converted to strings using
+#' \code{paste(collapse = " ")}. Any property with a value of \code{NULL} or
+#' \code{""} (after paste) will be dropped.
+#'
+#' @param ... Named style properties, where the name is the property name and
+#'   the argument is the property value. See Details for conversion rules.
+#' @param collapse_ (Note that the parameter name has a trailing underscore
+#'   character.) Character to use to collapse properties into a single string;
+#'   likely \code{""} (the default) for style attributes, and either \code{"\n"}
+#'   or \code{NULL} for style blocks.
+#'
+#' @examples
+#' padding <- 6
+#' css(
+#'   font.family = "Helvetica, sans-serif",
+#'   margin = paste0(c(10, 20, 10, 20), "px"),
+#'   "padding!" = if (!is.null(padding)) padding
+#' )
+#'
+#' @export
+css <- function(..., collapse_ = "") {
+  props <- list(...)
+  if (length(props) == 0) {
+    return("")
+  }
+
+  if (is.null(names(props)) || any(names(props) == "")) {
+    stop("cssList expects all arguments to be named")
+  }
+
+  # Necessary to make factors show up as level names, not numbers
+  props[] <- lapply(props, paste, collapse = " ")
+
+  # Drop null args
+  props <- props[!sapply(props, empty)]
+  if (length(props) == 0) {
+    return("")
+  }
+
+  # Replace all '.' and '_' in property names to '-'
+  names(props) <- gsub("[._]", "-", tolower(gsub("([A-Z])", "-\\1", names(props))))
+
+  # Create "!important" suffix for each property whose name ends with !, then
+  # remove the ! from the property name
+  important <- ifelse(grepl("!$", names(props), perl = TRUE), " !important", "")
+  names(props) <- sub("!$", "", names(props), perl = TRUE)
+
+  paste0(names(props), ":", props, important, ";", collapse = collapse_)
+}
+
+empty <- function(x) {
+  length(x) == 0 || (is.character(x) && !any(nzchar(x)))
+}
