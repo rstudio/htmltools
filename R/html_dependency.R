@@ -137,6 +137,28 @@ attachDependencies <- function(x, value, append = FALSE) {
   return(x)
 }
 
+#' Suppress web dependencies
+#'
+#' This suppresses one or more web dependencies. It is meant to be used when a
+#' dependency (like a JavaScript or CSS file) is declared in raw HTML, in an
+#' HTML template.
+#'
+#' @param ... Names of the dependencies to suppress. For example,
+#'   \code{"jquery"} or \code{"bootstrap"}.
+#'
+#' @seealso \code{\link{htmlTemplate}} for more information about using HTML
+#'   templates.
+#' @seealso \code{\link[htmltools]{htmlDependency}}
+#' @export
+suppressDependencies <- function(...) {
+  lapply(list(...), function(name) {
+    attachDependencies(
+      character(0),
+      htmlDependency(name, "9999", c(href = ""))
+    )
+  })
+}
+
 dir_path <- function(dependency) {
   if ("dir" %in% names(dependency$src))
     return(dependency$src[["dir"]])
