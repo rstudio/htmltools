@@ -1,8 +1,8 @@
 Package: htmltools
 Type: Package
 Title: Tools for HTML
-Version: 0.2.10
-Date: 2014-11-11
+Version: 0.2.11
+Date: 2015-12-22
 Author: RStudio, Inc.
 Maintainer: Joe Cheng <joe@rstudio.com>
 Description: Tools for HTML generation and output.
