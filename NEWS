@@ -1,11 +1,7 @@
-htmltools 0.2.11
+htmltools 0.3
 --------------------------------------------------------------------------------
 
 * Add `css` function for conveniently forming CSS declaration strings.
-
-
-htmltools 0.2.10
---------------------------------------------------------------------------------
 
 * Add template support, with the `htmlTemplate()`, `renderDocument()`, and
   `suppressDependencies()` functions.
