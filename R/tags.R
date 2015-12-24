@@ -247,6 +247,7 @@ tagAppendAttributes <- function(tag, ...) {
   tag
 }
 
+#' @param attr The name of an attribute.
 #' @rdname tag
 #' @export
 tagHasAttribute <- function(tag, attr) {

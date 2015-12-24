@@ -32,6 +32,8 @@ tag(`_tag_name`, varArgs)
 
 \item{tag}{A tag to append child elements to.}
 
+\item{attr}{The name of an attribute.}
+
 \item{child}{A child element to append to a parent tag.}
 
 \item{list}{An optional list of elements. Can be used with or instead of the
