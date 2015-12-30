@@ -237,20 +237,19 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   target_dir <- file.path(outputDir,
     paste(dependency$name, dependency$version, sep = "-"))
 
-  if (!dir_exists(target_dir)) {
+  if (!dir_exists(target_dir))
     dir.create(target_dir)
 
-    srcfiles <- file.path(dir, list.files(dir))
-    destfiles <- file.path(target_dir, list.files(dir))
-    isdir <- file.info(srcfiles)$isdir
-    destfiles <- ifelse(isdir, dirname(destfiles), destfiles)
+  srcfiles <- file.path(dir, list.files(dir))
+  destfiles <- file.path(target_dir, list.files(dir))
+  isdir <- file.info(srcfiles)$isdir
+  destfiles <- ifelse(isdir, dirname(destfiles), destfiles)
 
-    mapply(function(from, to, isdir) {
-      if (isdir && !dir_exists(to))
-        dir.create(to)
-      file.copy(from, to, overwrite = TRUE, recursive = TRUE)
-    }, srcfiles, destfiles, isdir)
-  }
+  mapply(function(from, to, isdir) {
+    if (isdir && !dir_exists(to))
+      dir.create(to)
+    file.copy(from, to, overwrite = TRUE, recursive = isdir)
+  }, srcfiles, destfiles, isdir)
 
   dependency$src$file <- normalizePath(target_dir, "/", TRUE)
 
