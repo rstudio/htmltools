@@ -231,13 +231,13 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
     }
   }
 
-  if (!file.exists(outputDir))
+  if (!dir_exists(outputDir))
     dir.create(outputDir)
 
   target_dir <- file.path(outputDir,
     paste(dependency$name, dependency$version, sep = "-"))
 
-  if (!file.exists(target_dir)) {
+  if (!dir_exists(target_dir)) {
     dir.create(target_dir)
 
     srcfiles <- file.path(dir, list.files(dir))
@@ -245,16 +245,20 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
     isdir <- file.info(srcfiles)$isdir
     destfiles <- ifelse(isdir, dirname(destfiles), destfiles)
 
-    mapply(function(from, to, recursive) {
-      if (recursive && !file.exists(to))
+    mapply(function(from, to, isdir) {
+      if (isdir && !dir_exists(to))
         dir.create(to)
-      file.copy(from, to, recursive=recursive)
+      file.copy(from, to, overwrite = TRUE, recursive = TRUE)
     }, srcfiles, destfiles, isdir)
   }
 
   dependency$src$file <- normalizePath(target_dir, "/", TRUE)
 
   dependency
+}
+
+dir_exists <- function(paths) {
+  utils::file_test("-d", paths)
 }
 
 # given a directory and a file, return a relative path from the directory to the
