@@ -193,7 +193,8 @@ urlEncodePath <- function(x) {
 #'
 #' Copies an HTML dependency to a subdirectory of the given directory. The
 #' subdirectory name will be \emph{name}-\emph{version} (for example,
-#' "outputDir/jquery-1.11.0").
+#' "outputDir/jquery-1.11.0"). You may set \code{options(htmltools.dir.version =
+#' FALSE)} to suppress the version number in the subdirectory name.
 #'
 #' In order for disk-based dependencies to work with static HTML files, it's
 #' generally necessary to copy them to either the directory of the referencing
@@ -234,8 +235,10 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   if (!file.exists(outputDir))
     dir.create(outputDir)
 
-  target_dir <- file.path(outputDir,
-    paste(dependency$name, dependency$version, sep = "-"))
+  target_dir <- if (getOption('htmltools.dir.version', TRUE)) {
+    paste(dependency$name, dependency$version, sep = "-")
+  } else dependency$name
+  target_dir <- file.path(outputDir, target_dir)
 
   if (!file.exists(target_dir)) {
     dir.create(target_dir)

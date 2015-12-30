@@ -23,7 +23,8 @@ The dependency with its \code{src} value updated to the new
 \description{
 Copies an HTML dependency to a subdirectory of the given directory. The
 subdirectory name will be \emph{name}-\emph{version} (for example,
-"outputDir/jquery-1.11.0").
+"outputDir/jquery-1.11.0"). You may set \code{options(htmltools.dir.version =
+FALSE)} to suppress the version number in the subdirectory name.
 }
 \details{
 In order for disk-based dependencies to work with static HTML files, it's
