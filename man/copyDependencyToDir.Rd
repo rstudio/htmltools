@@ -30,10 +30,6 @@ In order for disk-based dependencies to work with static HTML files, it's
 generally necessary to copy them to either the directory of the referencing
 HTML file, or to a subdirectory of that directory. This function makes it
 easier to perform that copy.
-
-If a subdirectory named \emph{name}-\emph{version} already exists in
-\code{outputDir}, then copying is not performed; the existing contents are
-assumed to be up-to-date.
 }
 \seealso{
 \code{\link{makeDependencyRelative}} can be used with the returned

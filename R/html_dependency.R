@@ -200,10 +200,6 @@ urlEncodePath <- function(x) {
 #' HTML file, or to a subdirectory of that directory. This function makes it
 #' easier to perform that copy.
 #'
-#' If a subdirectory named \emph{name}-\emph{version} already exists in
-#' \code{outputDir}, then copying is not performed; the existing contents are
-#' assumed to be up-to-date.
-#'
 #' @param dependency A single HTML dependency object.
 #' @param outputDir The directory in which a subdirectory should be created for
 #'   this dependency.
@@ -237,8 +233,12 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   target_dir <- file.path(outputDir,
     paste(dependency$name, dependency$version, sep = "-"))
 
-  if (!dir_exists(target_dir))
-    dir.create(target_dir)
+  # completely remove the target dir because we don't want possible leftover
+  # files in the target dir, e.g. we may have lib/foo.js last time, and it was
+  # removed from the original library, then the next time we copy the library
+  # over to the target dir, we want to remove this lib/foo.js as well
+  if (dir_exists(target_dir)) unlink(target_dir, recursive = TRUE)
+  dir.create(target_dir)
 
   srcfiles <- file.path(dir, list.files(dir))
   destfiles <- file.path(target_dir, list.files(dir))
