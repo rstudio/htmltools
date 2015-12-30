@@ -1,3 +1,16 @@
+htmltools 0.3.1
+--------------------------------------------------------------------------------
+
+* `copyDependencyToDir()` will always completely overwrite the target directory
+  when copying HTML dependency files to make sure all dependency files are
+  definitely updated in the target directory when the original dependency
+  directory has been updated. In the past, the dependency files were not updated
+  if they already existed. (#36)
+
+* The version number in the directory name of an HTML dependency can be
+  suppressed by setting options(htmltools.dir.version = FALSE) when the
+  dependency is copied via `copyDependencyToDir()`. (#37)
+
 htmltools 0.3
 --------------------------------------------------------------------------------
 
