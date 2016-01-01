@@ -1,4 +1,4 @@
 library(testthat)
 library(htmltools)
 
-test_package("htmltools")
+test_check("htmltools")
