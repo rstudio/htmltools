@@ -465,7 +465,7 @@ test_that("Head and singleton behavior", {
 
   # Ensure that singleton can be applied to lists, not just tags
   result4 <- renderTags(list(singleton(list("hello")), singleton(list("hello"))))
-  expect_identical(result4$singletons, "110d1f0ef6762db2c6863523a7c379a697b43ea3")
+  expect_identical(result4$singletons, "9bf8e66efbb75b8bf7adb849fd4576fd15621c72")
   expect_identical(result4$html, renderTags(HTML("hello"))$html)
 
   result5 <- renderTags(tagList(singleton(list(list("hello")))))
