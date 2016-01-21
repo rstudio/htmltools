@@ -236,8 +236,12 @@ normalizeText <- function(text) {
 #' @export
 tagList <- function(...) {
   lst <- list(...)
-  class(lst) <- c("shiny.tag.list", "list")
-  return(lst)
+
+  # Make sure everything is a tag-like object
+  structure(
+    lapply(lst, as.tags),
+    class = c("shiny.tag.list", "list")
+  )
 }
 
 #' @rdname tag
@@ -341,6 +345,9 @@ tag <- function(`_tag_name`, varArgs) {
   # Use unname() to remove the names attribute from the list, which would
   # consist of empty strings anyway.
   children <- unname(varArgs[!named_idx])
+
+  # Make sure all children are tag-like objects
+  children <- lapply(children, as.tags)
 
   # Return tag data structure
   structure(
@@ -910,10 +917,7 @@ as.tags <- function(x, ...) {
 
 #' @export
 as.tags.default <- function(x, ...) {
-  if (is.list(x) && !isTagList(x))
-    unclass(x)
-  else
-    tagList(as.character(x))
+  tagList(as.character(x))
 }
 
 #' @export
@@ -932,10 +936,21 @@ as.tags.shiny.tag.list <- function(x, ...) {
 }
 
 #' @export
+as.tags.list <- function(x, ...) {
+  # Convert to shiny.tag.list
+  do.call(tagList, x)
+}
+
+#' @export
 as.tags.character <- function(x, ...) {
   # For printing as.tags("<strong>") directly at console, without dropping any
   # attached dependencies
-  tagList(x)
+  x
+}
+
+#' @export
+as.tags.html_dependency <- function(x, ...) {
+  attachDependencies(tagList(), x)
 }
 
 #' Preserve HTML regions

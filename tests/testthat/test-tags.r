@@ -190,7 +190,7 @@ test_that("Creating nested tags", {
     structure(
       list(name = "div",
         attribs = structure(list(class = "foo"), .Names = "class"),
-        children = list(list("a", "b"))),
+        children = list(structure(list("a", "b"), class = c("shiny.tag.list", "list")))),
       .Names = c("name", "attribs", "children"),
       class = "shiny.tag"
     )
