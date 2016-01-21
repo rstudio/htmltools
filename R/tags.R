@@ -235,13 +235,7 @@ normalizeText <- function(text) {
 #' @rdname tag
 #' @export
 tagList <- function(...) {
-  lst <- list(...)
-
-  # Make sure everything is a tag-like object
-  structure(
-    lapply(lst, as.tags),
-    class = c("shiny.tag.list", "list")
-  )
+  as.tags(list(...))
 }
 
 #' @rdname tag
@@ -986,8 +980,10 @@ as.tags.shiny.tag.list <- function(x, ...) {
 
 #' @export
 as.tags.list <- function(x, ...) {
+  # Make sure everything is a tag-like object
+  res <- lapply(x, as.tags)
   # Convert to shiny.tag.list
-  res <- do.call(tagList, x)
+  class(res) <- c("shiny.tag.list", "list")
 
   # Preserve html.singleton attribute if present
   if (is.singleton(x)) {
