@@ -599,14 +599,14 @@ test_that("cssList tests", {
 test_that("Non-tag objects can be coerced", {
 
   .GlobalEnv$as.tags.testcoerce1 <- function(x) {
-    list(singleton(list("hello")))
+    tagList(singleton(list("hello")))
   }
   on.exit(rm("as.tags.testcoerce1", pos = .GlobalEnv), add = TRUE)
 
   # Make sure tag-coerceable objects are tagified
   result1 <- renderTags(structure(TRUE, class = "testcoerce1"))
   expect_identical(result1$html, HTML("hello"))
-  expect_identical(result1$singletons, "110d1f0ef6762db2c6863523a7c379a697b43ea3")
+  expect_identical(result1$singletons, "9bf8e66efbb75b8bf7adb849fd4576fd15621c72")
 
   # Make sure tag-coerceable objects are tagified before singleton handling
   # occurs, but that over-flattening doesn't happen
@@ -615,7 +615,7 @@ test_that("Non-tag objects can be coerced", {
     structure(TRUE, class = "testcoerce1")
   ))
   expect_identical(result2$html, HTML("hello"))
-  expect_identical(result2$singletons, "110d1f0ef6762db2c6863523a7c379a697b43ea3")
+  expect_identical(result2$singletons, "9bf8e66efbb75b8bf7adb849fd4576fd15621c72")
 
 })
 

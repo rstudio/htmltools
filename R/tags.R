@@ -917,7 +917,13 @@ as.tags <- function(x, ...) {
 
 #' @export
 as.tags.default <- function(x, ...) {
-  tagList(as.character(x))
+  res <- tagList(as.character(x))
+
+  # Preserve html.singleton attribute if present
+  if (is.singleton(x)) {
+    res <- singleton(res)
+  }
+  res
 }
 
 #' @export
@@ -938,7 +944,13 @@ as.tags.shiny.tag.list <- function(x, ...) {
 #' @export
 as.tags.list <- function(x, ...) {
   # Convert to shiny.tag.list
-  do.call(tagList, x)
+  res <- do.call(tagList, x)
+
+  # Preserve html.singleton attribute if present
+  if (is.singleton(x)) {
+    res <- singleton(res)
+  }
+  res
 }
 
 #' @export
