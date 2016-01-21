@@ -70,3 +70,20 @@ test_that("Inline dependencies", {
   x <- div(list(a1.1, div("foo")), "bar")
   expect_identical(findDependencies(x), list(a1.1))
 })
+
+test_that("Modifying children using dependencies", {
+  a1.1 <- htmlDependency("a", "1.1", c(href="/"))
+  a1.2 <- htmlDependency("a", "1.2", c(href="/"))
+
+  x <- tagAppendChild(div(a1.1), a1.2)
+  expect_identical(findDependencies(x), list(a1.1, a1.2))
+
+  x <- tagAppendChild(div(a1.1), list(a1.2))
+  expect_identical(findDependencies(x), list(a1.1, a1.2))
+
+  x <- tagAppendChildren(div(), a1.1, list(a1.2))
+  expect_identical(findDependencies(x), list(a1.1, a1.2))
+
+  x <- tagSetChildren(div("foo", a1.1), a1.2)
+  expect_identical(findDependencies(x), list(a1.2))
+})

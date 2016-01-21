@@ -280,21 +280,24 @@ tagGetAttribute <- function(tag, attr) {
 #' @rdname tag
 #' @export
 tagAppendChild <- function(tag, child) {
-  tag$children[[length(tag$children)+1]] <- child
+  tag$children[[length(tag$children)+1]] <- tagify(child)
   tag
 }
 
 #' @rdname tag
 #' @export
 tagAppendChildren <- function(tag, ..., list = NULL) {
-  tag$children <- c(tag$children, c(list(...), list))
+  items <- c(list(...), list)
+  items <- lapply(items, tagify)
+  tag$children <- c(tag$children, items)
   tag
 }
 
 #' @rdname tag
 #' @export
 tagSetChildren <- function(tag, ..., list = NULL) {
-  tag$children <- c(list(...), list)
+  items <- c(list(...), list)
+  tag$children <- lapply(items, tagify)
   tag
 }
 
