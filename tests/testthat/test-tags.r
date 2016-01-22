@@ -190,7 +190,7 @@ test_that("Creating nested tags", {
     structure(
       list(name = "div",
         attribs = structure(list(class = "foo"), .Names = "class"),
-        children = list(structure(list("a", "b"), class = c("shiny.tag.list", "list")))),
+        children = list(list("a", "b"))),
       .Names = c("name", "attribs", "children"),
       class = "shiny.tag"
     )
@@ -465,7 +465,7 @@ test_that("Head and singleton behavior", {
 
   # Ensure that singleton can be applied to lists, not just tags
   result4 <- renderTags(list(singleton(list("hello")), singleton(list("hello"))))
-  expect_identical(result4$singletons, "9bf8e66efbb75b8bf7adb849fd4576fd15621c72")
+  expect_identical(result4$singletons, "110d1f0ef6762db2c6863523a7c379a697b43ea3")
   expect_identical(result4$html, renderTags(HTML("hello"))$html)
 
   result5 <- renderTags(tagList(singleton(list(list("hello")))))
@@ -491,6 +491,34 @@ test_that("Unusual list contents are rendered correctly", {
   expect_identical(renderTags(list(list(100))), renderTags(HTML("100")))
   expect_identical(renderTags(list(list())), renderTags(HTML("")))
   expect_identical(renderTags(NULL), renderTags(HTML("")))
+})
+
+test_that("as.tags works recursively", {
+  .GlobalEnv$as.tags.testcoerce1 <- function(x) {
+    "success"
+  }
+  on.exit(rm("as.tags.testcoerce1", pos = .GlobalEnv), add = TRUE)
+
+  obj <- structure(list(), class = "testcoerce1")
+
+  # Children of tags
+  expect_identical(as.tags(div(div(obj))), div(div("success")))
+
+  # Lists and tagLists
+  expect_identical(as.tags(list(tagList(obj))), list(tagList("success")))
+  expect_identical(as.tags(tagList(list(obj))), tagList(list("success")))
+})
+
+test_that("as.tags preserves singleton attribute", {
+  x <- singleton(list())
+  expect_true(is.singleton(as.tags(x)))
+
+  x <- singleton(tagList())
+  expect_true(is.singleton(as.tags(x)))
+
+  # as.tags.default method should keep singleton attribute, but not necessarily others
+  x <- singleton(structure(list(), class = "test"))
+  expect_true(is.singleton(as.tags(x)))
 })
 
 test_that("Low-level singleton manipulation methods", {
@@ -599,14 +627,14 @@ test_that("cssList tests", {
 test_that("Non-tag objects can be coerced", {
 
   .GlobalEnv$as.tags.testcoerce1 <- function(x) {
-    tagList(singleton(list("hello")))
+    as.tags(list(singleton(list("hello"))))
   }
   on.exit(rm("as.tags.testcoerce1", pos = .GlobalEnv), add = TRUE)
 
   # Make sure tag-coerceable objects are tagified
   result1 <- renderTags(structure(TRUE, class = "testcoerce1"))
   expect_identical(result1$html, HTML("hello"))
-  expect_identical(result1$singletons, "9bf8e66efbb75b8bf7adb849fd4576fd15621c72")
+  expect_identical(result1$singletons, "110d1f0ef6762db2c6863523a7c379a697b43ea3")
 
   # Make sure tag-coerceable objects are tagified before singleton handling
   # occurs, but that over-flattening doesn't happen
@@ -615,7 +643,7 @@ test_that("Non-tag objects can be coerced", {
     structure(TRUE, class = "testcoerce1")
   ))
   expect_identical(result2$html, HTML("hello"))
-  expect_identical(result2$singletons, "9bf8e66efbb75b8bf7adb849fd4576fd15621c72")
+  expect_identical(result2$singletons, "110d1f0ef6762db2c6863523a7c379a697b43ea3")
 
 })
 

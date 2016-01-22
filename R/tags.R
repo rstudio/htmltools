@@ -235,7 +235,9 @@ normalizeText <- function(text) {
 #' @rdname tag
 #' @export
 tagList <- function(...) {
-  as.tags(list(...))
+  lst <- list(...)
+  class(lst) <- c("shiny.tag.list", "list")
+  return(lst)
 }
 
 #' @rdname tag
@@ -274,24 +276,21 @@ tagGetAttribute <- function(tag, attr) {
 #' @rdname tag
 #' @export
 tagAppendChild <- function(tag, child) {
-  tag$children[[length(tag$children)+1]] <- tagify(child)
+  tag$children[[length(tag$children)+1]] <- child
   tag
 }
 
 #' @rdname tag
 #' @export
 tagAppendChildren <- function(tag, ..., list = NULL) {
-  items <- c(list(...), list)
-  items <- lapply(items, tagify)
-  tag$children <- c(tag$children, items)
+  tag$children <- c(tag$children, c(list(...), list))
   tag
 }
 
 #' @rdname tag
 #' @export
 tagSetChildren <- function(tag, ..., list = NULL) {
-  items <- c(list(...), list)
-  tag$children <- lapply(items, tagify)
+  tag$children <- c(list(...), list)
   tag
 }
 
@@ -342,9 +341,6 @@ tag <- function(`_tag_name`, varArgs) {
   # Use unname() to remove the names attribute from the list, which would
   # consist of empty strings anyway.
   children <- unname(varArgs[!named_idx])
-
-  # Make sure all children are tag-like objects
-  children <- lapply(children, as.tags)
 
   # Return tag data structure
   structure(
@@ -665,7 +661,7 @@ takeHeads <- function(ui) {
 #'
 #' @export
 findDependencies <- function(tags) {
-  dep <- htmlDependencies(tags)
+  dep <- htmlDependencies(tagify(tags))
   if (!is.null(dep) && inherits(dep, "html_dependency"))
     dep <- list(dep)
   children <- if (is.list(tags)) {
@@ -970,27 +966,20 @@ as.tags.html <- function(x, ...) {
 
 #' @export
 as.tags.shiny.tag <- function(x, ...) {
+  # Preserve attributes if present
+  x$children[] <- lapply(x$children, as.tags)
   x
 }
 
 #' @export
 as.tags.shiny.tag.list <- function(x, ...) {
+  # Preserve attributes if present
+  x[] <- lapply(x, as.tags)
   x
 }
 
 #' @export
-as.tags.list <- function(x, ...) {
-  # Make sure everything is a tag-like object
-  res <- lapply(x, as.tags)
-  # Convert to shiny.tag.list
-  class(res) <- c("shiny.tag.list", "list")
-
-  # Preserve html.singleton attribute if present
-  if (is.singleton(x)) {
-    res <- singleton(res)
-  }
-  res
-}
+as.tags.list <- as.tags.shiny.tag.list
 
 #' @export
 as.tags.character <- function(x, ...) {
