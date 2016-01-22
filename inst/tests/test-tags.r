@@ -1,25 +1,25 @@
 context("tags")
 
 test_that("Basic tag writing works", {
-  expect_equal(as.character(tagList("hi")), HTML("hi"))
+  expect_equal(as.character(tagList("hi")), "hi")
   expect_equal(
     as.character(tagList("one", "two", tagList("three"))),
-    HTML("one\ntwo\nthree"))
+    "one\ntwo\nthree")
   expect_equal(
     as.character(tags$b("one")),
-    HTML("<b>one</b>"))
+    "<b>one</b>")
   expect_equal(
     as.character(tags$b("one", "two")),
-    HTML("<b>\n  one\n  two\n</b>"))
+    "<b>\n  one\n  two\n</b>")
   expect_equal(
     as.character(tagList(list("one"))),
-    HTML("one"))
+    "one")
   expect_equal(
     as.character(tagList(list(tagList("one")))),
-    HTML("one"))
+    "one")
   expect_equal(
     as.character(tagList(tags$br(), "one")),
-    HTML("<br/>\none"))
+    "<br/>\none")
 })
 
 
@@ -476,12 +476,12 @@ test_that("Factors are treated as characters, not numbers", {
   myfactors <- factor(LETTERS[1:3])
   expect_identical(
     as.character(tags$option(value=myfactors[[1]], myfactors[[1]])),
-    HTML('<option value="A">A</option>')
+    '<option value="A">A</option>'
   )
 
   expect_identical(
     as.character(tags$option(value=myfactors[[1]], value='B', value=3, myfactors[[1]])),
-    HTML('<option value="A B 3">A</option>')
+    '<option value="A B 3">A</option>'
   )
 })
 
