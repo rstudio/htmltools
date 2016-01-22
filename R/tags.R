@@ -180,7 +180,7 @@ format.shiny.tag <- function(x, ..., singletons = character(0), indent = 0) {
 
 #' @export
 as.character.shiny.tag <- function(x, ...) {
-  renderTags(x)$html
+  as.character(renderTags(x)$html)
 }
 
 #' @export
