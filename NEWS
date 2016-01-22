@@ -1,3 +1,12 @@
+htmltools 0.3.2
+--------------------------------------------------------------------------------
+
+* `as.character` now returns a character vector with no other attributes.
+  Previously it returned a character vector of class 'html'. (#31, #41)
+
+* `htmlTemplate` now can use a string as a template instead of requiring a
+  file. (#41, #43)
+
 htmltools 0.3.1
 --------------------------------------------------------------------------------
 
