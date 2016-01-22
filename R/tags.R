@@ -478,7 +478,7 @@ tagWrite.shiny.tag <- function(tag, textWriter, indent=0, eol = "\n") {
 #'
 #' @export
 renderTags <- function(x, singletons = character(0), indent = 0) {
-  x <- tagify(x)
+  x <- as.tags(x)
   # Do singleton and head processing before rendering
   singletonInfo <- takeSingletons(x, singletons)
   headInfo <- takeHeads(singletonInfo$ui)
@@ -661,7 +661,7 @@ takeHeads <- function(ui) {
 #'
 #' @export
 findDependencies <- function(tags) {
-  dep <- htmlDependencies(tagify(tags))
+  dep <- htmlDependencies(as.tags(tags))
   if (!is.null(dep) && inherits(dep, "html_dependency"))
     dep <- list(dep)
   children <- if (is.list(tags)) {
@@ -888,12 +888,6 @@ HTML <- function(text, ...) {
 withTags <- function(code) {
   eval(substitute(code), envir = as.list(tags), enclos = parent.frame())
 }
-
-# Make sure any objects in the tree that can be converted to tags, have been
-tagify <- function(x) {
-  rewriteTags(x, as.tags, FALSE)
-}
-
 
 # Given a list of tags, lists, and other items, return a flat list, where the
 # items from the inner, nested lists are pulled to the top level, recursively.
@@ -1196,7 +1190,7 @@ NULL
 #' @rdname knitr_methods
 #' @export
 knit_print.shiny.tag <- function(x, ...) {
-  x <- tagify(x)
+  x <- as.tags(x)
   output <- surroundSingletons(x)
   deps <- resolveDependencies(findDependencies(x))
   content <- takeHeads(output)
