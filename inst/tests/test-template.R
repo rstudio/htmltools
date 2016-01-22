@@ -18,6 +18,14 @@ test_that("Code blocks are evaluated and rendered correctly", {
   html <- renderDocument(template)
 
   expect_true(grepl('<div class="foo">bar</div>', html))
+
+  # With text_ argument
+  template <- htmlTemplate(text_ = "a {{ foo + 1 }} b", foo = 10)
+  expect_identical(as.character(as.character(template)), "a \n11\n b")
+
+  # Make char vectors are pasted together
+  template <- htmlTemplate(text_ = c("a", "{{ foo + 1 }} b"), foo = 10)
+  expect_identical(as.character(as.character(template)), "a\n\n11\n b")
 })
 
 test_that("UTF-8 characters in templates", {
@@ -29,6 +37,13 @@ test_that("UTF-8 characters in templates", {
   pat <- rawToChar(as.raw(c(0xce, 0x94, 0xe2, 0x98, 0x85, 0xf0, 0x9f, 0x98, 0x8e)))
   Encoding(pat) <- "UTF-8"
   expect_true(grepl(pat, html))
+
+  # If template is passed text_ argument, make sure it's converted from native
+  # to UTF-8.
+  latin1_str <- rawToChar(as.raw(0xFF))
+  Encoding(latin1_str) <- "latin1"
+  text <- as.character(htmlTemplate(text_ = latin1_str))
+  expect_identical(charToRaw(text), as.raw(c(0xc3, 0xbf)))
 })
 
 

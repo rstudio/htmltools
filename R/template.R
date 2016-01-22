@@ -5,8 +5,11 @@
 #' \code{html_document}, and can be passed to the function
 #' \code{\link{renderDocument}} to get the final HTML text.
 #'
-#' @param filename Path to an HTML template file.
+#' @param filename Path to an HTML template file. Incompatible with
+#'   \code{text_}.
 #' @param ... Variable values to use when processing the template.
+#' @param text_ A string to use as the template, instead of a file. Incompatible
+#'   with \code{filename}.
 #' @param document_ Is this template a complete HTML document (\code{TRUE}), or
 #'   a fragment of HTML that is to be inserted into an HTML document
 #'   (\code{FALSE})? With \code{"auto"} (the default), auto-detect by searching
@@ -14,9 +17,18 @@
 #'
 #' @seealso \code{\link{renderDocument}}
 #' @export
-htmlTemplate <- function(filename, ..., document_ = "auto") {
-  html <- readChar(filename, file.info(filename)$size, useBytes = TRUE)
-  Encoding(html) <- "UTF-8"
+htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto") {
+  if (!xor(is.null(filename), is.null(text_))) {
+    stop("htmlTemplate requires either `filename` or `text_`.")
+  }
+
+  if (!is.null(filename)) {
+    html <- readChar(filename, file.info(filename)$size, useBytes = TRUE)
+    Encoding(html) <- "UTF-8"
+  } else if(!is.null(text_)) {
+    text_ <- paste(text_, collapse = "\n")
+    html <- enc2utf8(text_)
+  }
 
   pieces <- strsplit(html, "{{", fixed = TRUE)[[1]]
   pieces <- strsplit(pieces, "}}", fixed = TRUE)
