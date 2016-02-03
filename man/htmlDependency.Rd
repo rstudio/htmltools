@@ -31,8 +31,9 @@ specified relative to the \code{src} parameter).}
 Details.}
 }
 \value{
-An object that can be included in a list of dependencies passed to
-  \code{\link{attachDependencies}}.
+An object which can be included in a list of dependencies passed to
+  \code{\link{attachDependencies}}, or which can be passed as an argument to
+  a \link{tag} function, or to \code{\link{tagList}}.
 }
 \description{
 Define an HTML dependency (i.e. CSS and/or JavaScript bundled in a
@@ -71,6 +72,8 @@ Each dependency can be located on the filesystem, at a relative or
 }
 \seealso{
 Use \code{\link{attachDependencies}} to associate a list of
-  dependencies with the HTML it belongs with.
+  dependencies with the HTML it belongs with, or pass the
+  \code{html_dependency} object to a \link{tag} function, or to
+  \code{\link{tagList}}.
 }
 

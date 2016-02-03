@@ -27,3 +27,63 @@ test_that("Dependency resolution works", {
 
   expect_warning(subtractDependencies(result1, list(a1.1)))
 })
+
+test_that("Inline dependencies", {
+  # Test out renderTags and findDependencies when tags are inline
+  a1.1 <- htmlDependency("a", "1.1", c(href="/"))
+  a1.2 <- htmlDependency("a", "1.2", c(href="/"))
+
+  # tagLists ----------------------------------------------------------
+  x <- tagList(a1.1, div("foo"), "bar")
+  expect_identical(findDependencies(x), list(a1.1))
+  expect_identical(as.character(renderTags(x)$html), "<div>foo</div>\nbar")
+
+  x <- tagList(a1.1, div("foo"), a1.2, "bar")
+  expect_identical(findDependencies(x), list(a1.1, a1.2))
+  expect_identical(as.character(renderTags(x)$html), "<div>foo</div>\nbar")
+
+  # Mixing inline and attribute dependencies
+  x <- attachDependencies(tagList(a1.1, div("foo"), "bar"), a1.2, append = TRUE)
+  expect_identical(findDependencies(x), list(a1.1, a1.2))
+  expect_identical(as.character(renderTags(x)$html), "<div>foo</div>\nbar")
+
+  # tags with children ------------------------------------------------
+  x <- div(a1.1, div("foo"), "bar")
+  expect_identical(findDependencies(x), list(a1.1))
+  expect_identical(as.character(renderTags(x)$html),
+                   "<div>\n  <div>foo</div>\n  bar\n</div>")
+
+  x <- div(div("foo"), a1.2, "bar", a1.1)
+  expect_identical(findDependencies(x), list(a1.2, a1.1))
+  expect_identical(as.character(renderTags(x)$html),
+                   "<div>\n  <div>foo</div>\n  bar\n</div>")
+
+  x <- attachDependencies(div(a1.1, div("foo"), "bar"), a1.2, append = TRUE)
+  expect_identical(findDependencies(x), list(a1.1, a1.2))
+  expect_identical(as.character(renderTags(x)$html),
+                   "<div>\n  <div>foo</div>\n  bar\n</div>")
+
+  # Passing normal lists to tagLists and tag functions  ---------------
+  x <- tagList(list(a1.1, div("foo")), "bar")
+  expect_identical(findDependencies(x), list(a1.1))
+
+  x <- div(list(a1.1, div("foo")), "bar")
+  expect_identical(findDependencies(x), list(a1.1))
+})
+
+test_that("Modifying children using dependencies", {
+  a1.1 <- htmlDependency("a", "1.1", c(href="/"))
+  a1.2 <- htmlDependency("a", "1.2", c(href="/"))
+
+  x <- tagAppendChild(div(a1.1), a1.2)
+  expect_identical(findDependencies(x), list(a1.1, a1.2))
+
+  x <- tagAppendChild(div(a1.1), list(a1.2))
+  expect_identical(findDependencies(x), list(a1.1, a1.2))
+
+  x <- tagAppendChildren(div(), a1.1, list(a1.2))
+  expect_identical(findDependencies(x), list(a1.1, a1.2))
+
+  x <- tagSetChildren(div("foo", a1.1), a1.2)
+  expect_identical(findDependencies(x), list(a1.2))
+})

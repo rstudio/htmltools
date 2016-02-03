@@ -493,6 +493,34 @@ test_that("Unusual list contents are rendered correctly", {
   expect_identical(renderTags(NULL), renderTags(HTML("")))
 })
 
+test_that("as.tags works recursively", {
+  .GlobalEnv$as.tags.testcoerce1 <- function(x) {
+    "success"
+  }
+  on.exit(rm("as.tags.testcoerce1", pos = .GlobalEnv), add = TRUE)
+
+  obj <- structure(list(), class = "testcoerce1")
+
+  # Children of tags
+  expect_identical(as.tags(div(div(obj))), div(div("success")))
+
+  # Lists and tagLists
+  expect_identical(as.tags(list(tagList(obj))), list(tagList("success")))
+  expect_identical(as.tags(tagList(list(obj))), tagList(list("success")))
+})
+
+test_that("as.tags preserves singleton attribute", {
+  x <- singleton(list())
+  expect_true(is.singleton(as.tags(x)))
+
+  x <- singleton(tagList())
+  expect_true(is.singleton(as.tags(x)))
+
+  # as.tags.default method should keep singleton attribute, but not necessarily others
+  x <- singleton(structure(list(), class = "test"))
+  expect_true(is.singleton(as.tags(x)))
+})
+
 test_that("Low-level singleton manipulation methods", {
   # Default arguments drop singleton duplicates and strips the
   # singletons it keeps of the singleton bit
@@ -599,7 +627,7 @@ test_that("cssList tests", {
 test_that("Non-tag objects can be coerced", {
 
   .GlobalEnv$as.tags.testcoerce1 <- function(x) {
-    list(singleton(list("hello")))
+    as.tags(list(singleton(list("hello"))))
   }
   on.exit(rm("as.tags.testcoerce1", pos = .GlobalEnv), add = TRUE)
 

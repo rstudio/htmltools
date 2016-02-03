@@ -351,35 +351,45 @@ tag <- function(`_tag_name`, varArgs) {
   )
 }
 
-isTagList <- function(x) {
-  is.list(x) && (inherits(x, "shiny.tag.list") || identical(class(x), "list"))
-}
 
 tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
+  UseMethod("tagWrite")
+}
 
+#' @export
+tagWrite.shiny.tag.list <- function(tag, textWriter, indent=0, eol = "\n") {
   if (length(tag) == 0)
-    return (NULL)
+    return(NULL)
 
-  # optionally process a list of tags
-  if (!isTag(tag) && isTagList(tag)) {
-    tag <- dropNullsOrEmpty(flattenTags(tag))
-    lapply(tag, tagWrite, textWriter, indent)
-    return (NULL)
-  }
+  tag <- dropNullsOrEmpty(flattenTags(tag))
+  lapply(tag, tagWrite, textWriter, indent)
+  return(NULL)
+}
 
-  nextIndent <- if (is.numeric(indent)) indent + 1 else indent
+#' @export
+tagWrite.list <- tagWrite.shiny.tag.list
+
+# For plain text or HTML
+#' @export
+tagWrite.character <- function(tag, textWriter, indent=0, eol = "\n") {
   indent <- if (is.numeric(indent)) indent else 0
 
   # compute indent text
   indentText <- paste(rep(" ", indent*2), collapse="")
 
-  # Check if it's just text (may either be plain-text or HTML)
-  if (is.character(tag)) {
-    textWriter(indentText)
-    textWriter(normalizeText(tag))
-    textWriter(eol)
-    return (NULL)
-  }
+  textWriter(indentText)
+  textWriter(normalizeText(tag))
+  textWriter(eol)
+  return(NULL)
+}
+
+#' @export
+tagWrite.shiny.tag <- function(tag, textWriter, indent=0, eol = "\n") {
+  nextIndent <- if (is.numeric(indent)) indent + 1 else indent
+  indent <- if (is.numeric(indent)) indent else 0
+
+  # compute indent text
+  indentText <- paste(rep(" ", indent*2), collapse="")
 
   # write tag name
   textWriter(paste8(indentText, "<", tag$name, sep=""))
@@ -468,7 +478,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 #'
 #' @export
 renderTags <- function(x, singletons = character(0), indent = 0) {
-  x <- tagify(x)
+  x <- as.tags(x)
   # Do singleton and head processing before rendering
   singletonInfo <- takeSingletons(x, singletons)
   headInfo <- takeHeads(singletonInfo$ui)
@@ -522,19 +532,41 @@ doRenderTags <- function(x, indent = 0) {
 # preorder=TRUE means preorder tree traversal, that is, an object
 # should be rewritten before its children.
 rewriteTags <- function(ui, func, preorder) {
+  UseMethod("rewriteTags")
+}
+
+#' @export
+rewriteTags.shiny.tag <- function(ui, func, preorder) {
   if (preorder)
     ui <- func(ui)
 
-  if (isTag(ui)) {
-    ui$children[] <- lapply(ui$children, rewriteTags, func, preorder)
-  } else if (isTagList(ui)) {
-    ui[] <- lapply(ui, rewriteTags, func, preorder)
-  }
+  ui$children[] <- lapply(ui$children, rewriteTags, func, preorder)
 
   if (!preorder)
     ui <- func(ui)
 
-  return(ui)
+  ui
+}
+
+#' @export
+rewriteTags.shiny.tag.list <- function(ui, func, preorder) {
+  if (preorder)
+    ui <- func(ui)
+
+  ui[] <- lapply(ui, rewriteTags, func, preorder)
+
+  if (!preorder)
+    ui <- func(ui)
+
+  ui
+}
+
+#' @export
+rewriteTags.list <- rewriteTags.shiny.tag.list
+
+#' @export
+rewriteTags.default <- function(ui, func, preorder) {
+  func(ui)
 }
 
 #' Singleton manipulation functions
@@ -629,7 +661,7 @@ takeHeads <- function(ui) {
 #'
 #' @export
 findDependencies <- function(tags) {
-  dep <- htmlDependencies(tags)
+  dep <- htmlDependencies(as.tags(tags))
   if (!is.null(dep) && inherits(dep, "html_dependency"))
     dep <- list(dep)
   children <- if (is.list(tags)) {
@@ -660,9 +692,9 @@ findDependencies <- function(tags) {
 #' @name builder
 #' @param ... Attributes and children of the element. Named arguments become
 #'   attributes, and positional arguments become children. Valid children are
-#'   tags, single-character character vectors (which become text nodes), and raw
-#'   HTML (see \code{\link{HTML}}). You can also pass lists that contain tags,
-#'   text nodes, and HTML.
+#'   tags, single-character character vectors (which become text nodes), raw
+#'   HTML (see \code{\link{HTML}}), and \code{html_dependency} objects. You can
+#'   also pass lists that contain tags, text nodes, or HTML.
 #' @export tags
 #' @examples
 #' doc <- tags$html(
@@ -857,42 +889,44 @@ withTags <- function(code) {
   eval(substitute(code), envir = as.list(tags), enclos = parent.frame())
 }
 
-# Make sure any objects in the tree that can be converted to tags, have been
-tagify <- function(x) {
-  rewriteTags(x, function(uiObj) {
-    if (isTag(uiObj) || isTagList(uiObj) || is.character(uiObj))
-      return(uiObj)
-    else
-      return(tagify(as.tags(uiObj)))
-  }, FALSE)
-}
-
 # Given a list of tags, lists, and other items, return a flat list, where the
 # items from the inner, nested lists are pulled to the top level, recursively.
-flattenTags <- function(x) {
-  if (isTag(x)) {
-    # For tags, wrap them into a list (which will be unwrapped by caller)
-    list(x)
-  } else if (isTagList(x)) {
-    if (length(x) == 0) {
-      # Empty lists are simply returned
-      x
-    } else {
-      # For items that are lists (but not tags), recurse
-      unlist(lapply(x, flattenTags), recursive = FALSE)
-    }
+flattenTags <- function(x) UseMethod("flattenTags")
 
-  } else if (is.character(x)){
-    # This will preserve attributes if x is a character with attribute,
-    # like what HTML() produces
-    list(x)
+#' @export
+flattenTags.shiny.tag <- function(x) {
+  # For tags, wrap them into a list (which will be unwrapped by caller)
+  list(x)
+}
 
+#' @export
+flattenTags.shiny.tag.list <- function(x) {
+  if (length(x) == 0) {
+    # Empty lists are simply returned
+    x
   } else {
-    # For other items, coerce to character and wrap them into a list (which
-    # will be unwrapped by caller). Note that this will strip attributes.
-    flattenTags(as.tags(x))
+    # For items that are lists (but not tags), recurse
+    unlist(lapply(x, flattenTags), recursive = FALSE)
   }
 }
+
+#' @export
+flattenTags.list <- flattenTags.shiny.tag.list
+
+#' @export
+flattenTags.character <- function(x) {
+  # This will preserve attributes if x is a character with attribute,
+  # like what HTML() produces
+  list(x)
+}
+
+#' @export
+flattenTags.default <- function(x) {
+  # For other items, coerce to character and wrap them into a list (which
+  # will be unwrapped by caller). Note that this will strip attributes.
+  flattenTags(as.tags(x))
+}
+
 
 #' Convert a value to tags
 #'
@@ -910,10 +944,13 @@ as.tags <- function(x, ...) {
 
 #' @export
 as.tags.default <- function(x, ...) {
-  if (is.list(x) && !isTagList(x))
-    unclass(x)
-  else
-    tagList(as.character(x))
+  res <- tagList(as.character(x))
+
+  # Preserve html.singleton attribute if present
+  if (is.singleton(x)) {
+    res <- singleton(res)
+  }
+  res
 }
 
 #' @export
@@ -923,19 +960,31 @@ as.tags.html <- function(x, ...) {
 
 #' @export
 as.tags.shiny.tag <- function(x, ...) {
+  # Preserve attributes if present
+  x$children[] <- lapply(x$children, as.tags)
   x
 }
 
 #' @export
 as.tags.shiny.tag.list <- function(x, ...) {
+  # Preserve attributes if present
+  x[] <- lapply(x, as.tags)
   x
 }
+
+#' @export
+as.tags.list <- as.tags.shiny.tag.list
 
 #' @export
 as.tags.character <- function(x, ...) {
   # For printing as.tags("<strong>") directly at console, without dropping any
   # attached dependencies
-  tagList(x)
+  x
+}
+
+#' @export
+as.tags.html_dependency <- function(x, ...) {
+  attachDependencies(tagList(), x)
 }
 
 #' Preserve HTML regions
@@ -1141,7 +1190,7 @@ NULL
 #' @rdname knitr_methods
 #' @export
 knit_print.shiny.tag <- function(x, ...) {
-  x <- tagify(x)
+  x <- as.tags(x)
   output <- surroundSingletons(x)
   deps <- resolveDependencies(findDependencies(x))
   content <- takeHeads(output)
