@@ -40,11 +40,15 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
   if (length(pieces[[1]]) != 1) {
     stop("Mismatched {{ and }} in HTML template.")
   }
-  lapply(pieces[-1], function(x) {
-    if (length(x) != 2) {
-      stop("Mismatched {{ and }} in HTML template.")
+  # Use a for loop instead of lapply, so that error stack trace is easier to
+  # understand.
+  if (length(pieces) >= 2) {
+    for (i in seq.int(2, length(pieces))) {
+      if(length(pieces[[i]]) != 2) {
+        stop("Mismatched {{ and }} in HTML template.")
+      }
     }
-  })
+  }
 
   # Create environment to evaluate code, as a child of the global env. This
   # environment gets the ... arguments assigned as variables.
