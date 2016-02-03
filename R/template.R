@@ -67,7 +67,7 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
   result <- tagList(pieces)
 
   if (document_ == "auto") {
-    document_ = grepl("<HTML>", html, ignore.case = TRUE)
+    document_ = grepl("<HTML(\\s[^<]*)?>", html, ignore.case = TRUE)
   }
   if (document_) {
     # The html.document class indicates that it's a complete document, and not
