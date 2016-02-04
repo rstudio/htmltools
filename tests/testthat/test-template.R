@@ -125,29 +125,29 @@ test_that("Brackets at start or end of text", {
   # No leading or trailing text
   expect_identical(
     as.character(htmlTemplate(text_ = "{{ code }}", code = 1)),
-    "1"
+    "\n1\n"
   )
   expect_identical(
     as.character(htmlTemplate(text_ = " {{ code }}", code = 1)),
-    "1"
+    " \n1\n"
   )
   expect_identical(
     as.character(htmlTemplate(text_ = "{{ code }} ", code = 1)),
-    "1"
+    "\n1\n "
   )
 
   # Edge cases
   expect_identical(as.character(htmlTemplate(text_ = "")), "")
   expect_identical(as.character(htmlTemplate(text_ = "X")), "X")
   expect_identical(as.character(htmlTemplate(text_ = " ")), " ")
-  expect_identical(as.character(htmlTemplate(text_ = "{{}}")), "")
+  expect_identical(as.character(htmlTemplate(text_ = "{{}}")), "\n")
   expect_identical(as.character(htmlTemplate(text_ = " {{}} ")), " \n ")
-  expect_identical(as.character(htmlTemplate(text_ = "{{ }}")), "")
-  expect_error(as.character(htmlTemplate(text_ = "{{"))) #
-  expect_error(as.character(htmlTemplate(text_ = " {{"))) #
+  expect_identical(as.character(htmlTemplate(text_ = "{{ }}")), "\n")
+  expect_identical(as.character(htmlTemplate(text_ = "{{}}{{}}")), "\n\n")
+  expect_error(as.character(htmlTemplate(text_ = "{{")))
+  expect_error(as.character(htmlTemplate(text_ = " {{")))
   expect_error(as.character(htmlTemplate(text_ = "{{ ")))
   expect_identical(as.character(htmlTemplate(text_ = "}}")), "}}")
   expect_identical(as.character(htmlTemplate(text_ = " }}")), " }}")
   expect_identical(as.character(htmlTemplate(text_ = "}} ")), "}} ")
-
 })

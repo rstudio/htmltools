@@ -29,39 +29,117 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
     text_ <- paste(text_, collapse = "\n")
     html <- enc2utf8(text_)
   }
-  pieces <- strsplit(html, "{{", fixed = TRUE)[[1]]
-  pieces[-1] <- strsplit(pieces[-1], "}}", fixed = TRUE)
-  npieces <- length(pieces)
 
-  # Each item in `pieces` is a 2-element character vector. In that vector, the
-  # first item is code, and the second is text. The exception is that the first
-  # item in `pieces` will be a 1-element char vector; that element is text. Or,
-  # if there's no text before the {{, as in "{{ 1 }}", it will be length 0.
-  if (npieces >= 1) {
-    if (!(length(pieces[[1]]) == 1 ||
-         (length(pieces[[1]]) == 0 && substr(html, 1, 2) == "{{")))
-    {
-      stop("Mismatched {{ and }} in HTML template.")
-    }
+  htmlchars <- strsplit(html, "", fixed = TRUE)[[1]]
+
+  seq_int_asc <- function(from, to) {
+    if (from <= to)
+      seq.int(from, to)
+    else
+      integer(0)
   }
-  # All the pieces except first and last. Use a for loop instead of lapply, so
-  # that error stack trace is easier to understand.
-  if (length(pieces) >= 3) {
-    for (i in seq.int(2, npieces - 1)) {
-      if (length(pieces[[i]]) != 2) {
-        stop("Mismatched {{ and }} in HTML template.")
+
+
+  i <- 1
+  len <- length(htmlchars)
+  state <- "html"
+  pieces <- list()
+  pieceStartIdx <- 0
+  while (i <= len) {
+    char = htmlchars[i]
+    switch(state,
+      "html" = {
+        switch(char,
+          "{" = {
+            state <- "html->oneOpenBracket"
+          }
+        )
+      },
+      "html->oneOpenBracket" = {
+        switch(char,
+          "{" = {
+            state <- "code"
+            pieces[[length(pieces) + 1]] <-
+              paste(htmlchars[seq_int_asc(pieceStartIdx, i-2)], collapse = "")
+            pieceStartIdx <- i+1
+          },
+          {
+            state <- "html"
+          }
+        )
+      },
+      "code" = {
+        switch(char,
+          "}" = {
+            state <- "code->oneCloseBracket"
+          },
+          "'" = {
+            state <- "code->string1"
+          },
+          '"' = {
+            state <- "code->string2"
+          },
+          "`" = {
+            state <- "code->backtick"
+          },
+          "\\" = {
+            state <- "code->backslash"
+          }
+        )
+      },
+      "code->oneCloseBracket" = {
+        switch(char,
+          "}" = {
+            state <- "html"
+            pieces[[length(pieces) + 1]] <-
+              paste(htmlchars[seq_int_asc(pieceStartIdx, i-2)], collapse = "")
+            pieceStartIdx <- i+1
+          },
+          {
+            state <- "code"
+          }
+        )
+      },
+      "code->string1" = {
+        switch(char,
+          "\\" = {
+            state <- "code->string1->backslash"
+          },
+          "'" = {
+            state <- "code"
+          }
+        )
+      },
+      "code->string1->backslash" = {
+        state <- "string1"
+      },
+      "code->string2" = {
+        switch(char,
+          "\\" = {
+            state <- "code->string2->backslash"
+          },
+          '"' = {
+            state <- "code"
+          }
+        )
+      },
+      "code->string2->backslash" = {
+        state <- "string2"
+      },
+      "code->backslash" = {
+        state <- "code"
       }
-    }
+    )
+
+    i <- i+1
   }
-  # The last piece. Special case for if the template ends with }}.
-  if (length(pieces) >= 2) {
-    if (!(length(pieces[[npieces]]) == 2 ||
-         (length(pieces[[npieces]]) == 1 &&
-          substr(html, nchar(html)-1, nchar(html)) == "}}")))
-    {
-      stop("Mismatched {{ and }} in HTML template.")
-    }
+
+  if (!(state %in% c("html", "html->oneOpenBracket"))) {
+    stop("HTML template did not end in html state (missing closing }}).")
   }
+  # Add ending HTML piece
+  pieces[[length(pieces) + 1]] <-
+    paste(htmlchars[seq_int_asc(pieceStartIdx, i-1)], collapse = "")
 
   # Create environment to evaluate code, as a child of the global env. This
   # environment gets the ... arguments assigned as variables.
@@ -72,23 +150,20 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
   vars$headContent <- function() HTML("<!-- HEAD_CONTENT -->")
   env <- list2env(vars, parent = globalenv())
 
-  if (npieces >= 1) {
-    pieces[[1]] <- HTML(pieces[[1]])
-  }
-  # For each item in `pieces` other than the first, run the code in the first
-  # subitem.
-  pieces[-1] <- lapply(pieces[-1], function(piece) {
-    if (length(piece) == 1) {
-      # This only should occur for the last piece, which can have just one
-      # element when the string has no text after the }}.
-      eval(parse(text = piece[1]), env)
-    } else {
-      tagList(
-        eval(parse(text = piece[1]), env),
-        HTML(piece[[2]])
-      )
-    }
-  })
+  # All the odd-numbered pieces are HTML; all the even-numbered pieces are code
+  pieces <- mapply(
+    pieces,
+    rep_len(c(FALSE, TRUE), length.out = length(pieces)),
+    FUN = function(piece, isCode) {
+      if (isCode) {
+        eval(parse(text = piece), env)
+      } else {
+        HTML(piece)
+      }
+    },
+    SIMPLIFY = FALSE
+  )
+
 
   result <- tagList(pieces)
 
