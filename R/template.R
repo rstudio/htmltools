@@ -29,24 +29,37 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
     text_ <- paste(text_, collapse = "\n")
     html <- enc2utf8(text_)
   }
-
   pieces <- strsplit(html, "{{", fixed = TRUE)[[1]]
-  pieces <- strsplit(pieces, "}}", fixed = TRUE)
+  pieces[-1] <- strsplit(pieces[-1], "}}", fixed = TRUE)
+  npieces <- length(pieces)
 
   # Each item in `pieces` is a 2-element character vector. In that vector, the
-  # first item is code, and the second is text. The one exception is that the
-  # first item in `pieces` will be a 1-element char vector; that element is
-  # text.
-  if (length(pieces[[1]]) != 1) {
-    stop("Mismatched {{ and }} in HTML template.")
+  # first item is code, and the second is text. The exception is that the first
+  # item in `pieces` will be a 1-element char vector; that element is text. Or,
+  # if there's no text before the {{, as in "{{ 1 }}", it will be length 0.
+  if (npieces >= 1) {
+    if (!(length(pieces[[1]]) == 1 ||
+         (length(pieces[[1]]) == 0 && substr(html, 1, 2) == "{{")))
+    {
+      stop("Mismatched {{ and }} in HTML template.")
+    }
   }
-  # Use a for loop instead of lapply, so that error stack trace is easier to
-  # understand.
-  if (length(pieces) >= 2) {
-    for (i in seq.int(2, length(pieces))) {
-      if(length(pieces[[i]]) != 2) {
+  # All the pieces except first and last. Use a for loop instead of lapply, so
+  # that error stack trace is easier to understand.
+  if (length(pieces) >= 3) {
+    for (i in seq.int(2, npieces - 1)) {
+      if (length(pieces[[i]]) != 2) {
         stop("Mismatched {{ and }} in HTML template.")
       }
+    }
+  }
+  # The last piece. Special case for if the template ends with }}.
+  if (length(pieces) >= 2) {
+    if (!(length(pieces[[npieces]]) == 2 ||
+         (length(pieces[[npieces]]) == 1 &&
+          substr(html, nchar(html)-1, nchar(html)) == "}}")))
+    {
+      stop("Mismatched {{ and }} in HTML template.")
     }
   }
 
@@ -59,13 +72,22 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
   vars$headContent <- function() HTML("<!-- HEAD_CONTENT -->")
   env <- list2env(vars, parent = globalenv())
 
-  pieces[[1]] <- HTML(pieces[[1]])
-  # For each item in `pieces` other than the first, run the code in the first subitem.
+  if (npieces >= 1) {
+    pieces[[1]] <- HTML(pieces[[1]])
+  }
+  # For each item in `pieces` other than the first, run the code in the first
+  # subitem.
   pieces[-1] <- lapply(pieces[-1], function(piece) {
-    tagList(
-      eval(parse(text = piece[1]), env),
-      HTML(piece[[2]])
-    )
+    if (length(piece) == 1) {
+      # This only should occur for the last piece, which can have just one
+      # element when the string has no text after the }}.
+      eval(parse(text = piece[1]), env)
+    } else {
+      tagList(
+        eval(parse(text = piece[1]), env),
+        HTML(piece[[2]])
+      )
+    }
   })
 
   result <- tagList(pieces)
