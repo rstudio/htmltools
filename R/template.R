@@ -17,6 +17,8 @@
 #'
 #' @seealso \code{\link{renderDocument}}
 #' @export
+#' @useDynLib htmltools
+#' @importFrom Rcpp sourceCpp
 htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto") {
   if (!xor(is.null(filename), is.null(text_))) {
     stop("htmlTemplate requires either `filename` or `text_`.")
@@ -30,116 +32,7 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
     html <- enc2utf8(text_)
   }
 
-  htmlchars <- strsplit(html, "", fixed = TRUE)[[1]]
-
-  seq_int_asc <- function(from, to) {
-    if (from <= to)
-      seq.int(from, to)
-    else
-      integer(0)
-  }
-
-
-  i <- 1
-  len <- length(htmlchars)
-  state <- "html"
-  pieces <- list()
-  pieceStartIdx <- 0
-  while (i <= len) {
-    char = htmlchars[i]
-    switch(state,
-      "html" = {
-        switch(char,
-          "{" = {
-            state <- "html->oneOpenBracket"
-          }
-        )
-      },
-      "html->oneOpenBracket" = {
-        switch(char,
-          "{" = {
-            state <- "code"
-            pieces[[length(pieces) + 1]] <-
-              paste(htmlchars[seq_int_asc(pieceStartIdx, i-2)], collapse = "")
-            pieceStartIdx <- i+1
-          },
-          {
-            state <- "html"
-          }
-        )
-      },
-      "code" = {
-        switch(char,
-          "}" = {
-            state <- "code->oneCloseBracket"
-          },
-          "'" = {
-            state <- "code->string1"
-          },
-          '"' = {
-            state <- "code->string2"
-          },
-          "`" = {
-            state <- "code->backtick"
-          },
-          "\\" = {
-            state <- "code->backslash"
-          }
-        )
-      },
-      "code->oneCloseBracket" = {
-        switch(char,
-          "}" = {
-            state <- "html"
-            pieces[[length(pieces) + 1]] <-
-              paste(htmlchars[seq_int_asc(pieceStartIdx, i-2)], collapse = "")
-            pieceStartIdx <- i+1
-          },
-          {
-            state <- "code"
-          }
-        )
-      },
-      "code->string1" = {
-        switch(char,
-          "\\" = {
-            state <- "code->string1->backslash"
-          },
-          "'" = {
-            state <- "code"
-          }
-        )
-      },
-      "code->string1->backslash" = {
-        state <- "string1"
-      },
-      "code->string2" = {
-        switch(char,
-          "\\" = {
-            state <- "code->string2->backslash"
-          },
-          '"' = {
-            state <- "code"
-          }
-        )
-      },
-      "code->string2->backslash" = {
-        state <- "string2"
-      },
-      "code->backslash" = {
-        state <- "code"
-      }
-    )
-
-    i <- i+1
-  }
-
-  if (!(state %in% c("html", "html->oneOpenBracket"))) {
-    stop("HTML template did not end in html state (missing closing }}).")
-  }
-  # Add ending HTML piece
-  pieces[[length(pieces) + 1]] <-
-    paste(htmlchars[seq_int_asc(pieceStartIdx, i-1)], collapse = "")
+  pieces <- template_dfa(html)
 
   # Create environment to evaluate code, as a child of the global env. This
   # environment gets the ... arguments assigned as variables.
@@ -157,6 +50,9 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
     FUN = function(piece, isCode) {
       if (isCode) {
         eval(parse(text = piece), env)
+      } else if (piece == "") {
+        # Don't add leading/trailing '\n' if empty HTML string.
+        NULL
       } else {
         HTML(piece)
       }

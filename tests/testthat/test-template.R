@@ -125,29 +125,56 @@ test_that("Brackets at start or end of text", {
   # No leading or trailing text
   expect_identical(
     as.character(htmlTemplate(text_ = "{{ code }}", code = 1)),
-    "\n1\n"
+    "1"
   )
   expect_identical(
     as.character(htmlTemplate(text_ = " {{ code }}", code = 1)),
-    " \n1\n"
+    " \n1"
   )
   expect_identical(
     as.character(htmlTemplate(text_ = "{{ code }} ", code = 1)),
-    "\n1\n "
+    "1\n "
   )
 
   # Edge cases
   expect_identical(as.character(htmlTemplate(text_ = "")), "")
   expect_identical(as.character(htmlTemplate(text_ = "X")), "X")
   expect_identical(as.character(htmlTemplate(text_ = " ")), " ")
-  expect_identical(as.character(htmlTemplate(text_ = "{{}}")), "\n")
+  expect_identical(as.character(htmlTemplate(text_ = "{{}}")), "")
   expect_identical(as.character(htmlTemplate(text_ = " {{}} ")), " \n ")
-  expect_identical(as.character(htmlTemplate(text_ = "{{ }}")), "\n")
-  expect_identical(as.character(htmlTemplate(text_ = "{{}}{{}}")), "\n\n")
+  expect_identical(as.character(htmlTemplate(text_ = "{{ }}")), "")
+  expect_identical(as.character(htmlTemplate(text_ = "{{}}{{}}")), "")
+  expect_identical(as.character(htmlTemplate(text_ = "{{1}}{{2}}")), "1\n2")
   expect_error(as.character(htmlTemplate(text_ = "{{")))
   expect_error(as.character(htmlTemplate(text_ = " {{")))
   expect_error(as.character(htmlTemplate(text_ = "{{ ")))
   expect_identical(as.character(htmlTemplate(text_ = "}}")), "}}")
   expect_identical(as.character(htmlTemplate(text_ = " }}")), " }}")
   expect_identical(as.character(htmlTemplate(text_ = "}} ")), "}} ")
+})
+
+
+test_that("Template DFA edge cases", {
+  # Single quotes
+  expect_identical(as.character(htmlTemplate(text_ = "{{ '' }}")), "")
+  expect_identical(as.character(htmlTemplate(text_ = " {{ '' }} ")), " \n\n ")
+  expect_identical(as.character(htmlTemplate(text_ = "{{ '\\'' }}")), "'")
+  expect_identical(as.character(htmlTemplate(text_ = "{{ '\\\\' }}")), "\\")
+  expect_identical(as.character(htmlTemplate(text_ = "{{ '}}' }}")), "}}")
+  # This one won't eval, so we need to test template_dfa function directly
+  expect_identical(template_dfa("{{ \\}}}"), c("", " \\}", ""))
+
+  # Double quotes
+  expect_identical(as.character(htmlTemplate(text_ = '{{ "" }}')), '')
+  expect_identical(as.character(htmlTemplate(text_ = ' {{ "" }} ')), ' \n\n ')
+  expect_identical(as.character(htmlTemplate(text_ = '{{ "\\"" }}')), '"')
+  expect_identical(as.character(htmlTemplate(text_ = '{{ "\\\\" }}')), '\\')
+  expect_identical(as.character(htmlTemplate(text_ = '{{ "}}" }}')), '}}')
+  # This one won"t eval, so we need to test template_dfa function directly
+  expect_identical(template_dfa('{{ \\}}}'), c('', ' \\}', ''))
+
+
+  # Backticks in code
+  expect_identical(as.character(htmlTemplate(text_ = "{{ `}}`<-1 }}")), "1")
+  expect_identical(as.character(htmlTemplate(text_ = "{{ `x\\`x`<-1 }}")), "1")
 })
