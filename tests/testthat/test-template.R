@@ -161,8 +161,6 @@ test_that("Template DFA edge cases", {
   expect_identical(as.character(htmlTemplate(text_ = "{{ '\\'' }}")), "'")
   expect_identical(as.character(htmlTemplate(text_ = "{{ '\\\\' }}")), "\\")
   expect_identical(as.character(htmlTemplate(text_ = "{{ '}}' }}")), "}}")
-  # This one won't eval, so we need to test template_dfa function directly
-  expect_identical(template_dfa("{{ \\}}}"), c("", " \\}", ""))
 
   # Double quotes
   expect_identical(as.character(htmlTemplate(text_ = '{{ "" }}')), '')
@@ -170,11 +168,26 @@ test_that("Template DFA edge cases", {
   expect_identical(as.character(htmlTemplate(text_ = '{{ "\\"" }}')), '"')
   expect_identical(as.character(htmlTemplate(text_ = '{{ "\\\\" }}')), '\\')
   expect_identical(as.character(htmlTemplate(text_ = '{{ "}}" }}')), '}}')
-  # This one won"t eval, so we need to test template_dfa function directly
-  expect_identical(template_dfa('{{ \\}}}'), c('', ' \\}', ''))
-
 
   # Backticks in code
   expect_identical(as.character(htmlTemplate(text_ = "{{ `}}`<-1 }}")), "1")
   expect_identical(as.character(htmlTemplate(text_ = "{{ `x\\`x`<-1 }}")), "1")
+
+  # Comments
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ 1 #2 }}b")),
+    "a\n1\nb"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ 1 #2\n3 }}b")),
+    "a\n3\nb"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ 1 #2'3 }}b")),
+    "a\n1\nb"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ 1 #2}3 }}b")),
+    "a\n1\nb"
+  )
 })

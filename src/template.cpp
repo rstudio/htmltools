@@ -1,19 +1,10 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-// Positive substring: return a substring of `str``going from `start` to `end`;
-// if `end` is earlier than `start`, return empty string.
-std::string pos_substr(std::string str, int start, int end) {
-  if (end < start)
-    return "";
-  else
-    return str.substr(start, end - start + 1);
-}
-
 // Break template text into character vector. The first element element of the
 // resulting vector is HTML, the next is R code, and they continue alternating.
 // [[Rcpp::export]]
-CharacterVector template_dfa(CharacterVector x) {
+std::vector<std::string> template_dfa(CharacterVector x) {
   enum State {
     html,
     code,
@@ -25,21 +16,21 @@ CharacterVector template_dfa(CharacterVector x) {
     code_string2_backslash,
     code_backtick,
     code_backtick_backslash,
-    code_backslash
+    code_comment,
+    code_comment_oneCloseBracket
   };
 
   if (x.length() != 1) {
     stop("Input HTML must be a character vector of length 1");
   }
   std::string input = Rcpp::as<std::string>(x[0]);
-  CharacterVector pieces(0);
+  std::vector<std::string> pieces(0);
 
-  int i = 0;
   int pieceStartIdx = 0;
   int len = input.length();
   char c;
   State state = html;
-  while (i < len) {
+  for (int i=0; i < len; i++) {
     c = input[i];
     switch (state) {
 
@@ -54,7 +45,7 @@ CharacterVector template_dfa(CharacterVector x) {
       switch (c) {
       case '{':
         state = code;
-        pieces.push_back(pos_substr(input, pieceStartIdx, i-2));
+        pieces.push_back(input.substr(pieceStartIdx, i - pieceStartIdx - 1));
         pieceStartIdx = i + 1;
         break;
       default:
@@ -72,8 +63,8 @@ CharacterVector template_dfa(CharacterVector x) {
         state = code_string2; break;
       case '`':
         state = code_backtick; break;
-      case '\\':
-        state = code_backslash; break;
+      case '#':
+        state = code_comment; break;
       }
       break;
 
@@ -81,7 +72,7 @@ CharacterVector template_dfa(CharacterVector x) {
       switch (c) {
       case '}':
         state = html;
-        pieces.push_back(pos_substr(input, pieceStartIdx, i-2));
+        pieces.push_back(input.substr(pieceStartIdx, i - pieceStartIdx - 1));
         pieceStartIdx = i + 1;
         break;
       default: state = code;
@@ -114,10 +105,6 @@ CharacterVector template_dfa(CharacterVector x) {
       state = code_string2;
       break;
 
-    case code_backslash:
-      state = code;
-      break;
-
     case code_backtick:
       switch (c) {
       case '\\':
@@ -130,9 +117,29 @@ CharacterVector template_dfa(CharacterVector x) {
     case code_backtick_backslash:
       state = code_backtick;
       break;
-    }
 
-    i++;
+    case code_comment:
+      switch (c) {
+      case '}':
+        state = code_comment_oneCloseBracket; break;
+      case '\n':
+        state = code; break;
+      }
+      break;
+
+    case code_comment_oneCloseBracket:
+      switch (c) {
+      case '}':
+        state = html;
+        pieces.push_back(input.substr(pieceStartIdx, i - pieceStartIdx - 1));
+        pieceStartIdx = i + 1;
+        break;
+      default:
+        state = code;
+      }
+      break;
+
+    }
   }
 
   if (!(state == html || state == html_oneOpenBracket)) {
@@ -140,7 +147,7 @@ CharacterVector template_dfa(CharacterVector x) {
   }
 
   // Add ending HTML piece
-  pieces.push_back(pos_substr(input, pieceStartIdx, i-1));
+  pieces.push_back(input.substr(pieceStartIdx, len - pieceStartIdx));
 
   return pieces;
 }

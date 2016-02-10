@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // template_dfa
-CharacterVector template_dfa(CharacterVector x);
+std::vector<std::string> template_dfa(CharacterVector x);
 RcppExport SEXP htmltools_template_dfa(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
