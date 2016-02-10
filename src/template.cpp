@@ -16,6 +16,7 @@ std::vector<std::string> template_dfa(CharacterVector x) {
     code_string2_backslash,
     code_backtick,
     code_backtick_backslash,
+    code_percentOp,
     code_comment,
     code_comment_oneCloseBracket
   };
@@ -63,6 +64,8 @@ std::vector<std::string> template_dfa(CharacterVector x) {
         state = code_string2; break;
       case '`':
         state = code_backtick; break;
+      case '%':
+        state = code_percentOp; break;
       case '#':
         state = code_comment; break;
       }
@@ -116,6 +119,13 @@ std::vector<std::string> template_dfa(CharacterVector x) {
 
     case code_backtick_backslash:
       state = code_backtick;
+      break;
+
+    case code_percentOp:
+      switch (c) {
+      case '%':
+        state = code; break;
+      }
       break;
 
     case code_comment:

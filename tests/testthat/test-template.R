@@ -173,6 +173,17 @@ test_that("Template DFA edge cases", {
   expect_identical(as.character(htmlTemplate(text_ = "{{ `}}`<-1 }}")), "1")
   expect_identical(as.character(htmlTemplate(text_ = "{{ `x\\`x`<-1 }}")), "1")
 
+
+  # Percent operator - various delimiters in percent operator
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ `%'%` <- function(x, y) 1; 2 %'% 3 }}b")),
+    "a\n1\nb"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ `%}}%` <- function(x, y) 1; 2 %}}% 3 }}b")),
+    "a\n1\nb"
+  )
+
   # Comments
   expect_identical(
     as.character(htmlTemplate(text_ = "a{{ 1 #2 }}b")),
