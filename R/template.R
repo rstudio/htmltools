@@ -17,6 +17,8 @@
 #'
 #' @seealso \code{\link{renderDocument}}
 #' @export
+#' @useDynLib htmltools
+#' @importFrom Rcpp sourceCpp
 htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto") {
   if (!xor(is.null(filename), is.null(text_))) {
     stop("htmlTemplate requires either `filename` or `text_`.")
@@ -30,21 +32,7 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
     html <- enc2utf8(text_)
   }
 
-  pieces <- strsplit(html, "{{", fixed = TRUE)[[1]]
-  pieces <- strsplit(pieces, "}}", fixed = TRUE)
-
-  # Each item in `pieces` is a 2-element character vector. In that vector, the
-  # first item is code, and the second is text. The one exception is that the
-  # first item in `pieces` will be a 1-element char vector; that element is
-  # text.
-  if (length(pieces[[1]]) != 1) {
-    stop("Mismatched {{ and }} in HTML template.")
-  }
-  lapply(pieces[-1], function(x) {
-    if (length(x) != 2) {
-      stop("Mismatched {{ and }} in HTML template.")
-    }
-  })
+  pieces <- template_dfa(html)
 
   # Create environment to evaluate code, as a child of the global env. This
   # environment gets the ... arguments assigned as variables.
@@ -55,14 +43,23 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
   vars$headContent <- function() HTML("<!-- HEAD_CONTENT -->")
   env <- list2env(vars, parent = globalenv())
 
-  pieces[[1]] <- HTML(pieces[[1]])
-  # For each item in `pieces` other than the first, run the code in the first subitem.
-  pieces[-1] <- lapply(pieces[-1], function(piece) {
-    tagList(
-      eval(parse(text = piece[1]), env),
-      HTML(piece[[2]])
-    )
-  })
+  # All the odd-numbered pieces are HTML; all the even-numbered pieces are code
+  pieces <- mapply(
+    pieces,
+    rep_len(c(FALSE, TRUE), length.out = length(pieces)),
+    FUN = function(piece, isCode) {
+      if (isCode) {
+        eval(parse(text = piece), env)
+      } else if (piece == "") {
+        # Don't add leading/trailing '\n' if empty HTML string.
+        NULL
+      } else {
+        HTML(piece)
+      }
+    },
+    SIMPLIFY = FALSE
+  )
+
 
   result <- tagList(pieces)
 

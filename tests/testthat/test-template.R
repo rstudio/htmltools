@@ -85,3 +85,120 @@ test_that("Dependencies can be suppressed", {
   expect_true(findDep(html, "jquery", "9999"))
   expect_false(grepl('<script[^>]+jquery[^>]+>', html))
 })
+
+test_that("Errors for mismatched brackets", {
+  # Error if unmatched opening brackets
+  expect_error(htmlTemplate(text_ = "text {{ code"))
+  # No error if we didn't open a code block
+  expect_identical(
+    as.character(htmlTemplate(text_ = "code }} text")),
+    "code }} text"
+  )
+
+  # Error if unmatched brackets, when no leading or trailing space
+  expect_error(htmlTemplate(text_ = "{{ code"))
+  # No error if we didn't open a code block
+  expect_identical(
+    as.character(htmlTemplate(text_ = "code }}")),
+    "code }}"
+  )
+
+})
+
+test_that("Brackets at start or end of text", {
+  # Code and text
+  expect_identical(
+    as.character(htmlTemplate(text_ = "text {{ code }} text", code = 1)),
+    "text \n1\n text"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = "text{{code}}text", code = 1)),
+    "text\n1\ntext"
+  )
+
+  # No brackets
+  expect_identical(
+    as.character(htmlTemplate(text_ = "text", code = 1)),
+    "text"
+  )
+
+  # No leading or trailing text
+  expect_identical(
+    as.character(htmlTemplate(text_ = "{{ code }}", code = 1)),
+    "1"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = " {{ code }}", code = 1)),
+    " \n1"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = "{{ code }} ", code = 1)),
+    "1\n "
+  )
+
+  # Edge cases
+  expect_identical(as.character(htmlTemplate(text_ = "")), "")
+  expect_identical(as.character(htmlTemplate(text_ = "X")), "X")
+  expect_identical(as.character(htmlTemplate(text_ = " ")), " ")
+  expect_identical(as.character(htmlTemplate(text_ = "{{}}")), "")
+  expect_identical(as.character(htmlTemplate(text_ = " {{}} ")), " \n ")
+  expect_identical(as.character(htmlTemplate(text_ = "{{ }}")), "")
+  expect_identical(as.character(htmlTemplate(text_ = "{{}}{{}}")), "")
+  expect_identical(as.character(htmlTemplate(text_ = "{{1}}{{2}}")), "1\n2")
+  expect_error(as.character(htmlTemplate(text_ = "{{")))
+  expect_error(as.character(htmlTemplate(text_ = " {{")))
+  expect_error(as.character(htmlTemplate(text_ = "{{ ")))
+  expect_identical(as.character(htmlTemplate(text_ = "}}")), "}}")
+  expect_identical(as.character(htmlTemplate(text_ = " }}")), " }}")
+  expect_identical(as.character(htmlTemplate(text_ = "}} ")), "}} ")
+})
+
+
+test_that("Template DFA edge cases", {
+  # Single quotes
+  expect_identical(as.character(htmlTemplate(text_ = "{{ '' }}")), "")
+  expect_identical(as.character(htmlTemplate(text_ = " {{ '' }} ")), " \n\n ")
+  expect_identical(as.character(htmlTemplate(text_ = "{{ '\\'' }}")), "'")
+  expect_identical(as.character(htmlTemplate(text_ = "{{ '\\\\' }}")), "\\")
+  expect_identical(as.character(htmlTemplate(text_ = "{{ '}}' }}")), "}}")
+
+  # Double quotes
+  expect_identical(as.character(htmlTemplate(text_ = '{{ "" }}')), '')
+  expect_identical(as.character(htmlTemplate(text_ = ' {{ "" }} ')), ' \n\n ')
+  expect_identical(as.character(htmlTemplate(text_ = '{{ "\\"" }}')), '"')
+  expect_identical(as.character(htmlTemplate(text_ = '{{ "\\\\" }}')), '\\')
+  expect_identical(as.character(htmlTemplate(text_ = '{{ "}}" }}')), '}}')
+
+  # Backticks in code
+  expect_identical(as.character(htmlTemplate(text_ = "{{ `}}`<-1 }}")), "1")
+  expect_identical(as.character(htmlTemplate(text_ = "{{ `x\\`x`<-1 }}")), "1")
+
+
+  # Percent operator - various delimiters in percent operator
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ `%'%` <- function(x, y) 1; 2 %'% 3 }}b")),
+    "a\n1\nb"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ `%}}%` <- function(x, y) 1; 2 %}}% 3 }}b")),
+    "a\n1\nb"
+  )
+
+  # Comments
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ 1 #2 }}b")),
+    "a\n1\nb"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ 1 #2\n3 }}b")),
+    "a\n3\nb"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ 1 #2'3 }}b")),
+    "a\n1\nb"
+  )
+  expect_identical(
+    as.character(htmlTemplate(text_ = "a{{ 1 #2}3 }}b")),
+    "a\n1\nb"
+  )
+})
