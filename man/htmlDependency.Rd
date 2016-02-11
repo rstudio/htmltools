@@ -5,7 +5,7 @@
 \title{Define an HTML dependency}
 \usage{
 htmlDependency(name, version, src, meta = NULL, script = NULL,
-  stylesheet = NULL, head = NULL, attachment = NULL)
+  stylesheet = NULL, head = NULL, attachment = NULL, all_files = TRUE)
 }
 \arguments{
 \item{name}{Library name}
@@ -29,6 +29,11 @@ specified relative to the \code{src} parameter).}
 
 \item{attachment}{Attachment(s) to include within the document head. See
 Details.}
+
+\item{all_files}{Whether all files under the \code{src} directory are
+dependency files. If \code{FALSE}, only the files specified in
+\code{script}, \code{stylesheet}, and \code{attachment} are treated as
+dependency files.}
 }
 \value{
 An object that can be included in a list of dependencies passed to
