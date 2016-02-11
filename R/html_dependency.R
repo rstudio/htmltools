@@ -19,6 +19,10 @@
 #' @param head Arbitrary lines of HTML to insert into the document head
 #' @param attachment Attachment(s) to include within the document head. See
 #'   Details.
+#' @param all_files Whether all files under the \code{src} directory are
+#'   dependency files. If \code{FALSE}, only the files specified in
+#'   \code{script}, \code{stylesheet}, and \code{attachment} are treated as
+#'   dependency files.
 #'
 #' @return An object that can be included in a list of dependencies passed to
 #'   \code{\link{attachDependencies}}.
@@ -62,7 +66,8 @@ htmlDependency <- function(name,
                            script = NULL,
                            stylesheet = NULL,
                            head = NULL,
-                           attachment = NULL) {
+                           attachment = NULL,
+                           all_files = TRUE) {
 
   # This function shouldn't be called from a namespace environment with
   # absolute paths.
@@ -89,7 +94,8 @@ htmlDependency <- function(name,
     script = script,
     stylesheet = stylesheet,
     head = head,
-    attachment = attachment
+    attachment = attachment,
+    all_files = all_files
   ))
 }
 
@@ -243,8 +249,11 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   if (dir_exists(target_dir)) unlink(target_dir, recursive = TRUE)
   dir.create(target_dir)
 
-  srcfiles <- file.path(dir, list.files(dir))
-  destfiles <- file.path(target_dir, list.files(dir))
+  files <- if (dependency$all_files) list.files(dir) else {
+    unlist(dependency[c('script', 'stylesheet', 'attachment')])
+  }
+  srcfiles <- file.path(dir, files)
+  destfiles <- file.path(target_dir, files)
   isdir <- file.info(srcfiles)$isdir
   destfiles <- ifelse(isdir, dirname(destfiles), destfiles)
 
