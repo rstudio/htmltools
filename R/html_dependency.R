@@ -165,6 +165,9 @@ suppressDependencies <- function(...) {
   })
 }
 
+#' @export
+print.html_dependency <- function(x, ...) str(x)
+
 dir_path <- function(dependency) {
   if ("dir" %in% names(dependency$src))
     return(dependency$src[["dir"]])
