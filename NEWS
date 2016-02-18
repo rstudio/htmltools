@@ -7,6 +7,9 @@ htmltools 0.3.3
 * `htmlTemplate` now can use a string as a template instead of requiring a
   file. (#41, #43)
 
+* HTML dependencies can now be added inline, instead of needing to use
+  `attachDependencies()`. (#40, #42)
+
 * `htmlDependency()` gained a new argument `all_files`.
 
 * `copyDependencyToDir()` will always completely overwrite the target directory
