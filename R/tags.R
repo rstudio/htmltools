@@ -503,19 +503,30 @@ doRenderTags <- function(x, indent = 0) {
   # since R doesn't have something like that (that I know of),
   # file() is the next best thing.
   conn <- file(open="w+b", encoding = "UTF-8")
+  # Track how many bytes we write, so we can read in the right amount
+  # later with readChar.
+  bytes <- 0
+
   connWriter <- function(text) {
-    text <- enc2utf8(text)
+    raw <- charToRaw(enc2utf8(text))
+    bytes <<- bytes + length(raw)
     # This is actually writing UTF-8 bytes, not chars
-    writeBin(charToRaw(text), conn)
+    writeBin(raw, conn)
   }
-  htmlResult <- tryCatch({
-    tagWrite(x, connWriter, indent)
-    flush(conn)
-    readLines(conn, encoding = "UTF-8")
-  },
+
+  htmlResult <- tryCatch(
+    {
+      tagWrite(x, connWriter, indent)
+      flush(conn)
+
+      # Strip off trailing \n (which is always there) but make sure not to
+      # specify a negative number of chars.
+      bytes <- max(bytes - 1, 0)
+      readChar(conn, bytes, useBytes = TRUE)
+    },
     finally = close(conn)
   )
-  return(HTML(paste(htmlResult, collapse = "\n")))
+  return(HTML(htmlResult))
 }
 
 # Walk a tree of tag objects, rewriting objects according to func.

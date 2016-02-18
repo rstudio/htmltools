@@ -19,6 +19,9 @@ htmltools 0.3.3
   suppressed by setting options(htmltools.dir.version = FALSE) when the
   dependency is copied via `copyDependencyToDir()`. (#37)
 
+* Performance improvement rendering tags, by switching from `readLines` to
+  `readChar`.
+
 htmltools 0.3
 --------------------------------------------------------------------------------
 
