@@ -1,4 +1,4 @@
-htmltools 0.3.3
+htmltools 0.3.4
 --------------------------------------------------------------------------------
 
 * `as.character` now returns a character vector with no other attributes.
