@@ -108,10 +108,33 @@ htmlDependency <- function(name,
 #' x\})}, except that if there are any existing dependencies,
 #' \code{attachDependencies} will add to them, instead of replacing them.
 #'
+#' As of htmltools 0.3.4, HTML dependencies can be attached without using
+#' \code{attachDependencies}. Instead, they can be added inline, like a child
+#' object of a tag or \code{\link{tagList}}.
+#'
 #' @param x An object which has (or should have) HTML dependencies.
 #' @param value An HTML dependency, or a list of HTML dependencies.
 #' @param append If FALSE (the default), replace any existing dependencies. If
 #'   TRUE, add the new dependencies to the existing ones.
+#'
+#' @examples
+#' # Create a JavaScript dependency
+#' dep <- htmlDependency("jqueryui", "1.11.4", c(href="shared/jqueryui"),
+#'                       script = "jquery-ui.min.js")
+#'
+#' # A CSS dependency
+#' htmlDependency(
+#'   "font-awesome", "4.5.0", c(href="shared/font-awesome"),
+#'   stylesheet = "css/font-awesome.min.css"
+#' )
+#'
+#' # A few different ways to add the dependency to tag objects:
+#' # Inline as a child of the div()
+#' div("Code here", dep)
+#' # Inline in a tagList
+#' tagList(div("Code here"), dep)
+#' # With attachDependencies
+#' attachDependencies(div("Code here"), dep)
 #'
 #' @export
 htmlDependencies <- function(x) {
@@ -164,6 +187,9 @@ suppressDependencies <- function(...) {
     )
   })
 }
+
+#' @export
+print.html_dependency <- function(x, ...) str(x)
 
 dir_path <- function(dependency) {
   if ("dir" %in% names(dependency$src))
