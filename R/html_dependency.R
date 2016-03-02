@@ -79,6 +79,10 @@ htmlDependency <- function(name,
     )
   }
 
+  version <- as.character(version)
+  validateScalarName(name)
+  validateScalarName(version)
+
   srcNames <- names(src)
   if (is.null(srcNames))
     srcNames <- rep.int("", length(src))
@@ -97,6 +101,13 @@ htmlDependency <- function(name,
     attachment = attachment,
     all_files = all_files
   ))
+}
+
+validateScalarName <- function(x, name = deparse(substitute(x))) {
+  if (length(x) != 1 || x == "" || grepl("[/\\]", x)) stop(
+    "Invalid argument '", name,
+    "' (must be a non-empty character string and contain no '/' or '\\')"
+  )
 }
 
 #' HTML dependency metadata
@@ -260,6 +271,9 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
     }
   }
 
+  if (length(outputDir) != 1 || outputDir %in% c("", "/"))
+    stop('outputDir must be of length 1 and cannot be "" or "/"')
+
   if (!dir_exists(outputDir))
     dir.create(outputDir)
 
@@ -271,7 +285,12 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   # completely remove the target dir because we don't want possible leftover
   # files in the target dir, e.g. we may have lib/foo.js last time, and it was
   # removed from the original library, then the next time we copy the library
-  # over to the target dir, we want to remove this lib/foo.js as well
+  # over to the target dir, we want to remove this lib/foo.js as well;
+  # unlink(recursive = TRUE) can be dangerous, e.g. we certainly do not want 'rm
+  # -rf /' to happen; in htmlDependency() we have made sure dependency$name and
+  # dependency$version are not "" or "/" or contains no / or \; we have also
+  # made sure outputDir is not "" or "/" above, so target_dir here should be
+  # relatively safe to be removed recursively
   if (dir_exists(target_dir)) unlink(target_dir, recursive = TRUE)
   dir.create(target_dir)
 
