@@ -28,11 +28,12 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
     html <- readChar(filename, file.info(filename)$size, useBytes = TRUE)
     Encoding(html) <- "UTF-8"
   } else if(!is.null(text_)) {
-    text_ <- paste(text_, collapse = "\n")
+    text_ <- paste8(text_, collapse = "\n")
     html <- enc2utf8(text_)
   }
 
   pieces <- template_dfa(html)
+  Encoding(pieces) <- "UTF-8"
 
   # Create environment to evaluate code, as a child of the global env. This
   # environment gets the ... arguments assigned as variables.
