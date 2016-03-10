@@ -526,6 +526,7 @@ doRenderTags <- function(x, indent = 0) {
     },
     finally = close(conn)
   )
+  Encoding(htmlResult) <- "UTF-8"
   return(HTML(htmlResult))
 }
 
