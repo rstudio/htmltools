@@ -34,7 +34,7 @@ htmlEscape <- local({
       .htmlSpecialsPattern
 
     # Short circuit in the common case that there's nothing to escape
-    if (!any(grepl(pattern, text)))
+    if (!any(grepl(pattern, text, useBytes = TRUE)))
       return(text)
 
     specials <- if(attribute)
@@ -43,7 +43,7 @@ htmlEscape <- local({
       .htmlSpecials
 
     for (chr in names(specials)) {
-      text <- gsub(chr, specials[[chr]], text, fixed=TRUE)
+      text <- gsub(chr, specials[[chr]], text, fixed = TRUE, useBytes = TRUE)
     }
 
     return(text)
