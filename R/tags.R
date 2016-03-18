@@ -214,7 +214,7 @@ print.html <- function(x, ..., browse = is.browsable(x)) {
   if (browse)
     html_print(HTML(x))
   else
-    cat(x, "\n")
+    cat(x, "\n", sep = "")
   invisible(x)
 }
 
