@@ -82,14 +82,42 @@ resolveDependencies <- function(dependencies) {
 
   # Get latest version of each dependency. `unique` uses the first occurrence of
   # each dependency name, which is important for inter-dependent libraries.
-  return(lapply(unique(depnames), function(depname) {
-    # Sort by depname equality, then by version. Since na.last=NA, all elements
-    # whose names do not match will not be included in the sorted vector.
-    sorted <- order(ifelse(depnames == depname, TRUE, NA), depvers,
-      na.last = NA, decreasing = TRUE)
-    # The first element in the list is the one with the largest version.
-    deps[[sorted[[1]]]]
-  }))
+  lapply(unique(depnames), function(depname) {
+    # Find the indices of dependencies with the name depname, and their versions
+    i <- which(depnames == depname)
+    v <- depvers[i]
+    # Only keep the dependencies with the highest version. There may be multiple
+    # *different* dependencies with this version and may be merged.
+    i <- i[v == max(v)]
+    mergeDependencies(deps[i])
+  })
+}
+
+# Merge multiple dependencies with the same name and version if allowed
+mergeDependencies <- function(dependencies) {
+  n <- length(dependencies)
+  if (n == 1) return(dependencies[[1]])
+  # All dependencies must be specified as mergeable
+  if (any(!sapply(dependencies, `[[`, "mergeable"))) return(dependencies[[1]])
+  deps <- dependencies[[1]]
+  elms <- c("meta", "script", "stylesheet", "head", "attachment")
+  for (dep in dependencies[2:n]) {
+    for (i in c("src", "name", "version")) if (!identical(deps[[i]], dep[[i]])) {
+      warning("Dependencies that differ in '", i, "' cannot be merged")
+      return(dependencies[[1]])
+    }
+    for (i in elms) deps[[i]] <- c(deps[[i]], dep[[i]])
+  }
+  # Remove duplicated elements
+  for (i in elms) {
+    d <- deps[[i]]
+    if (length(d) == 0) next
+    deps[[i]] <- if (i != "meta") unique(d) else {
+      # For meta, an element is duplicated only if its name is also duplicated
+      d[!duplicated(d) & !duplicated(names(d))]
+    }
+  }
+  deps
 }
 
 # Remove `remove` from `dependencies` if the name matches.

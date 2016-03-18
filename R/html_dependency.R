@@ -23,6 +23,12 @@
 #'   dependency files. If \code{FALSE}, only the files specified in
 #'   \code{script}, \code{stylesheet}, and \code{attachment} are treated as
 #'   dependency files.
+#' @param mergeable Whether multiple dependencies with the same name and the
+#'   highest version can be merged when they are to be resolved via
+#'   \code{\link{resolveDependencies}}: if \code{TRUE}, the components
+#'   \code{meta}, \code{script}, \code{stylesheet}, \code{head}, and
+#'   \code{attachment} will be merged; otherwise only the first dependency is
+#'   kept and the rest are discarded.
 #'
 #' @return An object that can be included in a list of dependencies passed to
 #'   \code{\link{attachDependencies}}.
@@ -67,7 +73,8 @@ htmlDependency <- function(name,
                            stylesheet = NULL,
                            head = NULL,
                            attachment = NULL,
-                           all_files = TRUE) {
+                           all_files = TRUE,
+                           mergeable = FALSE) {
 
   # This function shouldn't be called from a namespace environment with
   # absolute paths.
@@ -99,7 +106,8 @@ htmlDependency <- function(name,
     stylesheet = stylesheet,
     head = head,
     attachment = attachment,
-    all_files = all_files
+    all_files = all_files,
+    mergeable = mergeable
   ))
 }
 
