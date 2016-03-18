@@ -5,7 +5,8 @@
 \title{Define an HTML dependency}
 \usage{
 htmlDependency(name, version, src, meta = NULL, script = NULL,
-  stylesheet = NULL, head = NULL, attachment = NULL, all_files = TRUE)
+  stylesheet = NULL, head = NULL, attachment = NULL, all_files = TRUE,
+  mergeable = FALSE)
 }
 \arguments{
 \item{name}{Library name}
@@ -34,6 +35,13 @@ Details.}
 dependency files. If \code{FALSE}, only the files specified in
 \code{script}, \code{stylesheet}, and \code{attachment} are treated as
 dependency files.}
+
+\item{mergeable}{Whether multiple dependencies with the same name and the
+highest version can be merged when they are to be resolved via
+\code{\link{resolveDependencies}}: if \code{TRUE}, the components
+\code{meta}, \code{script}, \code{stylesheet}, \code{head}, and
+\code{attachment} will be merged; otherwise only the first dependency is
+kept and the rest are discarded.}
 }
 \value{
 An object that can be included in a list of dependencies passed to
