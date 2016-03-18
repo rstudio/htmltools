@@ -106,7 +106,7 @@ mergeDependencies <- function(dependencies) {
       warning("Dependencies that differ in '", i, "' cannot be merged")
       return(dependencies[[1]])
     }
-    for (i in elms) deps[[i]] <- c(deps[[i]], dep[[i]])
+    for (i in elms) deps[i] <- list(c(deps[[i]], dep[[i]]))
   }
   # Remove duplicated elements
   for (i in elms) {
