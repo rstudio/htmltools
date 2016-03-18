@@ -113,8 +113,8 @@ mergeDependencies <- function(dependencies) {
     d <- deps[[i]]
     if (length(d) == 0) next
     deps[[i]] <- if (i != "meta") unique(d) else {
-      # For meta, an element is duplicated only if its name is also duplicated
-      d[!duplicated(d) & !duplicated(names(d))]
+      # For meta, an element is duplicated only if its name is duplicated
+      d[!duplicated(names(d))]
     }
   }
   deps
