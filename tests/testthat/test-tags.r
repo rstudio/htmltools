@@ -666,3 +666,10 @@ test_that("Latin1 and system encoding are converted to UTF-8", {
   expect_identical(Encoding(format(HTML(latin1_str))), "UTF-8")
   expect_identical(Encoding(format(tagList(latin1_str))), "UTF-8")
 })
+
+test_that("Printing tags works", {
+  expect_identical(
+    capture.output(print(tags$a(href = "#", "link"))),
+    '<a href="#">link</a>'
+  )
+})
