@@ -97,6 +97,9 @@ htmlDependency <- function(name,
   names(src) <- srcNames
   src <- as.list(src)
 
+  if (length(setdiff(names(meta), "")) != length(meta))
+    stop("'meta' must be a named list")
+
   structure(class = "html_dependency", list(
     name = name,
     version = as.character(version),
