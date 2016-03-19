@@ -303,6 +303,8 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   destfiles <- ifelse(isdir, dirname(destfiles), destfiles)
 
   mapply(function(from, to, isdir) {
+    if (!dir_exists(dirname(to)))
+      dir.create(dirname(to), recursive = TRUE)
     if (isdir && !dir_exists(to))
       dir.create(to)
     file.copy(from, to, overwrite = TRUE, recursive = isdir)
