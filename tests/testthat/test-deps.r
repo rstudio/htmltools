@@ -26,6 +26,29 @@ test_that("Dependency resolution works", {
   expect_identical(result2, list(b1.0.1, c1.0))
 
   expect_warning(subtractDependencies(result1, list(a1.1)))
+
+  a1 <- htmlDependency(
+    "a", "1", c(href = "/"), meta = list(foo = 1), script = "a1.js",
+    mergeable = TRUE
+  )
+  a2 <- htmlDependency(
+    "a", "1", c(href = "/"), meta = list(foo = 2), script = c("a3.js", "a2.js"),
+    mergeable = TRUE
+  )
+  a3 <- htmlDependency(
+    "a", "1", c(href = "/"), meta = list(bar = 4), script = c("a1.js", "a2.js"),
+    mergeable = TRUE
+  )
+  expect_identical(
+    resolveDependencies(list(a1, a2, a3)), list(htmlDependency(
+      "a", "1", c(href = "/"), meta = list(foo = 1, bar = 4),
+      script = c("a1.js", "a3.js", "a2.js"), mergeable = TRUE
+    ))
+  )
+
+  # Not mergeable
+  a4 <- htmlDependency("a", "1", c(href = "/"), script = "a4.js")
+  expect_identical(resolveDependencies(list(a1, a4)), list(a1))
 })
 
 test_that("Inline dependencies", {

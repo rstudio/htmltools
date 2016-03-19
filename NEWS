@@ -14,6 +14,10 @@ htmltools 0.3.5
   files under the src directory should be copied when rendering dependencies,
   or only those specified in the dependency objects. (#48)
 
+* `htmlDependency()` gained a new argument `mergeable` to specify whether one
+  dependency can be merged with another of the same name, version, and src, when
+  the dependencies are to be resolved. (#53)
+
 * `copyDependencyToDir()` will always completely overwrite the target directory
   when copying HTML dependency files to make sure all dependency files are
   definitely updated in the target directory when the original dependency
