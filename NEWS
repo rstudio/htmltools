@@ -1,4 +1,4 @@
-htmltools 0.3.4
+htmltools 0.3.5
 --------------------------------------------------------------------------------
 
 * `as.character` now returns a character vector with no other attributes.
@@ -10,7 +10,9 @@ htmltools 0.3.4
 * HTML dependencies can now be added inline, instead of needing to use
   `attachDependencies()`. (#40, #42)
 
-* `htmlDependency()` gained a new argument `all_files`.
+* `htmlDependency()` gained a new argument `all_files` to indicate whether all
+  files under the src directory should be copied when rendering dependencies,
+  or only those specified in the dependency objects. (#48)
 
 * `copyDependencyToDir()` will always completely overwrite the target directory
   when copying HTML dependency files to make sure all dependency files are
