@@ -472,7 +472,7 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
   # Do singleton and head processing before rendering
   singletonInfo <- takeSingletons(x, singletons)
   headInfo <- takeHeads(singletonInfo$ui)
-  deps <- resolveDependencies(findDependencies(singletonInfo$ui))
+  deps <- resolveDependencies(findDependencies(singletonInfo$ui, tagify = FALSE))
 
   headIndent <- if (is.numeric(indent)) indent + 1 else indent
   headHtml <- doRenderTags(headInfo$head, indent = headIndent)
@@ -636,12 +636,16 @@ takeHeads <- function(ui) {
 #' Walks a hierarchy of tags looking for attached dependencies.
 #'
 #' @param tags A tag-like object to search for dependencies.
+#' @param tagify Whether to tagify the input before searching for dependencies.
 #'
 #' @return A list of \code{\link{htmlDependency}} objects.
 #'
 #' @export
-findDependencies <- function(tags) {
-  dep <- htmlDependencies(tagify(tags))
+findDependencies <- function(tags, tagify = TRUE) {
+  if (isTRUE(tagify)) {
+    tags <- tagify(tags)
+  }
+  dep <- htmlDependencies(tags)
   if (!is.null(dep) && inherits(dep, "html_dependency"))
     dep <- list(dep)
   children <- if (is.list(tags)) {
@@ -651,7 +655,7 @@ findDependencies <- function(tags) {
       tags
     }
   }
-  childDeps <- unlist(lapply(children, findDependencies), recursive = FALSE)
+  childDeps <- unlist(lapply(children, findDependencies, tagify = FALSE), recursive = FALSE)
   c(childDeps, if (!is.null(dep)) dep)
 }
 
@@ -1160,7 +1164,7 @@ NULL
 knit_print.shiny.tag <- function(x, ...) {
   x <- tagify(x)
   output <- surroundSingletons(x)
-  deps <- resolveDependencies(findDependencies(x))
+  deps <- resolveDependencies(findDependencies(x, tagify = FALSE))
   content <- takeHeads(output)
   head_content <- doRenderTags(tagList(content$head))
 
@@ -1177,7 +1181,7 @@ knit_print.shiny.tag <- function(x, ...) {
 #' @rdname knitr_methods
 #' @export
 knit_print.html <- function(x, ...) {
-  deps <- resolveDependencies(findDependencies(x))
+  deps <- resolveDependencies(findDependencies(x, tagify = FALSE))
   knitr::asis_output(htmlPreserve(as.character(x)),
     meta = if (length(deps)) list(deps))
 }
