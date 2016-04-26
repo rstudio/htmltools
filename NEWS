@@ -1,3 +1,6 @@
+
+* `validateCssUnit()` now accepts viewport units (vw, vh, vmin, vmax). (#56)
+
 htmltools 0.3.5
 --------------------------------------------------------------------------------
 
