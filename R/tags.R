@@ -1354,8 +1354,9 @@ is.singleton <- function(x) {
 #' Single element character vectors must be \code{"auto"} or \code{"inherit"},
 #' or a number. If the number has a suffix, it must be valid: \code{px},
 #' \code{\%}, \code{em}, \code{pt}, \code{in}, \code{cm}, \code{mm}, \code{ex},
-#' or \code{pc}. If the number has no suffix, the suffix \code{"px"} is
-#' appended.
+#' \code{pc}, \code{vh}, \code{vw}, \code{vmin}, or \code{vmax}. 
+#' If the number has no suffix, the suffix \code{"px"} is appended.
+#' 
 #'
 #' Any other value will cause an error to be thrown.
 #'
@@ -1380,7 +1381,7 @@ validateCssUnit <- function(x) {
     x <- as.numeric(x)
 
   pattern <-
-    "^(auto|inherit|((\\.\\d+)|(\\d+(\\.\\d+)?))(%|in|cm|mm|em|ex|pt|pc|px))$"
+    "^(auto|inherit|((\\.\\d+)|(\\d+(\\.\\d+)?))(%|in|cm|mm|em|ex|pt|pc|px|vh|vw|vmin|vmax))$"
 
   if (is.character(x) &&
       !grepl(pattern, x)) {
