@@ -67,6 +67,7 @@ htmlDependency <- function(name,
                            stylesheet = NULL,
                            head = NULL,
                            attachment = NULL,
+                           package = NULL,
                            all_files = TRUE) {
 
   # This function shouldn't be called from a namespace environment with
@@ -99,6 +100,7 @@ htmlDependency <- function(name,
     stylesheet = stylesheet,
     head = head,
     attachment = attachment,
+    package = package,
     all_files = all_files
   ))
 }
@@ -270,6 +272,9 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
       return(dependency)
     }
   }
+  # resolve the relative file path to absolute path in package
+  if (!is.null(dependency$package))
+    dir <- system.file(dir, package = dependency$package)
 
   if (length(outputDir) != 1 || outputDir %in% c("", "/"))
     stop('outputDir must be of length 1 and cannot be "" or "/"')
