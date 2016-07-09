@@ -1,6 +1,9 @@
 
 * `validateCssUnit()` now accepts viewport units (vw, vh, vmin, vmax). (#56)
 
+* `restorePreserveChunks()` marks the output with the correct encoding now
+  (UTF-8).
+
 htmltools 0.3.5
 --------------------------------------------------------------------------------
 
