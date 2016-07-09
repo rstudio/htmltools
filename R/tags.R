@@ -1140,8 +1140,11 @@ extractPreserveChunks <- function(strval) {
 #' @rdname htmlPreserve
 #' @export
 restorePreserveChunks <- function(strval, chunks) {
+  strval <- enc2utf8(strval)
+  chunks <- enc2utf8(chunks)
   for (id in names(chunks))
     strval <- gsub(id, chunks[[id]], strval, fixed = TRUE, useBytes = TRUE)
+  Encoding(strval) <- 'UTF-8'
   strval
 }
 
