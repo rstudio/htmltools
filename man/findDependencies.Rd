@@ -4,10 +4,12 @@
 \alias{findDependencies}
 \title{Collect attached dependencies from HTML tag object}
 \usage{
-findDependencies(tags)
+findDependencies(tags, tagify = TRUE)
 }
 \arguments{
 \item{tags}{A tag-like object to search for dependencies.}
+
+\item{tagify}{Whether to tagify the input before searching for dependencies.}
 }
 \value{
 A list of \code{\link{htmlDependency}} objects.
