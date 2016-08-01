@@ -68,11 +68,14 @@ depListToNamedDepList <- function(dependencies) {
 #' the latest version number is used.
 #'
 #' @param dependencies A list of \code{\link{htmlDependency}} objects.
+#' @param resolvePackageDir Whether to resolve the relative path to an absolute
+#'   path via \code{\link{system.file}} when the \code{package} attribute is
+#'   present in a dependency object.
 #' @return dependencies A list of \code{\link{htmlDependency}} objects with
 #'   redundancies removed.
 #'
 #' @export
-resolveDependencies <- function(dependencies) {
+resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
   # Remove nulls
   deps <- dependencies[!sapply(dependencies, is.null)]
 
@@ -88,7 +91,13 @@ resolveDependencies <- function(dependencies) {
     sorted <- order(ifelse(depnames == depname, TRUE, NA), depvers,
       na.last = NA, decreasing = TRUE)
     # The first element in the list is the one with the largest version.
-    deps[[sorted[[1]]]]
+    dep <- deps[[sorted[[1]]]]
+    if (resolvePackageDir && !is.null(dep$package)) {
+      dir <- dep$src$file
+      if (!is.null(dir)) dep$src$file <- system.file(dir, package = dep$package)
+      dep$package <- NULL
+    }
+    dep
   }))
 }
 
@@ -1163,7 +1172,7 @@ NULL
 knit_print.shiny.tag <- function(x, ...) {
   x <- tagify(x)
   output <- surroundSingletons(x)
-  deps <- resolveDependencies(findDependencies(x))
+  deps <- resolveDependencies(findDependencies(x), resolvePackageDir = FALSE)
   content <- takeHeads(output)
   head_content <- doRenderTags(tagList(content$head))
 
