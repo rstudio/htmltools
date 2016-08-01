@@ -1176,7 +1176,7 @@ NULL
 knit_print.shiny.tag <- function(x, ...) {
   x <- tagify(x)
   output <- surroundSingletons(x)
-  deps <- resolveDependencies(findDependencies(x, resolvePackageDir = FALSE, tagify = FALSE))
+  deps <- resolveDependencies(findDependencies(x, tagify = FALSE), resolvePackageDir = FALSE)
   content <- takeHeads(output)
   head_content <- doRenderTags(tagList(content$head))
 
