@@ -168,9 +168,21 @@ test_that("Creating simple tags", {
     div(b = "value")
   )
 
+  # length-0 attributes are dropped
+  expect_identical(
+    div(a = character(), b = "value"),
+    div(b = "value")
+  )
+
   # NULL children are dropped
   expect_identical(
     renderTags(div("foo", NULL, list(NULL, list(NULL, "bar"))))$html,
+    renderTags(div("foo", "bar"))$html
+  )
+
+  # length-0 children are dropped
+  expect_identical(
+    renderTags(div("foo", character(), list(character(), list(list(), "bar"))))$html,
     renderTags(div("foo", "bar"))$html
   )
 

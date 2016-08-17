@@ -4,6 +4,8 @@
 * `restorePreserveChunks()` marks the output with the correct encoding now
   (UTF-8).
 
+* Length-0 attributes are now dropped, like NULLs. (#65)
+
 htmltools 0.3.5
 --------------------------------------------------------------------------------
 
