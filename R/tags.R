@@ -159,7 +159,7 @@ dropNulls <- function(x) {
 }
 
 nullOrEmpty <- function(x) {
-  is.null(x) || length(x) == 0
+  length(x) == 0
 }
 # Given a vector or list, drop all the NULL items in it
 dropNullsOrEmpty <- function(x) {
