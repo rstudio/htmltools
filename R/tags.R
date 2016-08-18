@@ -159,9 +159,10 @@ dropNulls <- function(x) {
 }
 
 nullOrEmpty <- function(x) {
-  is.null(x) || length(x) == 0
+  length(x) == 0
 }
-# Given a vector or list, drop all the NULL items in it
+
+# Given a vector or list, drop all the NULL or length-0 items in it
 dropNullsOrEmpty <- function(x) {
   x[!vapply(x, nullOrEmpty, FUN.VALUE=logical(1))]
 }
@@ -342,9 +343,9 @@ tag <- function(`_tag_name`, varArgs) {
   if (is.null(varArgsNames))
     varArgsNames <- character(length=length(varArgs))
 
-  # Named arguments become attribs, dropping NULL values
+  # Named arguments become attribs, dropping NULL and length-0 values
   named_idx <- nzchar(varArgsNames)
-  attribs <- dropNulls(varArgs[named_idx])
+  attribs <- dropNullsOrEmpty(varArgs[named_idx])
 
   # Unnamed arguments are flattened and added as children.
   # Use unname() to remove the names attribute from the list, which would

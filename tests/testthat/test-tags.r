@@ -168,9 +168,21 @@ test_that("Creating simple tags", {
     div(b = "value")
   )
 
+  # length-0 attributes are dropped
+  expect_identical(
+    div(a = character(), b = "value"),
+    div(b = "value")
+  )
+
   # NULL children are dropped
   expect_identical(
     renderTags(div("foo", NULL, list(NULL, list(NULL, "bar"))))$html,
+    renderTags(div("foo", "bar"))$html
+  )
+
+  # length-0 children are dropped
+  expect_identical(
+    renderTags(div("foo", character(), list(character(), list(list(), "bar"))))$html,
     renderTags(div("foo", "bar"))$html
   )
 
@@ -590,7 +602,7 @@ test_that("cssList tests", {
   expect_error(css(1, b=2))
 
   # NULL and empty string are dropped
-  expect_identical(css(a="", b = NULL, "c!" = NULL), "")
+  expect_identical(css(a="", b = NULL, "c!" = NULL, d = character()), "")
 
   # We are dumb about duplicated properties. Probably don't do that.
   expect_identical(css(a=1, a=2), "a:1;a:2;")
