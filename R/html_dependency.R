@@ -315,7 +315,7 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
       dir.create(dirname(to), recursive = TRUE)
     if (isdir && !dir_exists(to))
       dir.create(to)
-    file.copy(from, to, overwrite = TRUE, recursive = isdir)
+    file.copy(from, to, overwrite = TRUE, recursive = isdir, copy.mode = FALSE)
   }, srcfiles, destfiles, isdir)
 
   dependency$src$file <- normalizePath(target_dir, "/", TRUE)
