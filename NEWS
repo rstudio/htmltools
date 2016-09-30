@@ -6,6 +6,9 @@
 
 * Length-0 attributes are now dropped, like NULLs. (#65)
 
+* Fixed #69: On Windows, `renderDocument()` did not mark output as UTF-8 if the
+  head was UTF-8 but body was ASCII. (#71)
+
 htmltools 0.3.5
 --------------------------------------------------------------------------------
 

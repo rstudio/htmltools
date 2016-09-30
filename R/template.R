@@ -130,5 +130,12 @@ renderDocument <- function(x, deps = NULL, processDep = identity) {
     depHtml,
     c(result$head, recursive = TRUE)
   )
-  sub("<!-- HEAD_CONTENT -->", head_content, result$html, fixed = TRUE)
+  # Need to mark result as UTF-8. If body is ASCII, it will be marked with
+  # encoding "unknown". If the head has UTF-8 characters and is marked as
+  # "UTF-8", the output string here will have the correct UTF-8 byte sequences,
+  # but will be marked as "unknown", which causes the wrong text to be
+  # displayed. See https://github.com/rstudio/shiny/issues/1395
+  res <- sub("<!-- HEAD_CONTENT -->", head_content, result$html, fixed = TRUE)
+  Encoding(res) <- "UTF-8"
+  res
 }
