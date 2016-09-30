@@ -46,6 +46,27 @@ test_that("UTF-8 characters in templates", {
   expect_identical(charToRaw(text), as.raw(c(0xc3, 0xbf)))
 })
 
+test_that("UTF-8 characters in template head but not body", {
+  # On Windows, a string with "中文" will automatically be marked as UTF-8.
+  ui <- tagList(
+    tags$head(tags$script("alert('中文')")),
+    "test"
+  )
+  html <- htmlTemplate("template-basic.html", body = ui)
+  res <- renderDocument(html)
+  expect_identical(Encoding(res), "UTF-8")
+  expect_true(grepl("中文", res, fixed = TRUE))
+
+  # On Windows, a string with "á" will automatically be marked as latin1.
+  ui <- tagList(
+    tags$head(tags$script("alert('á')")),
+    "test"
+  )
+  html <- htmlTemplate("template-basic.html", body = ui)
+  res <- renderDocument(html)
+  expect_identical(Encoding(res), "UTF-8")
+  expect_true(grepl("á", res, fixed = TRUE))
+})
 
 test_that("Dependencies are added properly", {
   dep <- htmlDependency("d3", "3.5.10", c(href="shared"), script = "d3.js")
