@@ -5,7 +5,7 @@
 \title{Create HTML for dependencies}
 \usage{
 renderDependencies(dependencies, srcType = c("href", "file"),
-  encodeFunc = urlEncodePath, hrefFilter = identity)
+  encodeFunc = urlEncodePath, hrefFilter = function(x, ...) {     x })
 }
 \arguments{
 \item{dependencies}{A list of \code{htmlDependency} objects.}
