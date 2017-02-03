@@ -26,6 +26,8 @@
 #'   dependency files. If \code{FALSE}, only the files specified in
 #'   \code{script}, \code{stylesheet}, and \code{attachment} are treated as
 #'   dependency files.
+#'  @param after_widget Should this dependency appear before or after
+#'  (the default) htmlwidget dependencies?
 #'
 #' @return An object that can be included in a list of dependencies passed to
 #'   \code{\link{attachDependencies}}.
@@ -71,7 +73,8 @@ htmlDependency <- function(name,
                            head = NULL,
                            attachment = NULL,
                            package = NULL,
-                           all_files = TRUE) {
+                           all_files = TRUE,
+                           after_widget = TRUE) {
 
   # This function shouldn't be called from a namespace environment with
   # absolute paths.
@@ -104,7 +107,8 @@ htmlDependency <- function(name,
     head = head,
     attachment = attachment,
     package = package,
-    all_files = all_files
+    all_files = all_files,
+    after_widget = after_widget
   ))
 }
 
