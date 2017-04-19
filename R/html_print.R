@@ -96,6 +96,7 @@ save_html <- function(html, file, background = "white", libdir = "lib") {
             rendered$html,
             "</body>",
             "</html>")
+  html <- enc2utf8(html)
 
   # write it
   writeLines(html, file, useBytes = TRUE)
