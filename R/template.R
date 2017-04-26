@@ -120,11 +120,11 @@ renderDocument <- function(x, deps = NULL, processDep = identity) {
 
   # Put content in the <head> section
   head_content <- paste0(
-    '  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> \n',
-    sprintf('  <script type="application/shiny-singletons">%s</script> \n',
+    '  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>\n',
+    sprintf('  <script type="application/shiny-singletons">%s</script>\n',
             paste(result$singletons, collapse = ',')
     ),
-    sprintf('  <script type="application/html-dependencies">%s</script> \n',
+    sprintf('  <script type="application/html-dependencies">%s</script>\n',
             depStr
     ),
     depHtml,
