@@ -17,7 +17,7 @@
 #'
 #' @seealso \code{\link{renderDocument}}
 #' @export
-#' @useDynLib htmltools
+#' @useDynLib htmltools, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto") {
   if (!xor(is.null(filename), is.null(text_))) {
