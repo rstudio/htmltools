@@ -252,8 +252,8 @@ tagList <- function(...) {
 
 #' @rdname tag
 #' @export
-tagAppendAttributes <- function(tag, ...) {
-  tag$attribs <- c(tag$attribs, list(...))
+tagAppendAttributes <- function(tag, ..., list = NULL) {
+  tag$attribs <- c(tag$attribs, c(list(...), list))
   tag
 }
 
