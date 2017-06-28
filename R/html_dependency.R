@@ -68,6 +68,7 @@ htmlDependency <- function(name,
                            meta = NULL,
                            script = NULL,
                            stylesheet = NULL,
+                           import= NULL,
                            head = NULL,
                            attachment = NULL,
                            package = NULL,
@@ -101,6 +102,7 @@ htmlDependency <- function(name,
     meta = meta,
     script = script,
     stylesheet = stylesheet,
+    import = import,
     head = head,
     attachment = attachment,
     package = package,
@@ -451,7 +453,17 @@ renderDependencies <- function(dependencies,
         sep = ""
       ))
     }
-
+    
+    # add imports
+    if (length(dep$import) > 0) {
+      html <- c(html, paste(
+        "<link href=\"",
+        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$import)))),
+        "\" rel=\"import\" />",
+        sep = ""
+      ))
+    }
+    
     if (length(dep$attachment) > 0) {
       if (is.null(names(dep$attachment)))
         names(dep$attachment) <- as.character(1:length(dep$attachment))
