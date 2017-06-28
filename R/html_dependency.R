@@ -16,6 +16,8 @@
 #'   specified relative to the \code{src} parameter).
 #' @param stylesheet Stylesheet(s) to include within the document (should be
 #'   specified relative to the \code{src} parameter).
+#' @param import Import(s) to include within the document (should be
+#'   specified relative to the \code{src} parameter).
 #' @param head Arbitrary lines of HTML to insert into the document head
 #' @param attachment Attachment(s) to include within the document head. See
 #'   Details.

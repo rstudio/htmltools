@@ -5,8 +5,8 @@
 \title{Define an HTML dependency}
 \usage{
 htmlDependency(name, version, src, meta = NULL, script = NULL,
-  stylesheet = NULL, head = NULL, attachment = NULL, package = NULL,
-  all_files = TRUE)
+  stylesheet = NULL, import = NULL, head = NULL, attachment = NULL,
+  package = NULL, all_files = TRUE)
 }
 \arguments{
 \item{name}{Library name}
@@ -24,6 +24,9 @@ Details.}
 specified relative to the \code{src} parameter).}
 
 \item{stylesheet}{Stylesheet(s) to include within the document (should be
+specified relative to the \code{src} parameter).}
+
+\item{import}{Import(s) to include within the document (should be
 specified relative to the \code{src} parameter).}
 
 \item{head}{Arbitrary lines of HTML to insert into the document head}
@@ -83,4 +86,3 @@ Each dependency can be located on the filesystem, at a relative or
 Use \code{\link{attachDependencies}} to associate a list of
   dependencies with the HTML it belongs with.
 }
-
