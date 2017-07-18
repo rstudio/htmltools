@@ -26,7 +26,7 @@
 #'   \code{\link{resolveDependencies}}).
 #' @param all_files Whether all files under the \code{src} directory are
 #'   dependency files. If \code{FALSE}, only the files specified in
-#'   \code{script}, \code{stylesheet}, and \code{attachment} are treated as
+#'   \code{script}, \code{stylesheet}, \code{import}, and \code{attachment} are treated as
 #'   dependency files.
 #'
 #' @return An object that can be included in a list of dependencies passed to
@@ -307,7 +307,7 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   dir.create(target_dir)
 
   files <- if (dependency$all_files) list.files(dir) else {
-    unlist(dependency[c('script', 'stylesheet', 'attachment')])
+    unlist(dependency[c('script', 'stylesheet', 'import', 'attachment')])
   }
   srcfiles <- file.path(dir, files)
   destfiles <- file.path(target_dir, files)
