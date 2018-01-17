@@ -30,4 +30,3 @@ directories.
 \seealso{
 \code{\link{copyDependencyToDir}}
 }
-

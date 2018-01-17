@@ -17,4 +17,3 @@ A list of \code{\link{htmlDependency}} objects.
 \description{
 Walks a hierarchy of tags looking for attached dependencies.
 }
-

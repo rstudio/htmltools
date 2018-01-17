@@ -35,4 +35,3 @@ Any other value will cause an error to be thrown.
 validateCssUnit("10\%")
 validateCssUnit(400)  #treated as '400px'
 }
-

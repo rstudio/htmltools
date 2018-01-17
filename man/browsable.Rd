@@ -30,4 +30,3 @@ by default when printed at the console.
 You can override the default browsability of an HTML object by explicitly
 passing \code{browse = TRUE} (or \code{FALSE}) to the \code{print} function.
 }
-

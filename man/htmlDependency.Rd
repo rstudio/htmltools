@@ -83,4 +83,3 @@ Each dependency can be located on the filesystem, at a relative or
 Use \code{\link{attachDependencies}} to associate a list of
   dependencies with the HTML it belongs with.
 }
-

@@ -30,4 +30,3 @@ list; if the latter, a warning can be emitted if the version of the
 dependency being removed is later than the version of the dependency object
 that is causing the removal.
 }
-

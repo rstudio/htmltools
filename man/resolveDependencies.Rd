@@ -22,4 +22,3 @@ Given a list of dependencies, removes any redundant dependencies (based on
 name equality). If multiple versions of a dependency are found, the copy with
 the latest version number is used.
 }
-

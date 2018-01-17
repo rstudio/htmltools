@@ -29,4 +29,3 @@ complete HTML document, then the returned object will also have class
 \seealso{
 \code{\link{renderDocument}}
 }
-

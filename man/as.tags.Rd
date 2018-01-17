@@ -16,4 +16,3 @@ An S3 method for converting arbitrary values to a value that can be used as
 the child of a tag or \code{tagList}. The default implementation simply calls
 \code{\link[base]{as.character}}.
 }
-

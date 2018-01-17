@@ -33,4 +33,3 @@ encountered should have the singleton attribute removed.}
 Functions for manipulating \code{\link{singleton}} objects in tag
 hierarchies. Intended for framework authors.
 }
-

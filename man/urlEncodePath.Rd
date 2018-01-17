@@ -14,4 +14,3 @@ Encode characters in a URL path. This is the same as
 \code{\link[utils]{URLencode}} with \code{reserved = TRUE} except that
 \code{/} is preserved.
 }
-

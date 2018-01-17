@@ -2,11 +2,11 @@
 % Please edit documentation in R/tags.R
 \name{include}
 \alias{include}
-\alias{includeCSS}
 \alias{includeHTML}
-\alias{includeMarkdown}
-\alias{includeScript}
 \alias{includeText}
+\alias{includeMarkdown}
+\alias{includeCSS}
+\alias{includeScript}
 \title{Include Content From a File}
 \usage{
 includeHTML(path)
@@ -44,4 +44,3 @@ large literal R string.
 The \code{includeMarkdown} function requires the \code{markdown}
   package.
 }
-

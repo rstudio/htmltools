@@ -36,4 +36,3 @@ easier to perform that copy.
 \code{\link{makeDependencyRelative}} can be used with the returned
   value to make the path relative to a specific directory.
 }
-

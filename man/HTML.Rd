@@ -24,4 +24,3 @@ el <- div(HTML("I like <u>turtles</u>"))
 cat(as.character(el))
 
 }
-

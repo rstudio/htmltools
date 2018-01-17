@@ -27,4 +27,3 @@ An \code{\link{HTML}} object suitable for inclusion in the head of an
 Create the appropriate HTML markup for including dependencies in an HTML
 document.
 }
-

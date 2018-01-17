@@ -18,4 +18,3 @@ Character vector with escaped text.
 Escape HTML entities contained in a character vector so that it can be safely
 included as text or an attribute value within an HTML document
 }
-

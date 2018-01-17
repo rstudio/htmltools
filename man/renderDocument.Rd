@@ -29,4 +29,3 @@ inserts those. To do the insertion, this function finds the string
 \code{"<!-- HEAD_CONTENT -->"} in the document, and replaces it with the web
 dependencies.
 }
-

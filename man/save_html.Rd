@@ -19,4 +19,3 @@ save_html(html, file, background = "white", libdir = "lib")
 Save the specified HTML object to a file, copying all of it's
 dependencies to the directory specified via \code{libdir}.
 }
-
