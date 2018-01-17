@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // template_dfa
 std::vector<std::string> template_dfa(CharacterVector x);
-RcppExport SEXP htmltools_template_dfa(SEXP xSEXP) {
+RcppExport SEXP _htmltools_template_dfa(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;

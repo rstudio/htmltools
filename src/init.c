@@ -4,10 +4,10 @@
 #include <R_ext/Rdynload.h>
 
 /* .Call calls */
-extern SEXP htmltools_template_dfa(SEXP);
+extern SEXP _htmltools_template_dfa(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"htmltools_template_dfa", (DL_FUNC) &htmltools_template_dfa, 1},
+    {"_htmltools_template_dfa", (DL_FUNC) &_htmltools_template_dfa, 1},
     {NULL, NULL, 0}
 };
 
