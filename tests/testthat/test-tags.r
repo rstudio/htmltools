@@ -677,6 +677,14 @@ test_that("Latin1 and system encoding are converted to UTF-8", {
 
   expect_identical(Encoding(format(HTML(latin1_str))), "UTF-8")
   expect_identical(Encoding(format(tagList(latin1_str))), "UTF-8")
+
+  # ensure the latin1 attribute returns correctly after escaping
+  latin1_str2 <- rawToChar(as.raw(c(0xff, 0x0d, 0x0a)))
+  Encoding(latin1_str2) <- "latin1"
+  expect_identical(
+    as.character(tags$span(latin1_str2, title = latin1_str2)),
+    "<span title=\"\u00ff&#13;&#10;\">\u00ff\r\n</span>"
+  )
 })
 
 test_that("Printing tags works", {
