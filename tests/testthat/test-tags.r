@@ -681,9 +681,15 @@ test_that("Latin1 and system encoding are converted to UTF-8", {
   # ensure the latin1 attribute returns correctly after escaping
   latin1_str2 <- rawToChar(as.raw(c(0xff, 0x0d, 0x0a)))
   Encoding(latin1_str2) <- "latin1"
+  spanLatin <- as.character(tags$span(latin1_str2, title = latin1_str2))
+  expect_identical(Encoding(spanLatin), "UTF-8")
   expect_identical(
-    as.character(tags$span(latin1_str2, title = latin1_str2)),
-    "<span title=\"\u00ff&#13;&#10;\">\u00ff\r\n</span>"
+    charToRaw(spanLatin),
+    as.raw(c(0x3c, 0x73, 0x70, 0x61, 0x6e, 0x20, 0x74, 0x69, 0x74,
+             0x6c, 0x65, 0x3d, 0x22, 0xc3, 0xbf, 0x26, 0x23, 0x31, 0x33, 0x3b,
+             0x26, 0x23, 0x31, 0x30, 0x3b, 0x22, 0x3e, 0xc3, 0xbf, 0x0d, 0x0a,
+             0x3c, 0x2f, 0x73, 0x70, 0x61, 0x6e, 0x3e
+    ))
   )
 })
 
