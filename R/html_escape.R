@@ -33,6 +33,7 @@ htmlEscape <- local({
     else
       .htmlSpecialsPattern
 
+    text <- enc2utf8(text)
     # Short circuit in the common case that there's nothing to escape
     if (!any(grepl(pattern, text, useBytes = TRUE)))
       return(text)
@@ -45,6 +46,7 @@ htmlEscape <- local({
     for (chr in names(specials)) {
       text <- gsub(chr, specials[[chr]], text, fixed = TRUE, useBytes = TRUE)
     }
+    Encoding(text) <- "UTF-8"
 
     return(text)
   }

@@ -3,6 +3,9 @@ htmltools 0.3.6.9000
 
 * Updated RcppExports for new version of Rcpp. (#93)
 
+* `as.character.shiny.tags()` will handle non-ASCII attributes correctly if they
+  are not encoded in native encoding.
+
 htmltools 0.3.6
 --------------------------------------------------------------------------------
 
