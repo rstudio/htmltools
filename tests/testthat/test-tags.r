@@ -699,3 +699,11 @@ test_that("Printing tags works", {
     '<a href="#">link</a>'
   )
 })
+
+test_that("htmlEscape will try to coerce inputs to characters", {
+  x <- list(a1 = "b", a2 = list("b1", "b2"))
+  expect_identical(
+    htmlEscape(x),
+    as.character(x)
+  )
+})
