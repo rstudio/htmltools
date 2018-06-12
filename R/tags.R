@@ -398,8 +398,18 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   attribs <- lapply(tag$attribs, as.character)
   # concatenate attributes
   # split() is very slow, so avoid it if possible
-  if (anyDuplicated(names(attribs)))
-    attribs <- lapply(split(attribs, names(attribs)), paste, collapse = " ")
+  if (anyDuplicated(names(attribs))) {
+    attribs <- lapply(split(attribs, names(attribs)), function(x) {
+      na_idx <- is.na(x)
+      if (any(na_idx)) {
+        if (all(na_idx)) {
+          return(NA)
+        }
+        x <- x[!na_idx]
+      }
+      paste(x, collapse = " ")
+    })
+  }
 
   # write attributes
   for (attrib in names(attribs)) {
