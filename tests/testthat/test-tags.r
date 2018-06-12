@@ -418,6 +418,42 @@ test_that("Getting attributes from tags", {
   )
 })
 
+test_that("NA attributes are rendered correctly", {
+  expect_identical(
+    as.character(tags$div("text", foo = NA)),
+    '<div foo>text</div>'
+  )
+  expect_identical(
+    as.character(tags$div("text", class = "a", foo = NA)),
+    '<div class="a" foo>text</div>'
+  )
+  expect_identical(
+    as.character(tags$div("text", class = "a", foo = NA, class = "b")),
+    '<div class="a b" foo>text</div>'
+  )
+
+  # Multiple NA's are coalesced
+  expect_identical(
+    as.character(tags$div("text", class = "a", foo = NA, class = "b", foo = NA)),
+    '<div class="a b" foo>text</div>'
+  )
+
+  # A non-NA value supersedes NA
+  expect_identical(
+    as.character(tags$div("text", class = "a", foo = NA, foo = "b")),
+    '<div class="a" foo="b">text</div>'
+  )
+  expect_identical(
+    as.character(tags$div("text", class = "a", foo = "b", foo = NA, foo = "c")),
+    '<div class="a" foo="b c">text</div>'
+  )
+  expect_identical(
+    as.character(tags$div("text", class = "a", foo = "b", foo = NA, foo = NA, foo = "c")),
+    '<div class="a" foo="b c">text</div>'
+  )
+})
+
+
 test_that("Flattening a list of tags", {
   # Flatten a nested list
   nested <- list(
