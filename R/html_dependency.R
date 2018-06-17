@@ -305,6 +305,15 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   files <- if (dependency$all_files) list.files(dir) else {
     unlist(dependency[c('script', 'stylesheet', 'attachment')])
   }
+  if (any(!file.exists(files))) {
+    stop(
+      sprintf(
+        "Can't copy dependency files that don't exist: '%s'",
+        paste(files, collapse = "', '")
+      ),
+      call. = FALSE
+    )
+  }
   srcfiles <- file.path(dir, files)
   destfiles <- file.path(target_dir, files)
   isdir <- file.info(srcfiles)$isdir
