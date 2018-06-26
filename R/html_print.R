@@ -72,7 +72,9 @@ save_html <- function(html, file, background = "white", libdir = "lib") {
 
   # ensure that the paths to dependencies are relative to the base
   # directory where the webpage is being built.
-  dir <- dirname(file)
+  base_file <- basename(file)
+  dir <- normalizePath(dirname(file))
+  file <- file.path(dir, base_file)
   oldwd <- setwd(dir)
   on.exit(setwd(oldwd), add = TRUE)
 
