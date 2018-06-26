@@ -8,6 +8,8 @@ htmltools 0.3.6.9001
 
 * Fixed #99: `NA` attributes were sometimes rendered as `"NA"` in the HTML,
   instead of being blank. (#100)
+  
+* Fixed #104: `save_html()` cannot recognize relative path. (#105)
 
 
 htmltools 0.3.6
