@@ -1230,71 +1230,71 @@ knit_print.shiny.tag.list <- knit_print.shiny.tag
 
 #' @rdname builder
 #' @export
-p <- function(...) tags$p(...)
+p <- tags$p
 
 #' @rdname builder
 #' @export
-h1 <- function(...) tags$h1(...)
+h1 <- tags$h1
 
 #' @rdname builder
 #' @export
-h2 <- function(...) tags$h2(...)
+h2 <- tags$h2
 
 #' @rdname builder
 #' @export
-h3 <- function(...) tags$h3(...)
+h3 <- tags$h3
 
 #' @rdname builder
 #' @export
-h4 <- function(...) tags$h4(...)
+h4 <- tags$h4
 
 #' @rdname builder
 #' @export
-h5 <- function(...) tags$h5(...)
+h5 <- tags$h5
 
 #' @rdname builder
 #' @export
-h6 <- function(...) tags$h6(...)
+h6 <- tags$h6
 
 #' @rdname builder
 #' @export
-a <- function(...) tags$a(...)
+a <- tags$a
 
 #' @rdname builder
 #' @export
-br <- function(...) tags$br(...)
+br <- tags$br
 
 #' @rdname builder
 #' @export
-div <- function(...) tags$div(...)
+div <- tags$div
 
 #' @rdname builder
 #' @export
-span <- function(...) tags$span(...)
+span <- tags$span
 
 #' @rdname builder
 #' @export
-pre <- function(...) tags$pre(...)
+pre <- tags$pre
 
 #' @rdname builder
 #' @export
-code <- function(...) tags$code(...)
+code <- tags$code
 
 #' @rdname builder
 #' @export
-img <- function(...) tags$img(...)
+img <- tags$img
 
 #' @rdname builder
 #' @export
-strong <- function(...) tags$strong(...)
+strong <- tags$strong
 
 #' @rdname builder
 #' @export
-em <- function(...) tags$em(...)
+em <- tags$em
 
 #' @rdname builder
 #' @export
-hr <- function(...) tags$hr(...)
+hr <- tags$hr
 
 #' Include Content From a File
 #'
