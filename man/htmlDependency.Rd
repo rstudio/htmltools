@@ -5,8 +5,8 @@
 \title{Define an HTML dependency}
 \usage{
 htmlDependency(name, version, src, meta = NULL, script = NULL,
-  stylesheet = NULL, head = NULL, attachment = NULL, package = NULL,
-  all_files = TRUE)
+  stylesheet = NULL, head = NULL, attachment = NULL,
+  package = NULL, all_files = TRUE)
 }
 \arguments{
 \item{name}{Library name}
