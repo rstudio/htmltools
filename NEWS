@@ -18,7 +18,7 @@ htmltools 0.3.6.9003
 * The error message for trailing commas in tag functions now provides context
   and useful information. (#109)
 
-* Adds the ability to skip overwriting existing html depedencies in the function copyDependenciesToDir. Intended to be used with
+* Adds the ability to skip overwriting existing html dependencies in the function copyDependenciesToDir. Intended to be used with
 rmarkdown::render to speed up rendering.
 
 
