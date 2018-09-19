@@ -252,6 +252,7 @@ urlEncodePath <- function(x) {
 #' @param dependency A single HTML dependency object.
 #' @param outputDir The directory in which a subdirectory should be created for
 #'   this dependency.
+#' @param overwrite_dir A logical indicating whether the dependency should be overwritten if it exists, defaults to \code{TRUE}.
 #' @param mustWork If \code{TRUE} and \code{dependency} does not point to a
 #'   directory on disk (but rather a URL location), an error is raised. If
 #'   \code{FALSE} then non-disk dependencies are returned without modification.
