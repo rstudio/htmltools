@@ -263,7 +263,7 @@ urlEncodePath <- function(x) {
 #'   value to make the path relative to a specific directory.
 #'
 #' @export
-copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
+copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE, overwrite_dir = TRUE) {
 
   dir <- dependency$src$file
 
@@ -289,6 +289,12 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
     paste(dependency$name, dependency$version, sep = "-")
   } else dependency$name
   target_dir <- file.path(outputDir, target_dir)
+
+  # if overwrite is false check to see if the file already exists
+  if(!overwrite_dir & dir_exists(target_dir)){
+    dependency$src$file <- normalizePath(target_dir, "/", TRUE)
+    return(dependency)
+  }
 
   # completely remove the target dir because we don't want possible leftover
   # files in the target dir, e.g. we may have lib/foo.js last time, and it was
