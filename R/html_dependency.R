@@ -310,8 +310,7 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
       sprintf(
         "Can't copy dependency files that don't exist: '%s'",
         paste(files, collapse = "', '")
-      ),
-      call. = FALSE
+      )
     )
   }
   srcfiles <- file.path(dir, files)
