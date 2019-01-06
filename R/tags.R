@@ -698,7 +698,13 @@ findDependencies <- function(tags, tagify = TRUE) {
 #'   attributes, and positional arguments become children. Valid children are
 #'   tags, single-character character vectors (which become text nodes), raw
 #'   HTML (see \code{\link{HTML}}), and \code{html_dependency} objects. You can
-#'   also pass lists that contain tags, text nodes, or HTML.
+#'   also pass lists that contain tags, text nodes, or HTML. To use boolean
+#'   attributes, use a named argument with a \code{NA} value. (see example)
+#' @references
+#'  \itemize{
+#'    \item W3C html specification about boolean attributes
+#'    \url{https://www.w3.org/TR/html5/infrastructure.html#sec-boolean-attributes}
+#'  }
 #' @export tags
 #' @examples
 #' doc <- tags$html(
@@ -715,6 +721,17 @@ findDependencies <- function(tags, tagify = TRUE) {
 #'   )
 #' )
 #' cat(as.character(doc))
+#'
+#' # create an html5 audio tag with controls.
+#' # controls is a boolean attributes
+#' audio_tag <- tags$audio(
+#'   controls = NA,
+#'   tags$source(
+#'     src = "myfile.wav",
+#'     type = "audio/wav"
+#'   )
+#' )
+#' cat(as.character(audio_tag))
 NULL
 
 
