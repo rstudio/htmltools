@@ -1377,7 +1377,7 @@ includeCSS <- function(path, ...) {
 #' @export
 includeScript <- function(path, ...) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
-  return(tags$script(HTML(paste8(lines, collapse='\r\n')), ...))
+  return(tags$script(HTML(paste8(lines, collapse='\n')), ...))
 }
 
 #' Include content only once
