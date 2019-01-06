@@ -1370,7 +1370,7 @@ includeCSS <- function(path, ...) {
   if (is.null(args$type))
     args$type <- 'text/css'
   return(do.call(tags$style,
-    c(list(HTML(paste8(lines, collapse='\r\n'))), args)))
+    c(list(HTML(paste8(lines, collapse='\n'))), args)))
 }
 
 #' @rdname include
