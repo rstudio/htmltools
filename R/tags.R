@@ -365,6 +365,7 @@ isTagList <- function(x) {
   is.list(x) && (inherits(x, "shiny.tag.list") || identical(class(x), "list"))
 }
 
+#' @include utils.R
 tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   if (length(tag) == 0)
@@ -382,17 +383,28 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   # compute indent text
   indentText <- paste(rep(" ", indent*2), collapse="")
+  textWriter$writeWS(indentText)
 
   # Check if it's just text (may either be plain-text or HTML)
   if (is.character(tag)) {
-    textWriter(indentText)
-    textWriter(normalizeText(tag))
-    textWriter(eol)
+    textWriter$write(normalizeText(tag))
+    textWriter$savePosition()
+    textWriter$writeWS(eol)
     return (NULL)
   }
 
+  noWS <- NULL
+  if (!is.null(tag$attribs[[".noWS"]])) {
+    noWS <- tag$attribs[[".noWS"]]
+    noWS <- strsplit(noWS, " +")[[1]]
+    tag$attribs[[".noWS"]] <- NULL
+  }
+  if ("before" %in% noWS) {
+    textWriter$restorePosition()
+  }
+
   # write tag name
-  textWriter(paste8(indentText, "<", tag$name, sep=""))
+  textWriter$write(paste8("<", tag$name, sep=""))
 
   # Convert all attribs to chars explicitly; prevents us from messing up factors
   attribs <- lapply(tag$attribs, as.character)
@@ -418,28 +430,36 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       if (is.logical(attribValue))
         attribValue <- tolower(attribValue)
       text <- htmlEscape(attribValue, attribute=TRUE)
-      textWriter(paste8(" ", attrib,"=\"", text, "\"", sep=""))
+      textWriter$write(paste8(" ", attrib,"=\"", text, "\"", sep=""))
     }
     else {
-      textWriter(paste8(" ", attrib, sep=""))
+      textWriter$write(paste8(" ", attrib, sep=""))
     }
   }
 
   # write any children
   children <- dropNullsOrEmpty(flattenTags(tag$children))
   if (length(children) > 0) {
-    textWriter(">")
+    textWriter$write(">")
 
     # special case for a single child text node (skip newlines and indentation)
     if ((length(children) == 1) && is.character(children[[1]]) ) {
-      textWriter(paste8(normalizeText(children[[1]]), "</", tag$name, ">", eol,
+      textWriter$write(paste8(normalizeText(children[[1]]), "</", tag$name, ">",
         sep=""))
     }
     else {
-      textWriter("\n")
+      textWriter$savePosition()
+      if ("after-begin" %in% noWS) {
+        textWriter$suppressWhitespace()
+      }
+      textWriter$writeWS("\n")
       for (child in children)
         tagWrite(child, textWriter, nextIndent)
-      textWriter(paste8(indentText, "</", tag$name, ">", eol, sep=""))
+      textWriter$writeWS(indentText)
+      if ("before-end" %in% noWS) {
+        textWriter$restorePosition()
+      }
+      textWriter$write(paste8("</", tag$name, ">", sep=""))
     }
   }
   else {
@@ -448,12 +468,17 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     if (tag$name %in% c("area", "base", "br", "col", "command", "embed", "hr",
       "img", "input", "keygen", "link", "meta", "param",
       "source", "track", "wbr")) {
-      textWriter(paste8("/>", eol, sep=""))
+      textWriter$write("/>")
     }
     else {
-      textWriter(paste8("></", tag$name, ">", eol, sep=""))
+      textWriter$write(paste8("></", tag$name, ">", sep=""))
     }
   }
+  textWriter$savePosition()
+  if ("after" %in% noWS) {
+    textWriter$suppressWhitespace()
+  }
+  textWriter$writeWS(eol)
 }
 
 #' Render tags into HTML
@@ -511,43 +536,12 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
-  # The text that is written to this connWriter will be converted to
-  # UTF-8 using enc2utf8. The rendered output will always be UTF-8
-  # encoded.
-  #
-  # We use a file() here instead of textConnection() or paste/c to
-  # avoid the overhead of copying, which is huge for moderately
-  # large numbers of calls to connWriter(). Generally when you want
-  # to incrementally build up a long string out of immutable ones,
-  # you want to use a mutable/growable string buffer of some kind;
-  # since R doesn't have something like that (that I know of),
-  # file() is the next best thing.
-  conn <- file(open="w+b", encoding = "UTF-8")
-  # Track how many bytes we write, so we can read in the right amount
-  # later with readChar.
-  bytes <- 0
-
-  connWriter <- function(text) {
-    raw <- charToRaw(enc2utf8(text))
-    bytes <<- bytes + length(raw)
-    # This is actually writing UTF-8 bytes, not chars
-    writeBin(raw, conn)
-  }
-
-  htmlResult <- tryCatch(
-    {
-      tagWrite(x, connWriter, indent)
-      flush(conn)
-
-      # Strip off trailing \n (which is always there) but make sure not to
-      # specify a negative number of chars.
-      bytes <- max(bytes - 1, 0)
-      readChar(conn, bytes, useBytes = TRUE)
-    },
-    finally = close(conn)
-  )
-  Encoding(htmlResult) <- "UTF-8"
-  return(HTML(htmlResult))
+  textWriter <- TextWriter$new()
+  on.exit(textWriter$close())
+  tagWrite(x, textWriter, indent)
+  # Strip off trailing \n (if present?)
+  textWriter$restorePosition()
+  HTML(textWriter$readAll())
 }
 
 # Walk a tree of tag objects, rewriting objects according to func.
