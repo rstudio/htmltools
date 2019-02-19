@@ -388,7 +388,6 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   # Check if it's just text (may either be plain-text or HTML)
   if (is.character(tag)) {
     textWriter$write(normalizeText(tag))
-    textWriter$savePosition()
     textWriter$writeWS(eol)
     return (NULL)
   }
@@ -400,7 +399,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     tag$attribs[[".noWS"]] <- NULL
   }
   if ("before" %in% noWS) {
-    textWriter$restorePosition()
+    textWriter$eatWS()
   }
 
   # write tag name
@@ -448,16 +447,15 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
         sep=""))
     }
     else {
-      textWriter$savePosition()
       if ("after-begin" %in% noWS) {
-        textWriter$suppressWhitespace()
+        textWriter$eatWS()
       }
       textWriter$writeWS("\n")
       for (child in children)
         tagWrite(child, textWriter, nextIndent)
       textWriter$writeWS(indentText)
       if ("before-end" %in% noWS) {
-        textWriter$restorePosition()
+        textWriter$eatWS()
       }
       textWriter$write(paste8("</", tag$name, ">", sep=""))
     }
@@ -474,9 +472,8 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       textWriter$write(paste8("></", tag$name, ">", sep=""))
     }
   }
-  textWriter$savePosition()
   if ("after" %in% noWS) {
-    textWriter$suppressWhitespace()
+    textWriter$eatWS()
   }
   textWriter$writeWS(eol)
 }
@@ -536,11 +533,11 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
-  textWriter <- TextWriter$new()
+  textWriter <- WSTextWriter$new()
   on.exit(textWriter$close())
   tagWrite(x, textWriter, indent)
   # Strip off trailing \n (if present?)
-  textWriter$restorePosition()
+  textWriter$eatWS()
   HTML(textWriter$readAll())
 }
 
