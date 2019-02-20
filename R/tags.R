@@ -398,7 +398,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     noWS <- strsplit(noWS, " +")[[1]]
     tag$attribs[[".noWS"]] <- NULL
   }
-  if ("before" %in% noWS) {
+  if ("before" %in% noWS || "outside" %in% noWS) {
     textWriter$eatWS()
   }
 
@@ -447,14 +447,14 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
         sep=""))
     }
     else {
-      if ("after-begin" %in% noWS) {
+      if ("after-begin" %in% noWS || "inside" %in% noWS) {
         textWriter$eatWS()
       }
       textWriter$writeWS("\n")
       for (child in children)
         tagWrite(child, textWriter, nextIndent)
       textWriter$writeWS(indentText)
-      if ("before-end" %in% noWS) {
+      if ("before-end" %in% noWS || "inside" %in% noWS) {
         textWriter$eatWS()
       }
       textWriter$write(paste8("</", tag$name, ">", sep=""))
@@ -472,7 +472,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       textWriter$write(paste8("></", tag$name, ">", sep=""))
     }
   }
-  if ("after" %in% noWS) {
+  if ("after" %in% noWS || "outside" %in% noWS) {
     textWriter$eatWS()
   }
   textWriter$writeWS(eol)
