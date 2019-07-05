@@ -392,6 +392,8 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     return (NULL)
   }
 
+  # Pull out the special `.noWS` attribute which is used to
+  # control whitespace, but is not an actual attribute.
   noWS <- NULL
   if (!is.null(tag$attribs[[".noWS"]])) {
     noWS <- tag$attribs[[".noWS"]]
