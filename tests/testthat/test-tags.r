@@ -146,8 +146,8 @@ test_that("Creating simple tags", {
   expect_identical(
     div(),
     structure(
-      list(name = "div", attribs = list(), children = list()),
-      .Names = c("name", "attribs", "children"),
+      list(name = "div", attribs = list(), children = list(), .noWS=NULL),
+      .Names = c("name", "attribs", "children", ".noWS"),
       class = "shiny.tag"
     )
   )
@@ -156,8 +156,8 @@ test_that("Creating simple tags", {
   expect_identical(
     div("text"),
     structure(
-      list(name = "div", attribs = list(), children = list("text")),
-      .Names = c("name", "attribs", "children"),
+      list(name = "div", attribs = list(), children = list("text"), .noWS=NULL),
+      .Names = c("name", "attribs", "children", ".noWS"),
       class = "shiny.tag"
     )
   )
@@ -202,8 +202,9 @@ test_that("Creating nested tags", {
     structure(
       list(name = "div",
         attribs = structure(list(class = "foo"), .Names = "class"),
-        children = list(list("a", "b"))),
-      .Names = c("name", "attribs", "children"),
+        children = list(list("a", "b")),
+        .noWS = NULL),
+      .Names = c("name", "attribs", "children", ".noWS"),
       class = "shiny.tag"
     )
   )
@@ -260,6 +261,28 @@ test_that("Creating nested tags", {
   )
 
   expect_identical(renderTags(t1)$html, renderTags(t1_full)$html)
+})
+
+
+test_that("Old tags without the .noWS option can still be rendered", {
+  oldTag <- structure(
+    list(name = "div", attribs = list(), children = list("text")),
+    .Names = c("name", "attribs", "children"),
+    class = "shiny.tag"
+  )
+  w <- WSTextWriter$new()
+  on.exit({w$close()})
+  tagWrite(oldTag, w)
+
+  expect_identical(
+    w$readAll(),
+    "<div>text</div>\n"
+  )
+})
+
+test_that("tag with noWS works",{
+  oneline <- tag("span", tag("strong", "Super strong", .noWS="outside"))
+  expect_identical(as.character(oneline), "<span><strong>Super strong</strong></span>")
 })
 
 test_that("Attributes are preserved", {
@@ -570,12 +593,12 @@ test_that("Low-level singleton manipulation methods", {
   expect_identical(
     renderTags(result3)$html,
     HTML("<div>
-  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
+  <!--SHINY.SINGLETON[0a0bc429c9b2859e0dc4eb30f95144760c4e564f]-->
   <script>foo</script>
-  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
-  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
+  <!--/SHINY.SINGLETON[0a0bc429c9b2859e0dc4eb30f95144760c4e564f]-->
+  <!--SHINY.SINGLETON[0a0bc429c9b2859e0dc4eb30f95144760c4e564f]-->
   <script>foo</script>
-  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
+  <!--/SHINY.SINGLETON[0a0bc429c9b2859e0dc4eb30f95144760c4e564f]-->
 </div>")
     )
 })

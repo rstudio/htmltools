@@ -323,6 +323,10 @@ tagSetChildren <- function(tag, ..., list = NULL) {
 #' @param ...  Unnamed items that comprise this list of tags.
 #' @param list An optional list of elements. Can be used with or instead of the
 #'   \code{...} items.
+#' @param .noWS Used to omit some of the whitespace that would normally be
+#'   written around this tag. Valid options include \code{before}, \code{after},
+#'   \code{outside}, \code{after-begin}, and \code{before-end}. Any number of
+#'   these options can be specified using a whitespace-delimited string.
 #' @return An HTML tag object that can be rendered as HTML using
 #'   \code{\link{as.character}()}.
 #' @export
@@ -337,7 +341,13 @@ tagSetChildren <- function(tag, ..., list = NULL) {
 #'           tags$h2("Header text"),
 #'           tags$p("Text here"))
 #' tagList(x)
-tag <- function(`_tag_name`, varArgs) {
+#'
+#' # suppress the whitespace between tags
+#' oneline <- tag("span",
+#'   tag("strong", "Super strong", .noWS="outside")
+#' )
+#' cat(as.character(oneline))
+tag <- function(`_tag_name`, varArgs, .noWS=NULL) {
   # Get arg names; if not a named list, use vector of empty strings
   varArgsNames <- names(varArgs)
   if (is.null(varArgsNames))
@@ -356,13 +366,22 @@ tag <- function(`_tag_name`, varArgs) {
   structure(
     list(name = `_tag_name`,
       attribs = attribs,
-      children = children),
+      children = children,
+      .noWS = .noWS),
     class = "shiny.tag"
   )
 }
 
 isTagList <- function(x) {
   is.list(x) && (inherits(x, "shiny.tag.list") || identical(class(x), "list"))
+}
+
+noWSOptions <- c("before", "after", "after-begin", "before-end", "outside")
+# Ensure that the provided `.noWS` string contains only valid options
+validateNoWS <- function(.noWS){
+  if (!all(.noWS %in% noWSOptions)){
+    stop("Invalid .noWS option(s) '", paste(.noWS, collapse="', '") ,"' specified.")
+  }
 }
 
 #' @include utils.R
@@ -385,22 +404,20 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   indentText <- paste(rep(" ", indent*2), collapse="")
   textWriter$writeWS(indentText)
 
+  .noWS <- NULL
+
   # Check if it's just text (may either be plain-text or HTML)
   if (is.character(tag)) {
     textWriter$write(normalizeText(tag))
     textWriter$writeWS(eol)
     return (NULL)
+  } else if (!is.null(tag$.noWS)){
+    .noWS <- strsplit(tag$.noWS, " +")[[1]]
+    validateNoWS(.noWS)
   }
 
-  # Pull out the special `.noWS` attribute which is used to
-  # control whitespace, but is not an actual attribute.
-  noWS <- NULL
-  if (!is.null(tag$attribs[[".noWS"]])) {
-    noWS <- tag$attribs[[".noWS"]]
-    noWS <- strsplit(noWS, " +")[[1]]
-    tag$attribs[[".noWS"]] <- NULL
-  }
-  if ("before" %in% noWS || "outside" %in% noWS) {
+
+  if ("before" %in% .noWS || "outside" %in% .noWS) {
     textWriter$eatWS()
   }
 
@@ -449,14 +466,14 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
         sep=""))
     }
     else {
-      if ("after-begin" %in% noWS || "inside" %in% noWS) {
+      if ("after-begin" %in% .noWS || "inside" %in% .noWS) {
         textWriter$eatWS()
       }
       textWriter$writeWS("\n")
       for (child in children)
         tagWrite(child, textWriter, nextIndent)
       textWriter$writeWS(indentText)
-      if ("before-end" %in% noWS || "inside" %in% noWS) {
+      if ("before-end" %in% .noWS || "inside" %in% .noWS) {
         textWriter$eatWS()
       }
       textWriter$write(paste8("</", tag$name, ">", sep=""))
@@ -474,7 +491,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       textWriter$write(paste8("></", tag$name, ">", sep=""))
     }
   }
-  if ("after" %in% noWS || "outside" %in% noWS) {
+  if ("after" %in% .noWS || "outside" %in% .noWS) {
     textWriter$eatWS()
   }
   textWriter$writeWS(eol)
@@ -693,8 +710,11 @@ findDependencies <- function(tags, tagify = TRUE) {
 #'   HTML (see \code{\link{HTML}}), and \code{html_dependency} objects. You can
 #'   also pass lists that contain tags, text nodes, or HTML. To use boolean
 #'   attributes, use a named argument with a \code{NA} value. (see example)
-#' @references
-#'  \itemize{
+#' @param .noWS Used to omit some of the whitespace that would normally be
+#'   written around this tag. Valid options include \code{before}, \code{after},
+#'   \code{outside}, \code{after-begin}, and \code{before-end}. Any number of
+#'   these options can be specified using a whitespace-delimited string.
+#' @references \itemize{
 #'    \item W3C html specification about boolean attributes
 #'    \url{https://www.w3.org/TR/html5/infrastructure.html#sec-boolean-attributes}
 #'  }
@@ -725,6 +745,12 @@ findDependencies <- function(tags, tagify = TRUE) {
 #'   )
 #' )
 #' cat(as.character(audio_tag))
+#'
+#' # suppress the whitespace between tags
+#' oneline <- tags$span(
+#'   tags$strong("I'm strong", .noWS="outside")
+#' )
+#' cat(as.character(oneline))
 NULL
 
 
@@ -851,9 +877,9 @@ names(known_tags) <- known_tags
 #' @docType NULL
 #' @keywords NULL
 tags <- lapply(known_tags, function(tagname) {
-  function(...) {
+  function(..., .noWS=NULL) {
     contents <- list(...)
-    tag(tagname, contents)
+    tag(tagname, contents, .noWS=.noWS)
   }
 })
 
