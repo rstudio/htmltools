@@ -13,24 +13,22 @@
 # behavior.
 WSTextWriter <- R6Class("WSTextWriter",
   private = list(
-    writer = "TextWriter"
+    writer = "TextWriter",
+    suppressing = logical(1)
   ),
   public = list(
     initialize = function() {
       private$writer <- TextWriter$new()
+      private$suppressing <- FALSE
     },
     close = function() {
       private$writer$close()
     },
     write = function(text) {
-      # If an error is going to happen while evaluating `text`, let's make it
-      # happen before we mutate any of our internal state
-      force(text)
-
-      # Stop eating whitespace
-      private$writer$setSuppress(FALSE)
-
       private$writer$write(text)
+
+      # Reset suppressing behavior
+      private$suppressing <- FALSE
 
       # Set a bookmark here, so that future calls to eatWS() don't affect this
       # write
@@ -41,6 +39,12 @@ WSTextWriter <- R6Class("WSTextWriter",
     # @param text Single element character vector containing only
     #   whitespace characters
     writeWS = function(text) {
+      if (private$suppressing){
+        return()
+      }
+      # If an error is going to happen while evaluating `text`, let's make it
+      # happen before we mutate any of our internal state
+      force(text)
       private$writer$write(text)
     },
     readAll = function() {
@@ -51,7 +55,7 @@ WSTextWriter <- R6Class("WSTextWriter",
       # Undo recent whitespace writes
       private$writer$restorePosition()
       # Ignore upcoming whitespace writes
-      private$writer$setSuppress(TRUE)
+      private$suppressing <- TRUE
     }
   )
 )
@@ -59,7 +63,7 @@ WSTextWriter <- R6Class("WSTextWriter",
 #' TextWriter class
 #'
 #' A class that manages the gradual concatenation of text. It
-#' provides three additional features (over a normal connection)
+#' provides two additional features (over a normal connection)
 #' that are important to us for tag writing:
 #'
 #' 1. Text is automatically converted to UTF-8.
@@ -69,16 +73,12 @@ WSTextWriter <- R6Class("WSTextWriter",
 #'    Restoring a bookmark essentially truncates content that
 #'    was written after the bookmark was set.
 #'
-#' 3. Ability to suppress writes (setSuppress); while suppression
-#'    is set to true, all write operations no-op.
-#'
 #' @noRd
 #' @importFrom R6 R6Class
 TextWriter <- R6Class("TextWriter",
   private = list(
     con = "ANY",
-    marked = numeric(1),
-    suppressing = logical(1)
+    marked = numeric(1)
   ),
   public = list(
     initialize = function() {
@@ -91,29 +91,21 @@ TextWriter <- R6Class("TextWriter",
       # file() is the next best thing.
       private$con <- file("", "w+b", encoding = "UTF-8")
       private$marked <- 0
-      private$suppressing <- FALSE
     },
     close = function() {
       close(private$con)
     },
-    # Write content; may or may not contain incidental whitespace,
-    # but whitespace that needs to be suppressible (like newlines
-    # and indents that the user did not explicitly request) should
-    # use writeWS() instead.
-    #
-    # Calling write() causes suppressWhitespace() to be cancelled.
+    # Write content
     #
     # @param text Single element character vector
     write = function(text) {
-      if (!private$suppressing) {
-        # The text that is written to this TextWriter will be converted to
-        # UTF-8 using enc2utf8. The rendered output will always be UTF-8
-        # encoded.
+      # The text that is written to this TextWriter will be converted to
+      # UTF-8 using enc2utf8. The rendered output will always be UTF-8
+      # encoded.
+      raw <- charToRaw(enc2utf8(text))
 
-        raw <- charToRaw(enc2utf8(text))
-        # This is actually writing UTF-8 bytes, not chars
-        writeBin(raw, private$con)
-      }
+      # This is actually writing UTF-8 bytes, not chars
+      writeBin(raw, private$con)
     },
     # Return the contents of the TextWriter, as a single element
     # character vector, from the beginning to the current writing
@@ -133,14 +125,7 @@ TextWriter <- R6Class("TextWriter",
     },
     # Jump to the most recently marked position
     restorePosition = function() {
-      if (!is.na(private$marked)) {
-        seek(private$con, private$marked, origin = "start", rw = "write")
-      }
-    },
-    # Causes subsequent writes to have no effect; pass FALSE to
-    # cancel
-    setSuppress = function(suppress = TRUE) {
-      private$suppressing <- suppress
+      seek(private$con, private$marked, origin = "start", rw = "write")
     }
   )
 )

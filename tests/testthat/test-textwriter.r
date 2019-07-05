@@ -42,35 +42,6 @@ describe("TextWriter", {
     tw$restorePosition()
     expect_identical(tw$readAll(), "bar")
   })
-
-  it("suppresses writes", {
-    tw <- TextWriter$new()
-    on.exit(tw$close())
-
-    tw$setSuppress(TRUE)
-    expect_identical(tw$readAll(), "")
-
-    tw$write("this should be ignored")
-    expect_identical(tw$readAll(), "")
-
-    tw$setSuppress(FALSE)
-    expect_identical(tw$readAll(), "")
-    tw$write("this should not be ignored")
-    expect_identical(tw$readAll(), "this should not be ignored")
-
-    tw$write("!")
-    expect_identical(tw$readAll(), "this should not be ignored!")
-
-    # Make sure savePosition works well when we're suppressed
-    tw$setSuppress(TRUE)
-    tw$savePosition()
-    tw$write("another ignored write")
-    tw$setSuppress(FALSE)
-    tw$write("\na second non-ignored line")
-    expect_identical(tw$readAll(), "this should not be ignored!\na second non-ignored line")
-    tw$restorePosition()
-    expect_identical(tw$readAll(), "this should not be ignored!")
-  })
 })
 
 describe("WSTextWriter", {
