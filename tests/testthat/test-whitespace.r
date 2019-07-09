@@ -55,7 +55,7 @@ with(tags, {
     expect_identical(
       as.character(
         div(
-          span(.noWS = "before after",
+          span(.noWS =c("before", "after"),
             strong()
           )
         )
@@ -70,7 +70,7 @@ with(tags, {
     expect_identical(
       as.character(
         div(
-          span(.noWS = "after-begin before-end",
+          span(.noWS = c("after-begin", "before-end"),
             strong()
           )
         )
@@ -84,7 +84,7 @@ with(tags, {
 
     expect_identical(
       as.character(
-        div(.noWS = "after-begin before-end",
+        div(.noWS = c("after-begin", "before-end"),
           span(.noWS = "before",
             strong()
           )

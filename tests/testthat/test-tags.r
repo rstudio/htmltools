@@ -281,7 +281,7 @@ test_that("Old tags without the .noWS option can still be rendered", {
 })
 
 test_that("tag with noWS works",{
-  oneline <- tag("span", tag("strong", "Super strong", .noWS="outside"))
+  oneline <- tag("span", list(tag("strong", "Super strong", .noWS="outside")))
   expect_identical(as.character(oneline), "<span><strong>Super strong</strong></span>")
 })
 

@@ -323,10 +323,10 @@ tagSetChildren <- function(tag, ..., list = NULL) {
 #' @param ...  Unnamed items that comprise this list of tags.
 #' @param list An optional list of elements. Can be used with or instead of the
 #'   \code{...} items.
-#' @param .noWS Used to omit some of the whitespace that would normally be
-#'   written around this tag. Valid options include \code{before}, \code{after},
-#'   \code{outside}, \code{after-begin}, and \code{before-end}. Any number of
-#'   these options can be specified using a whitespace-delimited string.
+#' @param .noWS Character vector used to omit some of the whitespace that would
+#'   normally be written around this tag. Valid options include \code{before},
+#'   \code{after}, \code{outside}, \code{after-begin}, and \code{before-end}.
+#'   Any number of these options can be specified.
 #' @return An HTML tag object that can be rendered as HTML using
 #'   \code{\link{as.character}()}.
 #' @export
@@ -412,10 +412,9 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     textWriter$writeWS(eol)
     return (NULL)
   } else if (!is.null(tag$.noWS)){
-    .noWS <- strsplit(tag$.noWS, " +")[[1]]
+    .noWS <- tag$.noWS
     validateNoWS(.noWS)
   }
-
 
   if ("before" %in% .noWS || "outside" %in% .noWS) {
     textWriter$eatWS()
@@ -710,10 +709,10 @@ findDependencies <- function(tags, tagify = TRUE) {
 #'   HTML (see \code{\link{HTML}}), and \code{html_dependency} objects. You can
 #'   also pass lists that contain tags, text nodes, or HTML. To use boolean
 #'   attributes, use a named argument with a \code{NA} value. (see example)
-#' @param .noWS Used to omit some of the whitespace that would normally be
-#'   written around this tag. Valid options include \code{before}, \code{after},
-#'   \code{outside}, \code{after-begin}, and \code{before-end}. Any number of
-#'   these options can be specified using a whitespace-delimited string.
+#' @param .noWS A character vector used to omit some of the whitespace that
+#'   would normally be written around this tag. Valid options include
+#'   \code{before}, \code{after}, \code{outside}, \code{after-begin}, and
+#'   \code{before-end}. Any number of these options can be specified.
 #' @references \itemize{
 #'    \item W3C html specification about boolean attributes
 #'    \url{https://www.w3.org/TR/html5/infrastructure.html#sec-boolean-attributes}
