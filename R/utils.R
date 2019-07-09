@@ -130,6 +130,11 @@ TextWriter <- R6Class("TextWriter",
     },
     # Jump to the most recently marked position
     restorePosition = function() {
+      if (private$position == private$marked){
+        # seek() can get expensive; only call it if needed
+        return()
+      }
+
       private$position <- private$marked
       seek(private$con, private$marked, origin = "start", rw = "write")
     }
