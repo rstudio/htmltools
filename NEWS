@@ -18,6 +18,12 @@ htmltools 0.3.6.9003
 * The error message for trailing commas in tag functions now provides context
   and useful information. (#109)
 
+* Added a `.noWS` argument to `tag()` and `tags` which can be used to suppress
+  the automatically generated whitespace around a particular tag. (#131)
+
+* Added a shim for `system.file()` so that htmltools works with `htmlDependency`
+  objects created by a package that was loaded with `devtools::load_all()`.
+  (#129)
 
 htmltools 0.3.6
 --------------------------------------------------------------------------------

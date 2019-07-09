@@ -263,7 +263,9 @@ test_that("Creating nested tags", {
   expect_identical(renderTags(t1)$html, renderTags(t1_full)$html)
 })
 
-
+# The .noWS option was added in 0.3.6.9003; we may still encounter tags created
+# in an older version (perhaps saved to an RDS file and restored). They would
+# lack this element in their structure.
 test_that("Old tags without the .noWS option can still be rendered", {
   oldTag <- structure(
     list(name = "div", attribs = list(), children = list("text")),

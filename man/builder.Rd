@@ -66,10 +66,10 @@ HTML (see \code{\link{HTML}}), and \code{html_dependency} objects. You can
 also pass lists that contain tags, text nodes, or HTML. To use boolean
 attributes, use a named argument with a \code{NA} value. (see example)}
 
-\item{.noWS}{Used to omit some of the whitespace that would normally be
-written around this tag. Valid options include \code{before}, \code{after},
-\code{outside}, \code{after-begin}, and \code{before-end}. Any number of
-these options can be specified using a whitespace-delimited string.}
+\item{.noWS}{A character vector used to omit some of the whitespace that
+would normally be written around this tag. Valid options include
+\code{before}, \code{after}, \code{outside}, \code{after-begin}, and
+\code{before-end}. Any number of these options can be specified.}
 }
 \description{
 Simple functions for constructing HTML documents.

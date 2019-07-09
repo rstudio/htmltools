@@ -47,10 +47,10 @@ children are tags, single-character character vectors (which become text
 nodes), and raw HTML (see \code{\link{HTML}}). You can also pass lists that
 contain tags, text nodes, and HTML.}
 
-\item{.noWS}{Used to omit some of the whitespace that would normally be
-written around this tag. Valid options include \code{before}, \code{after},
-\code{outside}, \code{after-begin}, and \code{before-end}. Any number of
-these options can be specified using a whitespace-delimited string.}
+\item{.noWS}{Character vector used to omit some of the whitespace that would
+normally be written around this tag. Valid options include \code{before},
+\code{after}, \code{outside}, \code{after-begin}, and \code{before-end}.
+Any number of these options can be specified.}
 }
 \value{
 An HTML tag object that can be rendered as HTML using
@@ -78,7 +78,7 @@ tagList(x)
 
 # suppress the whitespace between tags
 oneline <- tag("span",
-  tag("strong", "I'm strong", .noWS="outside")
+  tag("strong", "Super strong", .noWS="outside")
 )
 cat(as.character(oneline))
 }
