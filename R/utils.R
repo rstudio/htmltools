@@ -78,7 +78,8 @@ WSTextWriter <- R6Class("WSTextWriter",
 TextWriter <- R6Class("TextWriter",
   private = list(
     con = "ANY",
-    marked = numeric(1)
+    marked = numeric(1),
+    position = numeric(1)
   ),
   public = list(
     initialize = function() {
@@ -91,6 +92,8 @@ TextWriter <- R6Class("TextWriter",
       # file() is the next best thing.
       private$con <- file("", "w+b", encoding = "UTF-8")
       private$marked <- 0
+      # position could be obtained by calling `seek(where=NA)`, but it's too expensive
+      private$position <- 0
     },
     close = function() {
       close(private$con)
@@ -104,6 +107,9 @@ TextWriter <- R6Class("TextWriter",
       # encoded.
       raw <- charToRaw(enc2utf8(text))
 
+      # Update our current position
+      private$position <- private$position + length(raw)
+
       # This is actually writing UTF-8 bytes, not chars
       writeBin(raw, private$con)
     },
@@ -112,19 +118,19 @@ TextWriter <- R6Class("TextWriter",
     # position (normally this is the end of the connection, unless
     # restorePosition() was called).
     readAll = function() {
-      wpos <- seek(private$con, where = NA, rw = "write")
       seek(private$con, where = 0, origin = "start", rw = "read")
-      s <- readChar(private$con, wpos, useBytes = TRUE)
+      s <- readChar(private$con, private$position, useBytes = TRUE)
       Encoding(s) <- "UTF-8"
       s
     },
     # Mark the current writing position
     savePosition = function() {
       # Save the current write pos
-      private$marked <- seek(private$con, where = NA, rw = "write")
+      private$marked <- private$position
     },
     # Jump to the most recently marked position
     restorePosition = function() {
+      private$position <- private$marked
       seek(private$con, private$marked, origin = "start", rw = "write")
     }
   )

@@ -41,6 +41,16 @@ describe("TextWriter", {
     expect_identical(tw$readAll(), "bar baz qux")
     tw$restorePosition()
     expect_identical(tw$readAll(), "bar")
+
+    # multi-byte characters are ok
+    tw$write("\U0001f609abc")
+    expect_identical(tw$readAll(), "bar\U0001f609abc")
+    tw$restorePosition()
+    expect_identical(tw$readAll(), "bar")
+
+    tw$write("\U0001f57a123")
+    expect_identical(tw$readAll(), "bar\U0001f57a123")
+
   })
 })
 
