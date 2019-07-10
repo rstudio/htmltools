@@ -125,7 +125,7 @@ TextWriter <- R6Class("TextWriter",
       enc <- enc2utf8(text)
 
       private$position <- private$position + 1
-      private$buffer[private$position] <<- text
+      private$buffer[private$position] <<- enc
     },
     # Return the contents of the TextWriter, as a single element
     # character vector, from the beginning to the current writing
