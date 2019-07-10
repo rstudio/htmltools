@@ -79,7 +79,7 @@ TextWriter <- R6Class("TextWriter",
   private = list(
     marked = numeric(1),
     text = character(1),
-    buffer = character(64), # TODO: this is big enough that our tests don't cover it.
+    buffer = character(1024), # TODO: this is big enough that our tests don't cover it.
     position = numeric(1)
   ),
   public = list(
@@ -107,7 +107,7 @@ TextWriter <- R6Class("TextWriter",
 
           remaining <- private$position - private$marked
           if (remaining > 0){
-            private$buffer[1:(remaining)] <-
+            private$buffer[1:(remaining)] <<-
               private$buffer[(private$marked+1):(private$marked+remaining)]
           }
           private$position <- private$position - private$marked
@@ -115,7 +115,7 @@ TextWriter <- R6Class("TextWriter",
         } else {
           # grow the buffer
           cat("Reallocate to ", length(private$buffer)*2, "\n")
-          private$buffer[length(private$buffer)*2] <- NA_character_
+          private$buffer[length(private$buffer)*2] <<- NA_character_
         }
       }
 
@@ -125,7 +125,7 @@ TextWriter <- R6Class("TextWriter",
       enc <- enc2utf8(text)
 
       private$position <- private$position + 1
-      private$buffer[private$position] <- text
+      private$buffer[private$position] <<- text
     },
     # Return the contents of the TextWriter, as a single element
     # character vector, from the beginning to the current writing
