@@ -12,16 +12,16 @@
 # ignored. A call to `write` will be respected, and will restore normal
 # behavior.
 WSTextWriter <- R6Class("WSTextWriter",
-  portable = FALSE,
-  private = list(
-    writer = "TextWriter",
-    suppressing = logical(1)
-  ),
-  public = list(
+                        portable = FALSE,
+                        private = list(
+                          writer = "TextWriter",
+                          suppressing = logical(1)
+                        ),
+                        public = list(
 
-    # Removes both recent and upcoming whitespace writes
+                          # Removes both recent and upcoming whitespace writes
 
-  )
+                        )
 )
 
 #' TextWriter class
@@ -39,22 +39,52 @@ WSTextWriter <- R6Class("WSTextWriter",
 #'
 #' @noRd
 #' @importFrom R6 R6Class
-WSTextWriter <- R6Class("WSTextWriter",
-  portable = FALSE,
-  private = list(
-    marked = numeric(1),
-    accumulated = character(1),
-    buffer = character(1024), # TODO: this is big enough that our tests don't cover it.
-    position = numeric(1),
-    suppressing = logical(1)
-  ),
-  public = list(
-    initialize = function() {
-      marked <<- 0
-      position <<- 0
-      accumulated <<- ""
-      suppressing <<- FALSE
-    },
+WSTextWriter <- function(){
+  marked <- 0
+  accumulated <- ""
+  buffer <- character(1024) # TODO: this is big enough that our tests don't cover it.
+  position <- 0
+  suppressing <- FALSE
+
+  writeImpl <- function(text) {
+    # If an error is going to happen while evaluating `text`, let's make it
+    # happen before we mutate any of our internal state
+    force(text)
+
+    if (position == length(buffer)) {
+      # We're at the end of our buffer.
+
+      # If our `marked` position has advanced well into the buffer,
+      # we can go ahead and compile the string up to the marked position
+      # to free up room in the buffer
+      if (marked >= length(buffer)/2) {
+        str <- paste(buffer[1:marked], collapse="")
+        accumulated <<- paste0(accumulated, str)
+
+        remaining <- position - marked
+        if (remaining > 0){
+          buffer[1:(remaining)] <<-
+            buffer[(marked+1):(marked+remaining)]
+        }
+        position <<- position - marked
+        marked <<- 0
+      } else {
+        # grow the buffer
+        cat("Reallocate to ", length(buffer)*2, "\n")
+        buffer[length(buffer)*2] <<- NA_character_
+      }
+    }
+
+    # The text that is written to this TextWriter will be converted to
+    # UTF-8 using enc2utf8. The rendered output will always be UTF-8
+    # encoded.
+    enc <- enc2utf8(text)
+
+    position <<- position + 1
+    buffer[position] <<- enc
+  }
+
+  list(
     close = function() {
     },
     write = function(text){
@@ -66,43 +96,6 @@ WSTextWriter <- R6Class("WSTextWriter",
     # Write content
     #
     # @param text Single element character vector
-    writeImpl = function(text) {
-      # If an error is going to happen while evaluating `text`, let's make it
-      # happen before we mutate any of our internal state
-      force(text)
-
-      if (position == length(buffer)) {
-        # We're at the end of our buffer.
-
-        # If our `marked` position has advanced well into the buffer,
-        # we can go ahead and compile the string up to the marked position
-        # to free up room in the buffer
-        if (marked >= length(buffer)/2) {
-          str <- paste(buffer[1:marked], collapse="")
-          accumulated <<- paste0(accumulated, str)
-
-          remaining <- position - marked
-          if (remaining > 0){
-            buffer[1:(remaining)] <<-
-              buffer[(marked+1):(marked+remaining)]
-          }
-          position <<- position - marked
-          marked <<- 0
-        } else {
-          # grow the buffer
-          cat("Reallocate to ", length(buffer)*2, "\n")
-          buffer[length(buffer)*2] <<- NA_character_
-        }
-      }
-
-      # The text that is written to this TextWriter will be converted to
-      # UTF-8 using enc2utf8. The rendered output will always be UTF-8
-      # encoded.
-      enc <- enc2utf8(text)
-
-      position <<- position + 1
-      buffer[position] <<- enc
-    },
     # Write whitespace. If suppressWhitespace() was called and
     # its effect has not been canceled, then this method no-ops.
     # @param text Single element character vector containing only
@@ -128,4 +121,4 @@ WSTextWriter <- R6Class("WSTextWriter",
       suppressing <<- TRUE
     }
   )
-)
+}

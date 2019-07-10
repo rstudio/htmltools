@@ -551,8 +551,7 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
-  textWriter <- WSTextWriter$new()
-  on.exit(textWriter$close())
+  textWriter <- WSTextWriter()
   tagWrite(x, textWriter, indent)
   # Strip off trailing \n (if present?)
   textWriter$eatWS()

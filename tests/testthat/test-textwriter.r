@@ -56,8 +56,7 @@ describe("TextWriter", {
 
 describe("WSTextWriter", {
   it("eats past and future whitespace", {
-    wtw <- WSTextWriter$new()
-    on.exit(wtw$close())
+    wtw <- WSTextWriter()#$new()
 
     expect_identical(wtw$readAll(), "")
     wtw$writeWS("   ")
