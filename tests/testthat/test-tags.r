@@ -272,8 +272,7 @@ test_that("Old tags without the .noWS option can still be rendered", {
     .Names = c("name", "attribs", "children"),
     class = "shiny.tag"
   )
-  w <- WSTextWriter$new()
-  on.exit({w$close()})
+  w <- WSTextWriter()
   tagWrite(oldTag, w)
 
   expect_identical(
