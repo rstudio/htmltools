@@ -12,50 +12,51 @@
 # ignored. A call to `write` will be respected, and will restore normal
 # behavior.
 WSTextWriter <- R6Class("WSTextWriter",
+  portable = FALSE,
   private = list(
     writer = "TextWriter",
     suppressing = logical(1)
   ),
   public = list(
     initialize = function() {
-      private$writer <- TextWriter$new()
-      private$suppressing <- FALSE
+      writer <<- TextWriter$new()
+      suppressing <<- FALSE
     },
     close = function() {
-      private$writer$close()
+      writer$close()
     },
     write = function(text) {
-      private$writer$write(text)
+      writer$write(text)
 
       # Reset suppressing behavior
-      private$suppressing <- FALSE
+      suppressing <<- FALSE
 
       # Set a bookmark here, so that future calls to eatWS() don't affect this
       # write
-      private$writer$savePosition()
+      writer$savePosition()
     },
     # Write whitespace. If suppressWhitespace() was called and
     # its effect has not been canceled, then this method no-ops.
     # @param text Single element character vector containing only
     #   whitespace characters
     writeWS = function(text) {
-      if (private$suppressing){
+      if (suppressing){
         return()
       }
       # If an error is going to happen while evaluating `text`, let's make it
       # happen before we mutate any of our internal state
       force(text)
-      private$writer$write(text)
+      writer$write(text)
     },
     readAll = function() {
-      private$writer$readAll()
+      writer$readAll()
     },
     # Removes both recent and upcoming whitespace writes
     eatWS = function() {
       # Undo recent whitespace writes
-      private$writer$restorePosition()
+      writer$restorePosition()
       # Ignore upcoming whitespace writes
-      private$suppressing <- TRUE
+      suppressing <<- TRUE
     }
   )
 )
@@ -76,6 +77,7 @@ WSTextWriter <- R6Class("WSTextWriter",
 #' @noRd
 #' @importFrom R6 R6Class
 TextWriter <- R6Class("TextWriter",
+  portable = FALSE,
   private = list(
     marked = numeric(1),
     text = character(1),
@@ -84,10 +86,9 @@ TextWriter <- R6Class("TextWriter",
   ),
   public = list(
     initialize = function() {
-      #private$buffer <- character(10)
-      private$marked <- 0
-      private$position <- 0
-      private$text <- ""
+      marked <<- 0
+      position <<- 0
+      text <<- ""
     },
     close = function() {
     },
@@ -95,27 +96,27 @@ TextWriter <- R6Class("TextWriter",
     #
     # @param text Single element character vector
     write = function(text) {
-      if (private$position == length(private$buffer)) {
+      if (position == length(buffer)) {
         # We're at the end of our buffer.
 
         # If our `marked` position has advanced well into the buffer,
         # we can go ahead and compile the string up to the marked position
         # to free up room in the buffer
-        if (private$marked >= length(private$buffer)/2) {
-          str <- paste(private$buffer[1:private$marked], collapse="")
-          private$text <- paste0(private$text, str)
+        if (marked >= length(buffer)/2) {
+          str <- paste(buffer[1:marked], collapse="")
+          text <<- paste0(text, str)
 
-          remaining <- private$position - private$marked
+          remaining <- position - marked
           if (remaining > 0){
-            private$buffer[1:(remaining)] <<-
-              private$buffer[(private$marked+1):(private$marked+remaining)]
+            buffer[1:(remaining)] <<-
+              buffer[(marked+1):(marked+remaining)]
           }
-          private$position <- private$position - private$marked
-          private$marked <- 0
+          position <<- position - marked
+          marked <<- 0
         } else {
           # grow the buffer
-          cat("Reallocate to ", length(private$buffer)*2, "\n")
-          private$buffer[length(private$buffer)*2] <<- NA_character_
+          cat("Reallocate to ", length(buffer)*2, "\n")
+          buffer[length(buffer)*2] <<- NA_character_
         }
       }
 
@@ -124,27 +125,27 @@ TextWriter <- R6Class("TextWriter",
       # encoded.
       enc <- enc2utf8(text)
 
-      private$position <- private$position + 1
-      private$buffer[private$position] <<- enc
+      position <<- position + 1
+      buffer[position] <<- enc
     },
     # Return the contents of the TextWriter, as a single element
     # character vector, from the beginning to the current writing
     # position (normally this is the end of the connection, unless
     # restorePosition() was called).
     readAll = function() {
-      s <- paste(private$buffer[seq_len(private$position)], collapse="")
-      s <- paste0(private$text, s)
+      s <- paste(buffer[seq_len(position)], collapse="")
+      s <- paste0(text, s)
       Encoding(s) <- "UTF-8"
       s
     },
     # Mark the current writing position
     savePosition = function() {
       # Save the current write pos
-      private$marked <- private$position
+      marked <<- position
     },
     # Jump to the most recently marked position
     restorePosition = function() {
-      private$position <- private$marked
+      position <<- marked
     }
   )
 )
