@@ -80,7 +80,7 @@ TextWriter <- R6Class("TextWriter",
   portable = FALSE,
   private = list(
     marked = numeric(1),
-    text = character(1),
+    accumulated = character(1),
     buffer = character(1024), # TODO: this is big enough that our tests don't cover it.
     position = numeric(1)
   ),
@@ -88,7 +88,7 @@ TextWriter <- R6Class("TextWriter",
     initialize = function() {
       marked <<- 0
       position <<- 0
-      text <<- ""
+      accumulated <<- ""
     },
     close = function() {
     },
@@ -104,7 +104,7 @@ TextWriter <- R6Class("TextWriter",
         # to free up room in the buffer
         if (marked >= length(buffer)/2) {
           str <- paste(buffer[1:marked], collapse="")
-          text <<- paste0(text, str)
+          accumulated <<- paste0(accumulated, str)
 
           remaining <- position - marked
           if (remaining > 0){
@@ -134,7 +134,7 @@ TextWriter <- R6Class("TextWriter",
     # restorePosition() was called).
     readAll = function() {
       s <- paste(buffer[seq_len(position)], collapse="")
-      s <- paste0(text, s)
+      s <- paste0(accumulated, s)
       Encoding(s) <- "UTF-8"
       s
     },
