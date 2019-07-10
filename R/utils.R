@@ -78,14 +78,16 @@ WSTextWriter <- R6Class("WSTextWriter",
 TextWriter <- R6Class("TextWriter",
   private = list(
     marked = numeric(1),
-    buffer = character(0),
+    text = character(1),
+    buffer = character(64), # TODO: this is big enough that our tests don't cover it.
     position = numeric(1)
   ),
   public = list(
     initialize = function() {
-      private$buffer <- character(10)
+      #private$buffer <- character(10)
       private$marked <- 0
       private$position <- 0
+      private$text <- ""
     },
     close = function() {
     },
@@ -93,9 +95,28 @@ TextWriter <- R6Class("TextWriter",
     #
     # @param text Single element character vector
     write = function(text) {
-      if (private$position == length(private$buffer)){
-        # double in size, if needed
-        private$buffer[length(private$buffer)*2] <- NA_character_
+      if (private$position == length(private$buffer)) {
+        # We're at the end of our buffer.
+
+        # If our `marked` position has advanced well into the buffer,
+        # we can go ahead and compile the string up to the marked position
+        # to free up room in the buffer
+        if (private$marked >= length(private$buffer)/2) {
+          str <- paste(private$buffer[1:private$marked], collapse="")
+          private$text <- paste0(private$text, str)
+
+          remaining <- private$position - private$marked
+          if (remaining > 0){
+            private$buffer[1:(remaining)] <-
+              private$buffer[(private$marked+1):(private$marked+remaining)]
+          }
+          private$position <- private$position - private$marked
+          private$marked <- 0
+        } else {
+          # grow the buffer
+          cat("Reallocate to ", length(private$buffer)*2, "\n")
+          private$buffer[length(private$buffer)*2] <- NA_character_
+        }
       }
 
       # The text that is written to this TextWriter will be converted to
@@ -112,6 +133,7 @@ TextWriter <- R6Class("TextWriter",
     # restorePosition() was called).
     readAll = function() {
       s <- paste(private$buffer[seq_len(private$position)], collapse="")
+      s <- paste0(private$text, s)
       Encoding(s) <- "UTF-8"
       s
     },
