@@ -77,49 +77,41 @@ WSTextWriter <- R6Class("WSTextWriter",
 #' @importFrom R6 R6Class
 TextWriter <- R6Class("TextWriter",
   private = list(
-    con = "ANY",
     marked = numeric(1),
+    buffer = character(0),
     position = numeric(1)
   ),
   public = list(
     initialize = function() {
-      # We use a file() here instead of textConnection() or paste/c to
-      # avoid the overhead of copying, which is huge for moderately
-      # large numbers of calls to .$write(). Generally when you want
-      # to incrementally build up a long string out of immutable ones,
-      # you want to use a mutable/growable string buffer of some kind;
-      # since R doesn't have something like that (that I know of),
-      # file() is the next best thing.
-      private$con <- file("", "w+b", encoding = "UTF-8")
+      private$buffer <- character(10)
       private$marked <- 0
-      # position could be obtained by calling `seek(where=NA)`, but it's too expensive
       private$position <- 0
     },
     close = function() {
-      close(private$con)
     },
     # Write content
     #
     # @param text Single element character vector
     write = function(text) {
+      if (private$position == length(private$buffer)){
+        # double in size, if needed
+        private$buffer[length(private$buffer)*2] <- NA_character_
+      }
+
       # The text that is written to this TextWriter will be converted to
       # UTF-8 using enc2utf8. The rendered output will always be UTF-8
       # encoded.
-      raw <- charToRaw(enc2utf8(text))
+      enc <- enc2utf8(text)
 
-      # Update our current position
-      private$position <- private$position + length(raw)
-
-      # This is actually writing UTF-8 bytes, not chars
-      writeBin(raw, private$con)
+      private$position <- private$position + 1
+      private$buffer[private$position] <- text
     },
     # Return the contents of the TextWriter, as a single element
     # character vector, from the beginning to the current writing
     # position (normally this is the end of the connection, unless
     # restorePosition() was called).
     readAll = function() {
-      seek(private$con, where = 0, origin = "start", rw = "read")
-      s <- readChar(private$con, private$position, useBytes = TRUE)
+      s <- paste(private$buffer[seq_len(private$position)], collapse="")
       Encoding(s) <- "UTF-8"
       s
     },
@@ -130,13 +122,7 @@ TextWriter <- R6Class("TextWriter",
     },
     # Jump to the most recently marked position
     restorePosition = function() {
-      if (private$position == private$marked){
-        # seek() can get expensive; only call it if needed
-        return()
-      }
-
       private$position <- private$marked
-      seek(private$con, private$marked, origin = "start", rw = "write")
     }
   )
 )
