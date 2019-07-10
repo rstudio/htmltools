@@ -18,46 +18,9 @@ WSTextWriter <- R6Class("WSTextWriter",
     suppressing = logical(1)
   ),
   public = list(
-    initialize = function() {
-      writer <<- TextWriter$new()
-      suppressing <<- FALSE
-    },
-    close = function() {
-      writer$close()
-    },
-    write = function(text) {
-      writer$write(text)
 
-      # Reset suppressing behavior
-      suppressing <<- FALSE
-
-      # Set a bookmark here, so that future calls to eatWS() don't affect this
-      # write
-      writer$savePosition()
-    },
-    # Write whitespace. If suppressWhitespace() was called and
-    # its effect has not been canceled, then this method no-ops.
-    # @param text Single element character vector containing only
-    #   whitespace characters
-    writeWS = function(text) {
-      if (suppressing){
-        return()
-      }
-      # If an error is going to happen while evaluating `text`, let's make it
-      # happen before we mutate any of our internal state
-      force(text)
-      writer$write(text)
-    },
-    readAll = function() {
-      writer$readAll()
-    },
     # Removes both recent and upcoming whitespace writes
-    eatWS = function() {
-      # Undo recent whitespace writes
-      writer$restorePosition()
-      # Ignore upcoming whitespace writes
-      suppressing <<- TRUE
-    }
+
   )
 )
 
@@ -76,26 +39,38 @@ WSTextWriter <- R6Class("WSTextWriter",
 #'
 #' @noRd
 #' @importFrom R6 R6Class
-TextWriter <- R6Class("TextWriter",
+WSTextWriter <- R6Class("WSTextWriter",
   portable = FALSE,
   private = list(
     marked = numeric(1),
     accumulated = character(1),
     buffer = character(1024), # TODO: this is big enough that our tests don't cover it.
-    position = numeric(1)
+    position = numeric(1),
+    suppressing = logical(1)
   ),
   public = list(
     initialize = function() {
       marked <<- 0
       position <<- 0
       accumulated <<- ""
+      suppressing <<- FALSE
     },
     close = function() {
+    },
+    write = function(text){
+      writeImpl(text)
+
+      suppressing <<- FALSE
+      marked <<- position
     },
     # Write content
     #
     # @param text Single element character vector
-    write = function(text) {
+    writeImpl = function(text) {
+      # If an error is going to happen while evaluating `text`, let's make it
+      # happen before we mutate any of our internal state
+      force(text)
+
       if (position == length(buffer)) {
         # We're at the end of our buffer.
 
@@ -128,6 +103,16 @@ TextWriter <- R6Class("TextWriter",
       position <<- position + 1
       buffer[position] <<- enc
     },
+    # Write whitespace. If suppressWhitespace() was called and
+    # its effect has not been canceled, then this method no-ops.
+    # @param text Single element character vector containing only
+    #   whitespace characters
+    writeWS = function(text) {
+      if (suppressing){
+        return()
+      }
+      writeImpl(text)
+    },
     # Return the contents of the TextWriter, as a single element
     # character vector, from the beginning to the current writing
     # position (normally this is the end of the connection, unless
@@ -138,14 +123,9 @@ TextWriter <- R6Class("TextWriter",
       Encoding(s) <- "UTF-8"
       s
     },
-    # Mark the current writing position
-    savePosition = function() {
-      # Save the current write pos
-      marked <<- position
-    },
-    # Jump to the most recently marked position
-    restorePosition = function() {
+    eatWS = function() {
       position <<- marked
+      suppressing <<- TRUE
     }
   )
 )
