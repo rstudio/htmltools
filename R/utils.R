@@ -34,17 +34,18 @@ WSTextWriter <- function(bufferSize=1024){
   suppressing <- FALSE
 
   # Logic to do the actual write
-  writeImpl <- function(text) {
-    # force `text` to evaluate and check that it's the right shape
-    # TODO: We could support vectors with multiple elements here and perhaps
-    #   find some way to combine with `paste8()`. See
-    #   https://github.com/rstudio/htmltools/pull/132#discussion_r302280588
-    if (length(text) != 1 || !is.character(text)){
-      stop("Text to be written must be a length-one character vector")
-    }
+  writeImpl <- function(els) {
+    elLength <- length(els)
+
+    # The text that is written to this writer will be converted to
+    # UTF-8 using enc2utf8. The rendered output will always be UTF-8
+    # encoded.
+    # Also ensures that we were given a character vector
+    # Force evaluation early on before we mutate our state.
+    enc <- enc2utf8(els)
 
     # Are we at the end of our buffer?
-    if (position == length(buffer)) {
+    if (position+elLength >= length(buffer)) {
 
       # If our `marked` position has advanced well into the buffer,
       # we can go ahead and collapse the string up to the marked position
@@ -62,24 +63,22 @@ WSTextWriter <- function(bufferSize=1024){
         }
         position <<- position - marked
         marked <<- 0
-      } else {
+      }
+
+      # We may still need to increase the buffer size
+      while (position+elLength >= length(buffer)){
         # The writes in the buffer are still eligible to get eaten, so we can't
         # collapse them. Instead, we'll have to grow the buffer
         buffer[length(buffer)*2] <<- NA_character_
       }
     }
 
-    # The text that is written to this writer will be converted to
-    # UTF-8 using enc2utf8. The rendered output will always be UTF-8
-    # encoded.
-    enc <- enc2utf8(text)
-
     # Move the position pointer and store the (encoded) write
-    position <<- position + 1
-    buffer[position] <<- enc
+    buffer[seq(from=position+1, length.out=elLength)] <<- enc
+    position <<- position + elLength
   }
 
-  # The actual object returned
+  # The actual writer object returned
   list(
     # Write content. Updates the marker and stops suppressing whitespace writes.
     #

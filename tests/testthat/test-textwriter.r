@@ -19,7 +19,14 @@ describe("WSTextWriter", {
     expect_identical(wsw$readAll(), "line one\nanother linemore content")
 
     expect_error(wsw$write(1))
-    expect_error(wsw$write(letters[1:2]))
+  })
+  it("pastes multiple elements together", {
+    wsw <- WSTextWriter()
+    wsw$write("a", "b")
+    expect_identical(wsw$readAll(), "ab")
+
+    wsw$write("c", "d")
+    expect_identical(wsw$readAll(), "abcd")
   })
   it("eats past and future whitespace", {
     wtw <- WSTextWriter()
@@ -66,6 +73,19 @@ describe("WSTextWriter", {
     expect_identical(wtw$readAll(), "abcdefg ")
     wtw$eatWS()
     expect_identical(wtw$readAll(), "abcdefg")
+
+    # Big writes that may require increasing the buffer multiple times
+    wtw <- WSTextWriter(bufferSize = 2)
+    wtw$write(letters)
+    expect_identical(wtw$readAll(), paste0(letters, collapse=""))
+
+    wtw <- WSTextWriter(bufferSize = 2)
+    wtw$writeWS(rep(" ", times=6))
+    expect_identical(wtw$readAll(), "      ")
+    wtw$eatWS()
+    expect_identical(wtw$readAll(), "")
+    wtw$write("a")
+    expect_identical(wtw$readAll(), "a")
   })
 
   it("handles full buffers of non-collapsable writeWS's", {
