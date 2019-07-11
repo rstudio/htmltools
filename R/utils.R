@@ -17,7 +17,6 @@
 #'   able to backtrack to fulfill an `eatWS()` call), then the buffer size will
 #'   be doubled.
 #' @noRd
-#' @importFrom R6 R6Class
 WSTextWriter <- function(bufferSize=1024){
   # A string into which we can collapse entries in the buffer if the buffer gets full.
   accumulated <- ""
@@ -36,11 +35,14 @@ WSTextWriter <- function(bufferSize=1024){
 
   # Logic to do the actual write
   writeImpl <- function(text) {
-    # If an error is going to happen while evaluating `text`, let's make it
-    # happen before we mutate any of our internal state
-    force(text)
+    # force `text` to evaluate and check that it's the right shape
+    # TODO: We could support vectors with multiple elements here and perhaps
+    #   find some way to combine with `paste8()`. See
+    #   https://github.com/rstudio/htmltools/pull/132#discussion_r302280588
+    if (length(text) != 1 || !is.character(text)){
+      stop("Text to be written must be a length-one character vector")
+    }
 
-    # FIXME: test
     # Are we at the end of our buffer?
     if (position == length(buffer)) {
 
@@ -49,14 +51,14 @@ WSTextWriter <- function(bufferSize=1024){
       # to free up room in the buffer.
       if (marked >= length(buffer)/2) {
         # Collapse the writes in the buffer up to the marked position
-        str <- paste(buffer[1:marked], collapse="")
+        str <- paste(buffer[seq_len(marked)], collapse="")
         accumulated <<- paste0(accumulated, str)
 
         # Move the remainder of the buffer up to the front and update the markers
         remaining <- position - marked
         if (remaining > 0){
-          buffer[1:(remaining)] <<-
-            buffer[(marked+1):(marked+remaining)]
+          buffer[seq_len(remaining)] <<-
+            buffer[seq(from=marked+1,to=marked+remaining)]
         }
         position <<- position - marked
         marked <<- 0
@@ -105,11 +107,8 @@ WSTextWriter <- function(bufferSize=1024){
       # Collapse everything in the buffer
       s <- paste(buffer[seq_len(position)], collapse="")
 
-      # Combine with anuthing we'd already accumulated
-      s <- paste0(accumulated, s)
-
-      Encoding(s) <- "UTF-8"
-      s
+      # Combine with anything we'd already accumulated
+      paste0(accumulated, s)
     },
     # Removes both recent and upcoming whitespace writes
     eatWS = function() {

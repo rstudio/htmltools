@@ -17,6 +17,9 @@ describe("WSTextWriter", {
 
     wsw$write("more content")
     expect_identical(wsw$readAll(), "line one\nanother linemore content")
+
+    expect_error(wsw$write(1))
+    expect_error(wsw$write(letters[1:2]))
   })
   it("eats past and future whitespace", {
     wtw <- WSTextWriter()
