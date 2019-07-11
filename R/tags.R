@@ -421,7 +421,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   }
 
   # write tag name
-  textWriter$write(paste0("<", tag$name))
+  textWriter$write(paste8("<", tag$name, sep=""))
 
   # Convert all attribs to chars explicitly; prevents us from messing up factors
   attribs <- lapply(tag$attribs, as.character)
@@ -447,10 +447,10 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       if (is.logical(attribValue))
         attribValue <- tolower(attribValue)
       text <- htmlEscape(attribValue, attribute=TRUE)
-      textWriter$write(paste0(" ", attrib,"=\"", text, "\""))
+      textWriter$write(paste8(" ", attrib,"=\"", text, "\"", sep=""))
     }
     else {
-      textWriter$write(paste0(" ", attrib))
+      textWriter$write(paste8(" ", attrib, sep=""))
     }
   }
 
@@ -461,7 +461,8 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
     # special case for a single child text node (skip newlines and indentation)
     if ((length(children) == 1) && is.character(children[[1]]) ) {
-      textWriter$write(paste0(normalizeText(children[[1]]), "</", tag$name, ">"))
+      textWriter$write(paste8(normalizeText(children[[1]]), "</", tag$name, ">",
+        sep=""))
     }
     else {
       if ("after-begin" %in% .noWS || "inside" %in% .noWS) {
@@ -474,7 +475,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       if ("before-end" %in% .noWS || "inside" %in% .noWS) {
         textWriter$eatWS()
       }
-      textWriter$write(paste0("</", tag$name, ">"))
+      textWriter$write(paste8("</", tag$name, ">", sep=""))
     }
   }
   else {
@@ -486,7 +487,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       textWriter$write("/>")
     }
     else {
-      textWriter$write(paste0("></", tag$name, ">"))
+      textWriter$write(paste8("></", tag$name, ">", sep=""))
     }
   }
   if ("after" %in% .noWS || "outside" %in% .noWS) {
