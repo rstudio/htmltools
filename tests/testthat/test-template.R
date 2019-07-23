@@ -29,21 +29,29 @@ test_that("Code blocks are evaluated and rendered correctly", {
 })
 
 test_that("UTF-8 characters in templates", {
-  template <- htmlTemplate("template-document.html", x = "")
-  html <- renderDocument(template)
+  test_template <- function(locale=""){
+    Sys.setlocale("LC_ALL", locale)
+    template <- htmlTemplate("template-document.html", x = "")
+    html <- renderDocument(template)
 
-  # Create the string 'Δ★😎', making sure it's UTF-8 encoded on all platforms.
-  # These characters are 2, 3, and 4 bytes long, respectively.
-  pat <- rawToChar(as.raw(c(0xce, 0x94, 0xe2, 0x98, 0x85, 0xf0, 0x9f, 0x98, 0x8e)))
-  Encoding(pat) <- "UTF-8"
-  expect_true(grepl(pat, html))
+    # Create the string 'Δ★😎', making sure it's UTF-8 encoded on all platforms.
+    # These characters are 2, 3, and 4 bytes long, respectively.
+    pat <- rawToChar(as.raw(c(0xce, 0x94, 0xe2, 0x98, 0x85, 0xf0, 0x9f, 0x98, 0x8e)))
+    Encoding(pat) <- "UTF-8"
+    expect_true(grepl(pat, html))
 
-  # If template is passed text_ argument, make sure it's converted from native
-  # to UTF-8.
-  latin1_str <- rawToChar(as.raw(0xFF))
-  Encoding(latin1_str) <- "latin1"
-  text <- as.character(htmlTemplate(text_ = latin1_str))
-  expect_identical(charToRaw(text), as.raw(c(0xc3, 0xbf)))
+    # If template is passed text_ argument, make sure it's converted from native
+    # to UTF-8.
+    latin1_str <- rawToChar(as.raw(0xFF))
+    Encoding(latin1_str) <- "latin1"
+    text <- as.character(htmlTemplate(text_ = latin1_str))
+    expect_identical(charToRaw(text), as.raw(c(0xc3, 0xbf)))
+
+    # Restore locale
+    Sys.setlocale("LC_ALL", "")
+  }
+  test_template("") # The default locale
+  test_template("Chinese") # Chinese locale
 })
 
 test_that("UTF-8 characters in template head but not body", {
