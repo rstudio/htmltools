@@ -18,8 +18,11 @@ describe("WSTextWriter", {
     wsw$write("more content")
     expect_identical(wsw$readAll(), "line one\nanother linemore content")
 
+    # Non-character writes
     expect_error(wsw$write(1))
     expect_error(wsw$write(letters[1:2]))
+
+    expect_error(WSTextWriter(bufferSize=2))
   })
   it("eats past and future whitespace", {
     wtw <- WSTextWriter()
@@ -47,8 +50,8 @@ describe("WSTextWriter", {
   })
 
 
-  it("handles full buffers of collapsable writes", {
-    wtw <- WSTextWriter(bufferSize = 2)
+  it("handles full buffers of non-WS writes", {
+    wtw <- WSTextWriter(bufferSize = 3)
 
     wtw$write("a")
     wtw$write("b")
@@ -68,22 +71,27 @@ describe("WSTextWriter", {
     expect_identical(wtw$readAll(), "abcdefg")
   })
 
-  it("handles full buffers of non-collapsable writeWS's", {
-    wtw <- WSTextWriter(bufferSize = 2)
+  it("handles full buffers of whitespace writeWS's", {
+    wtw <- WSTextWriter(bufferSize = 3)
 
-    # fill the buffer with whitespace that it might need to backtrack over
-    wtw$write("a")
+    # fill the buffer with whitespace that it will need to accumulate
     wtw$writeWS(" ")
     wtw$writeWS(" ")
     wtw$writeWS(" ")
     wtw$writeWS(" ")
 
-    expect_identical(wtw$readAll(), "a    ")
+    expect_identical(wtw$readAll(), "    ")
     wtw$eatWS()
-    expect_identical(wtw$readAll(), "a")
+    expect_identical(wtw$readAll(), "")
 
     wtw$write("b")
-    expect_identical(wtw$readAll(), "ab")
+    wtw$writeWS(" ")
+    wtw$writeWS(" ")
+    wtw$writeWS(" ")
+    wtw$writeWS(" ")
+    expect_identical(wtw$readAll(), "b    ")
+    wtw$eatWS()
+    expect_identical(wtw$readAll(), "b")
   })
 })
 

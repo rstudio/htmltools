@@ -18,8 +18,9 @@
 #'   be doubled.
 #' @noRd
 WSTextWriter <- function(bufferSize=1024){
-  # A string into which we can collapse entries in the buffer if the buffer gets full.
-  accumulated <- ""
+  if (bufferSize < 3){
+    stop("Buffer size must be at least 3")
+  }
 
   # The buffer into which we enter all the writes.
   buffer <- character(bufferSize)
@@ -30,7 +31,7 @@ WSTextWriter <- function(bufferSize=1024){
   # The index storing the position in the buffer of the most recent write or writeWS.
   position <- 0
 
-  # TRUE if we're eating whitespace right now, in which case calls to eatWS are no-ops.
+  # TRUE if we're eating whitespace right now, in which case calls to writeWS are no-ops.
   suppressing <- FALSE
 
   # Logic to do the actual write
@@ -45,28 +46,24 @@ WSTextWriter <- function(bufferSize=1024){
 
     # Are we at the end of our buffer?
     if (position == length(buffer)) {
-
-      # If our `marked` position has advanced well into the buffer,
-      # we can go ahead and collapse the string up to the marked position
-      # to free up room in the buffer.
-      if (marked >= length(buffer)/2) {
-        # Collapse the writes in the buffer up to the marked position
-        str <- paste(buffer[seq_len(marked)], collapse="")
-        accumulated <<- paste0(accumulated, str)
-
-        # Move the remainder of the buffer up to the front and update the markers
-        remaining <- position - marked
-        if (remaining > 0){
-          buffer[seq_len(remaining)] <<-
-            buffer[seq(from=marked+1,to=marked+remaining)]
-        }
-        position <<- position - marked
-        marked <<- 0
-      } else {
-        # The writes in the buffer are still eligible to get eaten, so we can't
-        # collapse them. Instead, we'll have to grow the buffer
-        buffer[length(buffer)*2] <<- NA_character_
+      # Collapse the writes in the buffer up to the marked position into the first buffer entry
+      nonWS <- ""
+      if (marked > 0){
+        nonWS <- paste(buffer[seq_len(marked)], collapse="")
       }
+
+      # Collapse any remaining whitespace
+      ws <- ""
+      remaining <- position - marked
+      if (remaining > 0){
+        # We have some whitespace to collapse. Collapse it into the second buffer entry.
+        ws <- paste(buffer[seq(from=marked+1,to=marked+remaining)], collapse="")
+      }
+
+      buffer[1] <<- nonWS
+      buffer[2] <<- ws
+      position <<- 2
+      marked <<- 1
     }
 
     # The text that is written to this writer will be converted to
@@ -104,11 +101,8 @@ WSTextWriter <- function(bufferSize=1024){
     # vector, from the beginning to the current writing position (normally this
     # is the end of the last write or writeWS, unless eatWS() was called).
     readAll = function() {
-      # Collapse everything in the buffer
-      s <- paste(buffer[seq_len(position)], collapse="")
-
-      # Combine with anything we'd already accumulated
-      paste0(accumulated, s)
+      # Collapse everything in the buffer up to `position`
+      paste(buffer[seq_len(position)], collapse="")
     },
     # Removes both recent and upcoming whitespace writes
     eatWS = function() {
