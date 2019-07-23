@@ -14,7 +14,7 @@ paste8 <- function(..., sep = " ", collapse = NULL) {
   do.call(paste, args)
 }
 
-# A special case of paste8 that employes paste0. Avoids the overhead of lapply.
+# A special case of paste8 that employs paste0. Avoids the overhead of lapply.
 concat8 <- function(...) {
   enc2utf8(paste0(...))
 }
