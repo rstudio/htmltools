@@ -348,6 +348,7 @@ tagSetChildren <- function(tag, ..., list = NULL) {
 #' )
 #' cat(as.character(oneline))
 tag <- function(`_tag_name`, varArgs, .noWS=NULL) {
+  validateNoWS(.noWS)
   # Get arg names; if not a named list, use vector of empty strings
   varArgsNames <- names(varArgs)
   if (is.null(varArgsNames))
@@ -362,14 +363,18 @@ tag <- function(`_tag_name`, varArgs, .noWS=NULL) {
   # consist of empty strings anyway.
   children <- unname(varArgs[!named_idx])
 
-  # Return tag data structure
-  structure(
-    list(name = `_tag_name`,
+  st <- list(name = `_tag_name`,
       attribs = attribs,
-      children = children,
-      .noWS = .noWS),
-    class = "shiny.tag"
-  )
+      children = children)
+
+  # Conditionally include the .noWS element. We do this to avoid breaking the hashes
+  # of existing tags that weren't leveraging .noWS.
+  if (!is.null(.noWS)){
+    st$.noWS <- .noWS
+  }
+
+  # Return tag data structure
+  structure(st, class = "shiny.tag")
 }
 
 isTagList <- function(x) {
@@ -404,17 +409,14 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   indentText <- paste(rep(" ", indent*2), collapse="")
   textWriter$writeWS(indentText)
 
-  .noWS <- NULL
-
   # Check if it's just text (may either be plain-text or HTML)
   if (is.character(tag)) {
     textWriter$write(normalizeText(tag))
     textWriter$writeWS(eol)
     return (NULL)
-  } else if (!is.null(tag$.noWS)){
-    .noWS <- tag$.noWS
-    validateNoWS(.noWS)
   }
+
+  .noWS <- tag$.noWS
 
   if ("before" %in% .noWS || "outside" %in% .noWS) {
     textWriter$eatWS()
@@ -877,6 +879,7 @@ names(known_tags) <- known_tags
 #' @keywords NULL
 tags <- lapply(known_tags, function(tagname) {
   function(..., .noWS=NULL) {
+    validateNoWS(.noWS)
     contents <- list(...)
     tag(tagname, contents, .noWS=.noWS)
   }

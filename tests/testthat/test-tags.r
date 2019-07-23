@@ -146,8 +146,8 @@ test_that("Creating simple tags", {
   expect_identical(
     div(),
     structure(
-      list(name = "div", attribs = list(), children = list(), .noWS=NULL),
-      .Names = c("name", "attribs", "children", ".noWS"),
+      list(name = "div", attribs = list(), children = list()),
+      .Names = c("name", "attribs", "children"),
       class = "shiny.tag"
     )
   )
@@ -156,8 +156,8 @@ test_that("Creating simple tags", {
   expect_identical(
     div("text"),
     structure(
-      list(name = "div", attribs = list(), children = list("text"), .noWS=NULL),
-      .Names = c("name", "attribs", "children", ".noWS"),
+      list(name = "div", attribs = list(), children = list("text")),
+      .Names = c("name", "attribs", "children"),
       class = "shiny.tag"
     )
   )
@@ -202,9 +202,8 @@ test_that("Creating nested tags", {
     structure(
       list(name = "div",
         attribs = structure(list(class = "foo"), .Names = "class"),
-        children = list(list("a", "b")),
-        .noWS = NULL),
-      .Names = c("name", "attribs", "children", ".noWS"),
+        children = list(list("a", "b"))),
+      .Names = c("name", "attribs", "children"),
       class = "shiny.tag"
     )
   )
@@ -285,6 +284,11 @@ test_that("Old tags without the .noWS option can still be rendered", {
 test_that("tag with noWS works",{
   oneline <- tag("span", list(tag("strong", "Super strong", .noWS="outside")))
   expect_identical(as.character(oneline), "<span><strong>Super strong</strong></span>")
+})
+
+test_that("tag/s with invalid noWS fails fast", {
+  expect_error(tag("span", .noWS="wrong"))
+  expect_error(tags$a(.noWS="wrong"))
 })
 
 test_that("Attributes are preserved", {
@@ -595,12 +599,12 @@ test_that("Low-level singleton manipulation methods", {
   expect_identical(
     renderTags(result3)$html,
     HTML("<div>
-  <!--SHINY.SINGLETON[0a0bc429c9b2859e0dc4eb30f95144760c4e564f]-->
+  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
   <script>foo</script>
-  <!--/SHINY.SINGLETON[0a0bc429c9b2859e0dc4eb30f95144760c4e564f]-->
-  <!--SHINY.SINGLETON[0a0bc429c9b2859e0dc4eb30f95144760c4e564f]-->
+  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
+  <!--SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
   <script>foo</script>
-  <!--/SHINY.SINGLETON[0a0bc429c9b2859e0dc4eb30f95144760c4e564f]-->
+  <!--/SHINY.SINGLETON[e2c5bca2641bfa9885e43fd0afd994a659829b32]-->
 </div>")
     )
 })
