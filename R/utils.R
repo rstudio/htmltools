@@ -17,8 +17,8 @@
 #'   able to backtrack to fulfill an `eatWS()` call), then the buffer size will
 #'   be doubled.
 #' @noRd
-WSTextWriter <- function(bufferSize=1024){
-  if (bufferSize < 3){
+WSTextWriter <- function(bufferSize=1024) {
+  if (bufferSize < 3) {
     stop("Buffer size must be at least 3")
   }
 
@@ -38,17 +38,17 @@ WSTextWriter <- function(bufferSize=1024){
   # element in the buffer will be the concatenation of any writes up to the
   # current marker. The second element in the buffer will be the concatenation
   # of all writes after the marker.
-  collapseBuffer <- function(){
+  collapseBuffer <- function() {
     # Collapse the writes in the buffer up to the marked position into the first buffer entry
     nonWS <- ""
-    if (marked > 0){
+    if (marked > 0) {
       nonWS <- paste(buffer[seq_len(marked)], collapse="")
     }
 
     # Collapse any remaining whitespace
     ws <- ""
     remaining <- position - marked
-    if (remaining > 0){
+    if (remaining > 0) {
       # We have some whitespace to collapse. Collapse it into the second buffer entry.
       ws <- paste(buffer[seq(from=marked+1,to=marked+remaining)], collapse="")
     }
@@ -65,7 +65,7 @@ WSTextWriter <- function(bufferSize=1024){
     # TODO: We could support vectors with multiple elements here and perhaps
     #   find some way to combine with `paste8()`. See
     #   https://github.com/rstudio/htmltools/pull/132#discussion_r302280588
-    if (length(text) != 1 || !is.character(text)){
+    if (length(text) != 1 || !is.character(text)) {
       stop("Text to be written must be a length-one character vector")
     }
 
@@ -89,7 +89,7 @@ WSTextWriter <- function(bufferSize=1024){
     # Write content. Updates the marker and stops suppressing whitespace writes.
     #
     # @param text Single element character vector
-    write = function(text){
+    write = function(text) {
       writeImpl(text)
 
       suppressing <<- FALSE
@@ -100,7 +100,7 @@ WSTextWriter <- function(bufferSize=1024){
     # @param text Single element character vector containing only
     #   whitespace characters
     writeWS = function(text) {
-      if (suppressing){
+      if (suppressing) {
         return()
       }
       writeImpl(text)
