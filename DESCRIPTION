@@ -10,7 +10,8 @@ Depends:
 Imports:
     utils,
     digest,
-    Rcpp
+    Rcpp,
+    R6
 Suggests:
     markdown,
     testthat
@@ -18,5 +19,16 @@ Enhances: knitr
 License: GPL (>= 2)
 URL: https://github.com/rstudio/htmltools
 BugReports: https://github.com/rstudio/htmltools/issues
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 LinkingTo: Rcpp
+Encoding: UTF-8
+Collate: 
+    'RcppExports.R'
+    'html_dependency.R'
+    'html_escape.R'
+    'html_print.R'
+    'shim.R'
+    'utils.R'
+    'tags.R'
+    'template.R'
+    'zzz.R'

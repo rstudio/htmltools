@@ -24,39 +24,39 @@
 \usage{
 tags
 
-p(...)
+p(..., .noWS = NULL)
 
-h1(...)
+h1(..., .noWS = NULL)
 
-h2(...)
+h2(..., .noWS = NULL)
 
-h3(...)
+h3(..., .noWS = NULL)
 
-h4(...)
+h4(..., .noWS = NULL)
 
-h5(...)
+h5(..., .noWS = NULL)
 
-h6(...)
+h6(..., .noWS = NULL)
 
-a(...)
+a(..., .noWS = NULL)
 
-br(...)
+br(..., .noWS = NULL)
 
-div(...)
+div(..., .noWS = NULL)
 
-span(...)
+span(..., .noWS = NULL)
 
-pre(...)
+pre(..., .noWS = NULL)
 
-code(...)
+code(..., .noWS = NULL)
 
-img(...)
+img(..., .noWS = NULL)
 
-strong(...)
+strong(..., .noWS = NULL)
 
-em(...)
+em(..., .noWS = NULL)
 
-hr(...)
+hr(..., .noWS = NULL)
 }
 \arguments{
 \item{...}{Attributes and children of the element. Named arguments become
@@ -65,6 +65,11 @@ tags, single-character character vectors (which become text nodes), raw
 HTML (see \code{\link{HTML}}), and \code{html_dependency} objects. You can
 also pass lists that contain tags, text nodes, or HTML. To use boolean
 attributes, use a named argument with a \code{NA} value. (see example)}
+
+\item{.noWS}{A character vector used to omit some of the whitespace that
+would normally be written around this tag. Valid options include
+\code{before}, \code{after}, \code{outside}, \code{after-begin}, and
+\code{before-end}. Any number of these options can be specified.}
 }
 \description{
 Simple functions for constructing HTML documents.
@@ -106,6 +111,12 @@ audio_tag <- tags$audio(
   )
 )
 cat(as.character(audio_tag))
+
+# suppress the whitespace between tags
+oneline <- tags$span(
+  tags$strong("I'm strong", .noWS="outside")
+)
+cat(as.character(oneline))
 }
 \references{
 \itemize{

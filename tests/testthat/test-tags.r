@@ -262,6 +262,35 @@ test_that("Creating nested tags", {
   expect_identical(renderTags(t1)$html, renderTags(t1_full)$html)
 })
 
+# The .noWS option was added in 0.3.6.9003; we may still encounter tags created
+# in an older version (perhaps saved to an RDS file and restored). They would
+# lack this element in their structure.
+test_that("Old tags without the .noWS option can still be rendered", {
+  oldTag <- structure(
+    list(name = "div", attribs = list(), children = list("text")),
+    .Names = c("name", "attribs", "children"),
+    class = "shiny.tag"
+  )
+  w <- WSTextWriter$new()
+  on.exit({w$close()})
+  tagWrite(oldTag, w)
+
+  expect_identical(
+    w$readAll(),
+    "<div>text</div>\n"
+  )
+})
+
+test_that("tag with noWS works",{
+  oneline <- tag("span", list(tag("strong", "Super strong", .noWS="outside")))
+  expect_identical(as.character(oneline), "<span><strong>Super strong</strong></span>")
+})
+
+test_that("tag/s with invalid noWS fails fast", {
+  expect_error(tag("span", .noWS="wrong"))
+  expect_error(tags$a(.noWS="wrong"))
+})
+
 test_that("Attributes are preserved", {
   # HTML() adds an attribute to the data structure (note that this is
   # different from the 'attribs' field in the list)
