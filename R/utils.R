@@ -34,6 +34,31 @@ WSTextWriter <- function(bufferSize=1024){
   # TRUE if we're eating whitespace right now, in which case calls to writeWS are no-ops.
   suppressing <- FALSE
 
+  # Collapses the text in the buffer to create space for more writes. The first
+  # element in the buffer will be the concatenation of any writes up to the
+  # current marker. The second element in the buffer will be the concatenation
+  # of all writes after the marker.
+  collapseBuffer <- function(){
+    # Collapse the writes in the buffer up to the marked position into the first buffer entry
+    nonWS <- ""
+    if (marked > 0){
+      nonWS <- paste(buffer[seq_len(marked)], collapse="")
+    }
+
+    # Collapse any remaining whitespace
+    ws <- ""
+    remaining <- position - marked
+    if (remaining > 0){
+      # We have some whitespace to collapse. Collapse it into the second buffer entry.
+      ws <- paste(buffer[seq(from=marked+1,to=marked+remaining)], collapse="")
+    }
+
+    buffer[1] <<- nonWS
+    buffer[2] <<- ws
+    position <<- 2
+    marked <<- 1
+  }
+
   # Logic to do the actual write
   writeImpl <- function(text) {
     # force `text` to evaluate and check that it's the right shape
@@ -46,24 +71,7 @@ WSTextWriter <- function(bufferSize=1024){
 
     # Are we at the end of our buffer?
     if (position == length(buffer)) {
-      # Collapse the writes in the buffer up to the marked position into the first buffer entry
-      nonWS <- ""
-      if (marked > 0){
-        nonWS <- paste(buffer[seq_len(marked)], collapse="")
-      }
-
-      # Collapse any remaining whitespace
-      ws <- ""
-      remaining <- position - marked
-      if (remaining > 0){
-        # We have some whitespace to collapse. Collapse it into the second buffer entry.
-        ws <- paste(buffer[seq(from=marked+1,to=marked+remaining)], collapse="")
-      }
-
-      buffer[1] <<- nonWS
-      buffer[2] <<- ws
-      position <<- 2
-      marked <<- 1
+      collapseBuffer()
     }
 
     # The text that is written to this writer will be converted to
