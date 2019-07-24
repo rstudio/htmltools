@@ -730,27 +730,26 @@ test_that("Latin1 and system encoding are converted to UTF-8", {
 })
 
 test_that("paste8 in Chinese locale works", {
-  Sys.setlocale("LC_ALL", "Chinese")
-  x <- "\377"
-  Encoding(x) <- "latin1"
-  expect_identical(x, "ÿ")
-  expect_identical(Encoding(x), "latin1")
+  loc <- "Chinese"
+  withr::with_locale(c(LC_COLLATE=loc, LC_CTYPE=loc, LC_MONETARY=loc, LC_TIME=loc), {
+    x <- "\377"
+    Encoding(x) <- "latin1"
+    expect_identical(x, "ÿ")
+    expect_identical(Encoding(x), "latin1")
 
-  y <- "\U4E2d"  # Using \Uxxxx always is encoded as UTF-8
-  expect_identical(y, "中")
-  expect_identical(Encoding(y), "UTF-8")
+    y <- "\U4E2d"  # Using \Uxxxx always is encoded as UTF-8
+    expect_identical(y, "中")
+    expect_identical(Encoding(y), "UTF-8")
 
-  xy <- paste8(x, y)
-  xy
-  expect_identical(xy, "ÿ 中")
-  expect_identical(Encoding(xy), "UTF-8")
+    xy <- paste8(x, y)
+    xy
+    expect_identical(xy, "ÿ 中")
+    expect_identical(Encoding(xy), "UTF-8")
 
-  xy <- paste8(c(x, y), collapse = "")
-  expect_identical(xy, "ÿ中")
-  expect_identical(Encoding(xy), "UTF-8")
-
-  # Restore default locale
-  Sys.setlocale("LC_ALL", "")
+    xy <- paste8(c(x, y), collapse = "")
+    expect_identical(xy, "ÿ中")
+    expect_identical(Encoding(xy), "UTF-8")
+  })
 })
 
 test_that("Printing tags works", {

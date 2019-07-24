@@ -29,8 +29,7 @@ test_that("Code blocks are evaluated and rendered correctly", {
 })
 
 test_that("UTF-8 characters in templates", {
-  test_template <- function(locale=""){
-    Sys.setlocale("LC_ALL", locale)
+  test_template <- function(){
     template <- htmlTemplate("template-document.html", x = "")
     html <- renderDocument(template)
 
@@ -46,12 +45,15 @@ test_that("UTF-8 characters in templates", {
     Encoding(latin1_str) <- "latin1"
     text <- as.character(htmlTemplate(text_ = latin1_str))
     expect_identical(charToRaw(text), as.raw(c(0xc3, 0xbf)))
-
-    # Restore locale
-    Sys.setlocale("LC_ALL", "")
   }
-  test_template("") # The default locale
-  test_template("Chinese") # Chinese locale
+
+  # The default locale
+  loc <- ""
+  withr::with_locale(c(LC_COLLATE=loc, LC_CTYPE=loc, LC_MONETARY=loc, LC_TIME=loc), test_template())
+
+  # Chinese locale
+  loc <- "Chinese"
+  withr::with_locale(c(LC_COLLATE=loc, LC_CTYPE=loc, LC_MONETARY=loc, LC_TIME=loc), test_template())
 })
 
 test_that("UTF-8 characters in template head but not body", {
