@@ -28,31 +28,34 @@ test_that("Code blocks are evaluated and rendered correctly", {
   expect_identical(as.character(as.character(template)), "a\n\n11\n b")
 })
 
-test_that("UTF-8 characters in templates", {
-  test_template <- function(){
-    template <- htmlTemplate("template-document.html", x = "")
-    html <- renderDocument(template)
+test_template <- function(){
+  template <- htmlTemplate("template-document.html", x = "")
+  html <- renderDocument(template)
 
-    # Create the string 'Δ★😎', making sure it's UTF-8 encoded on all platforms.
-    # These characters are 2, 3, and 4 bytes long, respectively.
-    pat <- rawToChar(as.raw(c(0xce, 0x94, 0xe2, 0x98, 0x85, 0xf0, 0x9f, 0x98, 0x8e)))
-    Encoding(pat) <- "UTF-8"
-    expect_true(grepl(pat, html))
+  # Create the string 'Δ★😎', making sure it's UTF-8 encoded on all platforms.
+  # These characters are 2, 3, and 4 bytes long, respectively.
+  pat <- rawToChar(as.raw(c(0xce, 0x94, 0xe2, 0x98, 0x85, 0xf0, 0x9f, 0x98, 0x8e)))
+  Encoding(pat) <- "UTF-8"
+  expect_true(grepl(pat, html))
 
-    # If template is passed text_ argument, make sure it's converted from native
-    # to UTF-8.
-    latin1_str <- rawToChar(as.raw(0xFF))
-    Encoding(latin1_str) <- "latin1"
-    text <- as.character(htmlTemplate(text_ = latin1_str))
-    expect_identical(charToRaw(text), as.raw(c(0xc3, 0xbf)))
-  }
+  # If template is passed text_ argument, make sure it's converted from native
+  # to UTF-8.
+  latin1_str <- rawToChar(as.raw(0xFF))
+  Encoding(latin1_str) <- "latin1"
+  text <- as.character(htmlTemplate(text_ = latin1_str))
+  expect_identical(charToRaw(text), as.raw(c(0xc3, 0xbf)))
+}
 
+test_that("UTF-8 characters in templates with default locale", {
   # The default locale
   loc <- ""
   withr::with_locale(c(LC_COLLATE=loc, LC_CTYPE=loc, LC_MONETARY=loc, LC_TIME=loc), test_template())
 
+})
+test_that("UTF-8 characters in templates with Chinese locale", {
   # Chinese locale
   loc <- "Chinese"
+  testthat::skip_if_not(is_locale_available(loc), "Chinese locale not available")
   withr::with_locale(c(LC_COLLATE=loc, LC_CTYPE=loc, LC_MONETARY=loc, LC_TIME=loc), test_template())
 })
 

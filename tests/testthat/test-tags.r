@@ -731,6 +731,8 @@ test_that("Latin1 and system encoding are converted to UTF-8", {
 
 test_that("paste8 in Chinese locale works", {
   loc <- "Chinese"
+  testthat::skip_if_not(is_locale_available(loc), "Chinese locale not available")
+
   withr::with_locale(c(LC_COLLATE=loc, LC_CTYPE=loc, LC_MONETARY=loc, LC_TIME=loc), {
     x <- "\377"
     Encoding(x) <- "latin1"
