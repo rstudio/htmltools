@@ -14,6 +14,11 @@ paste8 <- function(..., sep = " ", collapse = NULL) {
   do.call(paste, args)
 }
 
+# A special case of paste8 that employs paste0. Avoids the overhead of lapply.
+concat8 <- function(...) {
+  enc2utf8(paste0(...))
+}
+
 # Reusable function for registering a set of methods with S3 manually. The
 # methods argument is a list of character vectors, each of which has the form
 # c(package, genname, class).
@@ -423,7 +428,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   }
 
   # write tag name
-  textWriter$write(paste8("<", tag$name, sep=""))
+  textWriter$write(concat8("<", tag$name))
 
   # Convert all attribs to chars explicitly; prevents us from messing up factors
   attribs <- lapply(tag$attribs, as.character)
@@ -449,10 +454,10 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       if (is.logical(attribValue))
         attribValue <- tolower(attribValue)
       text <- htmlEscape(attribValue, attribute=TRUE)
-      textWriter$write(paste8(" ", attrib,"=\"", text, "\"", sep=""))
+      textWriter$write(concat8(" ", attrib,"=\"", text, "\""))
     }
     else {
-      textWriter$write(paste8(" ", attrib, sep=""))
+      textWriter$write(concat8(" ", attrib))
     }
   }
 
@@ -463,8 +468,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
     # special case for a single child text node (skip newlines and indentation)
     if ((length(children) == 1) && is.character(children[[1]]) ) {
-      textWriter$write(paste8(normalizeText(children[[1]]), "</", tag$name, ">",
-        sep=""))
+      textWriter$write(concat8(normalizeText(children[[1]]), "</", tag$name, ">"))
     }
     else {
       if ("after-begin" %in% .noWS || "inside" %in% .noWS) {
@@ -477,7 +481,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       if ("before-end" %in% .noWS || "inside" %in% .noWS) {
         textWriter$eatWS()
       }
-      textWriter$write(paste8("</", tag$name, ">", sep=""))
+      textWriter$write(concat8("</", tag$name, ">"))
     }
   }
   else {
@@ -489,7 +493,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       textWriter$write("/>")
     }
     else {
-      textWriter$write(paste8("></", tag$name, ">", sep=""))
+      textWriter$write(concat8("></", tag$name, ">"))
     }
   }
   if ("after" %in% .noWS || "outside" %in% .noWS) {
@@ -553,8 +557,7 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
-  textWriter <- WSTextWriter$new()
-  on.exit(textWriter$close())
+  textWriter <- WSTextWriter()
   tagWrite(x, textWriter, indent)
   # Strip off trailing \n (if present?)
   textWriter$eatWS()

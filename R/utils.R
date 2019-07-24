@@ -1,6 +1,4 @@
-# Implements "whitespace eating" functionality on top of a normal TextWriter.
-# (WSTextWriter doesn't inherit from TextWriter, as it presents a different
-# interface.)
+# Implements a "whitespace eating" writer.
 #
 # WSTextWriter relies on the caller distinguishing between writes of important
 # content, and writes of whitespace that may or may not be elided (`.$write()`
@@ -11,132 +9,114 @@
 # `write` operation) to be undone, AND for any future `writeWS` calls to be
 # ignored. A call to `write` will be respected, and will restore normal
 # behavior.
-WSTextWriter <- R6Class("WSTextWriter",
-  private = list(
-    writer = "TextWriter",
-    suppressing = logical(1)
-  ),
-  public = list(
-    initialize = function() {
-      private$writer <- TextWriter$new()
-      private$suppressing <- FALSE
-    },
-    close = function() {
-      private$writer$close()
-    },
-    write = function(text) {
-      private$writer$write(text)
-
-      # Reset suppressing behavior
-      private$suppressing <- FALSE
-
-      # Set a bookmark here, so that future calls to eatWS() don't affect this
-      # write
-      private$writer$savePosition()
-    },
-    # Write whitespace. If suppressWhitespace() was called and
-    # its effect has not been canceled, then this method no-ops.
-    # @param text Single element character vector containing only
-    #   whitespace characters
-    writeWS = function(text) {
-      if (private$suppressing){
-        return()
-      }
-      # If an error is going to happen while evaluating `text`, let's make it
-      # happen before we mutate any of our internal state
-      force(text)
-      private$writer$write(text)
-    },
-    readAll = function() {
-      private$writer$readAll()
-    },
-    # Removes both recent and upcoming whitespace writes
-    eatWS = function() {
-      # Undo recent whitespace writes
-      private$writer$restorePosition()
-      # Ignore upcoming whitespace writes
-      private$suppressing <- TRUE
-    }
-  )
-)
-
-#' TextWriter class
-#'
-#' A class that manages the gradual concatenation of text. It
-#' provides two additional features (over a normal connection)
-#' that are important to us for tag writing:
-#'
-#' 1. Text is automatically converted to UTF-8.
-#'
-#' 2. Ability to bookmark (save) a write position, and jump back
-#'    to it (restore). Only one bookmark at a time is allowed.
-#'    Restoring a bookmark essentially truncates content that
-#'    was written after the bookmark was set.
-#'
+#
+# Text is automatically converted to UTF-8 before being written.
+#' @param bufferSize The initial size of the buffer in which writes are stored.
+#'   The buffer will be periodically cleared, if possible, to cache the writes
+#'   as a string. If the buffer cannot be cleared (because of the need to be
+#'   able to backtrack to fulfill an `eatWS()` call), then the buffer size will
+#'   be doubled.
 #' @noRd
-#' @importFrom R6 R6Class
-TextWriter <- R6Class("TextWriter",
-  private = list(
-    con = "ANY",
-    marked = numeric(1),
-    position = numeric(1)
-  ),
-  public = list(
-    initialize = function() {
-      # We use a file() here instead of textConnection() or paste/c to
-      # avoid the overhead of copying, which is huge for moderately
-      # large numbers of calls to .$write(). Generally when you want
-      # to incrementally build up a long string out of immutable ones,
-      # you want to use a mutable/growable string buffer of some kind;
-      # since R doesn't have something like that (that I know of),
-      # file() is the next best thing.
-      private$con <- file("", "w+b", encoding = "UTF-8")
-      private$marked <- 0
-      # position could be obtained by calling `seek(where=NA)`, but it's too expensive
-      private$position <- 0
-    },
-    close = function() {
-      close(private$con)
-    },
-    # Write content
+WSTextWriter <- function(bufferSize=1024) {
+  if (bufferSize < 3) {
+    stop("Buffer size must be at least 3")
+  }
+
+  # The buffer into which we enter all the writes.
+  buffer <- character(bufferSize)
+
+  # The index storing the position in the buffer of the most recent write.
+  marked <- 0
+
+  # The index storing the position in the buffer of the most recent write or writeWS.
+  position <- 0
+
+  # TRUE if we're eating whitespace right now, in which case calls to writeWS are no-ops.
+  suppressing <- FALSE
+
+  # Collapses the text in the buffer to create space for more writes. The first
+  # element in the buffer will be the concatenation of any writes up to the
+  # current marker. The second element in the buffer will be the concatenation
+  # of all writes after the marker.
+  collapseBuffer <- function() {
+    # Collapse the writes in the buffer up to the marked position into the first buffer entry
+    nonWS <- ""
+    if (marked > 0) {
+      nonWS <- paste(buffer[seq_len(marked)], collapse="")
+    }
+
+    # Collapse any remaining whitespace
+    ws <- ""
+    remaining <- position - marked
+    if (remaining > 0) {
+      # We have some whitespace to collapse. Collapse it into the second buffer entry.
+      ws <- paste(buffer[seq(from=marked+1,to=marked+remaining)], collapse="")
+    }
+
+    buffer[1] <<- nonWS
+    buffer[2] <<- ws
+    position <<- 2
+    marked <<- 1
+  }
+
+  # Logic to do the actual write
+  writeImpl <- function(text) {
+    # force `text` to evaluate and check that it's the right shape
+    # TODO: We could support vectors with multiple elements here and perhaps
+    #   find some way to combine with `paste8()`. See
+    #   https://github.com/rstudio/htmltools/pull/132#discussion_r302280588
+    if (length(text) != 1 || !is.character(text)) {
+      stop("Text to be written must be a length-one character vector")
+    }
+
+    # Are we at the end of our buffer?
+    if (position == length(buffer)) {
+      collapseBuffer()
+    }
+
+    # The text that is written to this writer will be converted to
+    # UTF-8 using enc2utf8. The rendered output will always be UTF-8
+    # encoded.
+    enc <- enc2utf8(text)
+
+    # Move the position pointer and store the (encoded) write
+    position <<- position + 1
+    buffer[position] <<- enc
+  }
+
+  # The actual object returned
+  list(
+    # Write content. Updates the marker and stops suppressing whitespace writes.
     #
     # @param text Single element character vector
     write = function(text) {
-      # The text that is written to this TextWriter will be converted to
-      # UTF-8 using enc2utf8. The rendered output will always be UTF-8
-      # encoded.
-      raw <- charToRaw(enc2utf8(text))
+      writeImpl(text)
 
-      # Update our current position
-      private$position <- private$position + length(raw)
-
-      # This is actually writing UTF-8 bytes, not chars
-      writeBin(raw, private$con)
+      suppressing <<- FALSE
+      marked <<- position
     },
-    # Return the contents of the TextWriter, as a single element
-    # character vector, from the beginning to the current writing
-    # position (normally this is the end of the connection, unless
-    # restorePosition() was called).
-    readAll = function() {
-      seek(private$con, where = 0, origin = "start", rw = "read")
-      s <- readChar(private$con, private$position, useBytes = TRUE)
-      Encoding(s) <- "UTF-8"
-      s
-    },
-    # Mark the current writing position
-    savePosition = function() {
-      # Save the current write pos
-      private$marked <- private$position
-    },
-    # Jump to the most recently marked position
-    restorePosition = function() {
-      if (private$position == private$marked){
-        # seek() can get expensive; only call it if needed
+    # Write whitespace. If eatWS() was called and its effect has not been
+    # canceled, then this method no-ops.
+    # @param text Single element character vector containing only
+    #   whitespace characters
+    writeWS = function(text) {
+      if (suppressing) {
         return()
       }
-
-      private$position <- private$marked
-      seek(private$con, private$marked, origin = "start", rw = "write")
+      writeImpl(text)
+    },
+    # Return the contents of the TextWriter, as a single element character
+    # vector, from the beginning to the current writing position (normally this
+    # is the end of the last write or writeWS, unless eatWS() was called).
+    readAll = function() {
+      # Collapse everything in the buffer up to `position`
+      paste(buffer[seq_len(position)], collapse="")
+    },
+    # Removes both recent and upcoming whitespace writes
+    eatWS = function() {
+      # Reset back to the most recent marker
+      position <<- marked
+      suppressing <<- TRUE
     }
   )
-)
+}

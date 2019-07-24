@@ -10,8 +10,7 @@ Depends:
 Imports:
     utils,
     digest,
-    Rcpp,
-    R6
+    Rcpp
 Suggests:
     markdown,
     testthat
