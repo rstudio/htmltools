@@ -757,6 +757,31 @@ test_that("Latin1 and system encoding are converted to UTF-8", {
   )
 })
 
+test_that("paste8 in Chinese locale works", {
+  loc <- "Chinese"
+  testthat::skip_if_not(is_locale_available(loc), "Chinese locale not available")
+
+  withr::with_locale(c(LC_COLLATE=loc, LC_CTYPE=loc, LC_MONETARY=loc, LC_TIME=loc), {
+    x <- "\377"
+    Encoding(x) <- "latin1"
+    expect_identical(x, "\Uff")
+    expect_identical(Encoding(x), "latin1")
+
+    y <- "\U4E2d"  # Using \Uxxxx always is encoded as UTF-8
+    expect_identical(y, "\U4E2d")
+    expect_identical(Encoding(y), "UTF-8")
+
+    xy <- paste8(x, y)
+    xy
+    expect_identical(xy, "\Uff \U4E2d")
+    expect_identical(Encoding(xy), "UTF-8")
+
+    xy <- paste8(c(x, y), collapse = "")
+    expect_identical(xy, "\Uff\U4E2d")
+    expect_identical(Encoding(xy), "UTF-8")
+  })
+})
+
 test_that("Printing tags works", {
   expect_identical(
     capture.output(print(tags$a(href = "#", "link"))),
