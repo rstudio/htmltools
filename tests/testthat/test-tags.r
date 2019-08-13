@@ -288,7 +288,7 @@ test_that("Old tags without the .noWS option can still be rendered", {
 # We moved to rlang::dots_list in 0.3.6; we may still encounter tags created
 # in an older version (perhaps saved to an RDS file and restored). They would
 # use old-school lists.
-test_that("Old tags without the .noWS option can still be rendered", {
+test_that("Old tags predating rlang::list2 can still be rendered", {
   oldTag <- structure(
     list(name = "div", attribs = list(), children = list("text")),
     .Names = c("name", "attribs", "children"),
