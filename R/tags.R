@@ -248,9 +248,10 @@ normalizeText <- function(text) {
 
 #' @name tag
 #' @rdname tag
+#' @import rlang
 #' @export
 tagList <- function(...) {
-  lst <- list(...)
+  lst <- dots_list(...)
   class(lst) <- c("shiny.tag.list", "list")
   return(lst)
 }
@@ -880,10 +881,11 @@ names(known_tags) <- known_tags
 #' @format NULL
 #' @docType NULL
 #' @keywords NULL
+#' @import rlang
 tags <- lapply(known_tags, function(tagname) {
   function(..., .noWS=NULL) {
     validateNoWS(.noWS)
-    contents <- list(...)
+    contents <- dots_list(...)
     tag(tagname, contents, .noWS=.noWS)
   }
 })
