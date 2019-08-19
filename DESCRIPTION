@@ -10,7 +10,8 @@ Depends:
 Imports:
     utils,
     digest,
-    Rcpp
+    Rcpp,
+    rlang
 Suggests:
     markdown,
     testthat,
