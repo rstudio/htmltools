@@ -1,7 +1,8 @@
 htmltools 0.3.6.9003
 --------------------------------------------------------------------------------
 
-* Add support for trailing commas in tagLists and the predefined tags. (#128)
+* Fixed #128: Added support for trailing commas in tagLists and the predefined
+  tags. (#135)
 
 * The `knit_print` methods are explicitly registered as S3 methods when both
   knitr and htmltools are loaded. This means that neither shiny nor htmltools
