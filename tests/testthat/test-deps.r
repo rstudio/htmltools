@@ -35,16 +35,16 @@ test_that("Inline dependencies", {
 
   # tagLists ----------------------------------------------------------
   x <- tagList(a1.1, div("foo"), "bar")
-  expect_identical(findDependencies(x), list(a1.1))
+  expect_identical(findDependencies(x), dots_list(a1.1))
   expect_identical(as.character(renderTags(x)$html), "<div>foo</div>\nbar")
 
   x <- tagList(a1.1, div("foo"), a1.2, "bar")
-  expect_identical(findDependencies(x), list(a1.1, a1.2))
+  expect_identical(findDependencies(x), dots_list(a1.1, a1.2))
   expect_identical(as.character(renderTags(x)$html), "<div>foo</div>\nbar")
 
   # Mixing inline and attribute dependencies
   x <- attachDependencies(tagList(a1.1, div("foo"), "bar"), a1.2, append = TRUE)
-  expect_identical(findDependencies(x), list(a1.1, a1.2))
+  expect_identical(findDependencies(x), dots_list(a1.1, a1.2))
   expect_identical(as.character(renderTags(x)$html), "<div>foo</div>\nbar")
 
   # tags with children ------------------------------------------------
@@ -65,7 +65,7 @@ test_that("Inline dependencies", {
 
   # Passing normal lists to tagLists and tag functions  ---------------
   x <- tagList(list(a1.1, div("foo")), "bar")
-  expect_identical(findDependencies(x), list(a1.1))
+  expect_identical(findDependencies(x), dots_list(a1.1))
 
   x <- div(list(a1.1, div("foo")), "bar")
   expect_identical(findDependencies(x), list(a1.1))

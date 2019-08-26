@@ -14,6 +14,11 @@ paste8 <- function(..., sep = " ", collapse = NULL) {
   do.call(paste, args)
 }
 
+# A special case of paste8 that employs paste0. Avoids the overhead of lapply.
+concat8 <- function(...) {
+  enc2utf8(paste0(...))
+}
+
 # Reusable function for registering a set of methods with S3 manually. The
 # methods argument is a list of character vectors, each of which has the form
 # c(package, genname, class).
@@ -243,9 +248,10 @@ normalizeText <- function(text) {
 
 #' @name tag
 #' @rdname tag
+#' @import rlang
 #' @export
 tagList <- function(...) {
-  lst <- list(...)
+  lst <- dots_list(...)
   class(lst) <- c("shiny.tag.list", "list")
   return(lst)
 }
@@ -323,6 +329,10 @@ tagSetChildren <- function(tag, ..., list = NULL) {
 #' @param ...  Unnamed items that comprise this list of tags.
 #' @param list An optional list of elements. Can be used with or instead of the
 #'   \code{...} items.
+#' @param .noWS Character vector used to omit some of the whitespace that would
+#'   normally be written around this tag. Valid options include \code{before},
+#'   \code{after}, \code{outside}, \code{after-begin}, and \code{before-end}.
+#'   Any number of these options can be specified.
 #' @return An HTML tag object that can be rendered as HTML using
 #'   \code{\link{as.character}()}.
 #' @export
@@ -337,7 +347,14 @@ tagSetChildren <- function(tag, ..., list = NULL) {
 #'           tags$h2("Header text"),
 #'           tags$p("Text here"))
 #' tagList(x)
-tag <- function(`_tag_name`, varArgs) {
+#'
+#' # suppress the whitespace between tags
+#' oneline <- tag("span",
+#'   tag("strong", "Super strong", .noWS="outside")
+#' )
+#' cat(as.character(oneline))
+tag <- function(`_tag_name`, varArgs, .noWS=NULL) {
+  validateNoWS(.noWS)
   # Get arg names; if not a named list, use vector of empty strings
   varArgsNames <- names(varArgs)
   if (is.null(varArgsNames))
@@ -352,19 +369,33 @@ tag <- function(`_tag_name`, varArgs) {
   # consist of empty strings anyway.
   children <- unname(varArgs[!named_idx])
 
-  # Return tag data structure
-  structure(
-    list(name = `_tag_name`,
+  st <- list(name = `_tag_name`,
       attribs = attribs,
-      children = children),
-    class = "shiny.tag"
-  )
+      children = children)
+
+  # Conditionally include the .noWS element. We do this to avoid breaking the hashes
+  # of existing tags that weren't leveraging .noWS.
+  if (!is.null(.noWS)){
+    st$.noWS <- .noWS
+  }
+
+  # Return tag data structure
+  structure(st, class = "shiny.tag")
 }
 
 isTagList <- function(x) {
   is.list(x) && (inherits(x, "shiny.tag.list") || identical(class(x), "list"))
 }
 
+noWSOptions <- c("before", "after", "after-begin", "before-end", "outside")
+# Ensure that the provided `.noWS` string contains only valid options
+validateNoWS <- function(.noWS){
+  if (!all(.noWS %in% noWSOptions)){
+    stop("Invalid .noWS option(s) '", paste(.noWS, collapse="', '") ,"' specified.")
+  }
+}
+
+#' @include utils.R
 tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   if (length(tag) == 0)
@@ -382,17 +413,23 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   # compute indent text
   indentText <- paste(rep(" ", indent*2), collapse="")
+  textWriter$writeWS(indentText)
 
   # Check if it's just text (may either be plain-text or HTML)
   if (is.character(tag)) {
-    textWriter(indentText)
-    textWriter(normalizeText(tag))
-    textWriter(eol)
+    textWriter$write(normalizeText(tag))
+    textWriter$writeWS(eol)
     return (NULL)
   }
 
+  .noWS <- tag$.noWS
+
+  if ("before" %in% .noWS || "outside" %in% .noWS) {
+    textWriter$eatWS()
+  }
+
   # write tag name
-  textWriter(paste8(indentText, "<", tag$name, sep=""))
+  textWriter$write(concat8("<", tag$name))
 
   # Convert all attribs to chars explicitly; prevents us from messing up factors
   attribs <- lapply(tag$attribs, as.character)
@@ -418,28 +455,34 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
       if (is.logical(attribValue))
         attribValue <- tolower(attribValue)
       text <- htmlEscape(attribValue, attribute=TRUE)
-      textWriter(paste8(" ", attrib,"=\"", text, "\"", sep=""))
+      textWriter$write(concat8(" ", attrib,"=\"", text, "\""))
     }
     else {
-      textWriter(paste8(" ", attrib, sep=""))
+      textWriter$write(concat8(" ", attrib))
     }
   }
 
   # write any children
   children <- dropNullsOrEmpty(flattenTags(tag$children))
   if (length(children) > 0) {
-    textWriter(">")
+    textWriter$write(">")
 
     # special case for a single child text node (skip newlines and indentation)
     if ((length(children) == 1) && is.character(children[[1]]) ) {
-      textWriter(paste8(normalizeText(children[[1]]), "</", tag$name, ">", eol,
-        sep=""))
+      textWriter$write(concat8(normalizeText(children[[1]]), "</", tag$name, ">"))
     }
     else {
-      textWriter("\n")
+      if ("after-begin" %in% .noWS || "inside" %in% .noWS) {
+        textWriter$eatWS()
+      }
+      textWriter$writeWS("\n")
       for (child in children)
         tagWrite(child, textWriter, nextIndent)
-      textWriter(paste8(indentText, "</", tag$name, ">", eol, sep=""))
+      textWriter$writeWS(indentText)
+      if ("before-end" %in% .noWS || "inside" %in% .noWS) {
+        textWriter$eatWS()
+      }
+      textWriter$write(concat8("</", tag$name, ">"))
     }
   }
   else {
@@ -448,12 +491,16 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     if (tag$name %in% c("area", "base", "br", "col", "command", "embed", "hr",
       "img", "input", "keygen", "link", "meta", "param",
       "source", "track", "wbr")) {
-      textWriter(paste8("/>", eol, sep=""))
+      textWriter$write("/>")
     }
     else {
-      textWriter(paste8("></", tag$name, ">", eol, sep=""))
+      textWriter$write(concat8("></", tag$name, ">"))
     }
   }
+  if ("after" %in% .noWS || "outside" %in% .noWS) {
+    textWriter$eatWS()
+  }
+  textWriter$writeWS(eol)
 }
 
 #' Render tags into HTML
@@ -511,43 +558,11 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
-  # The text that is written to this connWriter will be converted to
-  # UTF-8 using enc2utf8. The rendered output will always be UTF-8
-  # encoded.
-  #
-  # We use a file() here instead of textConnection() or paste/c to
-  # avoid the overhead of copying, which is huge for moderately
-  # large numbers of calls to connWriter(). Generally when you want
-  # to incrementally build up a long string out of immutable ones,
-  # you want to use a mutable/growable string buffer of some kind;
-  # since R doesn't have something like that (that I know of),
-  # file() is the next best thing.
-  conn <- file(open="w+b", encoding = "UTF-8")
-  # Track how many bytes we write, so we can read in the right amount
-  # later with readChar.
-  bytes <- 0
-
-  connWriter <- function(text) {
-    raw <- charToRaw(enc2utf8(text))
-    bytes <<- bytes + length(raw)
-    # This is actually writing UTF-8 bytes, not chars
-    writeBin(raw, conn)
-  }
-
-  htmlResult <- tryCatch(
-    {
-      tagWrite(x, connWriter, indent)
-      flush(conn)
-
-      # Strip off trailing \n (which is always there) but make sure not to
-      # specify a negative number of chars.
-      bytes <- max(bytes - 1, 0)
-      readChar(conn, bytes, useBytes = TRUE)
-    },
-    finally = close(conn)
-  )
-  Encoding(htmlResult) <- "UTF-8"
-  return(HTML(htmlResult))
+  textWriter <- WSTextWriter()
+  tagWrite(x, textWriter, indent)
+  # Strip off trailing \n (if present?)
+  textWriter$eatWS()
+  HTML(textWriter$readAll())
 }
 
 # Walk a tree of tag objects, rewriting objects according to func.
@@ -700,8 +715,11 @@ findDependencies <- function(tags, tagify = TRUE) {
 #'   HTML (see \code{\link{HTML}}), and \code{html_dependency} objects. You can
 #'   also pass lists that contain tags, text nodes, or HTML. To use boolean
 #'   attributes, use a named argument with a \code{NA} value. (see example)
-#' @references
-#'  \itemize{
+#' @param .noWS A character vector used to omit some of the whitespace that
+#'   would normally be written around this tag. Valid options include
+#'   \code{before}, \code{after}, \code{outside}, \code{after-begin}, and
+#'   \code{before-end}. Any number of these options can be specified.
+#' @references \itemize{
 #'    \item W3C html specification about boolean attributes
 #'    \url{https://www.w3.org/TR/html5/infrastructure.html#sec-boolean-attributes}
 #'  }
@@ -732,6 +750,12 @@ findDependencies <- function(tags, tagify = TRUE) {
 #'   )
 #' )
 #' cat(as.character(audio_tag))
+#'
+#' # suppress the whitespace between tags
+#' oneline <- tags$span(
+#'   tags$strong("I'm strong", .noWS="outside")
+#' )
+#' cat(as.character(oneline))
 NULL
 
 
@@ -857,10 +881,12 @@ names(known_tags) <- known_tags
 #' @format NULL
 #' @docType NULL
 #' @keywords NULL
+#' @import rlang
 tags <- lapply(known_tags, function(tagname) {
-  function(...) {
-    contents <- list(...)
-    tag(tagname, contents)
+  function(..., .noWS=NULL) {
+    validateNoWS(.noWS)
+    contents <- dots_list(...)
+    tag(tagname, contents, .noWS=.noWS)
   }
 })
 
@@ -1413,9 +1439,11 @@ is.singleton <- function(x) {
 #' number plus a suffix of \code{"px"}.
 #'
 #' Single element character vectors must be \code{"auto"} or \code{"inherit"},
-#' or a number. If the number has a suffix, it must be valid: \code{px},
-#' \code{\%}, \code{em}, \code{pt}, \code{in}, \code{cm}, \code{mm}, \code{ex},
-#' \code{pc}, \code{vh}, \code{vw}, \code{vmin}, or \code{vmax}.
+#' a number, or a length calculated by the \code{"calc"} CSS function.
+#' If the number has a suffix, it must be valid: \code{px},
+#' \code{\%}, \code{ch}, \code{em}, \code{rem}, \code{pt}, \code{in}, \code{cm},
+#' \code{mm}, \code{ex}, \code{pc}, \code{vh}, \code{vw}, \code{vmin}, or
+#' \code{vmax}.
 #' If the number has no suffix, the suffix \code{"px"} is appended.
 #'
 #'
@@ -1442,7 +1470,7 @@ validateCssUnit <- function(x) {
     x <- as.numeric(x)
 
   pattern <-
-    "^(auto|inherit|((\\.\\d+)|(\\d+(\\.\\d+)?))(%|in|cm|mm|em|ex|pt|pc|px|vh|vw|vmin|vmax))$"
+    "^(auto|inherit|calc\\(.*\\)|((\\.\\d+)|(\\d+(\\.\\d+)?))(%|in|cm|mm|ch|em|ex|rem|pt|pc|px|vh|vw|vmin|vmax))$"
 
   if (is.character(x) &&
       !grepl(pattern, x)) {

@@ -89,10 +89,11 @@ save_html <- function(html, file, background = "white", libdir = "lib") {
             "<html>",
             "<head>",
             "<meta charset=\"utf-8\"/>",
+            sprintf("<style>body{background-color:%s;}</style>", htmlEscape(background)),
             renderDependencies(deps, c("href", "file")),
             rendered$head,
             "</head>",
-            sprintf("<body style=\"background-color:%s;\">", htmlEscape(background)),
+            "<body>",
             rendered$html,
             "</body>",
             "</html>")

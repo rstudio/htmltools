@@ -24,9 +24,11 @@ Single element numeric vectors are returned as a character vector with the
 number plus a suffix of \code{"px"}.
 
 Single element character vectors must be \code{"auto"} or \code{"inherit"},
-or a number. If the number has a suffix, it must be valid: \code{px},
-\code{\%}, \code{em}, \code{pt}, \code{in}, \code{cm}, \code{mm}, \code{ex},
-\code{pc}, \code{vh}, \code{vw}, \code{vmin}, or \code{vmax}.
+a number, or a length calculated by the \code{"calc"} CSS function.
+If the number has a suffix, it must be valid: \code{px},
+\code{\%}, \code{ch}, \code{em}, \code{rem}, \code{pt}, \code{in}, \code{cm},
+\code{mm}, \code{ex}, \code{pc}, \code{vh}, \code{vw}, \code{vmin}, or
+\code{vmax}.
 If the number has no suffix, the suffix \code{"px"} is appended.
 
 Any other value will cause an error to be thrown.
