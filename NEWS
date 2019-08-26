@@ -28,6 +28,9 @@ htmltools 0.3.6.9003
   objects created by a package that was loaded with `devtools::load_all()`.
   (#129)
 
+* `validateCssUnit()` now accepts `ch`, `rem`, and `calc()`. (#134)
+
+
 htmltools 0.3.6
 --------------------------------------------------------------------------------
 
