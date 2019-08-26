@@ -29,6 +29,7 @@ htmltools 0.3.6.9003
 
 * `validateCssUnit()` now accepts `ch`, `rem`, and `calc()`. (#134)
 
+* Fixed #125: `print.html` removes html dependencies. (#126)
 
 htmltools 0.3.6
 --------------------------------------------------------------------------------

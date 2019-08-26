@@ -227,7 +227,7 @@ as.character.shiny.tag.list <- as.character.shiny.tag
 #' @export
 print.html <- function(x, ..., browse = is.browsable(x)) {
   if (browse)
-    html_print(HTML(x))
+    html_print(x)
   else
     cat(x, "\n", sep = "")
   invisible(x)
