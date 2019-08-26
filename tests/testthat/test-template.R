@@ -28,7 +28,7 @@ test_that("Code blocks are evaluated and rendered correctly", {
   expect_identical(as.character(as.character(template)), "a\n\n11\n b")
 })
 
-test_that("UTF-8 characters in templates", {
+test_template <- function(){
   template <- htmlTemplate("template-document.html", x = "")
   html <- renderDocument(template)
 
@@ -44,6 +44,19 @@ test_that("UTF-8 characters in templates", {
   Encoding(latin1_str) <- "latin1"
   text <- as.character(htmlTemplate(text_ = latin1_str))
   expect_identical(charToRaw(text), as.raw(c(0xc3, 0xbf)))
+}
+
+test_that("UTF-8 characters in templates with default locale", {
+  # The default locale
+  loc <- ""
+  withr::with_locale(c(LC_COLLATE=loc, LC_CTYPE=loc, LC_MONETARY=loc, LC_TIME=loc), test_template())
+
+})
+test_that("UTF-8 characters in templates with Chinese locale", {
+  # Chinese locale
+  loc <- "Chinese"
+  testthat::skip_if_not(is_locale_available(loc), "Chinese locale not available")
+  withr::with_locale(c(LC_COLLATE=loc, LC_CTYPE=loc, LC_MONETARY=loc, LC_TIME=loc), test_template())
 })
 
 test_that("UTF-8 characters in template head but not body", {

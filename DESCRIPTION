@@ -1,7 +1,7 @@
 Package: htmltools
 Type: Package
 Title: Tools for HTML
-Version: 0.3.6.9003
+Version: 0.3.6.9004
 Author: RStudio, Inc.
 Maintainer: Joe Cheng <joe@rstudio.com>
 Description: Tools for HTML generation and output.
@@ -10,13 +10,26 @@ Depends:
 Imports:
     utils,
     digest,
-    Rcpp
+    Rcpp,
+    rlang
 Suggests:
     markdown,
-    testthat
+    testthat,
+    withr
 Enhances: knitr
 License: GPL (>= 2)
 URL: https://github.com/rstudio/htmltools
 BugReports: https://github.com/rstudio/htmltools/issues
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 LinkingTo: Rcpp
+Encoding: UTF-8
+Collate: 
+    'RcppExports.R'
+    'html_dependency.R'
+    'html_escape.R'
+    'html_print.R'
+    'shim.R'
+    'utils.R'
+    'tags.R'
+    'template.R'
+    'zzz.R'
