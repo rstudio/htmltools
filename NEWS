@@ -21,6 +21,9 @@ htmltools 0.3.6.9003
 * The error message for trailing commas in tag functions now provides context
   and useful information. (#109)
 
+* Stopped using inline styles to set background color for `save_html`, as doing so
+  makes it difficult to override using other CSS rules. (#123)
+
 * Added a `.noWS` argument to `tag()` and `tags` which can be used to suppress
   the automatically generated whitespace around a particular tag. (#131)
 
