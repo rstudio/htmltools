@@ -1076,7 +1076,7 @@ as.tags.html_dependency <- function(x, ...) {
 #'
 #' @export
 htmlPreserve <- function(x) {
-  x <- paste(x, collapse = "\r\n")
+  x <- paste(x, collapse = "\n")
   if (nzchar(x))
     sprintf("<!--html_preserve-->%s<!--/html_preserve-->", x)
   else
@@ -1361,7 +1361,7 @@ hr <- tags$hr
 #' @export
 includeHTML <- function(path) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
-  return(HTML(paste8(lines, collapse='\r\n')))
+  return(HTML(paste8(lines, collapse='\n')))
 }
 
 #' @note \code{includeText} escapes its contents, but does no other processing.
@@ -1374,7 +1374,7 @@ includeHTML <- function(path) {
 #' @export
 includeText <- function(path) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
-  return(paste8(lines, collapse='\r\n'))
+  return(paste8(lines, collapse='\n'))
 }
 
 #' @note The \code{includeMarkdown} function requires the \code{markdown}
@@ -1396,14 +1396,14 @@ includeCSS <- function(path, ...) {
   if (is.null(args$type))
     args$type <- 'text/css'
   return(do.call(tags$style,
-    c(list(HTML(paste8(lines, collapse='\r\n'))), args)))
+    c(list(HTML(paste8(lines, collapse='\n'))), args)))
 }
 
 #' @rdname include
 #' @export
 includeScript <- function(path, ...) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
-  return(tags$script(HTML(paste8(lines, collapse='\r\n')), ...))
+  return(tags$script(HTML(paste8(lines, collapse='\n')), ...))
 }
 
 #' Include content only once

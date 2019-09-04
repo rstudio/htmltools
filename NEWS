@@ -31,6 +31,9 @@ htmltools 0.3.6.9003
 
 * Fixed #125: `print.html` removes html dependencies. (#126)
 
+* Stopped extra carriage returns from being inserted by `save_html` on Windows.
+  (#137)
+
 htmltools 0.3.6
 --------------------------------------------------------------------------------
 
