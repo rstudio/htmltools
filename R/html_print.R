@@ -69,6 +69,9 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
 #'
 #' @export
 save_html <- function(html, file, background = "white", libdir = "lib") {
+  force(html)
+  force(background)
+  force(libdir)
 
   # ensure that the paths to dependencies are relative to the base
   # directory where the webpage is being built.
