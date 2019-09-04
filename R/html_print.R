@@ -69,6 +69,9 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
 #'
 #' @export
 save_html <- function(html, file, background = "white", libdir = "lib") {
+  force(html)
+  force(background)
+  force(libdir)
 
   # ensure that the paths to dependencies are relative to the base
   # directory where the webpage is being built.
@@ -98,8 +101,16 @@ save_html <- function(html, file, background = "white", libdir = "lib") {
             "</body>",
             "</html>")
 
+  if (is.character(file)) {
+    # Write to file in binary mode, so \r\n in input doesn't become \r\r\n
+    con <- base::file(file, open = "w+b")
+    on.exit(close(con))
+  } else {
+    con <- file
+  }
+
   # write it
-  writeLines(html, file, useBytes = TRUE)
+  writeLines(html, con, useBytes = TRUE)
 }
 
 
