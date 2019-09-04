@@ -98,9 +98,8 @@ save_html <- function(html, file, background = "white", libdir = "lib") {
             "</html>")
 
   # write it
-  file_nat <- file(file, open = "w+", encoding = "native.enc")
-  writeLines(enc2utf8(html), file_nat, useBytes = TRUE)
-  close(file_nat)
+  opts = options(encoding = "native.enc"); on.exit(options(opts), add = TRUE)
+  writeLines(enc2utf8(html), file, useBytes = TRUE)
 }
 
 
