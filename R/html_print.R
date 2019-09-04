@@ -98,7 +98,8 @@ save_html <- function(html, file, background = "white", libdir = "lib") {
             "</html>")
 
   # write it
-  opts = options(encoding = "native.enc"); on.exit(options(opts), add = TRUE)
+  opts <- options(encoding = "native.enc")
+  on.exit(options(opts), add = TRUE)
   writeLines(enc2utf8(html), file, useBytes = TRUE)
 }
 
