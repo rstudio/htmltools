@@ -48,11 +48,12 @@ test_that("CRLF is properly handled", {
 })
 
 test_that("Special characters are not re-encoded", {
+  skip_on_cran()
   # https://github.com/rstudio/htmltools/pull/117
   f <- tempfile(fileext = ".html")
   withr::with_options(
     list(encoding = "UTF-8"),
     save_html(div("brûlée"), f)
   )
-  any(grepl("brûlée", readLines(f)))
+  expect_true(any(grepl("brûlée", readLines(f))))
 })
