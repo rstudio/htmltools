@@ -104,7 +104,7 @@ save_html <- function(html, file, background = "white", libdir = "lib") {
   if (is.character(file)) {
     # Write to file in binary mode, so \r\n in input doesn't become \r\r\n
     con <- base::file(file, open = "w+b")
-    on.exit(close(con))
+    on.exit(close(con), add = TRUE)
   } else {
     con <- file
   }

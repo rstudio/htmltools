@@ -8,7 +8,7 @@ test_that("print.html preserves dependencies for HTML()", {
   op <- options(viewer = function(url) {
     url <<- url
   })
-  on.exit(options(op))
+  on.exit(options(op), add = TRUE)
 
   print(attachDependencies(HTML("test"),
     list(dep)
@@ -22,7 +22,7 @@ test_that("CRLF is properly handled", {
   txt <- paste(c("x", "y", ""), collapse = "\r\n")
 
   tmp <- tempfile(fileext = ".txt")
-  on.exit(unlink(tmp))
+  on.exit(unlink(tmp), add = TRUE)
 
   writeBin(charToRaw(txt), tmp)
 
@@ -37,9 +37,12 @@ test_that("CRLF is properly handled", {
   )
 
   out <- tempfile(fileext = ".html")
-  on.exit(unlink(out))
+  on.exit(unlink(out), add = TRUE)
 
+  wd <- getwd()
   save_html(obj, out)
+  # Verify that save_html doesn't alter working dir
+  expect_identical(getwd(), wd)
 
   chr <- readChar(out, file.size(out))
   expect_false(grepl("\r\r\n", chr))
