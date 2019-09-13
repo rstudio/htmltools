@@ -1,4 +1,4 @@
-htmltools 0.3.6.9003
+htmltools 0.4.0
 --------------------------------------------------------------------------------
 
 * Fixed #128: Added support for trailing commas in tagLists and the predefined
