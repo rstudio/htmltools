@@ -56,7 +56,9 @@ test_that("Special characters are not re-encoded", {
   f <- tempfile(fileext = ".html")
   withr::with_options(
     list(encoding = "UTF-8"),
-    save_html(div("brûlée"), f)
+    {
+      save_html(div("brûlée"), f)
+      expect_true(any(grepl("brûlée", readLines(f))))
+    }
   )
-  expect_true(any(grepl("brûlée", readLines(f))))
 })
