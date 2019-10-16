@@ -693,7 +693,7 @@ test_that("cssList tests", {
   expect_error(css(1, b=2))
 
   # NULL and empty string are dropped
-  expect_identical(css(a="", b = NULL, "c!" = NULL, d = character()), "")
+  expect_null(css(a="", b = NULL, "c!" = NULL, d = character()))
 
   # We are dumb about duplicated properties. Probably don't do that.
   expect_identical(css(a=1, a=2), "a:1;a:2;")

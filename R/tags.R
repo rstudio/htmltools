@@ -1534,7 +1534,7 @@ css <- function(..., collapse_ = "") {
   # Drop null args
   props <- props[!sapply(props, empty)]
   if (length(props) == 0) {
-    return("")
+    return(NULL)
   }
 
   # Replace all '.' and '_' in property names to '-'
