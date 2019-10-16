@@ -366,6 +366,17 @@ test_that("Adding attributes to tags", {
     list(class = "c1 c2", class = "c3")
   )
 
+  # Adding empty attributes
+  expect_identical(
+    tagAppendAttributes(t1, class = NULL)$attribs,
+    list()
+  )
+  expect_identical(
+    tagAppendAttributes(
+      tagAppendAttributes(t1, class = "hidden"), class = NULL)$attribs,
+    list(class = "hidden")
+  )
+
   t2 <- tags$div("foo", class = "c1")
 
   # Adding attributes on a tag with other attributes
@@ -674,8 +685,8 @@ test_that("Indenting can be controlled/suppressed", {
 })
 
 test_that("cssList tests", {
-  expect_identical("", css())
-  expect_identical("", css())
+  expect_identical(NULL, css())
+  expect_identical(NULL, css())
   expect_identical(
     css(
       font.family = 'Helvetica, "Segoe UI"',
@@ -822,4 +833,15 @@ test_that("htmlEscape will try to coerce inputs to characters", {
     htmlEscape(x),
     as.character(x)
   )
+})
+
+test_that("trailing commas allowed everywhere", {
+  expect_silent({
+    t1 <- div("foo",)
+    tagList(t1,)
+    tagSetChildren(t1, "child",)
+    tagAppendAttributes(t1, class = "bar",)
+    tagAppendChildren(t1, "child2",)
+    css(style = "",)
+  })
 })

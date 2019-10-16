@@ -37,7 +37,7 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
 
   # Create environment to evaluate code, as a child of the global env. This
   # environment gets the ... arguments assigned as variables.
-  vars <- list(...)
+  vars <- dots_list(...)
   if ("headContent" %in% names(vars)) {
     stop("Can't use reserved argument name 'headContent'.")
   }

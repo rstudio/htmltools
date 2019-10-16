@@ -259,7 +259,7 @@ tagList <- function(...) {
 #' @rdname tag
 #' @export
 tagAppendAttributes <- function(tag, ...) {
-  tag$attribs <- c(tag$attribs, list(...))
+  tag$attribs <- c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
   tag
 }
 
@@ -299,14 +299,14 @@ tagAppendChild <- function(tag, child) {
 #' @rdname tag
 #' @export
 tagAppendChildren <- function(tag, ..., list = NULL) {
-  tag$children <- c(tag$children, c(list(...), list))
+  tag$children <- unname(c(tag$children, c(dots_list(...), list)))
   tag
 }
 
 #' @rdname tag
 #' @export
 tagSetChildren <- function(tag, ..., list = NULL) {
-  tag$children <- c(list(...), list)
+  tag$children <- unname(c(dots_list(...), list))
   tag
 }
 
@@ -910,7 +910,7 @@ rm(known_tags)
 #'
 #' @export
 HTML <- function(text, ...) {
-  htmlText <- c(text, as.character(list(...)))
+  htmlText <- c(text, as.character(dots_list(...)))
   htmlText <- paste8(htmlText, collapse=" ")
   attr(htmlText, "html") <- TRUE
   class(htmlText) <- c("html", "character")
@@ -1392,7 +1392,7 @@ includeMarkdown <- function(path) {
 #' @export
 includeCSS <- function(path, ...) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
-  args <- list(...)
+  args <- dots_list(...)
   if (is.null(args$type))
     args$type <- 'text/css'
   return(do.call(tags$style,
@@ -1519,9 +1519,9 @@ validateCssUnit <- function(x) {
 #'
 #' @export
 css <- function(..., collapse_ = "") {
-  props <- list(...)
+  props <- dots_list(...)
   if (length(props) == 0) {
-    return("")
+    return(NULL)
   }
 
   if (is.null(names(props)) || any(names(props) == "")) {
