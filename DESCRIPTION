@@ -10,12 +10,16 @@ Depends:
 Imports:
     utils,
     digest,
+    grDevices,
+    base64enc,
     Rcpp,
     rlang
 Suggests:
     markdown,
     testthat,
-    withr
+    withr,
+    Cairo,
+    ragg,
 Enhances: knitr
 License: GPL (>= 2)
 URL: https://github.com/rstudio/htmltools
