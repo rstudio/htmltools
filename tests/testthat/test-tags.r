@@ -100,7 +100,10 @@ test_that("Adding child tags", {
   t2 <- tagAppendChild(t2, tag_list[[3]])
   t2a <- do.call(tags$div, c(tag_list, class="foo"))
   expect_identical(t2a, t2)
-
+  t2b <- tagAppendChildren(div_tag, `names_are_ignored` = tag_list[[1]],
+    "ignore-this-name" = tag_list[[2]],
+    dummyName = tag_list[[3]])
+  expect_identical(t2b, t2)
 
   # tagSetChildren, using list argument
   t2 <- tagSetChildren(div_tag, list = tag_list)
@@ -108,6 +111,10 @@ test_that("Adding child tags", {
 
   # tagSetChildren, using ... arguments
   t2 <- tagSetChildren(div_tag, tag_list[[1]], tag_list[[2]], tag_list[[3]])
+  expect_identical(t2a, t2)
+
+  # tagSetChildren, using named ... arguments (names should be ignored)
+  t2 <- tagSetChildren(div_tag, ignored = tag_list[[1]], dummy = tag_list[[2]], blah = tag_list[[3]])
   expect_identical(t2a, t2)
 
   # tagSetChildren, using ... and list arguments
