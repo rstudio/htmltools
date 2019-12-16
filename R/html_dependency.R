@@ -196,7 +196,7 @@ attachDependencies <- function(x, value, append = FALSE) {
 #' @seealso \code{\link[htmltools]{htmlDependency}}
 #' @export
 suppressDependencies <- function(...) {
-  lapply(list(...), function(name) {
+  lapply(dots_list(...), function(name) {
     attachDependencies(
       character(0),
       htmlDependency(name, "9999", c(href = ""))

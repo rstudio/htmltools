@@ -100,7 +100,10 @@ test_that("Adding child tags", {
   t2 <- tagAppendChild(t2, tag_list[[3]])
   t2a <- do.call(tags$div, c(tag_list, class="foo"))
   expect_identical(t2a, t2)
-
+  t2b <- tagAppendChildren(div_tag, `names_are_ignored` = tag_list[[1]],
+    "ignore-this-name" = tag_list[[2]],
+    dummyName = tag_list[[3]])
+  expect_identical(t2b, t2)
 
   # tagSetChildren, using list argument
   t2 <- tagSetChildren(div_tag, list = tag_list)
@@ -108,6 +111,10 @@ test_that("Adding child tags", {
 
   # tagSetChildren, using ... arguments
   t2 <- tagSetChildren(div_tag, tag_list[[1]], tag_list[[2]], tag_list[[3]])
+  expect_identical(t2a, t2)
+
+  # tagSetChildren, using named ... arguments (names should be ignored)
+  t2 <- tagSetChildren(div_tag, ignored = tag_list[[1]], dummy = tag_list[[2]], blah = tag_list[[3]])
   expect_identical(t2a, t2)
 
   # tagSetChildren, using ... and list arguments
@@ -364,6 +371,17 @@ test_that("Adding attributes to tags", {
     tagAppendAttributes(
       tagAppendAttributes(t1, class = "c1 c2"), class = "c3")$attribs,
     list(class = "c1 c2", class = "c3")
+  )
+
+  # Adding empty attributes
+  expect_identical(
+    tagAppendAttributes(t1, class = NULL)$attribs,
+    list()
+  )
+  expect_identical(
+    tagAppendAttributes(
+      tagAppendAttributes(t1, class = "hidden"), class = NULL)$attribs,
+    list(class = "hidden")
   )
 
   t2 <- tags$div("foo", class = "c1")
@@ -674,8 +692,8 @@ test_that("Indenting can be controlled/suppressed", {
 })
 
 test_that("cssList tests", {
-  expect_identical("", css())
-  expect_identical("", css())
+  expect_identical(NULL, css())
+  expect_identical(NULL, css())
   expect_identical(
     css(
       font.family = 'Helvetica, "Segoe UI"',
@@ -693,7 +711,7 @@ test_that("cssList tests", {
   expect_error(css(1, b=2))
 
   # NULL and empty string are dropped
-  expect_identical(css(a="", b = NULL, "c!" = NULL, d = character()), "")
+  expect_null(css(a="", b = NULL, "c!" = NULL, d = character()))
 
   # We are dumb about duplicated properties. Probably don't do that.
   expect_identical(css(a=1, a=2), "a:1;a:2;")
@@ -822,4 +840,15 @@ test_that("htmlEscape will try to coerce inputs to characters", {
     htmlEscape(x),
     as.character(x)
   )
+})
+
+test_that("trailing commas allowed everywhere", {
+  expect_silent({
+    t1 <- div("foo",)
+    tagList(t1,)
+    tagSetChildren(t1, "child",)
+    tagAppendAttributes(t1, class = "bar",)
+    tagAppendChildren(t1, "child2",)
+    css(style = "",)
+  })
 })

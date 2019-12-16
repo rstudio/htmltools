@@ -1,3 +1,17 @@
+htmltools 0.4.0.9001
+--------------------------------------------------------------------------------
+
+* `css()` now returns `NULL` instead of `""` when no non-empty properties are
+  specified.
+
+* `save_html(tags$body(...))` no longer results in double <body> tags being
+  written to the .html file. (Note that `save_html(tags$html(...))` is not
+  supported at this time.)
+
+* Trailing commas now permited in `...` arguments to `css()`, `tagList()`, and
+  the var-arg mutation functions: `tagAppendAttributes()`, `tagSetChildren()`,
+  and `tagAppendChildren()`.
+
 htmltools 0.4.0
 --------------------------------------------------------------------------------
 

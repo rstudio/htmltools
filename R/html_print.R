@@ -87,6 +87,13 @@ save_html <- function(html, file, background = "white", libdir = "lib") {
     dep
   })
 
+  bodyBegin <- if (!isTRUE(grepl("<body\\b", rendered$html[1], ignore.case = TRUE))) {
+    "<body>"
+  }
+  bodyEnd <- if (!is.null(bodyBegin)) {
+    "</body>"
+  }
+
   # build the web-page
   html <- c("<!DOCTYPE html>",
             "<html>",
@@ -96,9 +103,9 @@ save_html <- function(html, file, background = "white", libdir = "lib") {
             renderDependencies(deps, c("href", "file")),
             rendered$head,
             "</head>",
-            "<body>",
+            bodyBegin,
             rendered$html,
-            "</body>",
+            bodyEnd,
             "</html>")
 
   if (is.character(file)) {
