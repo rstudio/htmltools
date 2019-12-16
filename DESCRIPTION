@@ -28,6 +28,7 @@ Collate:
     'html_dependency.R'
     'html_escape.R'
     'html_print.R'
+    'images.R'
     'shim.R'
     'utils.R'
     'tags.R'
