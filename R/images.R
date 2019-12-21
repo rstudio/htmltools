@@ -63,7 +63,7 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
   if (!"..." %in% argnms) {
     # Only include `width`, `height`, and `res` if the corresponding formal
     # parameters are present.
-    args <- args[names(args) %in% argnms | names(args) == "filename"]
+    args <- args[names(args) %in% argnms]
   }
   args <- c(list(filename = filename), args, rlang::list2(...))
 
@@ -79,7 +79,7 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
   tryCatch({
     result <- withVisible(rlang::eval_tidy(expr))
     if (result$visible) {
-      capture.output(print(result))
+      capture.output(print(result$value))
     }
     filename
   }, error = function(e) {
@@ -194,9 +194,9 @@ plotTag <- function(expr, alt, device = defaultPngDevice(), width = 400, height 
 defaultPngDevice <- function() {
   if (capabilities("aqua")) {
     grDevices::png
-  } else if (nchar(system.file(package = "ragg"))) {
+  } else if (system.file(package = "ragg") != "") {
     ragg::agg_png
-  } else if (nchar(system.file(package = "Cairo"))) {
+  } else if (system.file(package = "Cairo") != "") {
     Cairo::CairoPNG
   } else {
     grDevices::png
