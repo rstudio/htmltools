@@ -24,7 +24,7 @@ Enhances: knitr
 License: GPL (>= 2)
 URL: https://github.com/rstudio/htmltools
 BugReports: https://github.com/rstudio/htmltools/issues
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 LinkingTo: Rcpp
 Encoding: UTF-8
 Collate: 

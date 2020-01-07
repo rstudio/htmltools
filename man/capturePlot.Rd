@@ -4,9 +4,15 @@
 \alias{capturePlot}
 \title{Capture a plot as a saved file}
 \usage{
-capturePlot(expr, filename = tempfile(fileext = ".png"),
-  device = defaultPngDevice(), width = 400, height = 400, res = 72,
-  ...)
+capturePlot(
+  expr,
+  filename = tempfile(fileext = ".png"),
+  device = defaultPngDevice(),
+  width = 400,
+  height = 400,
+  res = 72,
+  ...
+)
 }
 \arguments{
 \item{expr}{A plotting expression that generates a plot (or yields an object

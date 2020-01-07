@@ -4,10 +4,18 @@
 \alias{plotTag}
 \title{Capture a plot as a self-contained \code{<img>} tag}
 \usage{
-plotTag(expr, alt, device = defaultPngDevice(), width = 400,
-  height = 400, pixelratio = 2, mimeType = "image/png",
-  deviceArgs = list(), attribs = list(), suppressSize = c("none",
-  "x", "y", "xy"))
+plotTag(
+  expr,
+  alt,
+  device = defaultPngDevice(),
+  width = 400,
+  height = 400,
+  pixelratio = 2,
+  mimeType = "image/png",
+  deviceArgs = list(),
+  attribs = list(),
+  suppressSize = c("none", "x", "y", "xy")
+)
 }
 \arguments{
 \item{expr}{A plotting expression that generates a plot (or yields an object

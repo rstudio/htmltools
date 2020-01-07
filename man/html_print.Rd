@@ -4,8 +4,11 @@
 \alias{html_print}
 \title{Implementation of the print method for HTML}
 \usage{
-html_print(html, background = "white", viewer = getOption("viewer",
-  utils::browseURL))
+html_print(
+  html,
+  background = "white",
+  viewer = getOption("viewer", utils::browseURL)
+)
 }
 \arguments{
 \item{html}{HTML content to print}

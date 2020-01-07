@@ -4,8 +4,12 @@
 \alias{renderDependencies}
 \title{Create HTML for dependencies}
 \usage{
-renderDependencies(dependencies, srcType = c("href", "file"),
-  encodeFunc = urlEncodePath, hrefFilter = identity)
+renderDependencies(
+  dependencies,
+  srcType = c("href", "file"),
+  encodeFunc = urlEncodePath,
+  hrefFilter = identity
+)
 }
 \arguments{
 \item{dependencies}{A list of \code{htmlDependency} objects.}
