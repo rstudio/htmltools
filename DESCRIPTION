@@ -19,7 +19,7 @@ Suggests:
     testthat,
     withr,
     Cairo,
-    ragg,
+    ragg
 Enhances: knitr
 License: GPL (>= 2)
 URL: https://github.com/rstudio/htmltools
