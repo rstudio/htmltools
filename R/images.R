@@ -65,16 +65,22 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
     # parameters are present.
     args <- args[names(args) %in% argnms]
   }
-  args <- c(list(filename = filename), args, rlang::list2(...))
+
+  # Use either `filename` or `file` (e.g. svglite::svglite) as the argument
+  # name for filename
+  filename_arg <- "filename"
+  if (!("filename" %in% argnms) && "file" %in% argnms) {
+    filename_arg <- "file"
+  }
+
+  args <- c(rlang::list2(!!filename_arg := filename), args, rlang::list2(...))
 
   do.call(device, args)
   dev <- grDevices::dev.cur()
   on.exit(grDevices::dev.off(dev), add = TRUE, after = FALSE)
 
-  op <- graphics::par(mar = rep(0, 4))
   # Prevent examples() from prompting
   grDevices::devAskNewPage(FALSE)
-  tryCatch(graphics::plot.new(), finally = graphics::par(op))
 
   tryCatch({
     result <- withVisible(rlang::eval_tidy(expr))
