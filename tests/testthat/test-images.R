@@ -14,6 +14,9 @@ test_that("capturePlot works with device functions with various signatures", {
     grDevices::png(filename = filename, ...)
   })
 
+  # Ensure blank plot works
+  plotTag({}, alt = "", device = png)
+
   # So testthat knows we didn't skip testing
   expect_true(TRUE)
 })
