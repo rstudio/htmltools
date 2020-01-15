@@ -51,11 +51,8 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
     FUN = function(piece, isCode) {
       if (isCode) {
         eval(parse(text = piece), env)
-      } else if (piece == "") {
-        # Don't add leading/trailing '\n' if empty HTML string.
-        NULL
       } else {
-        HTML(piece)
+        HTML(piece, .noWS = "outside")
       }
     },
     SIMPLIFY = FALSE

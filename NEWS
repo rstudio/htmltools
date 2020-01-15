@@ -1,6 +1,12 @@
 htmltools 0.4.0.9001
 --------------------------------------------------------------------------------
 
+* BREAKING CHANGE: Fixed #57, #153: `htmlTemplate` output no longer inserts
+  extra whitespace around {{...}} replacement values. (#154)
+
+* `HTML()` now takes `.noWS` argument, which can be used to suppress surrounding
+  whitespace (similar to the new argument for tags in htmltools 0.4.0).
+
 * `css()` now returns `NULL` instead of `""` when no non-empty properties are
   specified.
 

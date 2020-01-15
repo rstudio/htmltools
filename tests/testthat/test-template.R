@@ -21,11 +21,11 @@ test_that("Code blocks are evaluated and rendered correctly", {
 
   # With text_ argument
   template <- htmlTemplate(text_ = "a {{ foo + 1 }} b", foo = 10)
-  expect_identical(as.character(as.character(template)), "a \n11\n b")
+  expect_identical(as.character(as.character(template)), "a 11 b")
 
   # Make char vectors are pasted together
   template <- htmlTemplate(text_ = c("a", "{{ foo + 1 }} b"), foo = 10)
-  expect_identical(as.character(as.character(template)), "a\n\n11\n b")
+  expect_identical(as.character(as.character(template)), "a\n11 b")
 })
 
 test_template <- function(){
@@ -143,11 +143,11 @@ test_that("Brackets at start or end of text", {
   # Code and text
   expect_identical(
     as.character(htmlTemplate(text_ = "text {{ code }} text", code = 1)),
-    "text \n1\n text"
+    "text 1 text"
   )
   expect_identical(
     as.character(htmlTemplate(text_ = "text{{code}}text", code = 1)),
-    "text\n1\ntext"
+    "text1text"
   )
 
   # No brackets
@@ -163,11 +163,11 @@ test_that("Brackets at start or end of text", {
   )
   expect_identical(
     as.character(htmlTemplate(text_ = " {{ code }}", code = 1)),
-    " \n1"
+    " 1"
   )
   expect_identical(
     as.character(htmlTemplate(text_ = "{{ code }} ", code = 1)),
-    "1\n "
+    "1 "
   )
 
   # Edge cases
@@ -175,10 +175,10 @@ test_that("Brackets at start or end of text", {
   expect_identical(as.character(htmlTemplate(text_ = "X")), "X")
   expect_identical(as.character(htmlTemplate(text_ = " ")), " ")
   expect_identical(as.character(htmlTemplate(text_ = "{{}}")), "")
-  expect_identical(as.character(htmlTemplate(text_ = " {{}} ")), " \n ")
+  expect_identical(as.character(htmlTemplate(text_ = " {{}} ")), "  ")
   expect_identical(as.character(htmlTemplate(text_ = "{{ }}")), "")
   expect_identical(as.character(htmlTemplate(text_ = "{{}}{{}}")), "")
-  expect_identical(as.character(htmlTemplate(text_ = "{{1}}{{2}}")), "1\n2")
+  expect_identical(as.character(htmlTemplate(text_ = "{{1}}{{2}}")), "12")
   expect_error(as.character(htmlTemplate(text_ = "{{")))
   expect_error(as.character(htmlTemplate(text_ = " {{")))
   expect_error(as.character(htmlTemplate(text_ = "{{ ")))
@@ -191,14 +191,14 @@ test_that("Brackets at start or end of text", {
 test_that("Template DFA edge cases", {
   # Single quotes
   expect_identical(as.character(htmlTemplate(text_ = "{{ '' }}")), "")
-  expect_identical(as.character(htmlTemplate(text_ = " {{ '' }} ")), " \n\n ")
+  expect_identical(as.character(htmlTemplate(text_ = " {{ '' }} ")), "  ")
   expect_identical(as.character(htmlTemplate(text_ = "{{ '\\'' }}")), "'")
   expect_identical(as.character(htmlTemplate(text_ = "{{ '\\\\' }}")), "\\")
   expect_identical(as.character(htmlTemplate(text_ = "{{ '}}' }}")), "}}")
 
   # Double quotes
   expect_identical(as.character(htmlTemplate(text_ = '{{ "" }}')), '')
-  expect_identical(as.character(htmlTemplate(text_ = ' {{ "" }} ')), ' \n\n ')
+  expect_identical(as.character(htmlTemplate(text_ = ' {{ "" }} ')), '  ')
   expect_identical(as.character(htmlTemplate(text_ = '{{ "\\"" }}')), '"')
   expect_identical(as.character(htmlTemplate(text_ = '{{ "\\\\" }}')), '\\')
   expect_identical(as.character(htmlTemplate(text_ = '{{ "}}" }}')), '}}')
@@ -211,28 +211,28 @@ test_that("Template DFA edge cases", {
   # Percent operator - various delimiters in percent operator
   expect_identical(
     as.character(htmlTemplate(text_ = "a{{ `%'%` <- function(x, y) 1; 2 %'% 3 }}b")),
-    "a\n1\nb"
+    "a1b"
   )
   expect_identical(
     as.character(htmlTemplate(text_ = "a{{ `%}}%` <- function(x, y) 1; 2 %}}% 3 }}b")),
-    "a\n1\nb"
+    "a1b"
   )
 
   # Comments
   expect_identical(
     as.character(htmlTemplate(text_ = "a{{ 1 #2 }}b")),
-    "a\n1\nb"
+    "a1b"
   )
   expect_identical(
     as.character(htmlTemplate(text_ = "a{{ 1 #2\n3 }}b")),
-    "a\n3\nb"
+    "a3b"
   )
   expect_identical(
     as.character(htmlTemplate(text_ = "a{{ 1 #2'3 }}b")),
-    "a\n1\nb"
+    "a1b"
   )
   expect_identical(
     as.character(htmlTemplate(text_ = "a{{ 1 #2}3 }}b")),
-    "a\n1\nb"
+    "a1b"
   )
 })

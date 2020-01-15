@@ -417,7 +417,14 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   # Check if it's just text (may either be plain-text or HTML)
   if (is.character(tag)) {
+    .noWS <- attr(tag, "noWS", exact = TRUE)
+    if ("before" %in% .noWS || "outside" %in% .noWS) {
+      textWriter$eatWS()
+    }
     textWriter$write(normalizeText(tag))
+    if ("after" %in% .noWS || "outside" %in% .noWS) {
+      textWriter$eatWS()
+    }
     textWriter$writeWS(eol)
     return (NULL)
   }
@@ -902,6 +909,10 @@ rm(known_tags)
 #' @param text The text value to mark with HTML
 #' @param ... Any additional values to be converted to character and
 #'   concatenated together
+#' @param .noWS Character vector used to omit some of the whitespace that would
+#'   normally be written around this HTML. Valid options include \code{before},
+#'   \code{after}, and \code{outside} (equivalent to \code{before} and
+#'   \code{end}).
 #' @return The same value, but marked as HTML.
 #'
 #' @examples
@@ -909,10 +920,11 @@ rm(known_tags)
 #' cat(as.character(el))
 #'
 #' @export
-HTML <- function(text, ...) {
+HTML <- function(text, ..., .noWS = NULL) {
   htmlText <- c(text, as.character(dots_list(...)))
   htmlText <- paste8(htmlText, collapse=" ")
   attr(htmlText, "html") <- TRUE
+  attr(htmlText, "noWS") <- .noWS
   class(htmlText) <- c("html", "character")
   htmlText
 }
