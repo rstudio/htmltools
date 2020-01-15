@@ -12,6 +12,9 @@ htmltools 0.4.0.9001
   the var-arg mutation functions: `tagAppendAttributes()`, `tagSetChildren()`,
   and `tagAppendChildren()`.
 
+* Added `capturePlot` and `plotTag` functions, for easily creating image files
+  and HTML <img> tags (respectively) from plot expressions.
+
 htmltools 0.4.0
 --------------------------------------------------------------------------------
 
