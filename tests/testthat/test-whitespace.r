@@ -96,5 +96,57 @@ with(tags, {
         "  </span></div>"
       ))
     )
+
+    expect_identical(
+      as.character(
+        div(
+          HTML("one", .noWS = "before"),
+          HTML("two")
+        )
+      ),
+      paste(collapse = "\n", c(
+        "<div>one",
+        "  two",
+        "</div>"
+      ))
+    )
+
+    expect_identical(
+      as.character(
+        div(
+          HTML("one", .noWS = c("before", "after")),
+          HTML("two")
+        )
+      ),
+      paste(collapse = "\n", c(
+        "<div>onetwo",
+        "</div>"
+      ))
+    )
+
+    expect_identical(
+      as.character(
+        div(.noWS = c("after-begin", "before-end"),
+          HTML("one"),
+          HTML("two")
+        )
+      ),
+      paste(collapse = "\n", c(
+        "<div>one",
+        "  two</div>"
+      ))
+    )
+
+    expect_identical(
+      as.character(
+        div(
+          HTML("one", .noWS = "outside"),
+          HTML("two", .noWS = "outside"),
+        )
+      ),
+      paste(collapse = "\n", c(
+        "<div>onetwo</div>"
+      ))
+    )
   })
 })
