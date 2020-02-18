@@ -106,7 +106,7 @@ parseCssColors <- function(str, mustWork = TRUE) {
   }
 
   if (mustWork && any(!success)) {
-    stop("CSS color value(s) could not be parsed")
+    stop(sprintf("CSS color value(s) could not be parsed: '%s'", paste0(str[!success], collapse = "', '")))
   }
 
   result
