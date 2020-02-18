@@ -8,7 +8,7 @@ color_strip_ws <- function(str) {
 }
 
 # Takes a vector of strings whose elements represent a SINGLE hex color channel
-# (one or two hexadecimal digits) and return an integer in the range [0-255]
+# (one or two hexadecimal digits) and return an integer in the range [0-255].
 conv_hexstr_to_num255 <- function(str) {
   stopifnot(all(nchar(str) %in% c(1,2)))
 
@@ -21,8 +21,17 @@ conv_hexstr_to_num255 <- function(str) {
 }
 
 # Convert strings of floating point numbers [0-255] to integer values in the
-# same range
+# same range. Valid values outside the range will be clamped. Invalid values
+# will raise errors.
 conv_decstr_to_num255 <- function(str) {
   stopifnot(all(grepl("^-?[0-9]+(\\.[0-9]+)?$", str) | grepl("^-?\\.[0-9]+$", str)))
-  pmax(0, pmin(255, round(as.numeric(str))))
+  as.integer(pmax(0, pmin(255, round(as.numeric(str)))))
+}
+
+# Convert strings of floating point numbers [0-1] to integer values [0-255].
+# Valid values outside the range will be clamped. Invalid values will raise
+# errors.
+conv_unitstr_to_num255 <- function(str) {
+  stopifnot(all(grepl("^-?[0-9]+(\\.[0-9]+)?$", str) | grepl("^-?\\.[0-9]+$", str)))
+  as.integer(pmax(0, pmin(255, round(as.numeric(str) * 255))))
 }
