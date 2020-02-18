@@ -122,14 +122,31 @@ color_strip_ws <- function(str) {
   str
 }
 
+#' Match and decode a string
+#'
+#' Given a vector of strings, applies a regex that contains one or more
+#' capturing groups. Each group's matching substrings are then passed to a
+#' decoder function, which is responsible for returning decoded values. (One
+#' decoder function is provided per capturing roup.)
+#'
+#' After decoding, all of the decoded values are cbind-ed together. The caller
+#' needs to know which elements in `str` actually matched; therefore, the actual
+#' return value is a list with names `matching_rows` and `values` (the latter is
+#' only present if one or more rows actually matched).
+#'
 #' @param pattern Regex that contains the same number of capturing groups as
 #'   unnamed arguments in `...`. The capturing groups MUST be non-overlapping.
 #' @param ... Functions for decoding each capturing group
 #' @noRd
 match_and_decode <- function(str, pattern, ...) {
+  # Example:
+  # str <- c("#123456", "#ABCDEF")
+  # pattern <- "#([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})"
+  # args <- list(decode_hex, decode_hex, decode_hex)
+
   args <- rlang::list2(...)
   m <- regexec(pattern, str)
-  matching_rows <- vapply(m, function(x) { x[1] >= 0 }, logical(1))
+  matching_rows <- vapply(m, function(x) { x[1] >= 0 }, logical(1)) # Ex: c(T,T)
   matches <- regmatches(str[matching_rows], m[matching_rows])
   if (length(matches) == 0) {
     return(list(
@@ -138,11 +155,24 @@ match_and_decode <- function(str, pattern, ...) {
   }
 
   col_count <- length(matches[[1]])
-  str_matrix <- matrix(unlist(matches), ncol = col_count, byrow = TRUE)[,-1,drop=FALSE]
+  str_matrix <- matrix(unlist(matches), ncol = col_count, byrow = TRUE)
+  # Drop the first column, which is the entire matched string; we only want the
+  # capturing groups
+  str_matrix <- str_matrix[,-1,drop=FALSE]
+  # Ex: str_matrix
+  #      [,1] [,2] [,3]
+  # [1,] "12" "34" "56"
+  # [2,] "AB" "CD" "EF"
   vals <- lapply(seq_len(ncol(str_matrix)), function(i) {
+    # Ex: decode_hex(c("12", "AB")) => c(18, 171)
     args[[i]](str_matrix[,i])
   })
   results <- do.call(cbind, vals)
+  # Ex: results
+  #      [,1] [,2] [,3]
+  # [1,]   18   52   86
+  # [2,]  171  205  239
+
   return(list(
     matching_rows = matching_rows,
     values = results
