@@ -200,7 +200,7 @@ decode_hex <- function(str) {
   str <- ifelse(nchar(str) == 1, paste0(str, str), str)
 
   res <- strtoi(str, 16)
-  stopifnot(!any(is.na(res)))
+  stopifnot(!anyNA(res))
   res
 }
 
@@ -224,19 +224,24 @@ decode_float_identity <- function(str) {
 }
 
 encode_hex <- function(values) {
-  if (ncol(values) == 0 || nrow(values) == 0) return(character(0))
+  if (length(values) == 0) {
+    return(character(0))
+  }
 
+  if (!is.matrix(values)) {
+    stop("encode_hex requires a matrix argument")
+  }
   if (ncol(values) < 3) {
     stop("encode_hex called with too few columns")
   }
   if (ncol(values) > 4) {
     stop("encode_hex called with too many columns")
   }
-  if (!is.numeric(values) && !is.integer(values)) {
-    stop("encode_hex requires numeric or integer values")
+  if (!is.numeric(values)) {
+    stop("encode_hex requires numeric values")
   }
 
-  if (is.numeric(values)) {
+  if (!is.integer(values)) {
     values <- round(values)
   }
 
@@ -259,9 +264,24 @@ encode_hex <- function(values) {
   colors
 }
 
-encode_hsl <- function(values) {
-  if (ncol(values) == 0 || nrow(values) == 0) return(character(0))
+# Convert HTML color keywords (plus "transparent") to integer matrix with 3
+# columns (r, g, b) and length(str) rows. Errors on invalid strings.
+decode_color_keyword <- function(str) {
+  color <- css_color_keywords[str]
+  if (anyNA(color)) {
+    stop("Invalid color keyword(s)")
+  }
+  unname(t(col2rgb(color, alpha = TRUE)))
+}
 
+encode_hsl <- function(values) {
+  if (length(values) == 0) {
+    return(character(0))
+  }
+
+  if (!is.matrix(values)) {
+    stop("encode_hsl requires a matrix argument")
+  }
   if (ncol(values) < 3) {
     stop("encode_hsl called with too few columns")
   }
@@ -271,6 +291,8 @@ encode_hsl <- function(values) {
   if (!is.numeric(values)) {
     stop("encode_hsl requires numeric values")
   }
+
+  # https://www.w3.org/TR/css-color-3/#hsl-color
 
   H <- values[,1]
   S <- values[,2] / 100
@@ -282,27 +304,34 @@ encode_hsl <- function(values) {
   }
 
   # Clamp
+  H <- (((H %% 360) + 360) %% 360) / 360
   S <- pmax(0, pmin(1, S))
   L <- pmax(0, pmin(1, L))
 
-  # https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB_alternative
-  f <- function(n) {
-    k <- (n + H/30) %% 12
-    a <- S * pmin(L, 1-L)
-    L - a * pmax(-1, pmin(k - 3, 9 - k, 1))
+  hue_to_rgb <- function(m1, m2, h) {
+    h <- ifelse(h < 0, h + 1,
+      ifelse(h > 1, h - 1,
+        h))
+    ifelse(h * 6 < 1, m1+(m2-m1)*h*6,
+      ifelse(h * 2 < 1, m2,
+        ifelse(h * 3 < 2, m1+(m2-m1)*(2/3-h)*6,
+          m1)))
   }
-  rgb <- cbind(f(0), f(8), f(4)) * 255
+
+  M2 <- ifelse(L <= 0.5,
+    L * (S + 1),
+    L + S - L * S
+  )
+  M1 <- L * 2 - M2
+
+  rgb <- cbind(
+    hue_to_rgb(M1, M2, H+1/3),
+    hue_to_rgb(M1, M2, H    ),
+    hue_to_rgb(M1, M2, H-1/3)
+  ) * 255
   rgb <- cbind(rgb, alpha)
 
   encode_hex(rgb)
-}
-
-decode_color_keyword <- function(str) {
-  color <- css_color_keywords[str]
-  if (any(is.na(color))) {
-    stop("Invalid color keyword(s)")
-  }
-  t(col2rgb(color, alpha = TRUE))
 }
 
 css_color_keywords <- c(
