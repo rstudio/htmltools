@@ -4,9 +4,18 @@
 #' `"#RRGGBB"` and/or `"#RRGGBBAA"` format. Understands hex colors in 3, 4, 6,
 #' and 8 digit forms, `rgb()`/`rgba()`, `hsl()`/`hsla()`, and color keywords.
 #'
+#' Note that `parseCssColors` may return colors in `#RRGGBBAA` format. Such
+#' values are not understood by Internet Explorer, and must be converted to
+#' `rgba(red, green, blue, alpha)` format to be safe for the web.
+#'
 #' @param str CSS color strings
 #' @param mustWork If true, invalid color strings will cause an error; if false,
 #'   then the result will contain `NA` for invalid colors.
+#' @return A vector of strings in `#RRGGBB` or `#RRGGBBAA` format (the latter is
+#'   only used for colors whose alpha values are less than `FF`), or `NA` for
+#'   invalid colors when `mustWork` is false. Such strings are suitable for
+#'   use in plots, or parsing with [col2rgb()] (be sure to pass `alpha = TRUE`
+#'   to prevent the alpha channel from being discarded).
 #'
 #' @examples
 #'
@@ -18,6 +27,7 @@
 #'   "hsl(261, 51%, 51%)",
 #'   "cornflowerblue"
 #' ))
+#' @md
 #' @export
 parseCssColors <- function(str, mustWork = TRUE) {
   # Strip insignificant whitespace

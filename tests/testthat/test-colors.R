@@ -7,10 +7,19 @@ colors_good <- readLines(test_path("colors-good.txt"))
 colors_good_expected <- readLines(test_path("colors-good-expected.txt"))
 
 test_that("parseCssColors", {
+  # Invalid colors
   for (color in colors_bad) {
     expect_error(parseCssColors(color))
   }
+  expect_true(all(is.na(parseCssColors(colors_bad, mustWork = FALSE))))
 
+  # Both valid and invalid
+  expect_identical(
+    parseCssColors(c("black", "hello"), mustWork = FALSE),
+    c("#000000", NA)
+  )
+
+  # Valid colors
   expect_identical(parseCssColors(colors_good), colors_good_expected)
 })
 

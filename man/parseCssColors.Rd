@@ -10,12 +10,24 @@ parseCssColors(str, mustWork = TRUE)
 \item{str}{CSS color strings}
 
 \item{mustWork}{If true, invalid color strings will cause an error; if false,
-then the result will contain `NA` for invalid colors.}
+then the result will contain \code{NA} for invalid colors.}
+}
+\value{
+A vector of strings in \verb{#RRGGBB} or \verb{#RRGGBBAA} format (the latter is
+only used for colors whose alpha values are less than \code{FF}), or \code{NA} for
+invalid colors when \code{mustWork} is false. Such strings are suitable for
+use in plots, or parsing with \code{\link[=col2rgb]{col2rgb()}} (be sure to pass \code{alpha = TRUE}
+to prevent the alpha channel from being discarded).
 }
 \description{
 Parses/normalizes CSS color strings, and returns them as strings in
-`"#RRGGBB"` and/or `"#RRGGBBAA"` format. Understands hex colors in 3, 4, 6,
-and 8 digit forms, `rgb()`/`rgba()`, `hsl()`/`hsla()`, and color keywords.
+\code{"#RRGGBB"} and/or \code{"#RRGGBBAA"} format. Understands hex colors in 3, 4, 6,
+and 8 digit forms, \code{rgb()}/\code{rgba()}, \code{hsl()}/\code{hsla()}, and color keywords.
+}
+\details{
+Note that \code{parseCssColors} may return colors in \verb{#RRGGBBAA} format. Such
+values are not understood by Internet Explorer, and must be converted to
+\code{rgba(red, green, blue, alpha)} format to be safe for the web.
 }
 \examples{
 
