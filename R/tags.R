@@ -1167,7 +1167,7 @@ extractPreserveChunks <- function(strval) {
     strval <- paste(strval, collapse = "\n")
 
   # matches contains the index of all the start and end markers
-  matches <- gregexpr(pattern, strval)[[1]]
+  matches <- gregexpr(pattern, strval, perl = TRUE)[[1]]
   lengths <- attr(matches, "match.length", TRUE)
 
   # No markers? Just return.
