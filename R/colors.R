@@ -285,7 +285,7 @@ decode_color_keyword <- function(str) {
   if (anyNA(color)) {
     stop("Invalid color keyword(s)")
   }
-  unname(t(col2rgb(color, alpha = TRUE)))
+  unname(t(grDevices::col2rgb(color, alpha = TRUE)))
 }
 
 encode_hsl <- function(values) {
