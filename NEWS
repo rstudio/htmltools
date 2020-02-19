@@ -5,21 +5,24 @@ htmltools 0.4.0.9001
   extra whitespace around {{...}} replacement values. (#154)
 
 * `HTML()` now takes `.noWS` argument, which can be used to suppress surrounding
-  whitespace (similar to the new argument for tags in htmltools 0.4.0).
+  whitespace (similar to the new argument for tags in htmltools 0.4.0). (#154)
 
 * `css()` now returns `NULL` instead of `""` when no non-empty properties are
-  specified.
+  specified. (#145)
 
 * `save_html(tags$body(...))` no longer results in double <body> tags being
   written to the .html file. (Note that `save_html(tags$html(...))` is not
-  supported at this time.)
+  supported at this time.) (#145)
 
 * Trailing commas now permited in `...` arguments to `css()`, `tagList()`, and
   the var-arg mutation functions: `tagAppendAttributes()`, `tagSetChildren()`,
-  and `tagAppendChildren()`.
+  and `tagAppendChildren()`. (#145)
 
 * Added `capturePlot` and `plotTag` functions, for easily creating image files
-  and HTML <img> tags (respectively) from plot expressions.
+  and HTML <img> tags (respectively) from plot expressions. (#150)
+
+* Added `parseCssColors` function, for normalizing the various CSS color formats
+  into #RRGGBB(AA) strings. (#155)
 
 htmltools 0.4.0
 --------------------------------------------------------------------------------

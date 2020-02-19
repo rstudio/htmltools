@@ -29,6 +29,7 @@ LinkingTo: Rcpp
 Encoding: UTF-8
 Collate: 
     'RcppExports.R'
+    'colors.R'
     'html_dependency.R'
     'html_escape.R'
     'html_print.R'
