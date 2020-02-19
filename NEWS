@@ -21,6 +21,8 @@ htmltools 0.4.0.9001
 * Added `capturePlot` and `plotTag` functions, for easily creating image files
   and HTML <img> tags (respectively) from plot expressions.
 
+* Fixed #156: Now `extractPreserveChunks()` handles strings contain Emoji Unicode strings correctly on Windows. (#157)
+
 htmltools 0.4.0
 --------------------------------------------------------------------------------
 
