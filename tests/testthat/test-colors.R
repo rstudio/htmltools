@@ -2,14 +2,16 @@ context("test-colors")
 
 colors_bad <- readLines(test_path("colors-bad.txt"))
 colors_good <- readLines(test_path("colors-good.txt"))
+# To update the test results:
+# writeLines(parseCssColors(readLines(test_path("colors-good.txt"))), test_path("colors-good-expected.txt"))
+colors_good_expected <- readLines(test_path("colors-good-expected.txt"))
 
 test_that("parseCssColors", {
   for (color in colors_bad) {
     expect_error(parseCssColors(color))
   }
-  for (color in colors_good) {
-    expect_error(parseCssColors(color), NA)
-  }
+
+  expect_identical(parseCssColors(colors_good), colors_good_expected)
 })
 
 test_that("decode_hex", {

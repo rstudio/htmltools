@@ -145,7 +145,9 @@ match_and_decode <- function(str, pattern, ...) {
   # args <- list(decode_hex, decode_hex, decode_hex)
 
   args <- rlang::list2(...)
-  m <- regexec(pattern, str)
+  stopifnot(all(vapply(args, is.function, logical(1))))
+
+  m <- regexec(pattern, str, ignore.case = TRUE)
   matching_rows <- vapply(m, function(x) { x[1] >= 0 }, logical(1)) # Ex: c(T,T)
   matches <- regmatches(str[matching_rows], m[matching_rows])
   if (length(matches) == 0) {
@@ -159,6 +161,8 @@ match_and_decode <- function(str, pattern, ...) {
   # Drop the first column, which is the entire matched string; we only want the
   # capturing groups
   str_matrix <- str_matrix[,-1,drop=FALSE]
+  # Number of function arguments should match number of regex's capturing groups
+  stopifnot(length(args) == ncol(str_matrix))
   # Ex: str_matrix
   #      [,1] [,2] [,3]
   # [1,] "12" "34" "56"
@@ -267,7 +271,7 @@ encode_hex <- function(values) {
 # Convert HTML color keywords (plus "transparent") to integer matrix with 3
 # columns (r, g, b) and length(str) rows. Errors on invalid strings.
 decode_color_keyword <- function(str) {
-  color <- css_color_keywords[str]
+  color <- css_color_keywords[tolower(str)]
   if (anyNA(color)) {
     stop("Invalid color keyword(s)")
   }

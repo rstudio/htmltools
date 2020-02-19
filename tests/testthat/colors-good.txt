@@ -11,3 +11,18 @@ rgb(100,100,100,0.5)
 rgb( 100 , 200 , 300 , 0.5 )
 rgba(100,100,100,0.5)
 rgba( 100 , 200 , 300 , 0.5 )
+hsl(0,30%,40%)
+hsl( 360 , 30% , 40% )
+hsla(0,100%,100%)
+hsla( 360 , 100% , 100% )
+hsl(-200.5,23.2%,70%,0.5)
+hsla(-200.5,23.2%,70%,0.5)
+hsl( -200.5 , 23.2% , 70% , 0.5)
+hsla( -200.5 , 23.2% , 70% , 0.5)
+white
+BLACK
+Orange
+tRaNsPaReNt
+fuchsia
+CornflowerBlue
+RebeccaPurple
