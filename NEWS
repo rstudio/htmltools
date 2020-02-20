@@ -24,6 +24,8 @@ htmltools 0.4.0.9001
 * Added `parseCssColors` function, for normalizing the various CSS color formats
   into #RRGGBB(AA) strings. (#155)
 
+* Fixed #156: Now `extractPreserveChunks()` handles strings contain Emoji Unicode strings correctly on Windows. (#157)
+
 htmltools 0.4.0
 --------------------------------------------------------------------------------
 

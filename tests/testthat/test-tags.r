@@ -852,3 +852,12 @@ test_that("trailing commas allowed everywhere", {
     css(style = "",)
   })
 })
+
+test_that("extractPreserveChunks works for emoji strings", {
+  x <- "<!--html_preserve-->chunck1<!--/html_preserve-->\U0001F937<!--html_preserve-->chunck2<!--/html_preserve-->"
+  out <- extractPreserveChunks(x)
+  expect_equivalent(
+    out$chunks,
+    c('chunck2', 'chunck1')
+  )
+})
