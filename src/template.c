@@ -13,8 +13,8 @@ SEXP str_sxp_set(SEXP x, int i, SEXP val) {
 // Break template text into character vector. The first element element of the
 // resulting vector is HTML, the next is R code, and they continue alternating.
 // [[export]]
-extern "C" SEXP template_dfa(SEXP x_sxp) {
-  enum State {
+SEXP template_dfa(SEXP x_sxp) {
+  typedef enum {
     html,
     code,
     html_oneOpenBracket,
@@ -28,7 +28,7 @@ extern "C" SEXP template_dfa(SEXP x_sxp) {
     code_percentOp,
     code_comment,
     code_comment_oneCloseBracket
-  };
+  } State;
 
   if (Rf_xlength(x_sxp) != 1) {
     Rf_error("Input HTML must be a character vector of length 1");
