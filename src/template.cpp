@@ -1,10 +1,19 @@
-#include <Rcpp.h>
-using namespace Rcpp;
+#include <Rinternals.h>
+
+SEXP str_sxp_set(SEXP x, int i, SEXP val) {
+  R_xlen_t len = Rf_xlength(x);
+  if (i >= len) {
+    len *= 2;
+    x = Rf_lengthgets(x, len);
+  }
+  SET_STRING_ELT(x, i, val);
+  return x;
+}
 
 // Break template text into character vector. The first element element of the
 // resulting vector is HTML, the next is R code, and they continue alternating.
-// [[Rcpp::export]]
-std::vector<std::string> template_dfa(CharacterVector x) {
+// [[export]]
+extern "C" SEXP template_dfa(SEXP x_sxp) {
   enum State {
     html,
     code,
@@ -21,17 +30,24 @@ std::vector<std::string> template_dfa(CharacterVector x) {
     code_comment_oneCloseBracket
   };
 
-  if (x.length() != 1) {
-    stop("Input HTML must be a character vector of length 1");
+  if (Rf_xlength(x_sxp) != 1) {
+    Rf_error("Input HTML must be a character vector of length 1");
   }
-  std::string input = Rcpp::as<std::string>(x[0]);
-  std::vector<std::string> pieces(0);
+
+  SEXP str;
+  SEXP pieces = Rf_allocVector(STRSXP, 10);
+  R_xlen_t pieces_num = 0;
+  PROTECT_INDEX pieces_idx;
+  PROTECT_WITH_INDEX(pieces, &pieces_idx);
+
+  SEXP input_sxp = STRING_ELT(x_sxp, 0);
+  const char* input = CHAR(input_sxp);
 
   int pieceStartIdx = 0;
-  int len = input.length();
+  R_xlen_t len = Rf_xlength(input_sxp);
   char c;
   State state = html;
-  for (int i=0; i < len; i++) {
+  for (R_xlen_t i=0; i < len; i++) {
     c = input[i];
     switch (state) {
 
@@ -46,7 +62,9 @@ std::vector<std::string> template_dfa(CharacterVector x) {
       switch (c) {
       case '{':
         state = code;
-        pieces.push_back(input.substr(pieceStartIdx, i - pieceStartIdx - 1));
+        str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, i - pieceStartIdx - 1, CE_UTF8));
+        REPROTECT(pieces = str_sxp_set(pieces, pieces_num++, str), pieces_idx);
+        UNPROTECT(1);
         pieceStartIdx = i + 1;
         break;
       default:
@@ -75,7 +93,9 @@ std::vector<std::string> template_dfa(CharacterVector x) {
       switch (c) {
       case '}':
         state = html;
-        pieces.push_back(input.substr(pieceStartIdx, i - pieceStartIdx - 1));
+        str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, i - pieceStartIdx - 1, CE_UTF8));
+        REPROTECT(pieces = str_sxp_set(pieces, pieces_num++, str), pieces_idx);
+        UNPROTECT(1);
         pieceStartIdx = i + 1;
         break;
       default: state = code;
@@ -141,7 +161,9 @@ std::vector<std::string> template_dfa(CharacterVector x) {
       switch (c) {
       case '}':
         state = html;
-        pieces.push_back(input.substr(pieceStartIdx, i - pieceStartIdx - 1));
+        str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, i - pieceStartIdx - 1, CE_UTF8));
+        REPROTECT(pieces = str_sxp_set(pieces, pieces_num++, str), pieces_idx);
+        UNPROTECT(1);
         pieceStartIdx = i + 1;
         break;
       default:
@@ -153,11 +175,20 @@ std::vector<std::string> template_dfa(CharacterVector x) {
   }
 
   if (!(state == html || state == html_oneOpenBracket)) {
-    stop("HTML template did not end in html state (missing closing \"}}\").");
+    Rf_error("HTML template did not end in html state (missing closing \"}}\").");
   }
 
   // Add ending HTML piece
-  pieces.push_back(input.substr(pieceStartIdx, len - pieceStartIdx));
+  str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, len - pieceStartIdx, CE_UTF8));
+  REPROTECT(pieces = str_sxp_set(pieces, pieces_num++, str), pieces_idx);
+  UNPROTECT(1);
+
+  if (pieces_num < Rf_xlength(pieces)) {
+    SETLENGTH(pieces, pieces_num);
+    SET_TRUELENGTH(pieces, pieces_num);
+  }
+
+  UNPROTECT(1);
 
   return pieces;
 }
