@@ -12,6 +12,14 @@
   SET_STRING_ELT(X, i, VAL);                     \
 })
 
+Rboolean str_is_ASCII(const char *str) {
+    const char *p;
+    for(p = str; *p; p++) {
+      if((unsigned int)*p > 0x7F) return FALSE;
+    }
+    return TRUE;
+}
+
 // Break template text into character vector. The first element element of the
 // resulting vector is HTML, the next is R code, and they continue alternating.
 // [[export]]
@@ -36,13 +44,18 @@ SEXP template_dfa(SEXP x_sxp) {
     Rf_error("Input HTML must be a character vector of length 1");
   }
 
+  SEXP input_sxp = STRING_ELT(x_sxp, 0);
+
+  if (!(Rf_getCharCE(input_sxp) == CE_UTF8 || str_is_ASCII(CHAR(input_sxp)))) {
+    Rf_warning("Input HTML must have a UTF-8 encoding");
+  }
+
   SEXP str;
   SEXP pieces = Rf_allocVector(STRSXP, 10);
   R_xlen_t pieces_num = 0;
   PROTECT_INDEX pieces_idx;
   PROTECT_WITH_INDEX(pieces, &pieces_idx);
 
-  SEXP input_sxp = STRING_ELT(x_sxp, 0);
   const char* input = CHAR(input_sxp);
 
   int pieceStartIdx = 0;
@@ -186,6 +199,8 @@ SEXP template_dfa(SEXP x_sxp) {
   UNPROTECT(1);
 
   if (pieces_num < Rf_xlength(pieces)) {
+    // Using SETLENGTH and SET_TRUELENGTH in this way allows us to resize the
+    // vector without an extra copy.
     SETLENGTH(pieces, pieces_num);
     SET_TRUELENGTH(pieces, pieces_num);
   }
