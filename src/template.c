@@ -1,14 +1,16 @@
 #include <Rinternals.h>
 
-SEXP str_sxp_set(SEXP x, int i, SEXP val) {
-  R_xlen_t len = Rf_xlength(x);
-  if (i >= len) {
-    len *= 2;
-    x = Rf_lengthgets(x, len);
-  }
-  SET_STRING_ELT(x, i, val);
-  return x;
-}
+// A macro similar to SET_STRING_ELT, it assumes a string vector protected with
+// PROTECT_WITH_INDEX, will automatically grow it if needed.
+#define SET_STRING_ELT2(X, I, VAL, P_IDX) ({     \
+  R_xlen_t len = Rf_xlength(X);                  \
+  R_xlen_t i = I;                                \
+  if (i >= len) {                                \
+    len *= 2;                                    \
+    REPROTECT(X = Rf_lengthgets(X, len), P_IDX); \
+  }                                              \
+  SET_STRING_ELT(X, i, VAL);                     \
+})
 
 // Break template text into character vector. The first element element of the
 // resulting vector is HTML, the next is R code, and they continue alternating.
@@ -63,7 +65,7 @@ SEXP template_dfa(SEXP x_sxp) {
       case '{':
         state = code;
         str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, i - pieceStartIdx - 1, CE_UTF8));
-        REPROTECT(pieces = str_sxp_set(pieces, pieces_num++, str), pieces_idx);
+        SET_STRING_ELT2(pieces, pieces_num++, str, pieces_idx);
         UNPROTECT(1);
         pieceStartIdx = i + 1;
         break;
@@ -94,7 +96,7 @@ SEXP template_dfa(SEXP x_sxp) {
       case '}':
         state = html;
         str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, i - pieceStartIdx - 1, CE_UTF8));
-        REPROTECT(pieces = str_sxp_set(pieces, pieces_num++, str), pieces_idx);
+        SET_STRING_ELT2(pieces, pieces_num++, str, pieces_idx);
         UNPROTECT(1);
         pieceStartIdx = i + 1;
         break;
@@ -162,7 +164,7 @@ SEXP template_dfa(SEXP x_sxp) {
       case '}':
         state = html;
         str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, i - pieceStartIdx - 1, CE_UTF8));
-        REPROTECT(pieces = str_sxp_set(pieces, pieces_num++, str), pieces_idx);
+        SET_STRING_ELT2(pieces, pieces_num++, str, pieces_idx);
         UNPROTECT(1);
         pieceStartIdx = i + 1;
         break;
@@ -180,7 +182,7 @@ SEXP template_dfa(SEXP x_sxp) {
 
   // Add ending HTML piece
   str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, len - pieceStartIdx, CE_UTF8));
-  REPROTECT(pieces = str_sxp_set(pieces, pieces_num++, str), pieces_idx);
+  SET_STRING_ELT2(pieces, pieces_num++, str, pieces_idx);
   UNPROTECT(1);
 
   if (pieces_num < Rf_xlength(pieces)) {
