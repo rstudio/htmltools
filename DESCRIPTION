@@ -12,7 +12,6 @@ Imports:
     digest,
     grDevices,
     base64enc,
-    Rcpp,
     rlang
 Suggests:
     markdown,
@@ -25,10 +24,8 @@ License: GPL (>= 2)
 URL: https://github.com/rstudio/htmltools
 BugReports: https://github.com/rstudio/htmltools/issues
 RoxygenNote: 7.0.2
-LinkingTo: Rcpp
 Encoding: UTF-8
 Collate: 
-    'RcppExports.R'
     'colors.R'
     'html_dependency.R'
     'html_escape.R'
