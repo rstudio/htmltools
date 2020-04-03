@@ -1,11 +1,30 @@
-#include <Rcpp.h>
-using namespace Rcpp;
+#include <Rinternals.h>
+
+// A macro similar to SET_STRING_ELT, it assumes a string vector protected with
+// PROTECT_WITH_INDEX, will automatically grow it if needed.
+#define SET_STRING_ELT2(X, I, VAL, P_IDX) ({     \
+  R_xlen_t len = Rf_xlength(X);                  \
+  R_xlen_t i = I;                                \
+  if (i >= len) {                                \
+    len *= 2;                                    \
+    REPROTECT(X = Rf_lengthgets(X, len), P_IDX); \
+  }                                              \
+  SET_STRING_ELT(X, i, VAL);                     \
+})
+
+Rboolean str_is_ASCII(const char *str) {
+    const char *p;
+    for(p = str; *p; p++) {
+      if((unsigned int)*p > 0x7F) return FALSE;
+    }
+    return TRUE;
+}
 
 // Break template text into character vector. The first element element of the
 // resulting vector is HTML, the next is R code, and they continue alternating.
-// [[Rcpp::export]]
-std::vector<std::string> template_dfa(CharacterVector x) {
-  enum State {
+// [[export]]
+SEXP template_dfa(SEXP x_sxp) {
+  typedef enum {
     html,
     code,
     html_oneOpenBracket,
@@ -19,19 +38,31 @@ std::vector<std::string> template_dfa(CharacterVector x) {
     code_percentOp,
     code_comment,
     code_comment_oneCloseBracket
-  };
+  } State;
 
-  if (x.length() != 1) {
-    stop("Input HTML must be a character vector of length 1");
+  if (Rf_xlength(x_sxp) != 1) {
+    Rf_error("Input HTML must be a character vector of length 1");
   }
-  std::string input = Rcpp::as<std::string>(x[0]);
-  std::vector<std::string> pieces(0);
+
+  SEXP input_sxp = STRING_ELT(x_sxp, 0);
+
+  if (!(Rf_getCharCE(input_sxp) == CE_UTF8 || str_is_ASCII(CHAR(input_sxp)))) {
+    Rf_warning("Input HTML must have a UTF-8 encoding");
+  }
+
+  SEXP str;
+  SEXP pieces = Rf_allocVector(STRSXP, 10);
+  R_xlen_t pieces_num = 0;
+  PROTECT_INDEX pieces_idx;
+  PROTECT_WITH_INDEX(pieces, &pieces_idx);
+
+  const char* input = CHAR(input_sxp);
 
   int pieceStartIdx = 0;
-  int len = input.length();
+  R_xlen_t len = Rf_xlength(input_sxp);
   char c;
   State state = html;
-  for (int i=0; i < len; i++) {
+  for (R_xlen_t i=0; i < len; i++) {
     c = input[i];
     switch (state) {
 
@@ -46,7 +77,9 @@ std::vector<std::string> template_dfa(CharacterVector x) {
       switch (c) {
       case '{':
         state = code;
-        pieces.push_back(input.substr(pieceStartIdx, i - pieceStartIdx - 1));
+        str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, i - pieceStartIdx - 1, CE_UTF8));
+        SET_STRING_ELT2(pieces, pieces_num++, str, pieces_idx);
+        UNPROTECT(1);
         pieceStartIdx = i + 1;
         break;
       default:
@@ -75,7 +108,9 @@ std::vector<std::string> template_dfa(CharacterVector x) {
       switch (c) {
       case '}':
         state = html;
-        pieces.push_back(input.substr(pieceStartIdx, i - pieceStartIdx - 1));
+        str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, i - pieceStartIdx - 1, CE_UTF8));
+        SET_STRING_ELT2(pieces, pieces_num++, str, pieces_idx);
+        UNPROTECT(1);
         pieceStartIdx = i + 1;
         break;
       default: state = code;
@@ -141,7 +176,9 @@ std::vector<std::string> template_dfa(CharacterVector x) {
       switch (c) {
       case '}':
         state = html;
-        pieces.push_back(input.substr(pieceStartIdx, i - pieceStartIdx - 1));
+        str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, i - pieceStartIdx - 1, CE_UTF8));
+        SET_STRING_ELT2(pieces, pieces_num++, str, pieces_idx);
+        UNPROTECT(1);
         pieceStartIdx = i + 1;
         break;
       default:
@@ -153,11 +190,22 @@ std::vector<std::string> template_dfa(CharacterVector x) {
   }
 
   if (!(state == html || state == html_oneOpenBracket)) {
-    stop("HTML template did not end in html state (missing closing \"}}\").");
+    Rf_error("HTML template did not end in html state (missing closing \"}}\").");
   }
 
   // Add ending HTML piece
-  pieces.push_back(input.substr(pieceStartIdx, len - pieceStartIdx));
+  str = PROTECT(Rf_mkCharLenCE(input + pieceStartIdx, len - pieceStartIdx, CE_UTF8));
+  SET_STRING_ELT2(pieces, pieces_num++, str, pieces_idx);
+  UNPROTECT(1);
+
+  if (pieces_num < Rf_xlength(pieces)) {
+    // Using SETLENGTH and SET_TRUELENGTH in this way allows us to resize the
+    // vector without an extra copy.
+    SETLENGTH(pieces, pieces_num);
+    SET_TRUELENGTH(pieces, pieces_num);
+  }
+
+  UNPROTECT(1);
 
   return pieces;
 }
