@@ -767,120 +767,204 @@ NULL
 
 
 known_tags <- c(
-  "a",
-  "abbr",
-  "address",
-  "area",
-  "article",
-  "aside",
-  "audio",
-  "b",
-  "base",
-  "bdi",
-  "bdo",
-  "blockquote",
-  "body",
-  "br",
-  "button",
-  "canvas",
-  "caption",
-  "cite",
-  "code",
-  "col",
-  "colgroup",
-  "command",
-  "data",
-  "datalist",
-  "dd",
-  "del",
-  "details",
-  "dfn",
-  "dialog",
-  "div",
-  "dl",
-  "dt",
-  "em",
-  "embed",
-  "eventsource",
-  "fieldset",
-  "figcaption",
-  "figure",
-  "footer",
-  "form",
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "head",
-  "header",
-  "hgroup",
-  "hr",
-  "html",
-  "i",
-  "iframe",
-  "img",
-  "input",
-  "ins",
-  "kbd",
-  "keygen",
-  "label",
-  "legend",
-  "li",
-  "link",
-  "main",
-  "mark",
-  "map",
-  "menu",
-  "meta",
-  "meter",
-  "nav",
-  "noscript",
-  "object",
-  "ol",
-  "optgroup",
-  "option",
-  "output",
-  "p",
-  "param",
-  "picture",
-  "pre",
-  "progress",
-  "q",
-  "rp",
-  "rt",
-  "ruby",
-  "s",
-  "samp",
-  "script",
-  "section",
-  "select",
-  "small",
-  "source",
-  "span",
-  "strong",
-  "style",
-  "sub",
-  "summary",
-  "sup",
-  "table",
-  "tbody",
-  "td",
-  "template",
-  "textarea",
-  "tfoot",
-  "th",
-  "thead",
-  "time",
-  "title",
-  "tr",
-  "track",
-  "u",
-  "ul",
-  "var",
-  "video",
-  "wbr"
+  "a",                  # html svg
+  "abbr",               # html
+  "address",            # html
+  "altGlyph",           #      svg
+  "altGlyphDef",        #      svg
+  "altGlyphItem",       #      svg
+  "animate",            #      svg
+  "animateColor",       #      svg
+  "animateMotion",      #      svg
+  "animateTransform",   #      svg
+  "area",               # html
+  "article",            # html
+  "aside",              # html
+  "audio",              # html
+  "b",                  # html
+  "base",               # html
+  "bdi",                # html
+  "bdo",                # html
+  "blockquote",         # html
+  "body",               # html
+  "br",                 # html
+  "button",             # html
+  "canvas",             # html
+  "caption",            # html
+  "circle",             #      svg
+  "cite",               # html
+  "clipPath",           #      svg
+  "code",               # html
+  "col",                # html
+  "colgroup",           # html
+  "color-profile",      #      svg
+  "command",            #
+  "cursor",             #      svg
+  "data",               # html
+  "datalist",           # html
+  "dd",                 # html
+  "defs",               #      svg
+  "del",                # html
+  "desc",               #      svg
+  "details",            # html
+  "dfn",                # html
+  "dialog",             # html
+  "discard",            #      svg
+  "div",                # html
+  "dl",                 # html
+  "dt",                 # html
+  "ellipse",            #      svg
+  "em",                 # html
+  "embed",              # html
+  "eventsource",        #
+  "feBlend",            #      svg
+  "feColorMatrix",      #      svg
+  "feComponentTransfer",#      svg
+  "feComposite",        #      svg
+  "feConvolveMatrix",   #      svg
+  "feDiffuseLighting",  #      svg
+  "feDisplacementMap",  #      svg
+  "feDistantLight",     #      svg
+  "feDropShadow",       #      svg
+  "feFlood",            #      svg
+  "feFuncA",            #      svg
+  "feFuncB",            #      svg
+  "feFuncG",            #      svg
+  "feFuncR",            #      svg
+  "feGaussianBlur",     #      svg
+  "feImage",            #      svg
+  "feMerge",            #      svg
+  "feMergeNode",        #      svg
+  "feMorphology",       #      svg
+  "feOffset",           #      svg
+  "fePointLight",       #      svg
+  "feSpecularLighting", #      svg
+  "feSpotLight",        #      svg
+  "feTile",             #      svg
+  "feTurbulence",       #      svg
+  "fieldset",           # html
+  "figcaption",         # html
+  "figure",             # html
+  "filter",             #      svg
+  "font",               #      svg
+  "font-face",          #      svg
+  "font-face-format",   #      svg
+  "font-face-name",     #      svg
+  "font-face-src",      #      svg
+  "font-face-uri",      #      svg
+  "footer",             # html
+  "foreignObject",      #      svg
+  "form",               # html
+  "g",                  #      svg
+  "glyph",              #      svg
+  "glyphRef",           #      svg
+  "h1",                 # html
+  "h2",                 # html
+  "h3",                 # html
+  "h4",                 # html
+  "h5",                 # html
+  "h6",                 # html
+  "hatch",              #      svg
+  "hatchpath",          #      svg
+  "head",               # html
+  "header",             # html
+  "hgroup",             # html
+  "hkern",              #      svg
+  "hr",                 # html
+  "html",               # html
+  "i",                  # html
+  "iframe",             # html
+  "image",              #      svg
+  "img",                # html
+  "input",              # html
+  "ins",                # html
+  "kbd",                # html
+  "keygen",             #
+  "label",              # html
+  "legend",             # html
+  "li",                 # html
+  "line",               #      svg
+  "linearGradient",     #      svg
+  "link",               # html
+  "main",               # html
+  "map",                # html
+  "mark",               # html
+  "marker",             #      svg
+  "mask",               #      svg
+  "menu",               # html
+  "meta",               # html
+  "metadata",           #      svg
+  "meter",              # html
+  "missing-glyph",      #      svg
+  "mpath",              #      svg
+  "nav",                # html
+  "noscript",           # html
+  "object",             # html
+  "ol",                 # html
+  "optgroup",           # html
+  "option",             # html
+  "output",             # html
+  "p",                  # html
+  "param",              # html
+  "path",               #      svg
+  "pattern",            #      svg
+  "picture",            # html
+  "polygon",            #      svg
+  "polyline",           #      svg
+  "pre",                # html
+  "progress",           # html
+  "q",                  # html
+  "radialGradient",     #      svg
+  "rb",                 # html
+  "rect",               #      svg
+  "rp",                 # html
+  "rt",                 # html
+  "rtc",                # html
+  "ruby",               # html
+  "s",                  # html
+  "samp",               # html
+  "script",             # html svg
+  "section",            # html
+  "select",             # html
+  "set",                #      svg
+  "slot",               # html
+  "small",              # html
+  "solidcolor",         #      svg
+  "source",             # html
+  "span",               # html
+  "stop",               #      svg
+  "strong",             # html
+  "style",              # html svg
+  "sub",                # html
+  "summary",            # html
+  "sup",                # html
+  "svg",                #      svg
+  "switch",             #      svg
+  "symbol",             #      svg
+  "table",              # html
+  "tbody",              # html
+  "td",                 # html
+  "template",           # html
+  "text",               #      svg
+  "textarea",           # html
+  "textPath",           #      svg
+  "tfoot",              # html
+  "th",                 # html
+  "thead",              # html
+  "time",               # html
+  "title",              # html svg
+  "tr",                 # html
+  "track",              # html
+  "tref",               #      svg
+  "tspan",              #      svg
+  "u",                  # html
+  "ul",                 # html
+  "use",                #      svg
+  "var",                # html
+  "video",              # html
+  "view",               #      svg
+  "vkern",              #      svg
+  "wbr"                 # html
 )
 names(known_tags) <- known_tags
 
