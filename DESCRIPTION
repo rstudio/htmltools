@@ -31,6 +31,7 @@ Collate:
     'html_escape.R'
     'html_print.R'
     'images.R'
+    'known_tags.R'
     'shim.R'
     'utils.R'
     'tags.R'
