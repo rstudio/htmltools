@@ -4,11 +4,7 @@ known_tags <- c(
   "a",                  # html svg
   "abbr",               # html
   "address",            # html
-  "altGlyph",           #      svg
-  "altGlyphDef",        #      svg
-  "altGlyphItem",       #      svg
   "animate",            #      svg
-  "animateColor",       #      svg
   "animateMotion",      #      svg
   "animateTransform",   #      svg
   "area",               # html
@@ -33,7 +29,6 @@ known_tags <- c(
   "colgroup",           # html
   "color-profile",      #      svg
   "command",            #
-  "cursor",             #      svg
   "data",               # html
   "datalist",           # html
   "dd",                 # html
@@ -80,18 +75,10 @@ known_tags <- c(
   "figcaption",         # html
   "figure",             # html
   "filter",             #      svg
-  "font",               #      svg
-  "font-face",          #      svg
-  "font-face-format",   #      svg
-  "font-face-name",     #      svg
-  "font-face-src",      #      svg
-  "font-face-uri",      #      svg
   "footer",             # html
   "foreignObject",      #      svg
   "form",               # html
   "g",                  #      svg
-  "glyph",              #      svg
-  "glyphRef",           #      svg
   "h1",                 # html
   "h2",                 # html
   "h3",                 # html
@@ -103,7 +90,6 @@ known_tags <- c(
   "head",               # html
   "header",             # html
   "hgroup",             # html
-  "hkern",              #      svg
   "hr",                 # html
   "html",               # html
   "i",                  # html
@@ -129,7 +115,6 @@ known_tags <- c(
   "meta",               # html
   "metadata",           #      svg
   "meter",              # html
-  "missing-glyph",      #      svg
   "mpath",              #      svg
   "nav",                # html
   "noscript",           # html
@@ -189,7 +174,6 @@ known_tags <- c(
   "title",              # html svg
   "tr",                 # html
   "track",              # html
-  "tref",               #      svg
   "tspan",              #      svg
   "u",                  # html
   "ul",                 # html
@@ -197,6 +181,5 @@ known_tags <- c(
   "var",                # html
   "video",              # html
   "view",               #      svg
-  "vkern",              #      svg
   "wbr"                 # html
 )

@@ -38,7 +38,8 @@ html_tags <- get_tags("https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 # html_tags_obsolete <- get_tags("https://developer.mozilla.org/en-US/docs/Web/HTML/Element", "#content table:last-child td:first-child a")
 
 # do not include tags that do not contain documentation articles
-svg_tags <- get_tags("https://developer.mozilla.org/en-US/docs/Web/SVG/Element", "article a:not([rel='nofollow']) code")
+# Only pull from the index, as elements not in the index are considered obsolete. (ex: altGlyph or font-face)
+svg_tags <- get_tags("https://developer.mozilla.org/en-US/docs/Web/SVG/Element", "article .index a:not([rel='nofollow']) code")
 
 
 # Both SVG2 and HTML5
