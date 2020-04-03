@@ -1,26 +1,20 @@
 ## Source with `source("./scripts/generate_known_tags.R", echo = TRUE, prompt.echo = ">")`
+
+## This script web scrapes two Mozilla websites for HTML and SVG tag elements.
+## All HTML tags
+
+
 library(magrittr)
 
 
 get_tags <- function(url, css) {
-  items <-
-    url %>%
+  url %>%
     httr::GET() %>%
     httr::content() %>%
     rvest::html_nodes(css) %>%
-    rvest::html_text()
-  has_brackets <- grepl("^<", items) & grepl(">$", items)
-  items <- items[has_brackets]
-  has_bang <- grepl("!", items, fixed = TRUE)
-  items <- items[!has_bang]
-  items <- items %>%
+    rvest::html_text() %>%
     sub("^<", "", .) %>%
-    sub(">$", "", .)
-  item_has_h1 <- grepl("h1", items)
-  if (any(item_has_h1)) {
-    items <- c(items[-1 * which(grepl("h1", items))], paste0("h", 1:6))
-  }
-  items %>%
+    sub(">$", "", .) %>%
     sort() %>%
     unique() %>%
     print()
@@ -91,4 +85,4 @@ cat(
   sep = "\n",
   file = rprojroot::find_package_root_file(file.path("R", "known_tags.R"))
 )
-## (Saved to `./R/known_tags.R`)
+message("Saved to `./R/known_tags.R`")
