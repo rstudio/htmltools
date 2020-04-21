@@ -99,6 +99,34 @@ with(tags, {
 
     expect_identical(
       as.character(
+        div(.noWS = "inside",
+          span(
+            strong()
+          )
+        )
+      ),
+      paste(collapse = "\n", c(
+        "<div><span>",
+        "    <strong></strong>",
+        "  </span></div>"
+      ))
+    )
+
+    expect_identical(
+      as.character(
+        div(
+          span(.noWS = c("outside", "inside"),
+            strong()
+          )
+        )
+      ),
+      paste(collapse = "\n", c(
+        "<div><span><strong></strong></span></div>"
+      ))
+    )
+
+    expect_identical(
+      as.character(
         div(
           HTML("one", .noWS = "before"),
           HTML("two")

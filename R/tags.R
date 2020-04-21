@@ -387,7 +387,7 @@ isTagList <- function(x) {
   is.list(x) && (inherits(x, "shiny.tag.list") || identical(class(x), "list"))
 }
 
-noWSOptions <- c("before", "after", "after-begin", "before-end", "outside")
+noWSOptions <- c("before", "after", "after-begin", "before-end", "outside", "inside")
 # Ensure that the provided `.noWS` string contains only valid options
 validateNoWS <- function(.noWS){
   if (!all(.noWS %in% noWSOptions)){
@@ -724,8 +724,9 @@ findDependencies <- function(tags, tagify = TRUE) {
 #'   attributes, use a named argument with a \code{NA} value. (see example)
 #' @param .noWS A character vector used to omit some of the whitespace that
 #'   would normally be written around this tag. Valid options include
-#'   \code{before}, \code{after}, \code{outside}, \code{after-begin}, and
-#'   \code{before-end}. Any number of these options can be specified.
+#'   \code{before}, \code{after}, \code{outside}, \code{after-begin},
+#'   \code{before-end}, and \code{inside}. Any number of these options can be
+#'   specified.
 #' @references \itemize{
 #'    \item W3C html specification about boolean attributes
 #'    \url{https://www.w3.org/TR/html5/infrastructure.html#sec-boolean-attributes}
