@@ -34,6 +34,9 @@ htmltools 0.4.0.9001
 
 * Fixed #156: Now `extractPreserveChunks()` handles strings contain Emoji Unicode strings correctly on Windows. (#157)
 
+* The `.noWS` parameter for suppressing whitespace can now take an `"inside"`
+  value (equivalent to `c("after-start", "before-end")`). (#163)
+
 htmltools 0.4.0
 --------------------------------------------------------------------------------
 
