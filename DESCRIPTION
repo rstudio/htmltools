@@ -2,8 +2,14 @@ Package: htmltools
 Type: Package
 Title: Tools for HTML
 Version: 0.5.0
-Author: RStudio, Inc.
-Maintainer: Joe Cheng <joe@rstudio.com>
+Author@R: c(
+  person("Joe", "Cheng", role = "aut", email = "joe@rstudio.com"),
+  person("Carson", "Sievert", role = c("aut", "cre"), email = "carson@rstudio.com", comment = c(ORCID = "0000-0002-4958-2844")),
+  person("Winston", "Chang", role = "aut", email = "winston@rstudio.com"),
+  person("Yihui", "Xie", role = "aut", email = "yihui@rstudio.com"),
+  person("Jeff", "Allen", role = "aut", email = "jeff@rstudio.com"),
+  person(family = "RStudio", role = "cph")
+ )
 Description: Tools for HTML generation and output.
 Depends:
     R (>= 2.14.1)
