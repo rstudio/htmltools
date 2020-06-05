@@ -65,10 +65,23 @@ jobs:
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
 
+      - name: Mac systemdeps
+        if: runner.os == 'macOS'
+        run: |
+          brew cask install xquartz
+          brew install cairo
+
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
+        shell: Rscript {0}
+
+      # Temporary workaround for
+      # https://github.com/rstudio/rmarkdown/commit/dcd932f8c3470ad0218228e51bb7707fdd28abfa
+      - name: Install dev rmarkdown
+        run: |
+          remotes::install_github("rstudio/rmarkdown")
         shell: Rscript {0}
 
       - name: Session info
