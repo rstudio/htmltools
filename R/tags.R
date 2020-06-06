@@ -1359,10 +1359,16 @@ is.singleton <- function(x) {
 #' validateCssUnit(400)  #treated as '400px'
 #' @export
 validateCssUnit <- function(x) {
-  if (is.null(x) || is.na(x))
+  if (is.null(x))
     return(x)
 
-  if (length(x) > 1 || (!is.character(x) && !is.numeric(x)))
+  if( length(x) != 1)
+    stop('CSS units must be a single-element numeric or character vector')
+
+  if (is.na(x))
+    return(x)
+
+  if (!is.character(x) && !is.numeric(x))
     stop('CSS units must be a single-element numeric or character vector')
 
   # if the input is a character vector consisting only of digits (e.g. "960"),
