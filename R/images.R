@@ -69,7 +69,7 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
 
   do.call(device, args)
   dev <- grDevices::dev.cur()
-  on.exit(grDevices::dev.off(dev), add = TRUE, after = FALSE)
+  on.exit(grDevices::dev.off(dev), add = TRUE)
 
   # Call plot.new() so that even if no plotting operations are performed at
   # least we have a blank background. N.B. we need to set the margin to 0
@@ -167,7 +167,7 @@ plotTag <- function(expr, alt, device = defaultPngDevice(), width = 400, height 
     res = 72 * pixelratio,
     !!!deviceArgs)))
 
-  on.exit(unlink(file), add = TRUE, after = FALSE)
+  on.exit(unlink(file), add = TRUE)
 
   browsable(tags$img(
     src = base64enc::dataURI(file = file, mime = mimeType),
