@@ -854,10 +854,17 @@ test_that("trailing commas allowed everywhere", {
 })
 
 test_that("extractPreserveChunks works for emoji strings", {
-  x <- "<!--html_preserve-->chunck1<!--/html_preserve-->\U0001F937<!--html_preserve-->chunck2<!--/html_preserve-->"
+  # solaris doesn't seem to support Unicode characters with surrogate pairs
+  # (just by creating such a string will cause a warning)
+  # > "\U0001F937"
+  # [1] "\U0001f937"
+  # Warning message:
+  #   it is not known that wchar_t is Unicode on this platform
+  skip_on_os("solaris")
+  x <- "<!--html_preserve-->chunk1<!--/html_preserve-->\U0001F937<!--html_preserve-->chunk2<!--/html_preserve-->"
   out <- extractPreserveChunks(x)
   expect_equivalent(
     out$chunks,
-    c('chunck2', 'chunck1')
+    c('chunk2', 'chunk1')
   )
 })
