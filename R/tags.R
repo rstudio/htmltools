@@ -1061,11 +1061,10 @@ extractPreserveChunks <- function(strval) {
   matches <- c(startmatches, endmatches)
   o <- order(matches)
   matches <- matches[o]
-  attr(matches, "match.length") <- c(
+  lengths <- c(
     attr(startmatches, "match.length", TRUE),
     attr(endmatches, "match.length", TRUE)
   )[o]
-  lengths <- attr(matches, "match.length", TRUE)
 
   # No markers? Just return.
   if (matches[[1]] == -1)
