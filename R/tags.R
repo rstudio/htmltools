@@ -1067,7 +1067,7 @@ extractPreserveChunks <- function(strval) {
   )[o]
 
   # No markers? Just return.
-  if (identical(unique(matches), -1))
+  if (unique(matches)[[1]] == -1)
     return(list(value = strval, chunks = character(0)))
 
   # If TRUE, it's a start; if FALSE, it's an end
