@@ -2,10 +2,7 @@
 % Please edit documentation in R/images.R
 \name{defaultPngDevice}
 \alias{defaultPngDevice}
-\title{\code{\link[grDevices:png]{grDevices::png()}},
-  \code{\link[ragg:agg_png]{ragg::agg_png()}}, or
-  \code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}}, depending on your system
-Determine the best PNG device for your system}
+\title{Determine the best PNG device for your system}
 \usage{
 defaultPngDevice()
 }

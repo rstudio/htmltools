@@ -180,11 +180,6 @@ plotTag <- function(expr, alt, device = defaultPngDevice(), width = 400, height 
   ))
 }
 
-
-#'   \code{\link[grDevices:png]{grDevices::png()}},
-#'   \code{\link[ragg:agg_png]{ragg::agg_png()}}, or
-#'   \code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}}, depending on your system
-
 #' Determine the best PNG device for your system
 #'
 #' Returns the best PNG-based graphics device for your system, in the opinion of
