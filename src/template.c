@@ -2,7 +2,7 @@
 
 // A macro similar to SET_STRING_ELT, it assumes a string vector protected with
 // PROTECT_WITH_INDEX, will automatically grow it if needed.
-#define SET_STRING_ELT2(X, I, VAL, P_IDX) ({     \
+#define SET_STRING_ELT2(X, I, VAL, P_IDX) {      \
   R_xlen_t len = Rf_xlength(X);                  \
   R_xlen_t i = I;                                \
   if (i >= len) {                                \
@@ -10,7 +10,7 @@
     REPROTECT(X = Rf_lengthgets(X, len), P_IDX); \
   }                                              \
   SET_STRING_ELT(X, i, VAL);                     \
-})
+}
 
 Rboolean str_is_ASCII(const char *str) {
     const char *p;
