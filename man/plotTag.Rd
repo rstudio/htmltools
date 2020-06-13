@@ -2,7 +2,7 @@
 % Please edit documentation in R/images.R
 \name{plotTag}
 \alias{plotTag}
-\title{Capture a plot as a self-contained \code{<img>} tag}
+\title{Capture a plot as a self-contained \verb{<img>} tag}
 \usage{
 plotTag(
   expr,
@@ -26,10 +26,8 @@ of the image. This is used by accessibility tools, such as screen readers
 for vision impaired users.}
 
 \item{device}{A graphics device function; by default, this will be either
-\code{\link[grDevices:png]{grDevices::png()}},
-\code{\link[ragg:agg_png]{ragg::agg_png()}}, or
-\code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}}, depending on your system
-and configuration. See \code{\link{defaultPngDevice}}.}
+\code{\link[grDevices:png]{grDevices::png()}}, \code{\link[ragg:agg_png]{ragg::agg_png()}}, or \code{\link[Cairo:Cairo]{Cairo::CairoPNG()}}, depending on
+your system and configuration. See \code{\link[=defaultPngDevice]{defaultPngDevice()}}.}
 
 \item{width, height}{The width/height that the generated tag should be
 displayed at, in logical (browser) pixels.}
@@ -37,8 +35,7 @@ displayed at, in logical (browser) pixels.}
 \item{pixelratio}{Indicates the ratio between physical and logical units of
 length. For PNGs that may be displayed on high-DPI screens, use \code{2};
 for graphics devices that express width/height in inches (like
-\code{\link[grDevices:svg]{grDevices::svg()}}), try \code{1/72} or
-\code{1/96}.}
+\code{\link[grDevices:cairo]{grDevices::svg()}}, try \code{1/72} or \code{1/96}.}
 
 \item{mimeType}{The MIME type associated with the \code{device}. Examples are
 \code{image/png}, \code{image/tiff}, \code{image/svg+xml}.}
@@ -47,7 +44,7 @@ for graphics devices that express width/height in inches (like
 the \code{device} function is invoked.}
 
 \item{attribs}{A list of additional attributes that should be included on the
-generated \code{<img>} (e.g. \code{id}, \code{class}).}
+generated \verb{<img>} (e.g. \code{id}, \code{class}).}
 
 \item{suppressSize}{By default, \code{plotTag} will include a \code{style}
 attribute with \code{width} and \code{height} properties specified in
@@ -56,12 +53,12 @@ responsive CSS rules) you can use this argument to suppress width
 (\code{"x"}), height (\code{"y"}), or both (\code{"xy"}) properties.}
 }
 \value{
-A \code{\link{browsable}} HTML \code{<img>} tag object. Print it at
-  the console to preview, or call \code{\link{as.character}} on it to view the HTML
-  source.
+A \code{\link[=browsable]{browsable()}} HTML \verb{<img>} tag object. Print it at
+the console to preview, or call \code{\link[=as.character]{as.character()}} on it to view the HTML
+source.
 }
 \description{
-Capture a plot as a self-contained \code{<img>} tag
+Capture a plot as a self-contained \verb{<img>} tag
 }
 \examples{
 
@@ -80,5 +77,5 @@ if (interactive()) svg
 
 }
 \seealso{
-\code{\link{capturePlot}} saves plots as an image file.
+\code{\link[=capturePlot]{capturePlot()}} saves plots as an image file.
 }
