@@ -895,7 +895,7 @@ flattenTags <- function(x) {
 #'
 #' An S3 method for converting arbitrary values to a value that can be used as
 #' the child of a tag or \code{tagList}. The default implementation simply calls
-#' \code{\link[base]{as.character}}.
+#' \code{\link{as.character}}.
 #'
 #' @param x Object to be converted.
 #' @param ... Any additional parameters.
@@ -1056,11 +1056,18 @@ extractPreserveChunks <- function(strval) {
     strval <- paste(strval, collapse = "\n")
 
   # matches contains the index of all the start and end markers
-  matches <- gregexpr(pattern, strval, perl = TRUE)[[1]]
-  lengths <- attr(matches, "match.length", TRUE)
+  startmatches <- gregexpr(startmarker, strval, fixed = TRUE)[[1]]
+  endmatches <- gregexpr(endmarker, strval, fixed = TRUE)[[1]]
+  matches <- c(startmatches, endmatches)
+  o <- order(matches)
+  matches <- matches[o]
+  lengths <- c(
+    attr(startmatches, "match.length", TRUE),
+    attr(endmatches, "match.length", TRUE)
+  )[o]
 
   # No markers? Just return.
-  if (matches[[1]] == -1)
+  if (unique(matches)[[1]] == -1)
     return(list(value = strval, chunks = character(0)))
 
   # If TRUE, it's a start; if FALSE, it's an end

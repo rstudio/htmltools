@@ -24,10 +24,8 @@ extension will be used; you should provide a filename with a different
 extension if you provide a non-PNG graphics device function.}
 
 \item{device}{A graphics device function; by default, this will be either
-\code{\link[grDevices:png]{grDevices::png()}},
-\code{\link[ragg:agg_png]{ragg::agg_png()}}, or
-\code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}}, depending on
-your system and configuration. See \code{\link{defaultPngDevice}}.}
+\code{\link[grDevices:png]{grDevices::png()}}, \code{\link[ragg:agg_png]{ragg::agg_png()}}, or \code{\link[Cairo:Cairo]{Cairo::CairoPNG()}}, depending on
+your system and configuration. See \code{\link[=defaultPngDevice]{defaultPngDevice()}}.}
 
 \item{width, height, res, ...}{Additional arguments to the \code{device} function.}
 }
@@ -64,6 +62,6 @@ unlink(svgpath)
 
 }
 \seealso{
-\code{\link{plotTag}} saves plots as a self-contained \code{<img>}
-  tag.
+\code{\link[=plotTag]{plotTag()}} saves plots as a self-contained \verb{<img>}
+tag.
 }

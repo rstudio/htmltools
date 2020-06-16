@@ -5,20 +5,19 @@
 #'
 #' @param expr A plotting expression that generates a plot (or yields an object
 #'   that generates a plot when printed, like a ggplot2). We evaluate this
-#'   expression after activating the graphics device (\code{device}).
-#' @param filename The output filename. By default, a temp file with \code{.png}
+#'   expression after activating the graphics device (`device`).
+#' @param filename The output filename. By default, a temp file with `.png`
 #'   extension will be used; you should provide a filename with a different
 #'   extension if you provide a non-PNG graphics device function.
 #' @param device A graphics device function; by default, this will be either
-#'   \code{\link[grDevices:png]{grDevices::png()}},
-#'   \code{\link[ragg:agg_png]{ragg::agg_png()}}, or
-#'   \code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}}, depending on
-#'   your system and configuration. See \code{\link{defaultPngDevice}}.
-#' @param width,height,res,... Additional arguments to the \code{device} function.
+#'   [grDevices::png()], [ragg::agg_png()], or [Cairo::CairoPNG()], depending on
+#'   your system and configuration. See [defaultPngDevice()].
+#' @param width,height,res,... Additional arguments to the `device` function.
 #'
-#' @seealso \code{\link{plotTag}} saves plots as a self-contained \code{<img>}
+#' @seealso [plotTag()] saves plots as a self-contained `<img>`
 #'   tag.
 #'
+#' @md
 #' @examples
 #'
 #' # Default settings
@@ -69,7 +68,7 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
 
   do.call(device, args)
   dev <- grDevices::dev.cur()
-  on.exit(grDevices::dev.off(dev), add = TRUE, after = FALSE)
+  on.exit(grDevices::dev.off(dev), add = TRUE)
 
   # Call plot.new() so that even if no plotting operations are performed at
   # least we have a blank background. N.B. we need to set the margin to 0
@@ -98,7 +97,7 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
   })
 }
 
-#' Capture a plot as a self-contained \code{<img>} tag
+#' Capture a plot as a self-contained `<img>` tag
 #'
 #' @param expr A plotting expression that generates a plot (or yields an object
 #'   that generates a plot when printed, like a ggplot2).
@@ -106,35 +105,33 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
 #'   of the image. This is used by accessibility tools, such as screen readers
 #'   for vision impaired users.
 #' @param device A graphics device function; by default, this will be either
-#'   \code{\link[grDevices:png]{grDevices::png()}},
-#'   \code{\link[ragg:agg_png]{ragg::agg_png()}}, or
-#'   \code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}}, depending on your system
-#'   and configuration. See \code{\link{defaultPngDevice}}.
+#'   [grDevices::png()], [ragg::agg_png()], or [Cairo::CairoPNG()], depending on
+#'   your system and configuration. See [defaultPngDevice()].
 #' @param width,height The width/height that the generated tag should be
 #'   displayed at, in logical (browser) pixels.
 #' @param pixelratio Indicates the ratio between physical and logical units of
-#'   length. For PNGs that may be displayed on high-DPI screens, use \code{2};
+#'   length. For PNGs that may be displayed on high-DPI screens, use `2`;
 #'   for graphics devices that express width/height in inches (like
-#'   \code{\link[grDevices:svg]{grDevices::svg()}}), try \code{1/72} or
-#'   \code{1/96}.
-#' @param mimeType The MIME type associated with the \code{device}. Examples are
-#'   \code{image/png}, \code{image/tiff}, \code{image/svg+xml}.
+#'   [grDevices::svg()], try `1/72` or `1/96`.
+#' @param mimeType The MIME type associated with the `device`. Examples are
+#'   `image/png`, `image/tiff`, `image/svg+xml`.
 #' @param deviceArgs A list of additional arguments that should be included when
-#'   the \code{device} function is invoked.
+#'   the `device` function is invoked.
 #' @param attribs A list of additional attributes that should be included on the
-#'   generated \code{<img>} (e.g. \code{id}, \code{class}).
-#' @param suppressSize By default, \code{plotTag} will include a \code{style}
-#'   attribute with \code{width} and \code{height} properties specified in
+#'   generated `<img>` (e.g. `id`, `class`).
+#' @param suppressSize By default, `plotTag` will include a `style`
+#'   attribute with `width` and `height` properties specified in
 #'   pixels. If you'd rather specify the image size using other methods (like
 #'   responsive CSS rules) you can use this argument to suppress width
-#'   (\code{"x"}), height (\code{"y"}), or both (\code{"xy"}) properties.
+#'   (`"x"`), height (`"y"`), or both (`"xy"`) properties.
 #'
-#' @return A \code{\link{browsable}} HTML \code{<img>} tag object. Print it at
-#'   the console to preview, or call \code{\link{as.character}} on it to view the HTML
+#' @return A [browsable()] HTML `<img>` tag object. Print it at
+#'   the console to preview, or call [as.character()] on it to view the HTML
 #'   source.
 #'
-#' @seealso \code{\link{capturePlot}} saves plots as an image file.
+#' @seealso [capturePlot()] saves plots as an image file.
 #'
+#' @md
 #' @examples
 #'
 #' img <- plotTag({
@@ -167,7 +164,7 @@ plotTag <- function(expr, alt, device = defaultPngDevice(), width = 400, height 
     res = 72 * pixelratio,
     !!!deviceArgs)))
 
-  on.exit(unlink(file), add = TRUE, after = FALSE)
+  on.exit(unlink(file), add = TRUE)
 
   browsable(tags$img(
     src = base64enc::dataURI(file = file, mime = mimeType),
@@ -180,23 +177,19 @@ plotTag <- function(expr, alt, device = defaultPngDevice(), width = 400, height 
   ))
 }
 
-
-#'   \code{\link[grDevices:png]{grDevices::png()}},
-#'   \code{\link[ragg:agg_png]{ragg::agg_png()}}, or
-#'   \code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}}, depending on your system
-
 #' Determine the best PNG device for your system
 #'
 #' Returns the best PNG-based graphics device for your system, in the opinion of
-#' the \code{htmltools} maintainers. On Mac,
-#' \code{\link[grDevices:png]{grDevices::png()}} is used; on all other
-#' platforms, either \code{\link[ragg:agg_png]{ragg::agg_png()}} or
-#' \code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}} are used if their packages
-#' are installed. Otherwise, \code{\link[grDevices:png]{grDevices::png()}} is
+#' the `htmltools` maintainers. On Mac,
+#' [grDevices::png()] is used; on all other
+#' platforms, either [ragg::agg_png()] or
+#' [Cairo::CairoPNG()] are used if their packages
+#' are installed. Otherwise, [grDevices::png()] is
 #' used.
 #'
 #' @return A graphics device function.
 #'
+#' @md
 #' @export
 defaultPngDevice <- function() {
   if (capabilities("aqua")) {

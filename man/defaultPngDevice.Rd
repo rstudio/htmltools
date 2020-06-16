@@ -2,10 +2,7 @@
 % Please edit documentation in R/images.R
 \name{defaultPngDevice}
 \alias{defaultPngDevice}
-\title{\code{\link[grDevices:png]{grDevices::png()}},
-  \code{\link[ragg:agg_png]{ragg::agg_png()}}, or
-  \code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}}, depending on your system
-Determine the best PNG device for your system}
+\title{Determine the best PNG device for your system}
 \usage{
 defaultPngDevice()
 }
@@ -17,7 +14,7 @@ Returns the best PNG-based graphics device for your system, in the opinion of
 the \code{htmltools} maintainers. On Mac,
 \code{\link[grDevices:png]{grDevices::png()}} is used; on all other
 platforms, either \code{\link[ragg:agg_png]{ragg::agg_png()}} or
-\code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}} are used if their packages
+\code{\link[Cairo:Cairo]{Cairo::CairoPNG()}} are used if their packages
 are installed. Otherwise, \code{\link[grDevices:png]{grDevices::png()}} is
 used.
 }
