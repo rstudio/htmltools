@@ -20,6 +20,9 @@ called from Shiny, the function \code{\link[shiny]{createWebDependency}} is
 used; it modifies the href and tells Shiny to serve a particular path on
 the filesystem.}
 }
+\value{
+An \code{\link{HTML}} string, with UTF-8 encoding.
+}
 \description{
 This function renders \code{html_document} objects, and returns a string with
 the final HTML content. It calls the \code{\link{renderTags}} function to

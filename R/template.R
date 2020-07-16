@@ -94,6 +94,8 @@ htmlTemplate <- function(filename = NULL, ..., text_ = NULL, document_ = "auto")
 #'   used; it modifies the href and tells Shiny to serve a particular path on
 #'   the filesystem.
 #'
+#' @return An \code{\link{HTML}} string, with UTF-8 encoding.
+#'
 #' @export
 renderDocument <- function(x, deps = NULL, processDep = identity) {
   if (!inherits(x, "html_document")) {
