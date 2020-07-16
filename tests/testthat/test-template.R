@@ -31,6 +31,7 @@ test_that("Code blocks are evaluated and rendered correctly", {
 test_template <- function(){
   template <- htmlTemplate("template-document.html", x = "")
   html <- renderDocument(template)
+  expect_identical(Encoding(html), "UTF-8")
 
   # Create the string 'Δ★😎', making sure it's UTF-8 encoded on all platforms.
   # These characters are 2, 3, and 4 bytes long, respectively.
