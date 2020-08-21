@@ -65,7 +65,7 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
 #' @param html HTML content to print
 #' @param background Background color for web page
 #' @param file File to write content to
-#' @param libdir Directory to copy dependenies to
+#' @param libdir Directory to copy dependencies to
 #'
 #' @export
 save_html <- function(html, file, background = "white", libdir = "lib") {
