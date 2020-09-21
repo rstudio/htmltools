@@ -56,16 +56,6 @@ registerMethods <- function(methods) {
   ))
 }
 
-depListToNamedDepList <- function(dependencies) {
-  if (inherits(dependencies, "html_dependency"))
-    dependencies <- list(dependencies)
-
-  if (is.null(names(dependencies))) {
-    names(dependencies) <- sapply(dependencies, `[[`, "name")
-  }
-  return(dependencies)
-}
-
 #' Resolve a list of dependencies
 #'
 #' Given a list of dependencies, removes any redundant dependencies (based on
@@ -81,8 +71,7 @@ depListToNamedDepList <- function(dependencies) {
 #'
 #' @export
 resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
-  # Remove nulls
-  deps <- dependencies[!sapply(dependencies, is.null)]
+  deps <- as_html_dependencies(dependencies)
 
   # Get names and numeric versions in vector/list form
   depnames <- sapply(deps, `[[`, "name")
@@ -90,7 +79,7 @@ resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
 
   # Get latest version of each dependency. `unique` uses the first occurrence of
   # each dependency name, which is important for inter-dependent libraries.
-  return(lapply(unique(depnames), function(depname) {
+  lapply(unique(depnames), function(depname) {
     # Sort by depname equality, then by version. Since na.last=NA, all elements
     # whose names do not match will not be included in the sorted vector.
     sorted <- order(ifelse(depnames == depname, TRUE, NA), depvers,
@@ -103,7 +92,7 @@ resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
       dep$package <- NULL
     }
     dep
-  }))
+  })
 }
 
 # Remove `remove` from `dependencies` if the name matches.
@@ -135,6 +124,11 @@ resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
 #'
 #' @export
 subtractDependencies <- function(dependencies, remove, warnOnConflict = TRUE) {
+  dependencies <- as_html_dependencies(dependencies)
+  if (!is.character(remove)) {
+    remove <- as_html_dependencies(remove)
+  }
+
   depnames <- sapply(dependencies, `[[`, "name")
   rmnames <- if (is.character(remove))
     remove

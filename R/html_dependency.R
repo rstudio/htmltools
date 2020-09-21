@@ -115,6 +115,80 @@ validateScalarName <- function(x, name = deparse(substitute(x))) {
   )
 }
 
+#' @rdname htmlDependency
+#' @param func a function with no arguments that returns an `htmlDependency()` (or a list of them).
+#' @export
+htmlDependencyFunction <- function(func) {
+  if (!is.function(func) || length(formals(func)) != 0) {
+    stop("`func` must be a function with no formal arguments")
+  }
+  structure(
+    class = c("html_dependency_function", "html_dependency"),
+    list(func = func)
+  )
+}
+
+
+as_html_dependencies <- function(x, eval = TRUE) {
+  UseMethod("as_html_dependencies")
+}
+
+as_html_dependencies.html_dependency <- function(x, eval = TRUE) {
+  list(x)
+}
+
+as_html_dependencies.html_dependency_function <- function(x, eval = TRUE) {
+  if (eval) {
+    as_html_dependencies(as_html_dependency(x, TRUE), TRUE)
+  } else {
+    list(x)
+  }
+}
+
+as_html_dependencies.list <- function(x, eval = TRUE) {
+  deps <- lapply(dropNulls(x), function(y) as_html_dependency(y, eval = eval))
+  is_dep <- vapply(deps, inherits, logical(1), "html_dependency")
+  c(
+    deps[is_dep],
+    # htmlDependencyFunction() can return a dep or a list of deps
+    unlist(deps[!is_dep], recursive = FALSE)
+  )
+}
+
+as_html_dependencies.NULL <- function(x, eval = TRUE) {
+  NULL
+}
+
+
+as_html_dependency <- function(x, eval = TRUE) {
+  UseMethod("as_html_dependency")
+}
+
+as_html_dependency.html_dependency <- function(x, eval = TRUE) {
+  x
+}
+
+as_html_dependency.html_dependency_function <- function(x, eval = TRUE) {
+  if (!eval) {
+    return(x)
+  }
+  dep <- x$func()
+  if (inherits(dep, "html_dependency")) {
+    return(dep)
+  }
+  is_dep <- vapply(dep, inherits, logical(1), "html_dependency")
+  if (all(is_dep)) {
+    return(dep)
+  }
+  stop("The function provided to `htmlDependencyFunction()` must return an `htmlDependency()` (or a list of them).")
+}
+
+as_html_dependency.NULL <- function(x, eval = TRUE) {
+  NULL
+}
+
+
+
 #' HTML dependency metadata
 #'
 #' Gets or sets the HTML dependencies associated with an object (such as a tag).
@@ -154,32 +228,25 @@ validateScalarName <- function(x, name = deparse(substitute(x))) {
 #'
 #' @export
 htmlDependencies <- function(x) {
-  attr(x, "html_dependencies", TRUE)
+  attr(x, "html_dependencies", exact = TRUE)
 }
 
 #' @rdname htmlDependencies
 #' @export
 `htmlDependencies<-` <- function(x, value) {
-  if (inherits(value, "html_dependency"))
-    value <- list(value)
-  attr(x, "html_dependencies") <- value
+  # Important that we don't evaluate the HTML dependencies!
+  attr(x, "html_dependencies") <- as_html_dependencies(value, eval = FALSE)
   x
 }
 
 #' @rdname htmlDependencies
 #' @export
 attachDependencies <- function(x, value, append = FALSE) {
-  if (append) {
-    if (inherits(value, "html_dependency"))
-      value <- list(value)
-
-    old <- attr(x, "html_dependencies", TRUE)
-    htmlDependencies(x) <- c(old, value)
-
-  } else {
-    htmlDependencies(x) <- value
-  }
-  return(x)
+  htmlDependencies(x) <- c(
+    if (append) attr(x, "html_dependencies", exact = TRUE),
+    as_html_dependencies(value, eval = FALSE)
+  )
+  x
 }
 
 #' Suppress web dependencies
@@ -264,6 +331,7 @@ urlEncodePath <- function(x) {
 #'
 #' @export
 copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
+  dependency <- as_html_dependency(dependency)
 
   dir <- dependency$src$file
 
@@ -374,6 +442,7 @@ relativeTo <- function(dir, file) {
 #' @export
 makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
   basepath <- normalizePath(basepath, "/", TRUE)
+  dependency <- as_html_dependency(dependency)
   dir <- dependency$src$file
   if (is.null(dir)) {
     if (!mustWork)
@@ -412,6 +481,7 @@ renderDependencies <- function(dependencies,
 
   html <- c()
 
+  dependencies <- as_html_dependencies(dependencies)
   for (dep in dependencies) {
 
     usableType <- srcType[which(srcType %in% names(dep$src))]

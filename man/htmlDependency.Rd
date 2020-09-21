@@ -2,6 +2,7 @@
 % Please edit documentation in R/html_dependency.R
 \name{htmlDependency}
 \alias{htmlDependency}
+\alias{htmlDependencyFunction}
 \title{Define an HTML dependency}
 \usage{
 htmlDependency(
@@ -16,6 +17,8 @@ htmlDependency(
   package = NULL,
   all_files = TRUE
 )
+
+htmlDependencyFunction(func)
 }
 \arguments{
 \item{name}{Library name}
@@ -48,6 +51,8 @@ directory when \code{src} is a relative path (see
 dependency files. If \code{FALSE}, only the files specified in
 \code{script}, \code{stylesheet}, and \code{attachment} are treated as
 dependency files.}
+
+\item{func}{a function with no arguments that returns an `htmlDependency()` (or a list of them).}
 }
 \value{
 An object that can be included in a list of dependencies passed to

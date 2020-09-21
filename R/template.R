@@ -99,9 +99,8 @@ renderDocument <- function(x, deps = NULL, processDep = identity) {
   if (!inherits(x, "html_document")) {
     stop("Object must be an object of class html_document")
   }
-  if (inherits(deps, "html_dependency")) {
-    deps <- list(deps)
-  }
+
+  deps <- as_html_dependencies(deps)
 
   result <- renderTags(x)
 
