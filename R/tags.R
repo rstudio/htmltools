@@ -256,6 +256,14 @@ tagList <- function(...) {
   return(lst)
 }
 
+#' @export
+tagFunction <- function(func) {
+  if (!is.function(func) || length(formals(func)) != 0) {
+    stop("`func` must be a functions with no formal arguments")
+  }
+  structure(func, class = "shiny.tag.function")
+}
+
 #' @rdname tag
 #' @export
 tagAppendAttributes <- function(tag, ...) {
@@ -857,10 +865,10 @@ withTags <- function(code) {
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
   rewriteTags(x, function(uiObj) {
-    if (isTag(uiObj) || isTagList(uiObj) || is.character(uiObj))
+    if (isTag(uiObj) || isTagList(uiObj) || is.character(uiObj)) {
       return(uiObj)
-    else
-      return(tagify(as.tags(uiObj)))
+    }
+    as.tags(uiObj)
   }, FALSE)
 }
 
@@ -879,10 +887,13 @@ flattenTags <- function(x) {
       unlist(lapply(x, flattenTags), recursive = FALSE)
     }
 
-  } else if (is.character(x)){
+  } else if (is.character(x)) {
     # This will preserve attributes if x is a character with attribute,
     # like what HTML() produces
     list(x)
+
+  } else if (is_html_dependency(x)) {
+    list()
 
   } else {
     # For other items, coerce to character and wrap them into a list (which
@@ -929,6 +940,12 @@ as.tags.shiny.tag.list <- function(x, ...) {
 }
 
 #' @export
+as.tags.shiny.tag.function <- function(x, ...) {
+  # TODO: what about the case that tagFunction() returns a list of dependencies?
+  as.tags(x())
+}
+
+#' @export
 as.tags.character <- function(x, ...) {
   # For printing as.tags("<strong>") directly at console, without dropping any
   # attached dependencies
@@ -937,7 +954,7 @@ as.tags.character <- function(x, ...) {
 
 #' @export
 as.tags.html_dependency <- function(x, ...) {
-  attachDependencies(tagList(), x)
+  tagList(x)
 }
 
 #' Preserve HTML regions
