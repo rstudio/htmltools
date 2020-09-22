@@ -944,8 +944,13 @@ as.tags.shiny.tag.list <- function(x, ...) {
 
 #' @export
 as.tags.shiny.tag.function <- function(x, ...) {
-  # TODO: what about the case that tagFunction() returns a list of dependencies?
-  as.tags(x())
+  y <- x()
+  # as.tags() doesn't currently have a method for a list of dependencies
+  if (is.list(y) && vapply(y, inherits, logical(1), "html_dependency")) {
+    lapply(y, function(z) as.tags(z))
+  } else {
+    as.tags(y)
+  }
 }
 
 #' @export
