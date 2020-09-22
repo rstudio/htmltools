@@ -868,7 +868,10 @@ tagify <- function(x) {
     if (isTag(uiObj) || isTagList(uiObj) || is.character(uiObj)) {
       return(uiObj)
     }
-    as.tags(uiObj)
+    if (is_html_dependency(uiObj)) {
+      return(as.tags(uiObj))
+    }
+    tagify(as.tags(uiObj))
   }, FALSE)
 }
 
