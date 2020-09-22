@@ -168,18 +168,7 @@ htmlDependencies <- function(x) {
 #' @rdname htmlDependencies
 #' @export
 `htmlDependencies<-` <- function(x, value) {
-  if (inherits(value, c("html_dependency", "shiny.tag.function"))) {
-    value <- list(value)
-  }
-  if (!isTag(x) && !isTagList(x)) {
-    x <- tagList(x)
-  }
-  if (isTag(x)) {
-    x$children[length(x$children) + seq_along(value)] <- value
-  } else if (isTagList(x)) {
-    x[length(x) + seq_along(value)] <- value
-  }
-  x
+  attachDependencies(x, value, append = FALSE)
 }
 
 #' @rdname htmlDependencies
@@ -193,6 +182,7 @@ attachDependencies <- function(x, value, append = FALSE) {
     x <- tagList(x)
   }
 
+  # If we're not appending, then we first remove existing deps, then add new ones
   if (!append) {
     if (isTag(x)) {
       x$children[] <- x$children[!vapply(x$children, is_html_dependency, logical(1))]
@@ -201,7 +191,12 @@ attachDependencies <- function(x, value, append = FALSE) {
     }
   }
 
-  htmlDependencies(x) <- value
+  if (isTag(x)) {
+    x$children[length(x$children) + seq_along(value)] <- value
+  } else if (isTagList(x)) {
+    x[length(x) + seq_along(value)] <- value
+  }
+
   x
 }
 
