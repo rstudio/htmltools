@@ -154,54 +154,32 @@ validateScalarName <- function(x, name = deparse(substitute(x))) {
 #'
 #' @export
 htmlDependencies <- function(x) {
-  unname(c(
-    if (isTag(x)) {
-      x$children[vapply(x$children, is_html_dependency, logical(1))]
-    } else if (isTagList(x)) {
-      x[vapply(x, is_html_dependency, logical(1))]
-    },
-    # For historical reasons, we also need to support reading of this attribute
-    attr(x, "html_dependencies", TRUE)
-  ))
+  attr(x, "html_dependencies", TRUE)
 }
 
 #' @rdname htmlDependencies
 #' @export
 `htmlDependencies<-` <- function(x, value) {
-  attachDependencies(x, value, append = FALSE)
+  if (inherits(value, c("html_dependency", "shiny.tag.function")))
+    value <- list(value)
+  attr(x, "html_dependencies") <- value
+  x
 }
 
 #' @rdname htmlDependencies
 #' @export
 attachDependencies <- function(x, value, append = FALSE) {
-  if (inherits(value, c("html_dependency", "shiny.tag.function"))) {
-    value <- list(value)
+  if (append) {
+    if (inherits(value, c("html_dependency", "shiny.tag.function")))
+      value <- list(value)
+
+    old <- attr(x, "html_dependencies", TRUE)
+    htmlDependencies(x) <- c(old, value)
+
+  } else {
+    htmlDependencies(x) <- value
   }
-
-  if (!isTag(x) && !isTagList(x)) {
-    x <- tagList(x)
-  }
-
-  # If we're not appending, then we first remove existing deps, then add new ones
-  if (!append) {
-    if (isTag(x)) {
-      x$children[] <- x$children[!vapply(x$children, is_html_dependency, logical(1))]
-    } else if (isTagList(x)) {
-      x[] <- x[!vapply(x, is_html_dependency, logical(1))]
-    }
-  }
-
-  if (isTag(x)) {
-    x$children[length(x$children) + seq_along(value)] <- value
-  } else if (isTagList(x)) {
-    x[length(x) + seq_along(value)] <- value
-  }
-
-  x
-}
-
-is_html_dependency <- function(x) {
-  inherits(x, "html_dependency")
+  return(x)
 }
 
 #' Suppress web dependencies

@@ -259,7 +259,7 @@ tagList <- function(...) {
 #' @export
 tagFunction <- function(func) {
   if (!is.function(func) || length(formals(func)) != 0) {
-    stop("`func` must be a functions with no formal arguments")
+    stop("`func` must be a function with no arguments")
   }
   structure(func, class = "shiny.tag.function")
 }
@@ -687,17 +687,21 @@ takeHeads <- function(ui) {
 #'
 #' @param tags A tag-like object to search for dependencies.
 #' @param tagify Whether to tagify the input before searching for dependencies.
+#' @param resolve Whether to resolve [tagFunction()] dependencies.
 #'
 #' @return A list of \code{\link{htmlDependency}} objects.
 #'
 #' @export
-findDependencies <- function(tags, tagify = TRUE) {
+findDependencies <- function(tags, tagify = TRUE, resolve = TRUE) {
   if (isTRUE(tagify)) {
     tags <- tagify(tags)
   }
-  dep <- htmlDependencies(tags)
-  if (!is.null(dep) && inherits(dep, "html_dependency"))
-    dep <- list(dep)
+  deps <- htmlDependencies(tags)
+  if (!is.null(deps) && inherits(deps, "html_dependency"))
+    deps <- list(deps)
+  if (resolve) {
+    deps <- resolveFunctionalDependencies(deps)
+  }
   children <- if (is.list(tags)) {
     if (isTag(tags)) {
       tags$children
@@ -706,7 +710,35 @@ findDependencies <- function(tags, tagify = TRUE) {
     }
   }
   childDeps <- unlist(lapply(children, findDependencies, tagify = FALSE), recursive = FALSE)
-  c(childDeps, if (!is.null(dep)) dep)
+  c(childDeps, if (!is.null(deps)) deps)
+}
+
+resolveFunctionalDependencies <- function(deps) {
+  if (!length(deps)) {
+    return(deps)
+  }
+  deps <- lapply(deps, function(x) {
+    if (is_html_dependency(x)) {
+      return(list(x))
+    }
+    if (!inherits(x, "shiny.tag.function")) {
+      stop(call. = FALSE, "HTML dependencies must be a list containing either ",
+           "htmlDependency()s or tagFunction()s")
+    }
+    y <- x()
+    if (is_html_dependency(y)) {
+      return(list(deps))
+    }
+    if (!all(vapply(y, is_html_dependency, logical(1)))) {
+      stop("tagFunction() must return an htmlDependency() (or a list of them)")
+    }
+    y
+  })
+  unlist(deps, recursive = FALSE)
+}
+
+is_html_dependency <- function(x) {
+  inherits(x, "html_dependency")
 }
 
 #' HTML Builder Functions
@@ -865,13 +897,10 @@ withTags <- function(code) {
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
   rewriteTags(x, function(uiObj) {
-    if (isTag(uiObj) || isTagList(uiObj) || is.character(uiObj)) {
+    if (isTag(uiObj) || isTagList(uiObj) || is.character(uiObj))
       return(uiObj)
-    }
-    if (is_html_dependency(uiObj)) {
-      return(as.tags(uiObj))
-    }
-    tagify(as.tags(uiObj))
+    else
+      return(tagify(as.tags(uiObj)))
   }, FALSE)
 }
 
@@ -890,13 +919,10 @@ flattenTags <- function(x) {
       unlist(lapply(x, flattenTags), recursive = FALSE)
     }
 
-  } else if (is.character(x)) {
+  } else if (is.character(x)){
     # This will preserve attributes if x is a character with attribute,
     # like what HTML() produces
     list(x)
-
-  } else if (is_html_dependency(x)) {
-    list()
 
   } else {
     # For other items, coerce to character and wrap them into a list (which
@@ -962,7 +988,7 @@ as.tags.character <- function(x, ...) {
 
 #' @export
 as.tags.html_dependency <- function(x, ...) {
-  tagList(x)
+  attachDependencies(tagList(), x)
 }
 
 #' Preserve HTML regions
