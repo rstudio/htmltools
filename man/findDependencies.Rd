@@ -4,12 +4,14 @@
 \alias{findDependencies}
 \title{Collect attached dependencies from HTML tag object}
 \usage{
-findDependencies(tags, tagify = TRUE)
+findDependencies(tags, tagify = TRUE, resolveTagFunction = TRUE)
 }
 \arguments{
 \item{tags}{A tag-like object to search for dependencies.}
 
 \item{tagify}{Whether to tagify the input before searching for dependencies.}
+
+\item{resolveTagFunction}{whether or not to resolve [tagFunction()] dependencies.}
 }
 \value{
 A list of \code{\link{htmlDependency}} objects.

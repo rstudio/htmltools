@@ -4,7 +4,11 @@
 \alias{resolveDependencies}
 \title{Resolve a list of dependencies}
 \usage{
-resolveDependencies(dependencies, resolvePackageDir = TRUE)
+resolveDependencies(
+  dependencies,
+  resolvePackageDir = TRUE,
+  resolveTagFunction = TRUE
+)
 }
 \arguments{
 \item{dependencies}{A list of \code{\link{htmlDependency}} objects.}
@@ -12,6 +16,8 @@ resolveDependencies(dependencies, resolvePackageDir = TRUE)
 \item{resolvePackageDir}{Whether to resolve the relative path to an absolute
 path via \code{\link{system.file}} when the \code{package} attribute is
 present in a dependency object.}
+
+\item{resolveTagFunction}{whether or not to resolve [tagFunction()] dependencies.}
 }
 \value{
 dependencies A list of \code{\link{htmlDependency}} objects with

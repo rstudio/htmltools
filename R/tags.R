@@ -76,13 +76,16 @@ depListToNamedDepList <- function(dependencies) {
 #' @param resolvePackageDir Whether to resolve the relative path to an absolute
 #'   path via \code{\link{system.file}} when the \code{package} attribute is
 #'   present in a dependency object.
+#' @param resolveTagFunction whether or not to resolve [tagFunction()] dependencies.
 #' @return dependencies A list of \code{\link{htmlDependency}} objects with
 #'   redundancies removed.
 #'
 #' @export
-resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
-  # Remove nulls
-  deps <- dependencies[!sapply(dependencies, is.null)]
+resolveDependencies <- function(dependencies, resolvePackageDir = TRUE, resolveTagFunction = TRUE) {
+  deps <- dropNulls(dependencies)
+  if (isTRUE(resolveTagFunction)) {
+    deps <- resolveFunctionalDependencies(deps)
+  }
 
   # Get names and numeric versions in vector/list form
   depnames <- sapply(deps, `[[`, "name")
@@ -687,19 +690,19 @@ takeHeads <- function(ui) {
 #'
 #' @param tags A tag-like object to search for dependencies.
 #' @param tagify Whether to tagify the input before searching for dependencies.
-#' @param resolve Whether to resolve [tagFunction()] dependencies.
+#' @inheritParams resolveDependencies
 #'
 #' @return A list of \code{\link{htmlDependency}} objects.
 #'
 #' @export
-findDependencies <- function(tags, tagify = TRUE, resolve = TRUE) {
+findDependencies <- function(tags, tagify = TRUE, resolveTagFunction = TRUE) {
   if (isTRUE(tagify)) {
     tags <- tagify(tags)
   }
   deps <- htmlDependencies(tags)
   if (!is.null(deps) && inherits(deps, "html_dependency"))
     deps <- list(deps)
-  if (resolve) {
+  if (isTRUE(resolveTagFunction)) {
     deps <- resolveFunctionalDependencies(deps)
   }
   children <- if (is.list(tags)) {
