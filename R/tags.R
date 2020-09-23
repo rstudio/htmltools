@@ -255,7 +255,29 @@ tagList <- function(...) {
   return(lst)
 }
 
+#' Tag function
+#'
+#' Create 'lazily' rendered HTML [tags] (and/or [htmlDependencies()]).
+#'
+#' @param func a function with no arguments that returns HTML tags and/or
+#'   dependencies.
+#'
 #' @export
+#' @examples
+#'
+#' myDivDep <- tagFunction(function() {
+#'   if (isTRUE(getOption("useDep", TRUE))) {
+#'     htmlDependency(
+#'       name = "lazy-dependency",
+#'       version = "1.0", src = ""
+#'     )
+#'   }
+#' })
+#' myDiv <- attachDependencies(div(), myDivDep)
+#' (myDeps <- htmlDependencies(myDiv))
+#' resolveDependencies(myDeps)
+#' withr::with_options(list(useDep = FALSE), resolveDependencies(myDeps))
+#'
 tagFunction <- function(func) {
   if (!is.function(func) || length(formals(func)) != 0) {
     stop("`func` must be a function with no arguments")
@@ -718,21 +740,7 @@ findDependencies <- function(tags, tagify = TRUE) {
 #'
 #' @inheritParams resolveDependencies
 #' @export
-#' @examples
-#'
-#' myDiv <- attachDependencies(
-#'   div(), tagFunction(function() {
-#'     htmlDependency(
-#'       name = "lazy-dependency",
-#'       version = "1.0",
-#'       src = ""
-#'     )
-#'   })
-#' )
-#'
-#' (myDeps <- htmlDependencies(myDiv))
-#' resolveFunctionalDependencies(myDeps)
-#'
+#' @seealso [tagFunction()], [resolveDependencies()]
 resolveFunctionalDependencies <- function(dependencies) {
   if (!length(dependencies)) {
     return(dependencies)

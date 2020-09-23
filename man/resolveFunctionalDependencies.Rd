@@ -14,19 +14,6 @@ Resolves any [tagFunction()]s inside a list of [htmlDependencies()]. To
 resolve [tagFunction()]s _and then_ remove redundant dependencies all at once,
 use [resolveDependencies()] (which calls this function internally).
 }
-\examples{
-
-myDiv <- attachDependencies(
-  div(), tagFunction(function() {
-    htmlDependency(
-      name = "lazy-dependency",
-      version = "1.0",
-      src = ""
-    )
-  })
-)
-
-(myDeps <- htmlDependencies(myDiv))
-resolveFunctionalDependencies(myDeps)
-
+\seealso{
+[tagFunction()], [resolveDependencies()]
 }
