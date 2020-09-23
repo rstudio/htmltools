@@ -76,16 +76,12 @@ depListToNamedDepList <- function(dependencies) {
 #' @param resolvePackageDir Whether to resolve the relative path to an absolute
 #'   path via \code{\link{system.file}} when the \code{package} attribute is
 #'   present in a dependency object.
-#' @param resolveTagFunction whether or not to resolve [tagFunction()] dependencies.
 #' @return dependencies A list of \code{\link{htmlDependency}} objects with
 #'   redundancies removed.
 #'
 #' @export
-resolveDependencies <- function(dependencies, resolvePackageDir = TRUE, resolveTagFunction = TRUE) {
-  deps <- dropNulls(dependencies)
-  if (isTRUE(resolveTagFunction)) {
-    deps <- resolveFunctionalDependencies(deps)
-  }
+resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
+  deps <- resolveFunctionalDependencies(dropNulls(dependencies))
 
   # Get names and numeric versions in vector/list form
   depnames <- sapply(deps, `[[`, "name")
@@ -690,21 +686,19 @@ takeHeads <- function(ui) {
 #'
 #' @param tags A tag-like object to search for dependencies.
 #' @param tagify Whether to tagify the input before searching for dependencies.
-#' @inheritParams resolveDependencies
 #'
 #' @return A list of \code{\link{htmlDependency}} objects.
 #'
 #' @export
-findDependencies <- function(tags, tagify = TRUE, resolveTagFunction = TRUE) {
+findDependencies <- function(tags, tagify = TRUE) {
   if (isTRUE(tagify)) {
     tags <- tagify(tags)
   }
   deps <- htmlDependencies(tags)
-  if (!is.null(deps) && inherits(deps, "html_dependency"))
+  if (inherits(deps, "html_dependency")) {
     deps <- list(deps)
-  if (isTRUE(resolveTagFunction)) {
-    deps <- resolveFunctionalDependencies(deps)
   }
+  deps <- resolveFunctionalDependencies(deps)
   children <- if (is.list(tags)) {
     if (isTag(tags)) {
       tags$children
@@ -713,14 +707,37 @@ findDependencies <- function(tags, tagify = TRUE, resolveTagFunction = TRUE) {
     }
   }
   childDeps <- unlist(lapply(children, findDependencies, tagify = FALSE), recursive = FALSE)
-  c(childDeps, if (!is.null(deps)) deps)
+  c(childDeps, deps)
 }
 
-resolveFunctionalDependencies <- function(deps) {
-  if (!length(deps)) {
-    return(deps)
+#' Resolve functional HTML dependencies
+#'
+#' Resolves any [tagFunction()]s inside a list of [htmlDependencies()]. To
+#' resolve [tagFunction()]s _and then_ remove redundant dependencies all at once,
+#' use [resolveDependencies()] (which calls this function internally).
+#'
+#' @inheritParams resolveDependencies
+#' @export
+#' @examples
+#'
+#' myDiv <- attachDependencies(
+#'   div(), tagFunction(function() {
+#'     htmlDependency(
+#'       name = "lazy-dependency",
+#'       version = "1.0",
+#'       src = ""
+#'     )
+#'   })
+#' )
+#'
+#' (myDeps <- htmlDependencies(myDiv))
+#' resolveFunctionalDependencies(myDeps)
+#'
+resolveFunctionalDependencies <- function(dependencies) {
+  if (!length(dependencies)) {
+    return(dependencies)
   }
-  deps <- lapply(deps, function(x) {
+  dependencies <- lapply(dependencies, function(x) {
     if (is_html_dependency(x)) {
       return(list(x))
     }
@@ -730,14 +747,25 @@ resolveFunctionalDependencies <- function(deps) {
     }
     y <- x()
     if (is_html_dependency(y)) {
-      return(list(deps))
+      return(list(y))
     }
-    if (!all(vapply(y, is_html_dependency, logical(1)))) {
-      stop("tagFunction() must return an htmlDependency() (or a list of them)")
+    if (isTag(y) || isTagList(y)) {
+      return(findDependencies(y))
     }
-    y
+    # Also returns TRUE if y is zero-length
+    if (all(vapply(y, is_html_dependency, logical(1)))) {
+      return(y)
+    }
+    stop(
+      call. = FALSE,
+      "tagFunction() must return one of the following:\n",
+      "* `htmlDependency()`\n",
+      "* list of `htmlDependency()`s\n",
+      "* `tagList()` or `tags`\n",
+      "* `NULL` (or zero-length vector)"
+    )
   })
-  unlist(deps, recursive = FALSE)
+  unlist(dependencies, recursive = FALSE)
 }
 
 is_html_dependency <- function(x) {
@@ -976,6 +1004,7 @@ as.tags.shiny.tag.function <- function(x, ...) {
   y <- x()
   # as.tags() doesn't currently have a method for a list of dependencies
   if (is.list(y) && all(vapply(y, inherits, logical(1), "html_dependency"))) {
+    # In order for S3 dispatch to work properly, this can't simply be `lapply(y, as.tags)`
     lapply(y, function(z) as.tags(z))
   } else {
     as.tags(y)
