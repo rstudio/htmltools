@@ -961,7 +961,11 @@ as.tags <- function(x, ...) {
 
 #' @export
 as.tags.default <- function(x, ...) {
-  tagList(as.character(x))
+  if (is.list(x)) {
+    tagList(unclass(x))
+  } else {
+    tagList(as.character(x))
+  }
 }
 
 #' @export
