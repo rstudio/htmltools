@@ -291,6 +291,7 @@ tagFunction <- function(func) {
 #' @rdname tag
 #' @export
 tagAppendAttributes <- function(tag, ...) {
+  tag <- assert_shiny_tag(tag)
   tag$attribs <- c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
   tag
 }
@@ -299,6 +300,7 @@ tagAppendAttributes <- function(tag, ...) {
 #' @rdname tag
 #' @export
 tagHasAttribute <- function(tag, attr) {
+  tag <- assert_shiny_tag(tag)
   result <- attr %in% names(tag$attribs)
   result
 }
@@ -306,6 +308,7 @@ tagHasAttribute <- function(tag, attr) {
 #' @rdname tag
 #' @export
 tagGetAttribute <- function(tag, attr) {
+  tag <- assert_shiny_tag(tag)
   # Find out which positions in the attributes list correspond to the given attr
   attribs <- tag$attribs
   attrIdx <- which(attr == names(attribs))
@@ -324,6 +327,7 @@ tagGetAttribute <- function(tag, attr) {
 #' @rdname tag
 #' @export
 tagAppendChild <- function(tag, child) {
+  tag <- assert_shiny_tag(tag)
   tag$children[[length(tag$children)+1]] <- child
   tag
 }
@@ -331,6 +335,7 @@ tagAppendChild <- function(tag, child) {
 #' @rdname tag
 #' @export
 tagAppendChildren <- function(tag, ..., list = NULL) {
+  tag <- assert_shiny_tag(tag)
   tag$children <- unname(c(tag$children, c(dots_list(...), list)))
   tag
 }
@@ -338,8 +343,17 @@ tagAppendChildren <- function(tag, ..., list = NULL) {
 #' @rdname tag
 #' @export
 tagSetChildren <- function(tag, ..., list = NULL) {
+  tag <- assert_shiny_tag(tag)
   tag$children <- unname(c(dots_list(...), list))
   tag
+}
+
+assert_shiny_tag <- function(tag) {
+  tag <- as.tags(tag)
+  if (isTag(tag)) {
+    return(tag)
+  }
+  stop("Wasn't able to coerce an object of class '", class(tag)[1], "' into a shiny.tag")
 }
 
 #' HTML Tag Object
