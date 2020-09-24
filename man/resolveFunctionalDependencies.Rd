@@ -4,10 +4,10 @@
 \alias{resolveFunctionalDependencies}
 \title{Resolve tag functions}
 \usage{
-resolveFunctionalDependencies(x)
+resolveFunctionalDependencies(dependencies)
 }
 \arguments{
-\item{x}{a list of HTML dependencies or tags.}
+\item{dependencies}{A list of \code{\link{htmlDependency}} objects.}
 }
 \value{
 a list of HTML dependencies.
