@@ -24,8 +24,7 @@ myDivDep <- tagFunction(function() {
   }
 })
 myDiv <- attachDependencies(div(), myDivDep)
-(myDeps <- htmlDependencies(myDiv))
-resolveDependencies(myDeps)
-withr::with_options(list(useDep = FALSE), resolveDependencies(myDeps))
+renderTags(myDiv)
+withr::with_options(list(useDep = FALSE), renderTags(myDiv))
 
 }
