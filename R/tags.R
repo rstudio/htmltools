@@ -81,7 +81,7 @@ depListToNamedDepList <- function(dependencies) {
 #'
 #' @export
 resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
-  deps <- resolveFunctionalDependencies(dropNulls(dependencies))
+  deps <- resolveFunctionalDependencies(dependencies)
 
   # Get names and numeric versions in vector/list form
   depnames <- vapply(deps, function(x) x$name, character(1))
@@ -993,7 +993,7 @@ as.tags.shiny.tag.list <- function(x, ...) {
 as.tags.shiny.tag.function <- function(x, ...) {
   y <- x()
   # as.tags() doesn't currently have a method for a list of dependencies
-  if (is.list(y) && all(vapply(y, inherits, logical(1), "html_dependency"))) {
+  if (is.list(y) && all(vapply(y, is_html_dependency, logical(1)))) {
     # In order for S3 dispatch to work properly, this can't simply be `lapply(y, as.tags)`
     lapply(y, function(z) as.tags(z))
   } else {
