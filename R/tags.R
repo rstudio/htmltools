@@ -727,7 +727,7 @@ findDependencies <- function(tags, tagify = TRUE) {
       tags
     }
   }
-  childDeps <- unlist(lapply(children, findDependencies, tagify = FALSE), recursive = FALSE)
+  childDeps <- unlist(lapply(children, findDependencies, tagify = FALSE), recursive = FALSE, use.names = FALSE)
   c(childDeps, deps)
 }
 
@@ -752,7 +752,7 @@ resolveFunctionalDependencies <- function(dependencies) {
     }
     asDependencies(dep)
   })
-  unlist(dependencies, recursive = FALSE)
+  unlist(dependencies, recursive = FALSE, use.names = FALSE)
 }
 
 #' HTML Builder Functions
@@ -961,13 +961,7 @@ as.tags <- function(x, ...) {
 
 #' @export
 as.tags.default <- function(x, ...) {
-  if (is.list(x) && !isTagList(x)) {
-    unclass(x)
-  } else if (is.list(x)) {
-    tagList(x)
-  } else {
-    tagList(as.character(x))
-  }
+  tagList(as.character(x))
 }
 
 #' @export
@@ -987,14 +981,12 @@ as.tags.shiny.tag.list <- function(x, ...) {
 
 #' @export
 as.tags.shiny.tag.function <- function(x, ...) {
-  y <- x()
-  # as.tags() doesn't currently have a method for a list of dependencies
-  if (is.list(y) && all(vapply(y, is_html_dependency, logical(1)))) {
-    # In order for S3 dispatch to work properly, this can't simply be `lapply(y, as.tags)`
-    lapply(y, function(z) as.tags(z))
-  } else {
-    as.tags(y)
-  }
+  as.tags(x())
+}
+
+#' @export
+as.tags.list <- function(x, ...) {
+  tagList(x)
 }
 
 #' @export
