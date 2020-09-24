@@ -161,6 +161,14 @@ test_that("Inline dependencies", {
   x <- div(list(tagFunction(function() { a1.1 }), div("foo")), "bar")
   expect_identical(findDependencies(x), list(a1.1))
 
+  # Top-level lists -----------------------------------
+  x <- list(div("ab"), "cd", a1.1)
+  expect_identical(findDependencies(x), list(a1.1))
+  expect_identical(as.character(renderTags(x)$html), "<div>ab</div>\ncd")
+
+  x <- tagList(tagFunction(function() { list(div("ab"), "cd", a1.1) }), "bar")
+  expect_identical(findDependencies(x), dots_list(a1.1))
+  expect_identical(as.character(renderTags(x)$html), "<div>ab</div>\ncd\nbar")
 })
 
 test_that("Modifying children using dependencies", {

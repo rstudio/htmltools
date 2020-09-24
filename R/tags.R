@@ -965,10 +965,13 @@ as.tags <- function(x, ...) {
 
 #' @export
 as.tags.default <- function(x, ...) {
-  if (is.list(x) && !isTagList(x))
+  if (is.list(x) && !isTagList(x)) {
     unclass(x)
-  else
+  } else if (is.list(x)) {
+    tagList(x)
+  } else {
     tagList(as.character(x))
+  }
 }
 
 #' @export
