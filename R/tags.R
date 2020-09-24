@@ -84,8 +84,8 @@ resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
   deps <- resolveFunctionalDependencies(dropNulls(dependencies))
 
   # Get names and numeric versions in vector/list form
-  depnames <- sapply(deps, `[[`, "name")
-  depvers <- numeric_version(sapply(deps, `[[`, "version"))
+  depnames <- vapply(deps, function(x) x$name, character(1))
+  depvers <- numeric_version(vapply(deps, function(x) x$version, character(1)))
 
   # Get latest version of each dependency. `unique` uses the first occurrence of
   # each dependency name, which is important for inter-dependent libraries.
@@ -134,11 +134,15 @@ resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
 #'
 #' @export
 subtractDependencies <- function(dependencies, remove, warnOnConflict = TRUE) {
-  depnames <- sapply(dependencies, `[[`, "name")
-  rmnames <- if (is.character(remove))
-    remove
-  else
-    sapply(remove, `[[`, "name")
+  dependencies <- resolveFunctionalDependencies(dependencies)
+  depnames <- vapply(dependencies, function(x) x$name, character(1))
+
+  if (is.character(remove)) {
+    rmnames <- remove
+  } else {
+    remove <- resolveFunctionalDependencies(remove)
+    rmnames <- vapply(remove, function(x) x$name, character(1))
+  }
 
   matches <- depnames %in% rmnames
   if (warnOnConflict && !is.character(remove)) {
@@ -716,11 +720,7 @@ findDependencies <- function(tags, tagify = TRUE) {
   if (isTRUE(tagify)) {
     tags <- tagify(tags)
   }
-  deps <- htmlDependencies(tags)
-  if (inherits(deps, "html_dependency")) {
-    deps <- list(deps)
-  }
-  deps <- resolveFunctionalDependencies(deps)
+  deps <- resolveFunctionalDependencies(htmlDependencies(tags))
   children <- if (is.list(tags)) {
     if (isTag(tags)) {
       tags$children
@@ -732,7 +732,7 @@ findDependencies <- function(tags, tagify = TRUE) {
   c(childDeps, deps)
 }
 
-#' Resolve functional HTML dependencies
+#' Resolve tag functions
 #'
 #' Resolves any [tagFunction()]s inside a list of [htmlDependencies()]. To
 #' resolve [tagFunction()]s _and then_ remove redundant dependencies all at once,
@@ -740,44 +740,23 @@ findDependencies <- function(tags, tagify = TRUE) {
 #'
 #' @inheritParams resolveDependencies
 #' @export
+#' @return a list of HTML dependencies.
 #' @seealso [tagFunction()], [resolveDependencies()]
 resolveFunctionalDependencies <- function(dependencies) {
-  if (!length(dependencies)) {
-    return(dependencies)
-  }
-  dependencies <- lapply(dependencies, function(x) {
-    if (is_html_dependency(x)) {
-      return(list(x))
+  dependencies <- asDependencies(dependencies)
+  dependencies <- lapply(dependencies, function(dep) {
+    if (is_html_dependency(dep)) {
+      return(list(dep))
     }
-    if (!inherits(x, "shiny.tag.function")) {
-      stop(call. = FALSE, "HTML dependencies must be a list containing either ",
-           "htmlDependency()s or tagFunction()s")
+    if (is_tag_function(dep)) {
+      dep <- dep()
     }
-    y <- x()
-    if (is_html_dependency(y)) {
-      return(list(y))
+    if (isTag(dep) || isTagList(dep)) {
+      return(findDependencies(dep))
     }
-    if (isTag(y) || isTagList(y)) {
-      return(findDependencies(y))
-    }
-    # Also returns TRUE if y is zero-length
-    if (all(vapply(y, is_html_dependency, logical(1)))) {
-      return(y)
-    }
-    stop(
-      call. = FALSE,
-      "tagFunction() must return one of the following:\n",
-      "* `htmlDependency()`\n",
-      "* list of `htmlDependency()`s\n",
-      "* `tagList()` or `tags`\n",
-      "* `NULL` (or zero-length vector)"
-    )
+    asDependencies(dep)
   })
   unlist(dependencies, recursive = FALSE)
-}
-
-is_html_dependency <- function(x) {
-  inherits(x, "html_dependency")
 }
 
 #' HTML Builder Functions

@@ -2,12 +2,15 @@
 % Please edit documentation in R/tags.R
 \name{resolveFunctionalDependencies}
 \alias{resolveFunctionalDependencies}
-\title{Resolve functional HTML dependencies}
+\title{Resolve tag functions}
 \usage{
-resolveFunctionalDependencies(dependencies)
+resolveFunctionalDependencies(x)
 }
 \arguments{
-\item{dependencies}{A list of \code{\link{htmlDependency}} objects.}
+\item{x}{a list of HTML dependencies or tags.}
+}
+\value{
+a list of HTML dependencies.
 }
 \description{
 Resolves any [tagFunction()]s inside a list of [htmlDependencies()]. To
