@@ -744,9 +744,6 @@ findDependencies <- function(tags, tagify = TRUE) {
 resolveFunctionalDependencies <- function(dependencies) {
   dependencies <- asDependencies(dependencies)
   dependencies <- lapply(dependencies, function(dep) {
-    if (is_html_dependency(dep)) {
-      return(list(dep))
-    }
     if (is_tag_function(dep)) {
       dep <- dep()
     }
