@@ -742,16 +742,11 @@ findDependencies <- function(tags, tagify = TRUE) {
   c(childDeps, deps)
 }
 
-#' Resolve tag functions
-#'
+
 #' Resolves any [tagFunction()]s inside a list of [htmlDependencies()]. To
 #' resolve [tagFunction()]s _and then_ remove redundant dependencies all at once,
 #' use [resolveDependencies()] (which calls this function internally).
-#'
-#' @inheritParams resolveDependencies
-#' @export
-#' @return a list of HTML dependencies.
-#' @seealso [tagFunction()], [resolveDependencies()]
+#' @noRd
 resolveFunctionalDependencies <- function(dependencies) {
   if (!length(dependencies)) {
     return(dependencies)
