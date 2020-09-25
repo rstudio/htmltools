@@ -756,7 +756,12 @@ resolveFunctionalDependencies <- function(dependencies) {
     if (is_tag_function(dep)) {
       dep <- dep()
     }
-    if (isTag(dep) || isTagList(dep)) {
+    if (isTag(dep) || inherits(dep, "shiny.tag.list")) {
+      warning(
+        "It appears attachDependencies() has been used to attach a tagFunction()",
+        "that returns a shiny.tag/shiny.tag.list, which is considered poor practice",
+        "since those tags will never actually get rendered", call. = FALSE
+      )
       return(findDependencies(dep))
     }
     asDependencies(dep)

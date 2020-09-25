@@ -45,26 +45,26 @@ test_that("Dependency resolution works", {
     list(a1.1, tagFunction(function() { list(a1.2, a1.2.1) })),
     list(a1.2.1)
   )
-  expect_resolved_deps(
+  expect_warning(expect_resolved_deps(
     list(a1.1, tagFunction(function() { div("foo", a1.2, a1.2.1) })),
     list(a1.2.1)
-  )
-  expect_resolved_deps(
+  ))
+  expect_warning(expect_resolved_deps(
     list(a1.1, tagFunction(function() { tagList(a1.2, a1.2.1) })),
     list(a1.2.1)
-  )
-  expect_resolved_deps(
+  ))
+  expect_warning(expect_resolved_deps(
     list(a1.1, tagFunction(function() {
       tagList(div("foo", a1.2), div("foo", a1.2.1))
     })),
     list(a1.2.1)
-  )
-  expect_resolved_deps(
+  ))
+  expect_warning(expect_resolved_deps(
     list(a1.1, tagFunction(function() {
       tagList(div("foo", a1.2), div("foo", tagFunction(function() { a1.2.1 }))) }
     )),
     list(a1.2.1)
-  )
+  ))
   res <- subtractDependencies(list(a1.2.1, b1.0.1), list(a1.1), warnOnConflict = FALSE)
   expect_identical(res, list(b1.0.1))
   expect_warning(subtractDependencies(list(a1.2.1, b1.0.1), list(a1.1)))
