@@ -154,6 +154,9 @@ test_that("Inline dependencies", {
   x <- list(div("ab"), "cd", a1.1)
   expect_html_deps(x, "<div>ab</div>\ncd", list(a1.1))
 
+  x <- structure(list(div("ab"), "cd", a1.1), class = "foo")
+  expect_html_deps(x, "<div>ab</div>\ncd", list(a1.1))
+
   x <- tagList(tagFunction(function() { list(div("ab"), "cd", a1.1) }), "bar")
   expect_html_deps(x, "<div>ab</div>\ncd\nbar", list(a1.1))
 })

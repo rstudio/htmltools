@@ -975,6 +975,9 @@ as.tags <- function(x, ...) {
 
 #' @export
 as.tags.default <- function(x, ...) {
+  # Plain (non-classed) lists will hit as.tags.list(), but lists with a class
+  # will get here. (tagLists will already have been handled by
+  # as.tags.shiny.tag.list)
   if (is.list(x)) {
     do.call(tagList, unclass(x))
   } else {
@@ -1004,6 +1007,8 @@ as.tags.shiny.tag.function <- function(x, ...) {
 
 #' @export
 as.tags.list <- function(x, ...) {
+  # Only non-classed lists will hit this method
+  # (classed lists will reach the default method)
   do.call(tagList, x)
 }
 
