@@ -81,12 +81,11 @@ depListToNamedDepList <- function(dependencies) {
 #'
 #' @export
 resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
-  # Remove nulls
-  deps <- dependencies[!sapply(dependencies, is.null)]
+  deps <- resolveFunctionalDependencies(dependencies)
 
   # Get names and numeric versions in vector/list form
-  depnames <- sapply(deps, `[[`, "name")
-  depvers <- numeric_version(sapply(deps, `[[`, "version"))
+  depnames <- vapply(deps, function(x) x$name, character(1))
+  depvers <- numeric_version(vapply(deps, function(x) x$version, character(1)))
 
   # Get latest version of each dependency. `unique` uses the first occurrence of
   # each dependency name, which is important for inter-dependent libraries.
@@ -135,11 +134,15 @@ resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
 #'
 #' @export
 subtractDependencies <- function(dependencies, remove, warnOnConflict = TRUE) {
-  depnames <- sapply(dependencies, `[[`, "name")
-  rmnames <- if (is.character(remove))
-    remove
-  else
-    sapply(remove, `[[`, "name")
+  dependencies <- resolveFunctionalDependencies(dependencies)
+  depnames <- vapply(dependencies, function(x) x$name, character(1))
+
+  if (is.character(remove)) {
+    rmnames <- remove
+  } else {
+    remove <- resolveFunctionalDependencies(remove)
+    rmnames <- vapply(remove, function(x) x$name, character(1))
+  }
 
   matches <- depnames %in% rmnames
   if (warnOnConflict && !is.character(remove)) {
@@ -256,9 +259,39 @@ tagList <- function(...) {
   return(lst)
 }
 
+#' Tag function
+#'
+#' Create 'lazily' rendered HTML [tags] (and/or [htmlDependencies()]).
+#'
+#' @param func a function with no arguments that returns HTML tags and/or
+#'   dependencies.
+#'
+#' @export
+#' @examples
+#'
+#' myDivDep <- tagFunction(function() {
+#'   if (isTRUE(getOption("useDep", TRUE))) {
+#'     htmlDependency(
+#'       name = "lazy-dependency",
+#'       version = "1.0", src = ""
+#'     )
+#'   }
+#' })
+#' myDiv <- attachDependencies(div(), myDivDep)
+#' renderTags(myDiv)
+#' withr::with_options(list(useDep = FALSE), renderTags(myDiv))
+#'
+tagFunction <- function(func) {
+  if (!is.function(func) || length(formals(func)) != 0) {
+    stop("`func` must be a function with no arguments")
+  }
+  structure(func, class = "shiny.tag.function")
+}
+
 #' @rdname tag
 #' @export
 tagAppendAttributes <- function(tag, ...) {
+  throw_if_tag_function(tag)
   tag$attribs <- c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
   tag
 }
@@ -267,6 +300,7 @@ tagAppendAttributes <- function(tag, ...) {
 #' @rdname tag
 #' @export
 tagHasAttribute <- function(tag, attr) {
+  throw_if_tag_function(tag)
   result <- attr %in% names(tag$attribs)
   result
 }
@@ -274,6 +308,7 @@ tagHasAttribute <- function(tag, attr) {
 #' @rdname tag
 #' @export
 tagGetAttribute <- function(tag, attr) {
+  throw_if_tag_function(tag)
   # Find out which positions in the attributes list correspond to the given attr
   attribs <- tag$attribs
   attrIdx <- which(attr == names(attribs))
@@ -292,6 +327,7 @@ tagGetAttribute <- function(tag, attr) {
 #' @rdname tag
 #' @export
 tagAppendChild <- function(tag, child) {
+  throw_if_tag_function(tag)
   tag$children[[length(tag$children)+1]] <- child
   tag
 }
@@ -299,6 +335,7 @@ tagAppendChild <- function(tag, child) {
 #' @rdname tag
 #' @export
 tagAppendChildren <- function(tag, ..., list = NULL) {
+  throw_if_tag_function(tag)
   tag$children <- unname(c(tag$children, c(dots_list(...), list)))
   tag
 }
@@ -306,8 +343,14 @@ tagAppendChildren <- function(tag, ..., list = NULL) {
 #' @rdname tag
 #' @export
 tagSetChildren <- function(tag, ..., list = NULL) {
+  throw_if_tag_function(tag)
   tag$children <- unname(c(dots_list(...), list))
   tag
+}
+
+throw_if_tag_function <- function(tag) {
+  if (is_tag_function(tag))
+    stop("`tag` can not be a `tagFunction()`")
 }
 
 #' HTML Tag Object
@@ -687,9 +730,7 @@ findDependencies <- function(tags, tagify = TRUE) {
   if (isTRUE(tagify)) {
     tags <- tagify(tags)
   }
-  dep <- htmlDependencies(tags)
-  if (!is.null(dep) && inherits(dep, "html_dependency"))
-    dep <- list(dep)
+  deps <- resolveFunctionalDependencies(htmlDependencies(tags))
   children <- if (is.list(tags)) {
     if (isTag(tags)) {
       tags$children
@@ -697,8 +738,35 @@ findDependencies <- function(tags, tagify = TRUE) {
       tags
     }
   }
-  childDeps <- unlist(lapply(children, findDependencies, tagify = FALSE), recursive = FALSE)
-  c(childDeps, if (!is.null(dep)) dep)
+  childDeps <- unlist(lapply(children, findDependencies, tagify = FALSE), recursive = FALSE, use.names = FALSE)
+  c(childDeps, deps)
+}
+
+
+#' Resolves any [tagFunction()]s inside a list of [htmlDependencies()]. To
+#' resolve [tagFunction()]s _and then_ remove redundant dependencies all at once,
+#' use [resolveDependencies()] (which calls this function internally).
+#' @noRd
+resolveFunctionalDependencies <- function(dependencies) {
+  if (!length(dependencies)) {
+    return(dependencies)
+  }
+  dependencies <- asDependencies(dependencies)
+  dependencies <- lapply(dependencies, function(dep) {
+    if (is_tag_function(dep)) {
+      dep <- dep()
+    }
+    if (isTag(dep) || inherits(dep, "shiny.tag.list")) {
+      warning(
+        "It appears attachDependencies() has been used to attach a tagFunction()",
+        "that returns a shiny.tag/shiny.tag.list, which is considered poor practice",
+        "since those tags will never actually get rendered", call. = FALSE
+      )
+      return(findDependencies(dep))
+    }
+    asDependencies(dep)
+  })
+  unlist(dependencies, recursive = FALSE, use.names = FALSE)
 }
 
 #' HTML Builder Functions
@@ -907,10 +975,14 @@ as.tags <- function(x, ...) {
 
 #' @export
 as.tags.default <- function(x, ...) {
-  if (is.list(x) && !isTagList(x))
-    unclass(x)
-  else
+  # Plain (non-classed) lists will hit as.tags.list(), but lists with a class
+  # will get here. (tagLists will already have been handled by
+  # as.tags.shiny.tag.list)
+  if (is.list(x)) {
+    do.call(tagList, unclass(x))
+  } else {
     tagList(as.character(x))
+  }
 }
 
 #' @export
@@ -926,6 +998,18 @@ as.tags.shiny.tag <- function(x, ...) {
 #' @export
 as.tags.shiny.tag.list <- function(x, ...) {
   x
+}
+
+#' @export
+as.tags.shiny.tag.function <- function(x, ...) {
+  x()
+}
+
+#' @export
+as.tags.list <- function(x, ...) {
+  # Only non-classed lists will hit this method
+  # (classed lists will reach the default method)
+  do.call(tagList, x)
 }
 
 #' @export

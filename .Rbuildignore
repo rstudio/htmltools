@@ -6,3 +6,4 @@
 ^CONTRIBUTING\.md$
 ^scripts
 ^\.github$
+^revdep$

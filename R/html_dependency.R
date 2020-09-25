@@ -160,27 +160,53 @@ htmlDependencies <- function(x) {
 #' @rdname htmlDependencies
 #' @export
 `htmlDependencies<-` <- function(x, value) {
-  if (inherits(value, "html_dependency"))
-    value <- list(value)
-  attr(x, "html_dependencies") <- value
+  attr(x, "html_dependencies") <- asDependencies(value)
   x
 }
 
 #' @rdname htmlDependencies
 #' @export
 attachDependencies <- function(x, value, append = FALSE) {
-  if (append) {
-    if (inherits(value, "html_dependency"))
-      value <- list(value)
+  value <- asDependencies(value)
 
+  if (append) {
     old <- attr(x, "html_dependencies", TRUE)
     htmlDependencies(x) <- c(old, value)
-
   } else {
     htmlDependencies(x) <- value
   }
+
   return(x)
 }
+
+# This will _not_ execute tagFunction(), which is important for attachDependencies()
+asDependencies <- function(x) {
+  if (!length(x)) {
+    return(x)
+  }
+  if (is_dependency_maybe(x)) {
+    return(list(x))
+  }
+  x <- dropNulls(x)
+  if (all(vapply(x, is_dependency_maybe, logical(1)))) {
+    return(x)
+  }
+  stop("Could not coerce object of class '", class(x), "' into a list of HTML dependencies")
+}
+
+is_dependency_maybe <- function(x) {
+  is_html_dependency(x) || is_tag_function(x)
+}
+
+is_html_dependency <- function(x) {
+  inherits(x, "html_dependency")
+}
+
+is_tag_function <- function(x) {
+  inherits(x, "shiny.tag.function")
+}
+
+
 
 #' Suppress web dependencies
 #'
