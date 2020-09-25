@@ -179,7 +179,7 @@ attachDependencies <- function(x, value, append = FALSE) {
   return(x)
 }
 
-
+# This will _not_ execute tagFunction(), which is important for attachDependencies()
 asDependencies <- function(x) {
   if (!length(x)) {
     return(x)

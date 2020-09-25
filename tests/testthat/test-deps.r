@@ -168,9 +168,6 @@ test_that("Modifying children using dependencies", {
   x <- tagAppendChild(div(a1.1), tagFunction(function() { a1.2 }))
   expect_identical(findDependencies(x), list(a1.1, a1.2))
 
-  x <- tagAppendChild(tagFunction(function() { div(a1.1) }), tagFunction(function() { a1.2 }))
-  expect_identical(findDependencies(x), list(a1.1, a1.2))
-
   x <- tagAppendChild(div(a1.1), list(a1.2))
   expect_identical(findDependencies(x), list(a1.1, a1.2))
 
