@@ -3,6 +3,8 @@ htmltools 0.5.0.9000
 
 * Added a new `tagFunction()` for generating `tags` and/or `htmlDependency()`s conditional on the rendering context. For an example, see `?tagFunction`. (#180)
 
+* `print(as.tags(x))` no longer results in error when `x` is a generic `list()` of tag-like objects. (#181)
+
 htmltools 0.5.0
 --------------------------------------------------------------------------------
 
