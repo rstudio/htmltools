@@ -526,6 +526,31 @@ test_that("NA attributes are rendered correctly", {
   )
 })
 
+test_that("Tag list tree is rendered in DOM tree order", {
+  # Tree order is preorder, depth-first traversal
+  # https://dom.spec.whatwg.org/#concept-tree
+  #
+  # Test for preordered traversal/execution of tagFunction(). This allows one to
+  # rely on the side-effects of executing a tag, so long as those side-effects
+  # happen "towards the top" of the tree. Shiny implicitly assumes this
+  # behavior: execution of bootstrapLib() introduces a (temporary) side-effect
+  # that "down-stream" UI (i.e. sliderInput() et al) can use to inform their
+  # Sass -> CSS compilation
+  value <- NULL
+  lazyDiv <- div(tagFunction(function() { value }))
+  dom <- tagList(
+    lazyDiv,
+    div(tagList(
+      tagFunction(function() { value <<- 1 })
+    )),
+    lazyDiv
+  )
+  expect_identical(
+    as.character(dom),
+    "<div></div>\n<div>1</div>\n<div>1</div>"
+  )
+})
+
 
 test_that("Flattening a list of tags", {
   # Flatten a nested list
