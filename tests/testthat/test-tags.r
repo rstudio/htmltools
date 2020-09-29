@@ -530,12 +530,6 @@ test_that("Tag list tree is rendered in DOM tree order", {
   # Tree order is preorder, depth-first traversal
   # https://dom.spec.whatwg.org/#concept-tree
   #
-  # Test for depth-first (not breadth-first)
-  # https://stackoverflow.com/a/16113998/1583084
-  expect_identical(
-    as.character(tags$p("Consider this", tags$i("relatively"), "simple", tags$strong("HTML"), "subtree")),
-    "<p>\n  Consider this\n  <i>relatively</i>\n  simple\n  <strong>HTML</strong>\n  subtree\n</p>"
-  )
   # Test for preordered traversal/execution of tagFunction(). This allows one to
   # rely on the side-effects of executing a tag, so long as those side-effects
   # happen "towards the top" of the tree. Shiny implicitly assumes this
