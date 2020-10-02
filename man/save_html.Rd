@@ -13,7 +13,7 @@ save_html(html, file, background = "white", libdir = "lib")
 
 \item{background}{Background color for web page}
 
-\item{libdir}{Directory to copy dependenies to}
+\item{libdir}{Directory to copy dependencies to}
 }
 \description{
 Save the specified HTML object to a file, copying all of it's

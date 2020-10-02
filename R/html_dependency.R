@@ -26,6 +26,9 @@
 #'   dependency files. If \code{FALSE}, only the files specified in
 #'   \code{script}, \code{stylesheet}, and \code{attachment} are treated as
 #'   dependency files.
+#' @param restyle In the event that a dependency with this \code{name} and
+#' \code{version} has already rendered on the client, should this dependency
+#' disable the previous \code{stylesheet}s and re-render?
 #'
 #' @return An object that can be included in a list of dependencies passed to
 #'   \code{\link{attachDependencies}}.
@@ -71,7 +74,8 @@ htmlDependency <- function(name,
                            head = NULL,
                            attachment = NULL,
                            package = NULL,
-                           all_files = TRUE) {
+                           all_files = TRUE,
+                           restyle = TRUE) {
 
   # This function shouldn't be called from a namespace environment with
   # absolute paths.
@@ -104,7 +108,8 @@ htmlDependency <- function(name,
     head = head,
     attachment = attachment,
     package = package,
-    all_files = all_files
+    all_files = all_files,
+    restyle = restyle
   ))
 }
 
