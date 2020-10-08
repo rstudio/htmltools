@@ -4,7 +4,7 @@
 \alias{save_html}
 \title{Save an HTML object to a file}
 \usage{
-save_html(html, file, background = "white", libdir = "lib")
+save_html(html, file, background = "white", libdir = "lib", lang = "en")
 }
 \arguments{
 \item{html}{HTML content to print}
@@ -13,7 +13,9 @@ save_html(html, file, background = "white", libdir = "lib")
 
 \item{background}{Background color for web page}
 
-\item{libdir}{Directory to copy dependenies to}
+\item{libdir}{Directory to copy dependencies to}
+
+\item{lang}{Value of the `<html>` `lang` attribute}
 }
 \description{
 Save the specified HTML object to a file, copying all of it's

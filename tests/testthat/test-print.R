@@ -62,3 +62,20 @@ test_that("Special characters are not re-encoded", {
     }
   )
 })
+
+
+test_that("save_html() language parameter is set", {
+  output <- tempfile(fileext = ".html")
+  # test for default
+  save_html("<h2>Howdy</h2>", output)
+  output_read <- readLines(output)
+  expect_true(
+    grepl("<html lang=\"en\">", paste(output_read, collapse = " "))
+  )
+  # test for fr
+  save_html("<h2>Howdy</h2>", output, lang = "fr")
+  output_read <- readLines(output)
+  expect_true(
+    grepl("<html lang=\"fr\">", paste(output_read, collapse = " "))
+  )
+})

@@ -5,6 +5,8 @@ htmltools 0.5.0.9000
 
 * `print(as.tags(x))` no longer results in error when `x` is a generic `list()` of tag-like objects. (#181)
 
+* `save_html()` now has a `lang` parameter that can be used to set the lang attribute of `<html>`. (@ColinFay, #185)
+
 htmltools 0.5.0
 --------------------------------------------------------------------------------
 

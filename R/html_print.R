@@ -66,9 +66,10 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
 #' @param background Background color for web page
 #' @param file File to write content to
 #' @param libdir Directory to copy dependencies to
+#' @param lang Value of the `<html>` `lang` attribute
 #'
 #' @export
-save_html <- function(html, file, background = "white", libdir = "lib") {
+save_html <- function(html, file, background = "white", libdir = "lib", lang = "en") {
   force(html)
   force(background)
   force(libdir)
@@ -96,7 +97,7 @@ save_html <- function(html, file, background = "white", libdir = "lib") {
 
   # build the web-page
   html <- c("<!DOCTYPE html>",
-            "<html>",
+            sprintf('<html lang="%s">', lang),
             "<head>",
             "<meta charset=\"utf-8\"/>",
             sprintf("<style>body{background-color:%s;}</style>", htmlEscape(background)),
