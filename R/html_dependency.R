@@ -429,6 +429,9 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
 #' @param dependencies A list of \code{htmlDependency} objects.
 #' @param srcType The type of src paths to use; valid values are \code{file} or
 #'   \code{href}.
+#' @param scriptFields The types of attributes allowed to be given as named
+#'   elements to \code{script}; valid values are \code{src}, \code{integrity}
+#'   & \code{crossorigin}.
 #' @param encodeFunc The function to use to encode the path part of a URL. The
 #'   default should generally be used.
 #' @param hrefFilter A function used to transform the final, encoded URLs of
