@@ -36,6 +36,13 @@
 #'   \code{href} for URL. For example, a dependency that was both on disk and at
 #'   a URL might use \code{src = c(file=filepath, href=url)}.
 #'
+#'   \code{script} can be given as either a scalar string, or a named list with
+#'   the following fields: \code{src}, \code{integrity}, & \code{crossorigin},
+#'   allowing the use of SRI to ensure the integrity of packages downloaded from
+#'   remote servers.
+#'   \code{script = "pkg.js"} is equivalent to
+#'   \code{script = list(src = "pkg.js")}.
+#'
 #'   \code{attachment} can be used to make the indicated files available to the
 #'   JavaScript on the page via URL. For each element of \code{attachment}, an
 #'   element \code{<link id="DEPNAME-ATTACHINDEX-attachment" rel="attachment"
@@ -433,6 +440,7 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
 #' @export
 renderDependencies <- function(dependencies,
   srcType = c("href", "file"),
+  scriptFields = c("src", "integrity", "crossorigin"),
   encodeFunc = urlEncodePath,
   hrefFilter = identity) {
 
@@ -444,6 +452,13 @@ renderDependencies <- function(dependencies,
     if (length(usableType) == 0)
       stop("Dependency ", dep$name, " ", dep$version,
         " does not have a usable source")
+
+    if (length(dep$script) > 1) {
+      usableScript <- scriptFields[which(scriptFields %in% names(dep$script))]
+      if (length(usableScript) == 0)
+        stop("Dependency ", dep$name, " ", dep$version,
+          " does not have usable script fields")
+    }
 
     dir <- dep$src[head(usableType, 1)]
 
@@ -478,10 +493,37 @@ renderDependencies <- function(dependencies,
 
     # add scripts
     if (length(dep$script) > 0) {
+      if (length(dep$script) == 1) dep$script <- list(src = dep$script[[1]])
+
+      dep$script$src <- paste(
+        ' src="',
+        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$script$src)))),
+        '"',
+        sep = ''
+      )
+
+      if (!is.null(dep$script$integrity)) {
+        dep$script$integrity <- paste(
+          ' integrity="', dep$script$integrity, '"',
+          sep = ''
+        )
+      }
+
+      if (!is.null(dep$script$crossorigin)) {
+        dep$script$crossorigin <- paste(
+          ' crossorigin="', htmlEscape(dep$script$crossorigin), '"',
+          sep = ''
+        )
+      } else {
+        dep$script$crossorigin <- ""
+      }
+
       html <- c(html, paste(
-        "<script src=\"",
-        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$script)))),
-        "\"></script>",
+        "<script",
+        dep$script$src,
+        dep$script$integrity,
+        dep$script$crossorigin,
+        "></script>",
         sep = ""
       ))
     }
