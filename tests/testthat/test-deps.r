@@ -186,3 +186,44 @@ test_that("Modifying children using dependencies", {
   x <- tagSetChildren(div("foo", a1.1), tagFunction(function() { a1.2 }))
   expect_identical(findDependencies(x), list(a1.2))
 })
+
+
+test_that("able to resolve HTML scripts supplied with & without integrity", {
+  src1 <- "https://cdn.com/libs/p1/0.1/"
+  src2 <- "https://cdn/libs/p2/0.2/"
+  deps <- list(
+    htmlDependency(
+      name = "p1",
+      version = "0.1",
+      src = list(href = src1),
+      script = list(
+        src = "p1.min.js",
+        integrity = "longhash",
+        crossorigin = "anonymous"
+      )
+    ),
+    htmlDependency(
+      "p2", version = "0.2",
+      src = list(href = src2),
+      script = "p2.min.js"
+    )
+  )
+
+  expect1 <- paste(
+    '<script src="', src1, 'p1.min.js','" ',
+    'integrity="longhash" ',
+    'crossorigin="anonymous"></script>',
+    sep = ''
+  )
+  expect2 <- paste(
+    '<script src="', src2, 'p2.min.js','"></script>',
+    sep = ''
+  )
+
+  expect <- paste(expect1, expect2, sep = '\n')
+
+  class(expect) <- c("html", "character")
+
+
+  expect_equivalent(renderDependencies(deps), !!expect)
+})
