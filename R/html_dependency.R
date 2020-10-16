@@ -457,8 +457,7 @@ renderDependencies <- function(dependencies,
         " does not have a usable source")
 
     if (length(dep$script) > 1) {
-      usableScript <- scriptFields[which(scriptFields %in% names(dep$script))]
-      if (length(usableScript) == 0)
+      if (! all(names(script) %in% scriptFields))
         stop("Dependency ", dep$name, " ", dep$version,
           " does not have usable script fields")
     }
