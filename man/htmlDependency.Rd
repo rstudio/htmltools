@@ -66,6 +66,13 @@ Each dependency can be located on the filesystem, at a relative or
   \code{href} for URL. For example, a dependency that was both on disk and at
   a URL might use \code{src = c(file=filepath, href=url)}.
 
+  \code{script} can be given as either a scalar string, or a named list with
+  the following fields: \code{src}, \code{integrity}, & \code{crossorigin},
+  allowing the use of SRI to ensure the integrity of packages downloaded from
+  remote servers.
+  \code{script = "pkg.js"} is equivalent to
+  \code{script = list(src = "pkg.js")}.
+
   \code{attachment} can be used to make the indicated files available to the
   JavaScript on the page via URL. For each element of \code{attachment}, an
   element \code{<link id="DEPNAME-ATTACHINDEX-attachment" rel="attachment"
