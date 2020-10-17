@@ -36,10 +36,21 @@
 #'   \code{href} for URL. For example, a dependency that was both on disk and at
 #'   a URL might use \code{src = c(file=filepath, href=url)}.
 #'
-#'   \code{script} can be given as either a scalar string, or a named list with
-#'   the following fields: \code{src}, \code{integrity}, & \code{crossorigin},
-#'   allowing the use of SRI to ensure the integrity of packages downloaded from
-#'   remote servers.
+#'   \code{script} can be given as one of the following:
+#'   * a character vector specifying various scripts to include relative to the
+#'     value of \code{src}.
+#'     Each is expanded into its own \code{<script>} tag
+#'   * A named list with any of the following fields:
+#'     * \code{src},
+#'     * \code{integrity}, &
+#'     * \code{crossorigin},
+#'     allowing the use of SRI to ensure the integrity of packages downloaded from
+#'     remote servers.
+#'     Eg: \code{script = list(src = "min.js", integrity = "hash")}
+#'   * An unamed list, containing a combination of named list with the fields
+#'     mentioned previously, and strings.
+#'     Eg:
+#'     \code{script = list(list(src = "min.js"), "util.js", list(src = "log.js"))}
 #'   \code{script = "pkg.js"} is equivalent to
 #'   \code{script = list(src = "pkg.js")}.
 #'
