@@ -224,6 +224,83 @@ test_that("able to resolve HTML scripts supplied with & without integrity", {
 
   class(expect) <- c("html", "character")
 
+  actual <- renderDependencies(deps)
 
-  expect_equivalent(renderDependencies(deps), !!expect)
+
+
+  expect_equal(!!strsplit(actual, "\n"), !!strsplit(expect, "\n"))
 })
+
+test_that(
+  "can render scripts given as lists of nested lists + scalar strings", {
+    src = "https://cdn.com/libs/p1/0.1"
+    nm <- "p1.js"
+
+    d1 <- htmlDependency(
+      "p1", "0.1", src = list(href = src),
+      script = list(src = nm)
+    )
+
+    deps1 <- list(
+      d1,
+      htmlDependency(
+        "p1", "0.2", src = list(href = src),
+        script = nm
+      ),
+      htmlDependency(
+        "p1", "0.3", src = list(href = src),
+        script = list(list(src = nm))
+      )
+    )
+
+    out <- renderDependencies(deps1)
+
+    deps2 <- list(
+      d1,
+      d1,
+      d1
+    )
+
+    expect_length(unique(unlist(strsplit(out, "\n"))), 1)
+
+    expect_equal(renderDependencies(deps1), renderDependencies(deps2))
+
+    nm2 <- "p1-0.1.js"
+
+    deps3 <- list(
+      htmlDependency(
+        "p1", "0.1", src = list(href = src),
+        script = c(nm, nm2)
+      )
+    )
+
+    out <- renderDependencies(deps3)
+
+    src_urls <- c(
+      file.path(src, nm),
+      file.path(src, nm2)
+      )
+
+    expect <- paste(
+      '<script src="', src_urls[[1]],'"></script>\n',
+      '<script src="', src_urls[[2]],'"></script>',
+      sep = "")
+
+    expect_equal(!!as.character(out), !!expect)
+
+    deps4 <- list(
+      htmlDependency(
+        "p1", "0.1", src = list(href = src),
+        script = list(list(src = nm, integrity = "hash"), nm2)
+      )
+    )
+
+    out <- renderDependencies(deps4)
+
+    expect <- paste(
+      '<script src="', src_urls[[1]],'" integrity="hash"></script>\n',
+      '<script src="', src_urls[[2]],'"></script>',
+      sep = "")
+
+    expect_equal(!!as.character(out), !!expect)
+  })
