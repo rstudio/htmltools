@@ -429,9 +429,6 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
 #' @param dependencies A list of \code{htmlDependency} objects.
 #' @param srcType The type of src paths to use; valid values are \code{file} or
 #'   \code{href}.
-#' @param scriptFields The types of attributes allowed to be given as named
-#'   elements to \code{script}; valid values are \code{src}, \code{integrity}
-#'   & \code{crossorigin}.
 #' @param encodeFunc The function to use to encode the path part of a URL. The
 #'   default should generally be used.
 #' @param hrefFilter A function used to transform the final, encoded URLs of
@@ -443,7 +440,6 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
 #' @export
 renderDependencies <- function(dependencies,
   srcType = c("href", "file"),
-  scriptFields = c("src", "integrity", "crossorigin"),
   encodeFunc = urlEncodePath,
   hrefFilter = identity) {
 
@@ -455,12 +451,6 @@ renderDependencies <- function(dependencies,
     if (length(usableType) == 0)
       stop("Dependency ", dep$name, " ", dep$version,
         " does not have a usable source")
-
-    if (length(dep$script) > 1) {
-      if (! all(names(script) %in% scriptFields))
-        stop("Dependency ", dep$name, " ", dep$version,
-          " does not have usable script fields")
-    }
 
     dir <- dep$src[head(usableType, 1)]
 
@@ -495,39 +485,7 @@ renderDependencies <- function(dependencies,
 
     # add scripts
     if (length(dep$script) > 0) {
-      if (length(dep$script) == 1) dep$script <- list(src = dep$script[[1]])
-
-      dep$script$src <- paste(
-        ' src="',
-        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$script$src)))),
-        '"',
-        sep = ''
-      )
-
-      if (!is.null(dep$script$integrity)) {
-        dep$script$integrity <- paste(
-          ' integrity="', dep$script$integrity, '"',
-          sep = ''
-        )
-      }
-
-      if (!is.null(dep$script$crossorigin)) {
-        dep$script$crossorigin <- paste(
-          ' crossorigin="', htmlEscape(dep$script$crossorigin), '"',
-          sep = ''
-        )
-      } else {
-        dep$script$crossorigin <- ""
-      }
-
-      html <- c(html, paste(
-        "<script",
-        dep$script$src,
-        dep$script$integrity,
-        dep$script$crossorigin,
-        "></script>",
-        sep = ""
-      ))
+      html <- c(html, renderScript(dep$script, srcpath, encodeFunc, hrefFilter))
     }
 
     if (length(dep$attachment) > 0) {
@@ -547,6 +505,68 @@ renderDependencies <- function(dependencies,
   }
 
   HTML(paste(html, collapse = "\n"))
+}
+
+
+
+renderScript <- function(script, srcpath, encodeFunc, hrefFilter) {
+  leaf_fields <- c("src", "integrity", "crossorigin")
+
+  check_names <- function(script) {
+    if (length(names(script)) != 0) {
+      if (!all(names(script) %in% leaf_fields)) {
+        invalid_names <- names(script)[!names(script) %in% leaf_fields]
+        stop(
+          "Providing ", paste(invalid_names, collapse = T), " not supported",
+          " for <script> tags")
+      }
+
+      if (!hasName(script, "src")) {
+        stop("Named script elements must provide src")
+      }
+    }
+  }
+
+  check_names(script)
+
+  if (length(names(script)) >= 0) script <- list(script)
+
+  script <- lapply(script, function(item) {
+    if (length(item) == 1 && is.character(item)) {
+      item = list(src = item)
+    }
+
+    if (length(names(item)) == 0) {
+      stop(
+        "Elements of script must be named lists, or scalar strings ",
+        "I got ", deparse(item)
+      )
+    }
+    check_names(item)
+
+    return(item)
+  })
+
+  script <- vapply(
+    script,
+    function(x) {
+      z <- is.null
+
+      x$src <- htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(x$src))))
+
+      paste(
+        "<script",
+        if (!z(x$src)) paste0(' src="', x$src, '"'),
+        if (!z(x$integrity)) paste0(' integrity="', htmlEscape(x$integrity), '"'),
+        if (!z(x$crossorigin)) paste0(' crossorigin="', htmlEscape(x$crossorigin), '"'),
+        "></script>",
+        sep = ""
+      )
+    },
+    FUN.VALUE = character(1)
+    )
+
+  return(script)
 }
 
 # html_dependencies_as_character(list(
