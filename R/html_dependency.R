@@ -529,7 +529,7 @@ renderScript <- function(script, srcpath, encodeFunc, hrefFilter) {
 
   check_names(script)
 
-  if (length(names(script)) >= 0) script <- list(script)
+  if (length(names(script)) > 0) script <- list(script)
 
   script <- lapply(script, function(item) {
     if (length(item) == 1 && is.character(item)) {
