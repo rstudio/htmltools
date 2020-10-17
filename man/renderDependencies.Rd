@@ -7,7 +7,6 @@
 renderDependencies(
   dependencies,
   srcType = c("href", "file"),
-  scriptFields = c("src", "integrity", "crossorigin"),
   encodeFunc = urlEncodePath,
   hrefFilter = identity
 )
@@ -17,10 +16,6 @@ renderDependencies(
 
 \item{srcType}{The type of src paths to use; valid values are \code{file} or
 \code{href}.}
-
-\item{scriptFields}{The types of attributes allowed to be given as named
-elements to \code{script}; valid values are \code{src}, \code{integrity}
-& \code{crossorigin}.}
 
 \item{encodeFunc}{The function to use to encode the path part of a URL. The
 default should generally be used.}
