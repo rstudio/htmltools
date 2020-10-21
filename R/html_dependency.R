@@ -523,7 +523,10 @@ renderDependencies <- function(dependencies,
 renderScript <- function(script, srcpath, encodeFunc, hrefFilter) {
   # If the input is a named list, transform it to an unnamed list
   # whose only element is the input list
-  if (anyNamed(script)) script <- list(script)
+  if (anyNamed(script)) {
+    if (anyUnnamed(script)) stop("script inputs cannot mix named and unnamed")
+    script <- list(script)
+  }
 
   # For each element, if it's a scalar string, transform it to a named
   # list with one element, "src".
