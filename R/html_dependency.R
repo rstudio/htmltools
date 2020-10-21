@@ -521,27 +521,12 @@ renderDependencies <- function(dependencies,
 
 
 renderScript <- function(script, srcpath, encodeFunc, hrefFilter) {
-  leaf_fields <- c("src", "integrity", "crossorigin")
+  # If the input is a named list, transform it to an unnamed list
+  # whose only element is the input list
+  if (anyNamed(script)) script <- list(script)
 
-  check_names <- function(script) {
-    if (length(names(script)) != 0) {
-      if (!all(names(script) %in% leaf_fields)) {
-        invalid_names <- names(script)[!names(script) %in% leaf_fields]
-        stop(
-          "Providing ", paste(invalid_names, collapse = T), " not supported",
-          " for <script> tags")
-      }
-
-      if (!hasName(script, "src")) {
-        stop("Named script elements must provide src")
-      }
-    }
-  }
-
-  check_names(script)
-
-  if (length(names(script)) > 0) script <- list(script)
-
+  # For each element, if it's a scalar string, transform it to a named
+  # list with one element, "src".
   script <- lapply(script, function(item) {
     if (length(item) == 1 && is.character(item)) {
       item = list(src = item)
@@ -553,26 +538,14 @@ renderScript <- function(script, srcpath, encodeFunc, hrefFilter) {
         "I got ", deparse(item)
       )
     }
-    check_names(item)
 
     return(item)
   })
 
   script <- vapply(
-    script,
-    function(x) {
-      z <- is.null
-
-      x$src <- htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(x$src))))
-
-      paste(
-        "<script",
-        if (!z(x$src)) paste0(' src="', x$src, '"'),
-        if (!z(x$integrity)) paste0(' integrity="', htmlEscape(x$integrity), '"'),
-        if (!z(x$crossorigin)) paste0(' crossorigin="', htmlEscape(x$crossorigin), '"'),
-        "></script>",
-        sep = ""
-      )
+    script, function(x) {
+      x$src <- hrefFilter(file.path(srcpath, encodeFunc(x$src)))
+      renderTag(x, tag_name = "script", required_attributes = "src")
     },
     FUN.VALUE = character(1)
     )
@@ -580,6 +553,58 @@ renderScript <- function(script, srcpath, encodeFunc, hrefFilter) {
   return(script)
 }
 
+
+#' Render a tag
+#'
+#' @param attribute_list a list of attributes for the tag.
+#'        any attributes that should have specific encoding requirements
+#'        (urls, etc) should be preprocessed before rendering here, but there
+#'        is no need to escape them.
+#' @param tag_name required, the name for the tag
+#' @param empty_tag logical, whether the tag needs an end tag
+# #' @param tag_body a single string, the rendered tag contents
+#' @param required_attributes a character vector of tag attributes that must
+#'        be given, or \code{NULL} if all attributes are optional
+#' @param ... reserved for future expansion
+#' @keywords internal
+#' @noRd
+renderTag <- function(
+  attribute_list,
+  tag_name = NULL,
+  empty_tag = FALSE,
+  required_attributes = NULL,
+  ...
+  ) {
+  if (is.null(tag_name)) stop("must provide a tag name when rendering tags")
+
+  if (length(required_attributes) != 0) {
+    missing_attributes <- ( ! required_attributes %in% names(attribute_list) )
+
+    if (any(missing_attributes)) {
+      stop(
+        "In rendering ", tag_name, ", missing required attribute(s) ",
+        paste0(required_attributes[missing_attributes], collapse = ", ")
+        )
+    }
+  }
+  tag_name <- htmlEscape(tag_name)
+
+  tag_start <- paste("<", tag_name, sep = "")
+  tag_end <- ">"
+  if (!empty_tag) tag_end <- paste("></", tag_name, ">", sep = "")
+
+  rendered_attributes <- mapply(
+    function(name, value) {
+      paste(' ', htmlEscape(name), '="', htmlEscape(value), '"', sep = "")
+    },
+    names(attribute_list),
+    attribute_list
+    )
+
+  rendered_attributes <- paste(rendered_attributes, sep = "", collapse = "")
+
+  paste(tag_start, rendered_attributes, tag_end, sep = "")
+}
 # html_dependencies_as_character(list(
 #   htmlDependency("foo", "1.0",
 #     c(href="http://foo.com/bar%20baz/"),
