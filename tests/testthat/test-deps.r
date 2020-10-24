@@ -304,3 +304,30 @@ test_that(
 
     expect_equal(!!as.character(out), !!expect)
   })
+
+test_that("html escaping is carried out correctly in script rendering", {
+  src = "https://cdn.com/libs/p1/0.1"
+  nm <- "p1.js"
+  funky_hash <- "<hash>"
+
+  deps <- list(
+    htmlDependency(
+      "p1", "0.1", src = list(href = src),
+      script = list(src = nm, integrity = funky_hash)
+    )
+  )
+
+  src_url <- file.path(src, nm)
+
+  expect <- paste(
+    '<script',
+    ' src="', src_url, '"',
+    ' integrity="', htmlEscape(funky_hash), '"',
+    '></script>',
+    sep = ""
+  )
+
+  out <- renderDependencies(deps)
+  expect_equal(!!as.character(out), !!expect)
+
+})
