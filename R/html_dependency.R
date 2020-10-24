@@ -36,6 +36,31 @@
 #'   \code{href} for URL. For example, a dependency that was both on disk and at
 #'   a URL might use \code{src = c(file=filepath, href=url)}.
 #'
+#'   \code{script} can be given as one of the following:
+#'   \itemize{
+#'   \item a character vector specifying various scripts to include relative to the
+#'     value of \code{src}.
+#'     Each is expanded into its own \code{<script>} tag
+#'   \item A named list with any of the following fields:
+#'   \itemize{
+#'     \item \code{src},
+#'     \item \code{integrity}, &
+#'     \item \code{crossorigin},
+#'     \item any other valid \code{<script>} attributes.
+#'     }
+#'     allowing the use of SRI to ensure the integrity of packages downloaded from
+#'     remote servers.
+#'     Eg: \code{script = list(src = "min.js", integrity = "hash")}
+#'   \item An unamed list, containing a combination of named list with the fields
+#'     mentioned previously, and strings.
+#'     Eg:
+#'     \itemize{
+#'     \item \code{script = list(list(src = "min.js"), "util.js", list(src = "log.js"))}
+#'     \item \code{script = "pkg.js"} is equivalent to
+#'     \item \code{script = list(src = "pkg.js")}.
+#'     }
+#'   }
+#'
 #'   \code{attachment} can be used to make the indicated files available to the
 #'   JavaScript on the page via URL. For each element of \code{attachment}, an
 #'   element \code{<link id="DEPNAME-ATTACHINDEX-attachment" rel="attachment"
@@ -478,12 +503,7 @@ renderDependencies <- function(dependencies,
 
     # add scripts
     if (length(dep$script) > 0) {
-      html <- c(html, paste(
-        "<script src=\"",
-        htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$script)))),
-        "\"></script>",
-        sep = ""
-      ))
+      html <- c(html, renderScript(dep$script, srcpath, encodeFunc, hrefFilter))
     }
 
     if (length(dep$attachment) > 0) {
@@ -504,6 +524,57 @@ renderDependencies <- function(dependencies,
 
   HTML(paste(html, collapse = "\n"))
 }
+
+
+
+renderScript <- function(script, srcpath, encodeFunc, hrefFilter) {
+  # If the input is a named list, transform it to an unnamed list
+  # whose only element is the input list
+  if (anyNamed(script)) {
+    if (anyUnnamed(script)) stop("script inputs cannot mix named and unnamed")
+    script <- list(script)
+  }
+
+  # For each element, if it's a scalar string, transform it to a named
+  # list with one element, "src".
+  script <- lapply(script, function(item) {
+    if (length(item) == 1 && is.character(item)) {
+      item = list(src = item)
+    }
+
+    if (length(names(item)) == 0) {
+      stop(
+        "Elements of script must be named lists, or scalar strings ",
+        "I got ", deparse(item)
+      )
+    }
+
+    return(item)
+  })
+
+  script <- vapply(
+    script, function(x) {
+      x$src <- hrefFilter(file.path(srcpath, encodeFunc(x$src)))
+      paste0(
+        "<script", 
+        paste0(
+         " ", 
+         htmlEscape(names(x)),
+         '="', 
+         htmlEscape(x), 
+         '"', 
+         collapse = ''
+        ),
+      "></script>",
+      collapse = ""
+      )
+    },
+    FUN.VALUE = character(1)
+  )
+
+  return(script)
+}
+
 
 # html_dependencies_as_character(list(
 #   htmlDependency("foo", "1.0",

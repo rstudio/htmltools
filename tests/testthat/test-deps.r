@@ -186,3 +186,148 @@ test_that("Modifying children using dependencies", {
   x <- tagSetChildren(div("foo", a1.1), tagFunction(function() { a1.2 }))
   expect_identical(findDependencies(x), list(a1.2))
 })
+
+
+test_that("able to resolve HTML scripts supplied with & without integrity", {
+  src1 <- "https://cdn.com/libs/p1/0.1/"
+  src2 <- "https://cdn/libs/p2/0.2/"
+  deps <- list(
+    htmlDependency(
+      name = "p1",
+      version = "0.1",
+      src = list(href = src1),
+      script = list(
+        src = "p1.min.js",
+        integrity = "longhash",
+        crossorigin = "anonymous"
+      )
+    ),
+    htmlDependency(
+      "p2", version = "0.2",
+      src = list(href = src2),
+      script = "p2.min.js"
+    )
+  )
+
+  expect1 <- paste(
+    '<script src="', src1, 'p1.min.js','" ',
+    'integrity="longhash" ',
+    'crossorigin="anonymous"></script>',
+    sep = ''
+  )
+  expect2 <- paste(
+    '<script src="', src2, 'p2.min.js','"></script>',
+    sep = ''
+  )
+
+  expect <- paste(expect1, expect2, sep = '\n')
+
+  class(expect) <- c("html", "character")
+
+  actual <- renderDependencies(deps)
+
+
+
+  expect_equal(!!strsplit(actual, "\n"), !!strsplit(expect, "\n"))
+})
+
+test_that(
+  "can render scripts given as lists of nested lists + scalar strings", {
+    src = "https://cdn.com/libs/p1/0.1"
+    nm <- "p1.js"
+
+    d1 <- htmlDependency(
+      "p1", "0.1", src = list(href = src),
+      script = list(src = nm)
+    )
+
+    deps1 <- list(
+      d1,
+      htmlDependency(
+        "p1", "0.2", src = list(href = src),
+        script = nm
+      ),
+      htmlDependency(
+        "p1", "0.3", src = list(href = src),
+        script = list(list(src = nm))
+      )
+    )
+
+    out <- renderDependencies(deps1)
+
+    deps2 <- list(
+      d1,
+      d1,
+      d1
+    )
+
+    expect_length(unique(unlist(strsplit(out, "\n"))), 1)
+
+    expect_equal(renderDependencies(deps1), renderDependencies(deps2))
+
+    nm2 <- "p1-0.1.js"
+
+    deps3 <- list(
+      htmlDependency(
+        "p1", "0.1", src = list(href = src),
+        script = c(nm, nm2)
+      )
+    )
+
+    out <- renderDependencies(deps3)
+
+    src_urls <- c(
+      file.path(src, nm),
+      file.path(src, nm2)
+      )
+
+    expect <- paste(
+      '<script src="', src_urls[[1]],'"></script>\n',
+      '<script src="', src_urls[[2]],'"></script>',
+      sep = "")
+
+    expect_equal(!!as.character(out), !!expect)
+
+    deps4 <- list(
+      htmlDependency(
+        "p1", "0.1", src = list(href = src),
+        script = list(list(src = nm, integrity = "hash"), nm2)
+      )
+    )
+
+    out <- renderDependencies(deps4)
+
+    expect <- paste(
+      '<script src="', src_urls[[1]], '" integrity="hash"></script>\n',
+      '<script src="', src_urls[[2]], '"></script>',
+      sep = "")
+
+    expect_equal(!!as.character(out), !!expect)
+  })
+
+test_that("html escaping is carried out correctly in script rendering", {
+  src = "https://cdn.com/libs/p1/0.1"
+  nm <- "p1.js"
+  funky_hash <- "<hash>"
+
+  deps <- list(
+    htmlDependency(
+      "p1", "0.1", src = list(href = src),
+      script = list(src = nm, integrity = funky_hash)
+    )
+  )
+
+  src_url <- file.path(src, nm)
+
+  expect <- paste(
+    '<script',
+    ' src="', src_url, '"',
+    ' integrity="', htmlEscape(funky_hash), '"',
+    '></script>',
+    sep = ""
+  )
+
+  out <- renderDependencies(deps)
+  expect_equal(!!as.character(out), !!expect)
+
+})

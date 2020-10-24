@@ -1,4 +1,4 @@
-htmltools 0.5.0.9000
+htmltools 0.5.0.9002
 --------------------------------------------------------------------------------
 
 * Added a new `tagFunction()` for generating `tags` and/or `htmlDependency()`s conditional on the rendering context. For an example, see `?tagFunction`. (#180)
@@ -6,6 +6,9 @@ htmltools 0.5.0.9000
 * `print(as.tags(x))` no longer results in error when `x` is a generic `list()` of tag-like objects. (#181)
 
 * `save_html()` now has a `lang` parameter that can be used to set the lang attribute of `<html>`. (@ColinFay, #185)
+
+* `htmlDependency`, & `renderDependencies` now allow the `script` argument to be given as a named list containing the
+  elements: `src`, `integrity`, `crossorigin`.
 
 htmltools 0.5.0
 --------------------------------------------------------------------------------
