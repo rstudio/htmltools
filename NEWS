@@ -7,8 +7,7 @@ htmltools 0.5.0.9002
 
 * `save_html()` now has a `lang` parameter that can be used to set the lang attribute of `<html>`. (@ColinFay, #185)
 
-* `htmlDependency`, & `renderDependencies` now allow the `script` argument to be given as a named list containing the
-  elements: `src`, `integrity`, `crossorigin`.
+* Closed #101: `htmlDependency` & `renderDependencies` now allow the `script` argument to be given as a named list containing the elements: `src`, `integrity`, `crossorigin`. (@matthewstrasiotto, #188)
 
 htmltools 0.5.0
 --------------------------------------------------------------------------------
