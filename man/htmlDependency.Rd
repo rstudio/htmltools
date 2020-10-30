@@ -66,6 +66,31 @@ Each dependency can be located on the filesystem, at a relative or
   \code{href} for URL. For example, a dependency that was both on disk and at
   a URL might use \code{src = c(file=filepath, href=url)}.
 
+  \code{script} can be given as one of the following:
+  \itemize{
+  \item a character vector specifying various scripts to include relative to the
+    value of \code{src}.
+    Each is expanded into its own \code{<script>} tag
+  \item A named list with any of the following fields:
+  \itemize{
+    \item \code{src},
+    \item \code{integrity}, &
+    \item \code{crossorigin},
+    \item any other valid \code{<script>} attributes.
+    }
+    allowing the use of SRI to ensure the integrity of packages downloaded from
+    remote servers.
+    Eg: \code{script = list(src = "min.js", integrity = "hash")}
+  \item An unamed list, containing a combination of named list with the fields
+    mentioned previously, and strings.
+    Eg:
+    \itemize{
+    \item \code{script = list(list(src = "min.js"), "util.js", list(src = "log.js"))}
+    \item \code{script = "pkg.js"} is equivalent to
+    \item \code{script = list(src = "pkg.js")}.
+    }
+  }
+
   \code{attachment} can be used to make the indicated files available to the
   JavaScript on the page via URL. For each element of \code{attachment}, an
   element \code{<link id="DEPNAME-ATTACHINDEX-attachment" rel="attachment"
