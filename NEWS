@@ -9,6 +9,8 @@ htmltools 0.5.0.9002
 
 * Closed #101: `htmlDependency` & `renderDependencies` now allow the `script` argument to be given as a named list containing the elements: `src`, `integrity`, `crossorigin`. (@matthewstrasiotto, #188)
 
+* `validateCssUnit()` now accepts `fit-content`. (#189)
+
 htmltools 0.5.0
 --------------------------------------------------------------------------------
 
