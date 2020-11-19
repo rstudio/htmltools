@@ -9,7 +9,8 @@ save_html(html, file, background = "white", libdir = "lib", lang = "en")
 \arguments{
 \item{html}{HTML content to print}
 
-\item{file}{File to write content to}
+\item{file}{File path or connection. If a file path containing a
+sub-directory, the sub-directory must already exist.}
 
 \item{background}{Background color for web page}
 

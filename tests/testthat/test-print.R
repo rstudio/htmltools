@@ -79,3 +79,23 @@ test_that("save_html() language parameter is set", {
     grepl("<html lang=\"fr\">", paste(output_read, collapse = " "))
   )
 })
+
+test_that("save_html() can write to subdirectories", {
+  tmpDir <- tempfile()
+  dir.create(tmpDir)
+  withr::local_dir(tmpDir)
+  dir.create("foo")
+  save_html(tags$h2("Howdy"), "foo/bar.html")
+  expect_true(
+    grepl("<h2>Howdy</h2>", paste(readLines("foo/bar.html"), collapse = " "))
+  )
+})
+
+test_that("save_html() can write to a file connection", {
+  f <- file()
+  on.exit(close(f), add = TRUE)
+  save_html(tags$h2("Howdy"), f)
+  expect_true(
+    grepl("<h2>Howdy</h2>", paste(readLines(f), collapse = " "))
+  )
+})
