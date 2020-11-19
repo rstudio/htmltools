@@ -79,6 +79,8 @@ save_html <- function(html, file, background = "white", libdir = "lib", lang = "
   if (is.character(file)) {
     dir <- normalizePath(dirname(file), mustWork = TRUE)
     file <- file.path(dir, basename(file))
+    owd <- setwd(dir)
+    on.exit(setwd(owd), add = TRUE)
   }
 
   rendered <- renderTags(html)
