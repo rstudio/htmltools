@@ -64,7 +64,8 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
 #'
 #' @param html HTML content to print
 #' @param background Background color for web page
-#' @param file File to write content to
+#' @param file File path or connection. If a file path containing a
+#'   sub-directory, the sub-directory must already exist.
 #' @param libdir Directory to copy dependencies to
 #' @param lang Value of the `<html>` `lang` attribute
 #'
