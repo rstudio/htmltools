@@ -64,7 +64,8 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
 #'
 #' @param html HTML content to print
 #' @param background Background color for web page
-#' @param file File to write content to
+#' @param file File path or connection. If a file path containing a
+#'   sub-directory, the sub-directory must already exist.
 #' @param libdir Directory to copy dependencies to
 #' @param lang Value of the `<html>` `lang` attribute
 #'
@@ -76,9 +77,12 @@ save_html <- function(html, file, background = "white", libdir = "lib", lang = "
 
   # ensure that the paths to dependencies are relative to the base
   # directory where the webpage is being built.
-  dir <- dirname(file)
-  oldwd <- setwd(dir)
-  on.exit(setwd(oldwd), add = TRUE)
+  if (is.character(file)) {
+    dir <- normalizePath(dirname(file), mustWork = TRUE)
+    file <- file.path(dir, basename(file))
+    owd <- setwd(dir)
+    on.exit(setwd(owd), add = TRUE)
+  }
 
   rendered <- renderTags(html)
 
