@@ -7,6 +7,8 @@ htmltools 0.5.0.9002
 
 * `save_html()` now has a `lang` parameter that can be used to set the lang attribute of `<html>`. (@ColinFay, #185)
 
+* `htmlPreserve()` can now optionally use the Pandoc `raw_attribute` extension to enclose HTML.
+
 * Closed #101: `htmlDependency` & `renderDependencies` now allow the `script` argument to be given as a named list containing the elements: `src`, `integrity`, `crossorigin`. (@matthewstrasiotto, #188)
 
 * Closed #189: `validateCssUnit()` now accepts `fit-content`. (#190)
