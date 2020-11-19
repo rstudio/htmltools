@@ -13,6 +13,8 @@ htmltools 0.5.0.9002
 
 * Closed #189: `validateCssUnit()` now accepts `fit-content`. (#190)
 
+* `htmlPreserve()` can now optionally use the Pandoc `raw_attribute` extension to enclose HTML.
+
 htmltools 0.5.0
 --------------------------------------------------------------------------------
 
