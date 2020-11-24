@@ -6,7 +6,7 @@
 \alias{restorePreserveChunks}
 \title{Preserve HTML regions}
 \usage{
-htmlPreserve(x, raw = getOption("htmltools.preserve.raw", FALSE))
+htmlPreserve(x)
 
 extractPreserveChunks(strval)
 
@@ -14,9 +14,6 @@ restorePreserveChunks(strval, chunks)
 }
 \arguments{
 \item{x}{A character vector of HTML to be preserved.}
-
-\item{raw}{Preserve HTML using Pandoc `raw_attribute`
-(https://pandoc.org/MANUAL.html#extension-raw_attribute)}
 
 \item{strval}{Input string from which to extract/restore chunks.}
 

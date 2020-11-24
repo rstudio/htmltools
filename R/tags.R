@@ -1040,9 +1040,6 @@ as.tags.html_dependency <- function(x, ...) {
 #'
 #' @param x A character vector of HTML to be preserved.
 #'
-#' @param raw Preserve HTML using Pandoc `raw_attribute`
-#'  (https://pandoc.org/MANUAL.html#extension-raw_attribute)
-#'
 #' @return \code{htmlPreserve} returns a single-element character vector with
 #'   "magic" HTML comments surrounding the original text (unless the original
 #'   text was empty, in which case an empty string is returned).
@@ -1063,7 +1060,8 @@ as.tags.html_dependency <- function(x, ...) {
 #' output
 #'
 #' @export
-htmlPreserve <- function(x, raw = getOption("htmltools.preserve.raw", FALSE)) {
+htmlPreserve <- function(x) {
+  raw = getOption("htmltools.preserve.raw", FALSE)
   x <- paste(x, collapse = "\n")
   if (nzchar(x))
     if (raw) {
