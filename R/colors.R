@@ -34,10 +34,11 @@ parseCssColors <- function(str, mustWork = TRUE) {
   # Note that an empty string is not a valid color, so parsing fails
   # on NA input values, and thus, will be converted back to NA
   # when `mustWork = FALSE`
-  if (!(is.character(str) || rlang::is_na(str))) {
+  isNA <- is.na(str)
+  if (!(is.character(str) || all(isNA))) {
     stop("`str` must be a character vector (or NA).")
   }
-  str[is.na(str)] <- ""
+  str[isNA] <- ""
 
   # Strip insignificant whitespace
   str <- color_strip_ws(str)

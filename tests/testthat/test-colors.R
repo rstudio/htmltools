@@ -127,6 +127,10 @@ test_that("parseCssColors() handles incoming NA values sensibly", {
     NA_character_
   )
   expect_identical(
+    parseCssColors(rep(NA, 2), mustWork = FALSE),
+    rep(NA_character_, 2)
+  )
+  expect_identical(
     parseCssColors(c(NA, "red"), mustWork = FALSE),
     c(NA, "#FF0000")
   )
