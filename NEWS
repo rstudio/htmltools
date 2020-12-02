@@ -13,7 +13,7 @@ htmltools 0.5.0.9002
 
 * Closed #189: `validateCssUnit()` now accepts `fit-content`. (#190)
 
-* Closed #161: `parseCssColors(x, mustWork = FALSE)` now returns NA for NA input values instead of throwing an error. (#194)
+* BREAKING CHANGE: Closed #161: `parseCssColors(x)` now requires `x` to be a character vector and an error is no longer thrown when `mustWork = FALSE` and `x` contains `NA` value(s). (#194)
 
 * `htmlPreserve()` can now optionally use the Pandoc `raw_attribute` extension to enclose HTML.
 
