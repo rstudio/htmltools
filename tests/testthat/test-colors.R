@@ -122,8 +122,8 @@ test_that("decode_color_keyword", {
 
 test_that("parseCssColors() handles incoming NA values sensibly", {
   expect_error(parseCssColors(NA))
-  expect_equal(
-    parseCssColors(NA, mustWork = FALSE),
+  expect_identical(
+    parseCssColors(NA_character_, mustWork = FALSE),
     NA_character_
   )
   expect_identical(
