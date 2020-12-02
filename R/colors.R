@@ -30,6 +30,13 @@
 #' @md
 #' @export
 parseCssColors <- function(str, mustWork = TRUE) {
+  # Logic below assumes a character string with non-missing values
+  # Note that an empty string is not a valid color, so parsing fails
+  # on NA input values, and thus, will be converted back to NA
+  # when `mustWork = FALSE`
+  stopifnot(is.character(str))
+  str[is.na(str)] <- ""
+
   # Strip insignificant whitespace
   str <- color_strip_ws(str)
 
