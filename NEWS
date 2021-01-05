@@ -1,4 +1,4 @@
-htmltools 0.5.0.9002
+htmltools 0.5.1
 --------------------------------------------------------------------------------
 
 * Added a new `tagFunction()` for generating `tags` and/or `htmlDependency()`s conditional on the rendering context. For an example, see `?tagFunction`. (#180)
