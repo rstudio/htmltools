@@ -23,27 +23,29 @@
 #' # Default settings
 #' res <- capturePlot(plot(cars))
 #'
+#' # View result
 #' if (interactive()) browseURL(res)
-#'
-#' # Use custom width/height
-#' pngpath <- tempfile(fileext = ".png")
-#' capturePlot(plot(pressure), pngpath, width = 800, height = 375)
-#'
-#' if (interactive()) browseURL(pngpath)
-#'
-#' # Use SVG
-#' svgpath <- capturePlot(
-#'   plot(pressure),
-#'   tempfile(fileext = ".svg"),
-#'   grDevices::svg,
-#'   width = 8, height = 3.75)
-#'
-#' if (interactive()) browseURL(svgpath)
 #'
 #' # Clean up
 #' unlink(res)
+#'
+#' # Custom width/height
+#' pngpath <- tempfile(fileext = ".png")
+#' capturePlot(plot(pressure), pngpath, width = 800, height = 375)
+#' if (interactive()) browseURL(pngpath)
 #' unlink(pngpath)
-#' unlink(svgpath)
+#'
+#' # Use a custom graphics device (e.g., SVG)
+#' if (capabilities("cairo")) {
+#'   svgpath <- capturePlot(
+#'     plot(pressure),
+#'     tempfile(fileext = ".svg"),
+#'     grDevices::svg,
+#'     width = 8, height = 3.75
+#'   )
+#'   if (interactive()) browseURL(svgpath)
+#'   unlink(svgpath)
+#' }
 #'
 #' @export
 capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
