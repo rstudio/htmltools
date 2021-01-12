@@ -1,21 +1,28 @@
-htmltools 0.5.0.9002
+htmltools 0.5.1
 --------------------------------------------------------------------------------
+
+## New Features & Improvements
 
 * Added a new `tagFunction()` for generating `tags` and/or `htmlDependency()`s conditional on the rendering context. For an example, see `?tagFunction`. (#180)
 
-* `print(as.tags(x))` no longer results in error when `x` is a generic `list()` of tag-like objects. (#181)
+* Closed #104: `save_html()`'s `file` argument now properly handles relative paths. (@haozhu233, #105, #192)
 
 * `save_html()` now has a `lang` parameter that can be used to set the lang attribute of `<html>`. (@ColinFay, #185)
-
-* Closed #104: `save_html()`'s `file` argument now properly handles relative paths. (@haozhu233, #105, #192)
 
 * Closed #101: `htmlDependency` & `renderDependencies` now allow the `script` argument to be given as a named list containing the elements: `src`, `integrity`, `crossorigin`. (@matthewstrasiotto, #188)
 
 * Closed #189: `validateCssUnit()` now accepts `fit-content`. (#190)
 
-* BREAKING CHANGE: Closed #161: `parseCssColors(x)` now requires `x` to be a character vector and an error is no longer thrown when `mustWork = FALSE` and `x` contains `NA` value(s). (#194)
-
 * `htmlPreserve()` can now optionally use the Pandoc `raw_attribute` extension to enclose HTML.
+
+## Breaking Changes
+
+* Closed #161: `parseCssColors(x)` now requires `x` to be a character vector (it no longer accepts a `list()` of strings) and an error is no longer thrown when `mustWork = FALSE` and `x` contains `NA` value(s). (#194)
+
+## Bug fixes
+
+* `print(as.tags(x))` no longer results in error when `x` is a generic `list()` of tag-like objects. (#181)
+
 
 htmltools 0.5.0
 --------------------------------------------------------------------------------
