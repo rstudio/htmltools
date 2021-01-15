@@ -555,19 +555,10 @@ renderScript <- function(script, srcpath, encodeFunc, hrefFilter) {
   script <- vapply(
     script, function(x) {
       x$src <- hrefFilter(file.path(srcpath, encodeFunc(x$src)))
-      paste0(
-        "<script", 
-        paste0(
-         " ", 
-         htmlEscape(names(x)),
-         '="', 
-         htmlEscape(x), 
-         '"', 
-         collapse = ''
-        ),
-      "></script>",
-      collapse = ""
-      )
+      keys <- htmlEscape(names(x))
+      vals <- paste0('="', htmlEscape(x), '"')
+      attrs <- paste0(keys, ifelse(is.na(x), "", vals), collapse = ' ')
+      paste0("<script ", attrs, "></script>")
     },
     FUN.VALUE = character(1)
   )
