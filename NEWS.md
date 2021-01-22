@@ -1,5 +1,7 @@
-htmltools 0.5.1.9000
+htmltools 0.5.1.1
 --------------------------------------------------------------------------------
+
+* Added shiny as a suggested package.
 
 
 htmltools 0.5.1
