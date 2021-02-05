@@ -199,7 +199,8 @@ test_that("able to resolve HTML scripts supplied with & without integrity", {
       script = list(
         src = "p1.min.js",
         integrity = "longhash",
-        crossorigin = "anonymous"
+        crossorigin = "anonymous",
+        defer = NA
       )
     ),
     htmlDependency(
@@ -212,7 +213,7 @@ test_that("able to resolve HTML scripts supplied with & without integrity", {
   expect1 <- paste(
     '<script src="', src1, 'p1.min.js','" ',
     'integrity="longhash" ',
-    'crossorigin="anonymous"></script>',
+    'crossorigin="anonymous" defer></script>',
     sep = ''
   )
   expect2 <- paste(
