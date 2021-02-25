@@ -1,6 +1,7 @@
 htmltools 0.5.1.9000
 --------------------------------------------------------------------------------
 
+* Closed #197: Fixed rendering of boolean attributes in <script> tags rendered via renderDependencies() (#197, thanks @atusy).
 
 htmltools 0.5.1.1
 --------------------------------------------------------------------------------
