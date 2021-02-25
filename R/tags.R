@@ -291,16 +291,28 @@ tagFunction <- function(func) {
 #' @rdname tag
 #' @export
 tagAppendAttributes <- function(tag, ...) {
-  throw_if_tag_function(tag)
+  UseMethod("tagAppendAttributes")
+}
+
+#' @export
+tagAppendAttributes.shiny.tag <- function(tag, ...) {
   tag$attribs <- c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
   tag
+}
+
+#' @export
+tagAppendAttributes.shiny.tag.function <- function(tag, ...) {
+  tagFunction(function() {
+    tag <- doTagFunction(tag)
+    tagAppendAttributes(tag, ...)
+  })
 }
 
 #' @param attr The name of an attribute.
 #' @rdname tag
 #' @export
 tagHasAttribute <- function(tag, attr) {
-  throw_if_tag_function(tag)
+  if (is_tag_function(tag)) stop("`tag` can not be a `tagFunction()`")
   result <- attr %in% names(tag$attribs)
   result
 }
@@ -308,7 +320,7 @@ tagHasAttribute <- function(tag, attr) {
 #' @rdname tag
 #' @export
 tagGetAttribute <- function(tag, attr) {
-  throw_if_tag_function(tag)
+  if (is_tag_function(tag)) stop("`tag` can not be a `tagFunction()`")
   # Find out which positions in the attributes list correspond to the given attr
   attribs <- tag$attribs
   attrIdx <- which(attr == names(attribs))
@@ -327,30 +339,68 @@ tagGetAttribute <- function(tag, attr) {
 #' @rdname tag
 #' @export
 tagAppendChild <- function(tag, child) {
-  throw_if_tag_function(tag)
-  tag$children[[length(tag$children)+1]] <- child
+  UseMethod("tagAppendChild")
+}
+
+#' @export
+tagAppendChild.shiny.tag <- function(tag, child) {
+  tag$children[[length(tag$children) + 1]] <- child
   tag
 }
+
+#' @export
+tagAppendChild.shiny.tag.function <- function(tag, child) {
+  tagFunction(function() {
+    tag <- doTagFunction(tag)
+    tagAppendChild(tag, child)
+  })
+}
+
 
 #' @rdname tag
 #' @export
 tagAppendChildren <- function(tag, ..., list = NULL) {
-  throw_if_tag_function(tag)
+  UseMethod("tagAppendChildren")
+}
+
+#' @export
+tagAppendChildren.shiny.tag <- function(tag, ..., list = NULL) {
   tag$children <- unname(c(tag$children, c(dots_list(...), list)))
   tag
+}
+
+#' @export
+tagAppendChildren.shiny.tag.function <- function(tag, ..., list = NULL) {
+  tagFunction(function() {
+    tag <- doTagFunction(tag)
+    tagAppendChildren(tag, ..., list)
+  })
 }
 
 #' @rdname tag
 #' @export
 tagSetChildren <- function(tag, ..., list = NULL) {
-  throw_if_tag_function(tag)
+  UseMethod("tagSetChildren")
+}
+
+#' @export
+tagSetChildren.shiny.tag <- function(tag, ..., list = NULL) {
   tag$children <- unname(c(dots_list(...), list))
   tag
 }
 
-throw_if_tag_function <- function(tag) {
-  if (is_tag_function(tag))
-    stop("`tag` can not be a `tagFunction()`")
+#' @export
+tagSetChildren.shiny.tag.function <- function(tag, ..., list = NULL) {
+  tagFunction(function() {
+    tag <- doTagFunction(tag)
+    tagSetChildren(tag, ..., list)
+  })
+}
+
+doTagFunction <- function(x) {
+  y <- x()
+  if (!isTag(y)) stop("tagFunction() must return a shiny.tag object")
+  y
 }
 
 #' HTML Tag Object
