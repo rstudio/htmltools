@@ -26,7 +26,7 @@ An \code{\link{HTML}} string, with UTF-8 encoding.
 \description{
 This function renders \code{html_document} objects, and returns a string with
 the final HTML content. It calls the \code{\link{renderTags}} function to
-convert any shiny.tag objects to HTML. It also finds any any web dependencies
+convert any shiny.tag objects to HTML. It also finds any web dependencies
 (created by \code{\link{htmlDependency}}) that are attached to the tags, and
 inserts those. To do the insertion, this function finds the string
 \code{"<!-- HEAD_CONTENT -->"} in the document, and replaces it with the web

@@ -302,6 +302,8 @@ tagAppendAttributes.shiny.tag <- function(tag, ...) {
 
 #' @export
 tagAppendAttributes.shiny.tag.function <- function(tag, ...) {
+  force(tag)
+  force(...)
   tagFunction(function() {
     tag <- doTagFunction(tag)
     tagAppendAttributes(tag, ...)
@@ -350,6 +352,8 @@ tagAppendChild.shiny.tag <- function(tag, child) {
 
 #' @export
 tagAppendChild.shiny.tag.function <- function(tag, child) {
+  force(tag)
+  force(child)
   tagFunction(function() {
     tag <- doTagFunction(tag)
     tagAppendChild(tag, child)
@@ -371,6 +375,9 @@ tagAppendChildren.shiny.tag <- function(tag, ..., list = NULL) {
 
 #' @export
 tagAppendChildren.shiny.tag.function <- function(tag, ..., list = NULL) {
+  force(tag)
+  force(...)
+  force(list)
   tagFunction(function() {
     tag <- doTagFunction(tag)
     tagAppendChildren(tag, ..., list)
@@ -391,6 +398,9 @@ tagSetChildren.shiny.tag <- function(tag, ..., list = NULL) {
 
 #' @export
 tagSetChildren.shiny.tag.function <- function(tag, ..., list = NULL) {
+  force(tag)
+  force(...)
+  force(list)
   tagFunction(function() {
     tag <- doTagFunction(tag)
     tagSetChildren(tag, ..., list)
