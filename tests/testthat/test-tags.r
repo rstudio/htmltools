@@ -765,6 +765,25 @@ test_that("Non-tag objects can be coerced", {
 
 })
 
+test_that("doRenderTags() works", {
+  expect_equal(
+    doRenderTags(div("foo")),
+    HTML("<div>foo</div>")
+  )
+  expect_equal(
+    doRenderTags(tagList(div("foo"), div("bar"))),
+    HTML("<div>foo</div>\n<div>bar</div>")
+  )
+  expect_equal(
+    doRenderTags(tagFunction(function() { div("foo") })),
+    HTML("<div>foo</div>")
+  )
+  expect_equal(
+    doRenderTags(tagFunction(function() { tagFunction(function() {  div("foo") }) })),
+    HTML("<div>foo</div>")
+  )
+})
+
 test_that("Latin1 and system encoding are converted to UTF-8", {
   #Sys.setlocale(, "Chinese")
   latin1_str <- rawToChar(as.raw(0xFF))
