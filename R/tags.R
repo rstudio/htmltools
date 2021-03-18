@@ -295,7 +295,7 @@ tagAppendAttributes <- function(tag, ...) {
 }
 
 #' @export
-tagAppendAttributes.shiny.tag <- function(tag, ...) {
+tagAppendAttributes.default <- function(tag, ...) {
   tag$attribs <- c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
   tag
 }
@@ -345,7 +345,7 @@ tagAppendChild <- function(tag, child) {
 }
 
 #' @export
-tagAppendChild.shiny.tag <- function(tag, child) {
+tagAppendChild.default <- function(tag, child) {
   tag$children[[length(tag$children) + 1]] <- child
   tag
 }
@@ -368,7 +368,7 @@ tagAppendChildren <- function(tag, ..., list = NULL) {
 }
 
 #' @export
-tagAppendChildren.shiny.tag <- function(tag, ..., list = NULL) {
+tagAppendChildren.default <- function(tag, ..., list = NULL) {
   tag$children <- unname(c(tag$children, c(dots_list(...), list)))
   tag
 }
@@ -391,7 +391,7 @@ tagSetChildren <- function(tag, ..., list = NULL) {
 }
 
 #' @export
-tagSetChildren.shiny.tag <- function(tag, ..., list = NULL) {
+tagSetChildren.default <- function(tag, ..., list = NULL) {
   tag$children <- unname(c(dots_list(...), list))
   tag
 }
