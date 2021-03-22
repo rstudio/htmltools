@@ -608,11 +608,6 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
-  # tagWrite() expects that x is already a tag or tagList()
-  # so first tagify a top-level tagFunction()
-  if (is_tag_function(x)) {
-    x <- tagify(x)
-  }
   textWriter <- WSTextWriter()
   tagWrite(x, textWriter, indent)
   # Strip off trailing \n (if present?)
