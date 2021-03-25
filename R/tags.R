@@ -482,7 +482,13 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   textWriter$write(concat8("<", tag$name))
 
   # Convert all attribs to chars explicitly; prevents us from messing up factors
-  attribs <- lapply(tag$attribs, as.character)
+  attribs <- lapply(tag$attribs, function(x){
+    if(inherits(x, c("AsIs","noquote"))){
+      x
+    } else {
+      as.character(x)
+    }
+  })
   # concatenate attributes
   # split() is very slow, so avoid it if possible
   if (anyDuplicated(names(attribs))) {
@@ -501,11 +507,14 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   # write attributes
   for (attrib in names(attribs)) {
     attribValue <- attribs[[attrib]]
-    if (!is.na(attribValue)) {
+    if (!is.na(attribValue) && !inherits(attribValue,c("AsIs","noquote"))) {
       if (is.logical(attribValue))
         attribValue <- tolower(attribValue)
       text <- htmlEscape(attribValue, attribute=TRUE)
       textWriter$write(concat8(" ", attrib,"=\"", text, "\""))
+    }
+    else if(inherits(attribValue,c("AsIs","noquote"))){
+      textWriter(paste8(" ", attrib, "=", attribValue, sep="") )
     }
     else {
       textWriter$write(concat8(" ", attrib))
