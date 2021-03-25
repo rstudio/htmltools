@@ -21,7 +21,7 @@ renderDependencies(
 default should generally be used.}
 
 \item{hrefFilter}{A function used to transform the final, encoded URLs of
-script and stylsheet files. The default should generally be used.}
+script and stylesheet files. The default should generally be used.}
 }
 \value{
 An \code{\link{HTML}} object suitable for inclusion in the head of an
