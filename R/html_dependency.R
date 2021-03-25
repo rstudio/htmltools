@@ -450,7 +450,7 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
 #' @param encodeFunc The function to use to encode the path part of a URL. The
 #'   default should generally be used.
 #' @param hrefFilter A function used to transform the final, encoded URLs of
-#'   script and stylsheet files. The default should generally be used.
+#'   script and stylesheet files. The default should generally be used.
 #'
 #' @return An \code{\link{HTML}} object suitable for inclusion in the head of an
 #'   HTML document.
