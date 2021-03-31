@@ -579,7 +579,7 @@ tag_graph <- function(tag) {
   }
 }
 ​
-# ' @export​
+#' @export​
 `[[<-.tag_graph` <- function(x, position, value) {
   if (is.numeric(position)) {
     x$set(value, position)
