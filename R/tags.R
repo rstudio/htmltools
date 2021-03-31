@@ -585,6 +585,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 #'
 #' @export
 renderTags <- function(x, singletons = character(0), indent = 0) {
+  debug_message("renderTags()")
   x <- tagify(x)
   # Do singleton and head processing before rendering
   singletonInfo <- takeSingletons(x, singletons)
@@ -608,6 +609,8 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
+  assert_not_tag_env_like(x, "doRenderTags")
+
   textWriter <- WSTextWriter()
   tagWrite(x, textWriter, indent)
   # Strip off trailing \n (if present?)
@@ -619,6 +622,9 @@ doRenderTags <- function(x, indent = 0) {
 # preorder=TRUE means preorder tree traversal, that is, an object
 # should be rewritten before its children.
 rewriteTags <- function(ui, func, preorder) {
+  debug_message("rewriteTags()!")
+  assert_not_tag_env_like(ui, "doRenderTags")
+
   if (preorder)
     ui <- func(ui)
 
@@ -924,6 +930,7 @@ withTags <- function(code) {
 
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
+  debug_message("tagify()!")
   rewriteTags(x, function(uiObj) {
     if (isTag(uiObj) || isTagList(uiObj) || is.character(uiObj))
       return(uiObj)
@@ -935,7 +942,17 @@ tagify <- function(x) {
 # Given a list of tags, lists, and other items, return a flat list, where the
 # items from the inner, nested lists are pulled to the top level, recursively.
 flattenTags <- function(x) {
-  if (isTag(x)) {
+
+  # Be sure to check for tagEnvLike objects and not allow them
+  flattenTags_(x, validate = TRUE)
+}
+
+# By default, do not validate
+flattenTags_ <- function(x, validate = FALSE) {
+  if (validate) {
+    assert_not_tag_env_like(x, "flattenTags")
+  }
+  if (isTag(x) || isTagEnv(x)) {
     # For tags, wrap them into a list (which will be unwrapped by caller)
     list(x)
   } else if (isTagList(x)) {
@@ -944,9 +961,8 @@ flattenTags <- function(x) {
       x
     } else {
       # For items that are lists (but not tags), recurse
-      unlist(lapply(x, flattenTags), recursive = FALSE)
+      unlist(lapply(x, flattenTags_, validate = validate), recursive = FALSE)
     }
-
   } else if (is.character(x)){
     # This will preserve attributes if x is a character with attribute,
     # like what HTML() produces
@@ -955,7 +971,7 @@ flattenTags <- function(x) {
   } else {
     # For other items, coerce to character and wrap them into a list (which
     # will be unwrapped by caller). Note that this will strip attributes.
-    flattenTags(as.tags(x))
+    flattenTags_(as.tags(x))
   }
 }
 
