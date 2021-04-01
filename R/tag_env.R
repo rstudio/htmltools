@@ -570,8 +570,8 @@ tag_graph <- function(tag) {
 }
 ​
 ​
-#' @export
-`[[.tag_graph` <- function(x, position) {
+#' @rawNamespace S3method("[[", htmltools.tag.graph)​
+`[[.htmltools.tag.graph` <- function(x, position) {
   if (is.numeric(position)) {
     x$get(position)
   } else {
@@ -579,8 +579,8 @@ tag_graph <- function(tag) {
   }
 }
 ​
-#' @export​
-`[[<-.tag_graph` <- function(x, position, value) {
+#' @rawNamespace S3method("[[<-", htmltools.tag.graph)​
+`[[<-.htmltools.tag.graph` <- function(x, position, value) {
   if (is.numeric(position)) {
     x$set(value, position)
     x
@@ -590,8 +590,8 @@ tag_graph <- function(tag) {
 }
 ​
 ​
-#' @export
-`[.tag_graph` <- function(x, positions) {
+#' @rawNamespace S3method("[", htmltools.tag.graph)​
+`[.htmltools.tag.graph` <- function(x, positions) {
   if (is.numeric(positions)) {
     # return result of lapply
     lapply(positions, function(position) {
@@ -602,8 +602,8 @@ tag_graph <- function(tag) {
   }
 }
 ​
-#' @export
-`[<-.tag_graph` <- function(x, positions, values) {
+#' @rawNamespace S3method("[<-", htmltools.tag.graph)​
+`[<-.htmltools.tag.graph` <- function(x, positions, values) {
   if (is.numeric(positions)) {
     # Map handles vector recycling
     Map(
@@ -617,6 +617,11 @@ tag_graph <- function(tag) {
   } else {
     NextMethod()
   }
+}
+
+#' @export
+length.htmltools.tag.graph <- function(x) {
+  length(x$get_selected())
 }
 ​
 ​
