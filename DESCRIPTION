@@ -25,7 +25,8 @@ Suggests:
     withr,
     Cairo,
     ragg,
-    shiny
+    shiny,
+    fastmap
 Enhances: knitr
 License: GPL (>= 2)
 URL: https://github.com/rstudio/htmltools

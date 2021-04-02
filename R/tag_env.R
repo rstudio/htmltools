@@ -67,23 +67,20 @@ debug_message <- function(...) {
 
 envir_key_fn <- format.default
 
-# TODO-barret replace with fastmap::fastmap?
 envir_map <- function() {
-  ret <- list()
-
+  map <- fastmap::fastmap()
   list(
-    key_fn = envir_key_fn,
     keys = function() {
-      names(ret)
+      map$keys()
     },
     values = function() {
-      ret
+      map$values()
     },
     has = function(envir) {
-      !is.null(ret[[envir_key_fn(envir)]])
+      map$has(envir_key_fn(envir))
     },
     set = function(envir, value = envir) {
-      ret[[envir_key_fn(envir)]] <<- value
+      map$set(envir_key_fn(envir), value)
     }
   )
 }
