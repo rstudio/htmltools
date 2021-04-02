@@ -941,14 +941,8 @@ tagify <- function(x) {
 
 # Given a list of tags, lists, and other items, return a flat list, where the
 # items from the inner, nested lists are pulled to the top level, recursively.
-flattenTags <- function(x) {
-
-  # Be sure to check for tagEnvLike objects and not allow them
-  flattenTags_(x, validate = TRUE)
-}
-
-# By default, do not validate
-flattenTags_ <- function(x, validate = FALSE) {
+# Be sure to check for tagEnvLike objects and not allow them
+flattenTags <- function(x, validate = TRUE) {
   if (validate) {
     assert_not_tag_env_like(x, "flattenTags")
   }
@@ -961,7 +955,7 @@ flattenTags_ <- function(x, validate = FALSE) {
       x
     } else {
       # For items that are lists (but not tags), recurse
-      unlist(lapply(x, flattenTags_, validate = validate), recursive = FALSE)
+      unlist(lapply(x, flattenTags, validate = validate), recursive = FALSE)
     }
   } else if (is.character(x)){
     # This will preserve attributes if x is a character with attribute,
@@ -971,7 +965,7 @@ flattenTags_ <- function(x, validate = FALSE) {
   } else {
     # For other items, coerce to character and wrap them into a list (which
     # will be unwrapped by caller). Note that this will strip attributes.
-    flattenTags_(as.tags(x))
+    flattenTags(as.tags(x))
   }
 }
 
