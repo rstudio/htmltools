@@ -136,8 +136,8 @@ str_detect <- function(x, pattern, ...) {
 }
 
 # finds first, NOT all
-str_match_first <- function(x, pattern) {
-  reg_info <- regexpr(pattern, x)
+str_match_first <- function(x, pattern, ...) {
+  reg_info <- regexpr(pattern, x, ...)
   if (length(reg_info) == 1 && reg_info == -1) {
     return(NULL)
   }
@@ -146,9 +146,9 @@ str_match_first <- function(x, pattern) {
 }
 
 # return a vector of matches or NULL
-str_match_all <- function(x, pattern) {
+str_match_all <- function(x, pattern, ...) {
   stopifnot(length(x) == 1)
-  reg_info <- gregexpr(pattern, x)
+  reg_info <- gregexpr(pattern, x, ...)
   first <- reg_info[[1]]
   if (length(first) == 1 && first == -1) {
     return(NULL)
@@ -157,8 +157,8 @@ str_match_all <- function(x, pattern) {
   regmatches(x, reg_info)[[1]]
 }
 
-str_replace <- function(x, pattern, value) {
-  reg_info <- regexpr(pattern, x)
+str_replace <- function(x, pattern, value, ...) {
+  reg_info <- regexpr(pattern, x, ...)
   if (length(reg_info) == 1 && reg_info == -1) {
     return(x)
   }
@@ -167,8 +167,8 @@ str_replace <- function(x, pattern, value) {
   x
 }
 
-str_remove <- function(x, pattern) {
-  str_replace(x, pattern, "")
+str_remove <- function(x, pattern, ...) {
+  str_replace(x, pattern, "", ...)
 }
 
 
