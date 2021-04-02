@@ -481,22 +481,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   # write tag name
   textWriter$write(concat8("<", tag$name))
 
-  # Convert all attribs to chars explicitly; prevents us from messing up factors
-  attribs <- lapply(tag$attribs, as.character)
-  # concatenate attributes
-  # split() is very slow, so avoid it if possible
-  if (anyDuplicated(names(attribs))) {
-    attribs <- lapply(split(attribs, names(attribs)), function(x) {
-      na_idx <- is.na(x)
-      if (any(na_idx)) {
-        if (all(na_idx)) {
-          return(NA)
-        }
-        x <- x[!na_idx]
-      }
-      paste(x, collapse = " ")
-    })
-  }
+  attribs <- flattenTagAttribs(tag$attribs)
 
   # write attributes
   for (attrib in names(attribs)) {
@@ -964,6 +949,29 @@ flattenTags <- function(x, validate = TRUE) {
     # will be unwrapped by caller). Note that this will strip attributes.
     flattenTags(as.tags(x))
   }
+}
+
+flattenTagAttribs <- function(attribs) {
+
+  # Convert all attribs to chars explicitly; prevents us from messing up factors
+  attribs <- lapply(attribs, as.character)
+  # concatenate attributes
+  # split() is very slow, so avoid it if possible
+  if (anyDuplicated(names(attribs))) {
+    attribs <- lapply(split(attribs, names(attribs)), function(x) {
+      na_idx <- is.na(x)
+      if (any(na_idx)) {
+        if (all(na_idx)) {
+          return(NA)
+        }
+        x <- x[!na_idx]
+      }
+      paste(x, collapse = " ")
+    })
+  }
+
+  attribs
+
 }
 
 #' Convert a value to tags
