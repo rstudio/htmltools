@@ -105,7 +105,6 @@ renderDocument <- function(x, deps = NULL, processDep = identity) {
     deps <- list(deps)
   }
 
-debug_message("renderDocument()")
   result <- renderTags(x)
 
   # Figure out dependencies

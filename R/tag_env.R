@@ -9,13 +9,6 @@
 # TODO-barret followup PR
 # * onRender(x, fn) - tagFunction(x, fn)
 
-# TODO-barret remove!
-debug_message <- function(...) {
-  if (FALSE) {
-    message(...)
-  }
-}
-
 ## Methods not implemented
 # `$set_selected(selected)` & `$set(selected_item, pos)` - These methods are not available in jQuery and is very brittle in implementation. Do not pursue!
 # With `$set(selected, pos)` not implemented, `[[<-.tag_graph` should not be implemented
@@ -176,7 +169,6 @@ as_tag_env <- function(x) {
   as_tag_env_(x, parent = x$parent)
 }
 as_tag_env_ <- function(x, parent = NULL, seen_map = envir_map()) {
-  debug_message("as_tag_env_()")
   is_tag <- isTag(x)
   is_tag_env <- isTagEnv(x)
 
@@ -222,7 +214,6 @@ as_tag_env_ <- function(x, parent = NULL, seen_map = envir_map()) {
 # This method MUST undo everything done in `as_tag_env(x)`
 # Do not export to encourage direct use of `tag_graph()$root_as_tags()` or `tag_graph()$selected_as_tags()`
 tag_env_to_tags <- function(x) {
-  debug_message("tag_env_to_tags()")
   if (isTagEnv(x)) {
     x_el <- x
     # convert to list first to avoid altering the original env obj
@@ -260,29 +251,24 @@ shiny_tag_el_str <- "<!-- htmltools.tag.env -->"
 
 #' @export
 as.tags.htmltools.tag.env <- function(x, ...) {
-  debug_message("as.tags.htmltools.tag.env()")
   stop("Method not allowed", call. = TRUE)
   # as.tags(tag_env_to_tags(x), ...)
 }
 #' @export
 print.htmltools.tag.env <- function(x, ...) {
-  debug_message("print.htmltools.tag.env()")
   cat(shiny_tag_el_str, "\n")
   print(tag_env_to_tags(x), ...)
 }
 #' @export
 format.htmltools.tag.env <- function(x, ...) {
-  debug_message("format.htmltools.tag.env()")
   format(tag_env_to_tags(x), ...)
 }
 #' @export
 as.character.htmltools.tag.env <- function(x, ...) {
-  debug_message("as.character.htmltools.tag.env()")
   as.character(tag_env_to_tags(x), ...)
 }
 #' @export
 str.htmltools.tag.env <- function(object, ...) {
-  debug_message("str.htmltools.tag.env()")
   cat(shiny_tag_el_str, "\n")
   str(tag_env_to_tags(object), ...)
 }

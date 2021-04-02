@@ -585,7 +585,6 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 #'
 #' @export
 renderTags <- function(x, singletons = character(0), indent = 0) {
-  debug_message("renderTags()")
   x <- tagify(x)
   # Do singleton and head processing before rendering
   singletonInfo <- takeSingletons(x, singletons)
@@ -622,7 +621,6 @@ doRenderTags <- function(x, indent = 0) {
 # preorder=TRUE means preorder tree traversal, that is, an object
 # should be rewritten before its children.
 rewriteTags <- function(ui, func, preorder) {
-  debug_message("rewriteTags()!")
   assert_not_tag_env_like(ui, "rewriteTags")
 
   if (preorder)
@@ -930,7 +928,6 @@ withTags <- function(code) {
 
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
-  debug_message("tagify()!")
   rewriteTags(x, function(uiObj) {
     if (isTag(uiObj) || isTagList(uiObj) || is.character(uiObj))
       return(uiObj)
