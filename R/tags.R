@@ -623,7 +623,7 @@ doRenderTags <- function(x, indent = 0) {
 # should be rewritten before its children.
 rewriteTags <- function(ui, func, preorder) {
   debug_message("rewriteTags()!")
-  assert_not_tag_env_like(ui, "doRenderTags")
+  assert_not_tag_env_like(ui, "rewriteTags")
 
   if (preorder)
     ui <- func(ui)

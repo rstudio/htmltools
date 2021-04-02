@@ -1,5 +1,13 @@
 # TODO-barret
-# * find div, then find div. This should not return first div, but an inner div
+# * Add in `$env_key` to each tag env. This will avoid CONSTANT calling of format.default(tag_env)
+# * Rename `tag_graph_walk_*` to `selected_walk_*`
+# * Testing - find div, then find div. This should not return first div, but an inner div
+# * Remove obviously dead code
+# * Describe why using `props` and not `attr`
+#    * Skipping. The htmltools package has no concept of props. This would only create confusion.
+
+# TODO-barret followup PR
+# * onRender(x, fn) - tagFunction(x, fn)
 
 # TODO-barret remove!
 debug_message <- function(...) {
@@ -8,17 +16,35 @@ debug_message <- function(...) {
   }
 }
 
+## Methods not implemented
+# `$set_selected(selected)` & `$set(selected_item, pos)` - These methods are not available in jQuery and is very brittle in implementation. Do not pursue!
+# With `$set(selected, pos)` not implemented, `[[<-.tag_graph` should not be implemented
+# With `$set(selected, pos_vector)` not implemented, `[<-.tag_graph` should not be implemented
+# If not doing, `[[<-.tag_graph` or `[<-.tag_graph`, then `[[.tag_graph` and `[.tag_graph` should not be implemented. Same with `length.tag_graph`
+# `$set_children(...)` - jQuery does not have this. Instead, you can call `$empty()$append(...)`
+# jQuery.val() - Get the current value of the first element in the set of matched elements or set the value of every matched element.
+# jQuery.text() - Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements.
+# jQuery.css() - Get the value of a computed style property for the first element in the set of matched elements or set one or more CSS properties for every matched element.
+# jQuery.prop() - Get the value of a property for the first element in the set of matched elements or set one or more properties for every matched element.
 
-# TODO-barret followup PR - onRender(x, expr)
 
-# TODO-barret followup PR - Implement a more wrapper functions like
-# tagAddClass <- function(tag, css_selector, class) {
+
+
+## Skip these implementations for now as the tag graph methods are small and composable.
+## Instead write them where they are needed since they are small. (Just like we don't wrap dplyr code)
+# tagReplaceAttributesAt <- function(tag, css_selector, ...) {
+#   tag_graph(tag)$find(css_selector)$replace_attrs(...)$root_as_tags()
+# }
+# tagAppendAttributesAt <- function(tag, css_selector, ...) {
+#   tag_graph(tag)$find(css_selector)$add_attrs(...)$root_as_tags()
+# }
+# tagAddClassAt <- function(tag, css_selector, class) {
 #   tag_graph(tag)$find(css_selector)$add_class(class)$root_as_tags()
 # }
-# tagMutate <- function(x, css_selector, fn) {
-#   tag_graph(tag)$find(css_selector)$walk_selected(fn)$root_as_tags()
+# tagMutateAt <- function(x, css_selector, fn) {
+#   tag_graph(tag)$find(css_selector)$each(fn)$root_as_tags()
 # }
-# tagFind <- function(x, css) {
+# tagFindAt <- function(x, css) {
 #   tag_graph(tag)$find(css_selector)$selected_as_tags()
 # }
 
@@ -59,7 +85,7 @@ debug_message <- function(...) {
 # ----------
 
 # # Current design decisions
-# * Tag graphs or tag environments to be used in UI. These objects MUST be converted back to standard tag objects.
+# * Tag graphs or tag environments can NOT be used in UI. These objects MUST be converted back to standard tag objects.
 # * tagFunctions will not be altered in place
 #   * To alter tagFunction()s, use the `onRender(x)` method to register a method to be called after `as.tags(x)` is called.
 #   * `onRender(x, expr)` will wrap create a tag function that will resolve the tags before running the expr.
@@ -133,13 +159,13 @@ safe_env_2_list <- function(x, old_class = NULL) {
 # Do not export to encourage direct use of `tag_graph()`
 as_tag_env <- function(x) {
   if (isTagGraph(x)) {
-    x <- as_tag_env(x$root)
-  } else {
-    if (!isTagEnv(x)) {
-      if (!isTag(x)) {
-        # force all methods to send in tags, lists / tagLists are not allowed
-        stop("`as_tag_env()` can only accept tag envs or tag objects. It does not accept lists or tagLists")
-      }
+    return(as_tag_env(x$root))
+  }
+
+  if (!isTagEnv(x)) {
+    if (!isTag(x)) {
+      # force all methods to send in tags, lists / tagLists are not allowed
+      stop("`as_tag_env()` can only accept tag envs or tag objects. It does not accept `lists()` or `tagLists()`")
     }
   }
   as_tag_env_(x, parent = x$parent)
@@ -155,18 +181,32 @@ as_tag_env_ <- function(x, parent = NULL, seen_map = envir_map()) {
       x <- safe_list_2_env(x_list, "htmltools.tag.env")
     }
     if (seen_map$has(x)) {
-      stop("Circular tag reference found with tag.env", seen_map$key_fn(x), "\nTags found:\n", paste0("* ", seen_map$keys(), collapse = "\n"))
+      stop(
+        "Circular tag reference found with tag.env", envir_key_fn(x), "\n",
+        # Not necessarily the order of the circular dependency
+        # TODO-later show actual circular dependency and not all visited nodes? This should be rare
+        "Tags processed:\n", paste0("* ", seen_map$keys(), collapse = "\n")
+      )
     }
     seen_map$set(x, TRUE)
     # add parent env
     x$parent <- parent
     # recurse through children
-    if (!is.null(x$children)) {
+    if (length(x$children) != 0) {
+      # Possible optimization... name the children tags to the formatted values.
+      # * Allows for faster child look up later.
+      # * Comes with the cost of always formatting the env values even if children names are not needed.
+      # Attributes may be dropped
+      # * Could replace with `x$children[] <- ....`
+      # * Leaving as is to see if people mis-use the children field
       x$children <- lapply(
-        # simplify the structures
-        flattenTags_(x$children),
-        # recurse through
-        function(tag) { as_tag_env_(tag, parent = x, seen_map = seen_map) }
+        # Simplify the structures by flatting the tags
+        # Does NOT recurse to grand-children etc.
+        flattenTags(x$children, validate = FALSE),
+        # recurse through each child
+        as_tag_env_,
+        parent = x,
+        seen_map = seen_map
       )
     }
   }
@@ -210,11 +250,12 @@ assert_not_tag_env_like <- function(x, fn_name) {
 
 
 shiny_tag_el_str <- "<!-- htmltools.tag.env -->"
-​
+
 #' @export
 as.tags.htmltools.tag.env <- function(x, ...) {
   debug_message("as.tags.htmltools.tag.env()")
-  as.tags(tag_env_to_tags(x), ...)
+  stop("Method not allowed", call. = TRUE)
+  # as.tags(tag_env_to_tags(x), ...)
 }
 #' @export
 print.htmltools.tag.env <- function(x, ...) {
@@ -285,9 +326,17 @@ as.character.htmltools.tag.graph <- function(x) {
 #'
 #' This function is VERY experimental. The result api will most likely change. **Use at your own risk.**
 #'
-#' `tag_graph()` is built to perform highly complex alterations on a set of tags. For example, adding a class value, `"custom_class"`, to a grandparent of any `<span>` tag that match the css selector `div .inner span`. This alteration is not easily accomplished when using standard "pass by value" R objects.
+#' `tag_graph()` is modeled after [`jQuery`](jquery.com)'s [DOM maninipulation methods](https://api.jquery.com/category/manipulation/) and [Tree Traversal](https://api.jquery.com/category/traversing/tree-traversal/) categories with some alterations. One of the main differences is that there is no centralized `window.document` object to use or reference. Instead, only the original `root` tag provided to `tag_graph(root=)` is fully search-able.
 #'
-#' # Graph components
+#' `tag_graph()` is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard [`tag`] objects. With `tag_graph()`, it is possible to find all `<span>` tags that match the css selector `div .inner span`, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to
+#'
+#' ```r
+#' tag_graph(root)$find("div .inner span")$parent()$parent()$add_class("custom-class")$root_as_tags()
+#' ```
+#'
+#' This style of alteration is not easily achieved when using typical "pass by value" R objects or standard tag objects.
+#'
+#' # Tag graph components
 #'
 #' ## Tag environments
 #'
@@ -301,59 +350,19 @@ as.character.htmltools.tag.graph <- function(x) {
 #'
 #' A `tag_graph()` behaves simliar to an R6 object (but a tag graph is not implemented with `R6`). The `tag_graph()`'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. `$get_selected()` or `$root_as_tags()`.
 #'
-#' Internally, two important pieces of information are maintained: the root element and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to `tag_graph(tag=)`. However, the selected elements are a list of tag environments that update for every `$find(css_selector)` or `$set_selected(selected)` call.  The selected elements are initialized to a list containing the `root` tag environment. All `tag_graph()` methods will act on the selected elements unless declared otherwise.
-#'
-#' # Methods
-#'
-#' All methods return the altered tag graph object unless otherwise stated.
-#'
-#' ## Select tags
-#' * `$find(css_selector)`: Find all tag elements matching the `css_selector` starting from each selected element. The selected elements will be updated with the found set of tag environment.
-#' * `$find_parents()`: Update the selected elements to contain the unique set of parents of the selected elements.
-#' * `$find_children()`: Update the selected elements to contain all direct child elements of the selected elements.
-#' * `$find_reset()`: Resets the selected elements to the root.
-#'
-#' ## Update selected tag info
-#'
-#' * `$add_class(class)`: Append a class to the selected elements.
-#' * `$add_attrs(...)`: Add element attributes to all selected children. Similar to [`tagAppendAttributes()`].
-#'
-#' ## Adjust child elements
-#' * `$append(...)`: Add all `...` objects as children after any existing children to the selected elements.
-#' * `$prepend(...)`: Add all `...` objects as children before any existing children to the selected elements.
-#' * `$empty(...)`: Remove all children in the selected elements.
-#'
-#' ## Adjust sibling elements
-# ' * `$append(...)`: Add all `...` objects as children after any existing children to the selected elements.
-# ' * `$prepend(...)`: Add all `...` objects as children before any existing children to the selected elements.
-# ' * `$empty(...)`: Remove all children in the selected elements.
-#'
-#' ## Generic methods
-#' * `$walk_selected(fn)`: Perform function `fn` on each of the selected elements.
-#'
-#' ## Tag Graph functions
-#' * `$rebuild()`: Makes sure that all tags have been upgraded to tag environments. Objects wrapped in `HTML()` will not be inspected or altered. This method is internally called before each method executes and after any alterations where standard tag objects could be introduced into the tag structure.
-#' * `$root()`: Return the root tag environment.
-#' * `$get_selected()`: Returns a list of selected tag environments.
-#' * `$get(position)`: Returns the selected tag element at the position `position`.
-#' * `$set_selected(selected)`: TODO should this be included?
-#' * `$set(tag_env, i)`: TODO should this be included?
-#'
-#' # Convert to tags
-#' * `$root_as_tags()`: Converts the root tag environment (and all of its children elements) back to standard tag objects and returns the root tag value.
-#' * `$selected_as_tags()`: Converts each selected tag environments (and all of their child elements) back to standard tag objects. A `tagList()` is returned, wrapping around the set of selected tags.
+#' Internally, two important pieces of information are maintained: the root element and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to `tag_graph(tag=)`. However, the selected elements are a list of tag environments that update for every `$find(css_selector)` call.  The selected elements are initialized to a list containing the `root` tag environment. All `tag_graph()` methods will act on the selected elements unless declared otherwise.
 #'
 #'
-#' # Limitations
+#' @section Limitations:
 #'
 #' `tag_graph()`s can **not** be used directly within typical `tag` locations. An error should be thrown. Instead, please call `$selected_as_tags()` or `$root_as_tags()` to retrieve the tag structures of the selected tag elements or root element respectively.
 #'
-#' @param tag A single tag object with possibly many children tag objects. Currently, [`tagList()`] or [`list()`]s of tags are not allowed.
+#' @param root A single tag object with possibly many children tag objects. Currently, [`tagList()`] or [`list()`]s of tags are not allowed.
 #' @return A `tag_graph()` object. The `tag` supplied will be considered the `root` object. At the time of initialization, the `root` is also considered the single selected item. If any selections are made, the selected elements will be updated.
 #' @md
 #' @export
-tag_graph <- function(tag) {
-  root <- as_tag_env(tag)
+tag_graph <- function(root) {
+  root <- as_tag_env(root)
   selected_env <- new.env(parent = emptyenv())
   selected_env$data <- list(root)
   set_selected <- function(selected) { stopifnot(is.list(selected)); selected_env$data <- selected }
@@ -369,7 +378,12 @@ tag_graph <- function(tag) {
     structure(
       class = "htmltools.tag.graph",
       list(
-        ## Find
+        #' @details # Methods
+        #'
+        #' All methods return the altered tag graph object unless otherwise stated.
+        #'
+        #' ## Select tags
+        #' * `$find(css_selector)`: Find all tag elements matching the `css_selector` starting from each selected element. The selected elements will be updated with the found set of tag environment.
         find = function(css_selector) {
           rebuild()
           set_selected(
@@ -377,65 +391,103 @@ tag_graph <- function(tag) {
           )
           self
         },
-        find_parents = function() {
+        #' * `$fitler(fn)`: Update the selected elements to contain all direct child elements of the selected elements.
+        filter = function(fn) {
           rebuild()
           set_selected(
-            tag_graph_find_parent(get_selected())
+            tag_graph_find_filter(get_selected(), fn)
           )
+          rebuild() # the fn could have altered the content
           self
         },
-        find_children = function() {
+        #' * `$children()`: Update the selected elements to contain all direct child elements of the selected elements.
+        children = function() {
           rebuild()
           set_selected(
             tag_graph_find_children(get_selected())
           )
           self
         },
-        find_reset = function() {
+        #' * `$parent()`: Update the selected elements to contain the unique set of direct parent of the selected elements.
+        parent = function() {
           rebuild()
           set_selected(
-            list(root)
+            tag_graph_find_parent(get_selected())
           )
           self
         },
+        #' * `$parents()`: Update the selected elements to contain the unique set of all ancestors of the selected elements.
+        parents = function() {
+          rebuild()
+          set_selected(
+            tag_graph_find_parents(get_selected())
+          )
+          self
+        },
+        #' * `$reset()`: Resets the selected elements to the root.
+        reset = function() {
+          rebuild()
+          set_selected(
+            tag_graph_find_reset(root)
+          )
+          self
+        },
+        # TODO-later
+        #  .closest()
+        #    For each element in the set, get the first element that matches the selector by testing the element itself and traversing up through its ancestors in the DOM tree.
+        #    Find the nearest el (starting with self) that matches "css selector"
+        #  .siblings()
+        #    Get the siblings of each element in the set of matched elements, optionally filtered by a selector.
         ## end Find
 
-        ## Tag Info
-        # "Adds the specified class(es) to each element in the set of matched elements."
+
+        #' ## Update selected tag info
+        #' * `$add_class(class)`: Apps class(es) to each of the the selected elements.
         add_class = function(class) {
           rebuild()
           tag_graph_add_class(get_selected(), class)
           self
         },
+
+        # .hasClass() - Determine whether any of the matched elements are assigned the given class.
+        # TODO-followup PR has_class = function(class) { },
+        # .removeClass() - Remove a single class, multiple classes, or all classes from each element in the set of matched elements.
+        # TODO-followup PR remove_class = function(class) { },
+        # .toggleClass() - Add or remove one or more classes from each element in the set of matched elements, depending on either the class’s presence or the value of the state argument.
+        # TODO-followup PR toggle_class = function(class) { },
+
+        # TODO-later attr(). But this is difficult. Maybe separate out into `$set_attr(key, value)` or `$get_attr(key)`
+        # TODO-followup PR set_attrs = function(...) { },
+        # TODO-followup PR get_attrs = function(attributes) { },
+        # TODO-followup PR remove_attrs = function(attributes) { },
+          # .removeAttr()
+          # Remove an attribute from each element in the set of matched elements.
+          # TODO-Followup PR - Once all attrs are flattened, this should be easy to implement
+        # TODO-followup PR? has_attr = function(attribute) {},
+
+        #' * `$add_attrs(...)`: Add element attributes to all selected children. Similar to [`tagAppendAttributes()`].
         add_attrs = function(...) {
           rebuild()
           tag_graph_add_attrs(get_selected(), ...)
           self
         },
-        # .prop()
-        # Get the value of a property for the first element in the set of matched elements or set one or more properties for every matched element.
-        # .removeAttr()
-        # Remove an attribute from each element in the set of matched elements.
-        # .removeClass()
-        # Remove a single class, multiple classes, or all classes from each element in the set of matched elements.
-        # .toggleClass()
-        # Add or remove one or more classes from each element in the set of matched elements, depending on either the class’s presence or the value of the state argument.
-        ## end Tag Info
 
-        ## Adjust Children
-        # "Insert content, specified by the parameter, to the end of each element in the set of matched elements."
+        #' ## Adjust child elements
+        #' * `$append(...)`: Add all `...` objects as children **after** any existing children to the selected elements. Similar to [`tagAppendChildren()`]
         append = function(...) {
           rebuild()
           tag_graph_append_children(get_selected(), ...)
           rebuild()
           self
         },
+        #' * `$prepend(...)`: Add all `...` objects as children **before** any existing children to the selected elements. A variation of [`tagAppendChildren()`]
         prepend = function(...) {
           rebuild()
           tag_graph_prepend_children(get_selected(), ...)
           rebuild()
           self
         },
+        #' * `$empty(...)`: Remove all children in the selected elements. Use this method before calling `$append(...)` to replace all selected elements' children.
         empty = function() {
           rebuild()
           tag_graph_empty_children(get_selected())
@@ -445,7 +497,7 @@ tag_graph <- function(tag) {
         ## end Adjust Children
 
         ## Adjust Siblings
-        # .detach() / .remove()
+        # TODO-followup pr - All methods below
         # Remove the set of matched elements from the DOM.
         # remove = function() {
         #   rebuild()
@@ -459,46 +511,36 @@ tag_graph <- function(tag) {
         # Insert content, specified by the parameter, before each element in the set of matched elements.
         # .replaceWith()
         # Replace each element in the set of matched elements with the provided new content and return the set of elements that was removed.
-        ### Questionable methods that require parent alterting their children
-        # .unwrap()
-        # Remove the parents of the set of matched elements from the DOM, leaving the matched elements in their place.
-        # .wrap()
-        # Wrap an HTML structure around each element in the set of matched elements.
-        # .wrapAll()
-        # Wrap an HTML structure around all elements in the set of matched elements.
-        # .wrapInner()
-        # Wrap an HTML structure around the content of each element in the set of matched elements.
         ## end Adjust Siblings
 
         ## Generic Methods
-        walk_selected = function(fn) {
+        #' ## Generic methods
+        #' * `$each(fn)`: Perform function `fn` on each of the selected elements. `fn` should accept two arguments: a selected element and the selected element's position within the selected elements. This argument order is different than jQuery's `$().each()` as there is no concept of a `this` object inside the function execution. To stay consistent with other methods, the each of the selected tag environments will be given first, followed by the index position. Any alterations to the provided tag environments will persist in calling tag graph.
+        each = function(fn) {
           rebuild()
-          tag_graph_walk(get_selected(), fn)
+          tag_graph_each(get_selected(), fn)
           rebuild()
           self
         },
         ## end Generic Methods
 
-        ## Tag Graph fns
-        # TODO is this method necessary to export if we always handle it?
+        #' ## Tag Graph functions
+        #' * `$rebuild()`: Makes sure that all tags have been upgraded to tag environments. Objects wrapped in `HTML()` will not be inspected or altered. This method is internally called before each method executes and after any alterations where standard tag objects could be introduced into the tag structure.
         rebuild = function() {
           rebuild()
           self
         },
-        set_children = function(...) {
-          rebuild()
-          tag_graph_set_children(get_selected, ...)
-          rebuild()
-          self
-        },
+        #' * `$root()`: Return the root tag environment.
         root = function() {
           rebuild()
           root
         },
+        #' * `$get_selected()`: Returns a list of selected tag environments.
         get_selected = function() {
           rebuild()
           get_selected()
         },
+        #' * `$get(position)`: Returns the selected tag element at the position `position`.
         get = function(position) {
           rebuild()
           selected <- get_selected()
@@ -506,55 +548,18 @@ tag_graph <- function(tag) {
 
           selected[[position]]
         },
-        set_selected = function(selected) {
-          rebuild()
-          set_selected(
-            tag_graph_validate_selected(root, selected)
-          )
-          rebuild()
-          self
-        },
-        set = function(tag_env, position) {
-          rebuild()
-          selected <- get_selected()
-          validate_position(position, selected)
-          if (is.null(tag_env)) {
-            # no need to rebuild() or validate tag_env is a part of the graph when removing selected elements
-            selected[[position]] <- NULL
-            set_selected(selected)
-          } else {
-            validated_tag_env <- tag_graph_validate_selected(root, list(tag_env))[[1]]
-            selected[[position]] <- validated_tag_env
-            set_selected(dropNulls(selected))
-            rebuild()
-          }
-          self
-        },
         ## end Tag Graph fns
 
-
-        ### IDK how to implement
-        # .val()
-        # Get the current value of the first element in the set of matched elements or set the value of every matched element.
-
-        ### Methods that do not return self
-        # .text()
-        # Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements.
-        # .css()
-        # Get the value of a computed style property for the first element in the set of matched elements or set one or more CSS properties for every matched element.
-        # .hasClass()
-        # TODO-barret - also make a top level function
-        # Determine whether any of the matched elements are assigned the given class.
-        # .prop()
-        # Get the value of a property for the first element in the set of matched elements or set one or more properties for every matched element.
-
         ## To tags
+        #' ## Convert to tags
+        #' * `$root_as_tags()`: Converts the root tag environment (and all of its children elements) back to standard tag objects and returns the root tag value.
         root_as_tags = function() {
           rebuild()
           tag_env_to_tags(root)
         },
         # = .html()
         # Get the HTML contents of the first element in the set of matched elements or set the HTML contents of every matched element.
+        #' * `$selected_as_tags()`: Converts each selected tag environments (and all of their child elements) back to standard tag objects. A `tagList()` is returned, wrapping around the set of selected tags.
         selected_as_tags = function() {
           rebuild()
           # return as tagList
@@ -565,69 +570,24 @@ tag_graph <- function(tag) {
     )
   self
 }
-​
-​
-#' @rawNamespace S3method("[[", htmltools.tag.graph)​
-`[[.htmltools.tag.graph` <- function(x, position) {
-  if (is.numeric(position)) {
-    x$get(position)
-  } else {
-    NextMethod()
-  }
-}
-​
-#' @rawNamespace S3method("[[<-", htmltools.tag.graph)​
-`[[<-.htmltools.tag.graph` <- function(x, position, value) {
-  if (is.numeric(position)) {
-    x$set(value, position)
-    x
-  } else {
-    NextMethod()
-  }
-}
-​
-​
-#' @rawNamespace S3method("[", htmltools.tag.graph)​
-`[.htmltools.tag.graph` <- function(x, positions) {
-  if (is.numeric(positions)) {
-    # return result of lapply
-    lapply(positions, function(position) {
-      x$get(position)
-    })
-  } else {
-    NextMethod()
-  }
-}
-​
-#' @rawNamespace S3method("[<-", htmltools.tag.graph)​
-`[<-.htmltools.tag.graph` <- function(x, positions, values) {
-  if (is.numeric(positions)) {
-    # Map handles vector recycling
-    Map(
-      values,
-      positions,
-      f = function(value, position) {
-        x$set(value, position)
-      }
-    )
-    x
-  } else {
-    NextMethod()
-  }
-}
 
-#' @export
-length.htmltools.tag.graph <- function(x) {
-  length(x$get_selected())
-}
-​
-​
-​
+
 validate_position <- function(position, selected) {
   stopifnot(is.numeric(position))
   stopifnot(position > 0)
   stopifnot(position <= length(selected))
 }
+
+validate_fn_can_iterate <- function(fn) {
+  stopifnot(is.function(fn))
+  fn_formals <- formals(fn)
+  if (! ("..." %in% names(fn_formals))) {
+    if (length(fn_formals) < 2) {
+      stop("`$each(fn=)` must be a function that accepts at least two arguments: `selected[[i]]` and `i` ")
+    }
+  }
+}
+
 
 
 # Call `.f(x[[i]], ...)` for all values of i
@@ -637,20 +597,21 @@ walk <- function(.x, .f, ...) {
   }
   NULL
 }
+# Call `.f(x[[i]])` in reverse order
 # walk_rev <- function(.x, .f, ...) {
 #   for (i in rev(seq_along(.x))) {
 #     .f(.x[[i]], ...)
 #   }
 #   NULL
 # }
-# # call `.f(x[[i]], i, ...)`
+# Calls `.f(x[[i]], i, ...)`
 walk_i <- function(.x, .f, ...) {
   for (i in seq_along(.x)) {
     .f(.x[[i]], i, ...)
   }
   NULL
 }
-# Include `i` and call in reverse order
+# Calls `.f(x[[i]], i, ...)` in reverse order
 walk_i_rev <- function(.x, .f, ...) {
   for (i in rev(seq_along(.x))) {
     .f(.x[[i]], i, ...)
@@ -658,6 +619,8 @@ walk_i_rev <- function(.x, .f, ...) {
   NULL
 }
 
+
+# Make sure each item in list is a tag env
 tag_graph_verify_selected <- function(els) {
   stopifnot(is.list(els))
   walk_i(els, function(el, i) {
@@ -667,7 +630,7 @@ tag_graph_verify_selected <- function(els) {
   })
 }
 
-# return function that will verify before performing `func(els, fn)`
+# Return function that will verify elements before performing `func(els, fn)`
 tag_graph_walk_gen <- function(func) {
   function(els, fn) {
     tag_graph_verify_selected(els)
@@ -676,19 +639,28 @@ tag_graph_walk_gen <- function(func) {
     func(els, fn)
   }
 }
-# tag_graph_lapply <- tag_graph_walk_gen(lapply)
 tag_graph_walk <- tag_graph_walk_gen(walk)
 # tag_graph_walk_rev <- tag_graph_walk_gen(walk_rev)
 tag_graph_walk_i <- tag_graph_walk_gen(walk_i)
 tag_graph_walk_i_rev <- tag_graph_walk_gen(walk_i_rev)
 
 
+# Perform `fn` on each el in els
+tag_graph_each <- function(els, fn) {
+  validate_fn_can_iterate(fn)
+  tag_graph_walk_i(els, fn)
+}
 
-tag_graph_match_child_i <- function(els, func) {
+
+# For each el in els, go to el parent and find el's position
+# Then call `fn(parent, el, el_pos)`
+# Perform this matching in reverse order
+tag_graph_match_child_rev <- function(els, func) {
   tag_graph_walk(els, function(el) {
     el_key <- envir_key_fn(el)
     el_parent <- el$parent
-    tag_graph_walk_i_rev(parent$children, function(child, child_pos) {
+    # Walk in reverse to be able to remove all matches in a single pass
+    tag_graph_walk_i_rev(el_parent$children, function(child, child_pos) {
       child_key <- envir_key_fn(child)
       if (el_key == child_key) {
         func(el_parent, el, child_pos)
@@ -696,8 +668,10 @@ tag_graph_match_child_i <- function(els, func) {
     })
   })
 }
+# Remove each el in els from their parent.
+# Also remove parent pointer from within el
 tag_graph_remove <- function(els) {
-  tag_graph_match_child_i(els, function(el_parent, el, child_pos) {
+  tag_graph_match_child_rev(els, function(el_parent, el, child_pos) {
     # remove parent / child relationship
     el$parent <- NULL
     el_parent$children[[child_pos]] <- NULL
@@ -705,45 +679,14 @@ tag_graph_remove <- function(els) {
 }
 
 
-tag_graph_validate_selected <- function(root, selected) {
-
-  if (is.null(selected)) {
-    selected <- list()
-  }
-  root_envir_key <- envir_key_fn(root)
-  # For each element...
-  tag_graph_walk_i(selected, function(el, el_pos) {
-    # Find the top ancestor
-    cur_el <- el
-    while (!is.null(parent <- cur_el$parent)) {
-      cur_el <- cur_el$parent
-    }
-
-    # Validate that the top ancestor is `root`
-    if (root_envir_key != envir_key_fn(cur_el)) {
-      stop(
-        "`selected[[", el_pos, "]]` does not have a final ancestor of this tag graph's root element.\n",
-        "Root: ", root_envir_key, "\n",
-        "`selected[[", i, "]]`: ", envir_key_fn(cur_el), "\n"
-      )
-    }
-  })
-
-  selected
-}
-
-
-
 tag_graph_set_children <- function(els, ...) {
   tag_graph_walk(els, function(el) {
     tagSetChildren(el, ...)
   })
 }
-
 tag_graph_empty_children <- function(els) {
   tag_graph_set_children(els, list())
 }
-
 tag_graph_append_children <- function(els, ...) {
   tag_graph_walk(els, function(el) {
     tagAppendChildren(el, ...)
@@ -760,7 +703,6 @@ tag_graph_prepend_children <- function(els, ...) {
 tag_graph_add_class <- function(els, class) {
   tag_graph_add_attrs(els, class = class)
 }
-
 tag_graph_add_attrs <- function(els, ...) {
   tag_graph_walk(els, function(el) {
     tagAppendAttributes(el, ...)
@@ -768,6 +710,12 @@ tag_graph_add_attrs <- function(els, ...) {
 }
 
 
+# Return a list of `root`.
+# This may change if root ends up becoming a list of elements
+tag_graph_find_reset <- function(root) {
+  list(root)
+}
+# Return a list of the unique set of parent elements
 tag_graph_find_parent <- function(els) {
   parent_map <- envir_map()
   tag_graph_walk(els, function(el) {
@@ -775,6 +723,36 @@ tag_graph_find_parent <- function(els) {
   })
   parent_map$values()
 }
+# Return a list of the unique set of ancestor elements
+# By only looking for elements that have not been seen before, searching is as lazy as possible
+tag_graph_find_parents <- function(els) {
+  ancestors_map <- envir_map()
+
+  # First pass should contain the current elements
+  cur_els <- els
+  while(length(cur_els) > 0) {
+    # Make a map of elements to explore in the next loop iteration
+    next_els_map <- envir_map()
+
+    # For each element in `cur_els`
+    tag_graph_walk(cur_els, function(el) {
+      # If the element has not been seen before...
+      if (!ancestors_map$has(cur_el)) {
+        # Add to next iteration set
+        next_els_map$set(cur_el)
+        # Add to all ancestors
+        ancestors_map$set(cur_el)
+      }
+    })
+
+    # At this point, we have found a new set of unexplored ancestors: next_els_map
+    # Update `cur_els` to contain all tag envs to continue exploration
+    cur_els <- dropNulls(next_els_map$values())
+  }
+
+  ancestors_map$values()
+}
+# Get all unique children tag envs
 tag_graph_find_children <- function(els) {
   children_map <- envir_map()
   tag_graph_walk(els, function(el) {
@@ -785,15 +763,32 @@ tag_graph_find_children <- function(els) {
   children_map$values()
 }
 
+# Filter the selected elements using a function
+# The answer of `fn(el, i)` should work in an `if` block
+tag_graph_find_filter <- function(els, fn) {
+
+  validate_fn_can_iterate(fn)
+
+  filter_map <- envir_map()
+  tag_graph_walk_i(els, function(el, i) {
+    if (fn(el, i)) {
+      filter_map$set(el)
+    }
+  })
+
+  filter_map$values()
+}
+
+# Find all elements within `els` that match the `selector`
 tag_graph_find <- function(els, selector) {
   found_map <- envir_map()
   selector <- as_selector_list(selector)
-  # for every element...
+  # For every element...
   tag_graph_walk(els, function(el) {
-    # exclude the element and
-    # walk through each child...
+    # Ignore the element and
+    # Walk through each child...
     tag_graph_walk(el$children, function(child) {
-      # including the child, matching with a selector
+      # Find decendent matching the `selector`
       tag_graph_find_(child, selector, function(found_el) {
         found_map$set(found_el)
       })
@@ -802,10 +797,12 @@ tag_graph_find <- function(els, selector) {
   found_map$values()
 }
 
+# Recursive function to find all elements that match a selector
+# If a match is found, call `fn(matched_el)`
 tag_graph_find_ <- function(el, selector, fn) {
 
   if (isTagEnv(el)) {
-    # grab the first element
+    # Grab the first element
     cur_selector <- selector[[1]]
 
     is_match <- TRUE
@@ -849,13 +846,15 @@ tag_graph_find_ <- function(el, selector, fn) {
     }
 
   } else if (is.list(el)) {
+    # For each item in the list like object, recurse through
     walk(el, tag_graph_find_, fn = fn, selector = selector)
   } else if (is.atomic(el) || is.function(el)) {
+    # Can not match on atomics or functions
     return()
   } else {
-    message("tag_graph_find_()")
+    message("tag_graph_find_() - Unknown Type! This has not happened before:")
     str(el)
-    message("unknown type!!!")
+    stop("Unknown type in tag_graph_find_()")
   }
 
   invisible()
@@ -864,7 +863,7 @@ tag_graph_find_ <- function(el, selector, fn) {
 
 
 
-
+# TODO- Remove once lobstr PR gets accepted. Add in S3 methods to make for nice printing
 tag_env_explain <- function(x, ..., before = "", max = Inf, seen_map = envir_map()) {
   if (max == 0) {
     return(invisible(x))
@@ -883,7 +882,7 @@ tag_env_explain <- function(x, ..., before = "", max = Inf, seen_map = envir_map
 
   if (is.environment(x)) {
     if (seen_map$has(x)) {
-      cat0(seen_map$key_fn(x))
+      cat0(envir_key_fn(x))
       return(invisible(x))
     }
     seen_map$set(x, TRUE)
@@ -954,11 +953,11 @@ if (FALSE) {
       )
     )
   tag_graph(s) $ find(".inner") $ parent() $ add_class("bar") $ root_as_tags()
-  ​
+
   # Using square bracket
   tag_graph(s)[[1]]
   tag_graph(s)[[1]] <- div("hello")  # Needs to convert to env
-  ​
+
   # Using getter/setter
   tag_graph(s)$get(1)
   tag_graph(s)$set(1, div("hello"))
@@ -966,9 +965,9 @@ if (FALSE) {
 }
 
 if (FALSE) {
-​  x <- list(a =1, b =2)
+  x <- list(a =1, b =2)
   e <- list2env(x)
-  ​
+
   system.time({
     for (i in 1:1000000) {
       as.list.environment(e)
@@ -981,22 +980,20 @@ if (FALSE) {
       x1 <- to_list(x)
     }
   })
+
   library(magrittr)
-​
+
   s <- sliderInput("x", "X", 1, 4, 2)
-  ​
+
   s <- as_tag_env(s)
   # goal
   s %>% el_children() %>% add_child(div(class = "foo", "Hello")) %>% find(".foo") %>%
     to_list()
-  ​
 
   s <- as_tag_env(sliderInput("x", "X", 1, 4, 2))
   s <- as_tag_env(s)
-  ​
-  ​
-  ​
-  # ​library(shiny)
+
+  # library(shiny)
   ui <- fluidPage(
     as_tag_env(sliderInput("obs", "Number of observations:",
       min = 0, max = 1000, value = 500
@@ -1007,14 +1004,14 @@ if (FALSE) {
     # ),
     plotOutput("distPlot")
   )
-  ​
+
   # Server logic
   server <- function(input, output) {
     output$distPlot <- renderPlot({
       hist(rnorm(input$obs))
     })
   }
-  ​
+
   # Complete app with UI and server components
   shinyApp(ui, server)
 }
