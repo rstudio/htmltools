@@ -1,7 +1,10 @@
+#' @import fastmap
+
 # TODO-barret
 # * First pass of tests
-# * Implement `>` in css selector
 # * Testing - find div, then find div. This should not return first div, but an inner div
+# * Implement `>` in css selector
+# * Support `tag_graph(tagList(....))`
 # * Describe why using `props` and not `attr`
 #    * Skipping. The htmltools package has no concept of props. This would only create confusion.
 # * Remove obviously dead code
@@ -91,23 +94,39 @@ envir_key_or_stop <- function(x) {
   x$env_key %||% stop("`x` is not a tag environment. `x$env_key` is missing")
 }
 
+# use for `has()` functionality
 envir_map <- function() {
-  map <- fastmap::fastmap()
+  map <- fastmap()
   list(
     keys = function() {
       map$keys()
     },
-    values = function() {
-      map$values()
+    as_list = function() {
+      unname(map$as_list())
     },
     has = function(envir) {
       map$has(envir_key_or_stop(envir))
     },
     set = function(envir, value = envir) {
       map$set(envir_key_or_stop(envir), value)
+    },
+    remove = function(envir) {
+      map$remove(envir_key_or_stop(envir))
     }
   )
 }
+# use for consistent `as_list()` order
+envir_stack <- function() {
+  stack <- faststack()
+  list(
+    push = stack$push,
+    as_list = stack$as_list,
+    unique_list = function() {
+      unique(stack$as_list())
+    }
+  )
+}
+
 
 
 
@@ -182,14 +201,19 @@ as_tag_env_ <- function(x, parent = NULL, seen_map = envir_map()) {
     }
     if (seen_map$has(x)) {
       stop(
-        "Circular tag reference found with tag.env", envir_key_fn(x), "\n",
+        "Circular family tree found with tag environment: ", envir_key_fn(x), "\n",
         # Not necessarily the order of the circular dependency
         # TODO-later show actual circular dependency and not all visited nodes? This should be rare
         "Tags processed:\n", paste0("* ", seen_map$keys(), collapse = "\n")
       )
     }
+    # Add the item to the seen map to help with cycle detection
     seen_map$set(x, TRUE)
-    # recurse through children
+
+    # Make sure all attribs are unique
+    x$attribs <- flattenTagAttribs(x$attribs)
+
+    # Recurse through children
     if (length(x$children) != 0) {
       # Possible optimization... name the children tags to the formatted values.
       # * Allows for faster child look up later.
@@ -197,7 +221,7 @@ as_tag_env_ <- function(x, parent = NULL, seen_map = envir_map()) {
       # Attributes may be dropped
       # * Could replace with `x$children[] <- ....`
       # * Leaving as is to see if people mis-use the children field
-      x$children <- lapply(
+      x$children <- unname(lapply(
         # Simplify the structures by flatting the tags
         # Does NOT recurse to grand-children etc.
         flattenTags(x$children, validate = FALSE),
@@ -205,8 +229,11 @@ as_tag_env_ <- function(x, parent = NULL, seen_map = envir_map()) {
         as_tag_env_,
         parent = x,
         seen_map = seen_map
-      )
+      ))
     }
+    # Remove the item from the map to allow for checks for ciruclar deps
+    # Having multiple child objects that are the same is ok, as long as a cycle is not found
+    seen_map$remove(x)
   }
   x
 }
@@ -223,7 +250,7 @@ tag_env_to_tags <- function(x) {
     x$env_key <- NULL
     # recurse through children
     if (!is.null(x$children)) {
-      x$children <- lapply(x$children, tag_env_to_tags)
+      x$children <- unname(lapply(x$children, tag_env_to_tags))
     }
   }
   x
@@ -284,7 +311,7 @@ print.htmltools.tag.graph <- function(x, ...) {
   print(x$root_as_tags())
 
   cat("\nSelected Elements:")
-  selected <- x$get_selected()
+  selected <- x$selected()
   if (length(selected) == 0) {
     cat(" (Empty)\n")
   } else {
@@ -567,6 +594,7 @@ tag_graph <- function(root) {
 
 validate_position <- function(position, selected) {
   stopifnot(is.numeric(position))
+  stopifnot(length(position) == 1)
   stopifnot(position > 0)
   stopifnot(position <= length(selected))
 }
@@ -687,8 +715,12 @@ tag_graph_append_children <- function(els, ...) {
 }
 tag_graph_prepend_children <- function(els, ...) {
   tag_graph_walk(els, function(el) {
-    cur_children <- els$children
-    tagSetChildren(el, ..., cur_children)
+    cur_children <- el$children
+    if (length(cur_children) == 0) {
+      tagSetChildren(el, ...)
+    } else {
+      tagSetChildren(el, ..., cur_children)
+    }
   })
 }
 
@@ -710,50 +742,55 @@ tag_graph_find_reset <- function(root) {
 }
 # Return a list of the unique set of parent elements
 tag_graph_find_parent <- function(els) {
-  parent_map <- envir_map()
+  parent_stack <- envir_stack()
   tag_graph_walk(els, function(el) {
-    parent_map$set(el$parent)
+    parent_stack$push(el$parent)
   })
-  parent_map$values()
+  parent_stack$unique_list()
 }
 # Return a list of the unique set of ancestor elements
 # By only looking for elements that have not been seen before, searching is as lazy as possible
 tag_graph_find_parents <- function(els) {
+  # use the map for `has()` and stack for `values()`
   ancestors_map <- envir_map()
+  ancestors_stack <- envir_stack()
 
-  # First pass should contain the current elements
-  cur_els <- els
+  # First pass should contain the current elements' direct parents
+  cur_els <- tag_graph_find_parent(els)
+
   while(length(cur_els) > 0) {
     # Make a map of elements to explore in the next loop iteration
-    next_els_map <- envir_map()
+    next_els_stack <- envir_stack()
 
     # For each element in `cur_els`
     tag_graph_walk(cur_els, function(cur_el) {
       # If the element has not been seen before...
       if (!ancestors_map$has(cur_el)) {
-        # Add to next iteration set
-        next_els_map$set(cur_el)
-        # Add to all ancestors
-        ancestors_map$set(cur_el)
+        # Add parent el to next iteration set
+        next_els_stack$push(cur_el$parent)
+
+        # Add cur_el to all ancestors info
+        ancestors_map$set(cur_el, TRUE)
+        ancestors_stack$push(cur_el)
       }
     })
 
-    # At this point, we have found a new set of unexplored ancestors: next_els_map
+    # At this point, we have found a new set of unexplored ancestors: next_els_stack
     # Update `cur_els` to contain all tag envs to continue exploration
-    cur_els <- dropNulls(next_els_map$values())
+    cur_els <- dropNulls(next_els_stack$unique_list())
   }
 
-  ancestors_map$values()
+  ancestors_stack$unique_list()
 }
 # Get all unique children tag envs
 tag_graph_find_children <- function(els) {
-  children_map <- envir_map()
+  children_stack <- envir_stack()
   tag_graph_walk(els, function(el) {
     tag_graph_walk(el$children, function(child) {
-      children_map$set(child)
+      children_stack$push(child)
     })
   })
-  children_map$values()
+  children_stack$unique_list()
 }
 
 # Filter the selected elements using a function
@@ -762,19 +799,19 @@ tag_graph_find_filter <- function(els, fn) {
 
   validate_fn_can_iterate(fn)
 
-  filter_map <- envir_map()
+  filter_stack <- envir_stack()
   selected_walk_i(els, function(el, i) {
     if (fn(el, i)) {
-      filter_map$set(el)
+      filter_stack$push(el)
     }
   })
 
-  filter_map$values()
+  filter_stack$as_list()
 }
 
 # Find all elements within `els` that match the `selector`
 tag_graph_find <- function(els, selector) {
-  found_map <- envir_map()
+  found_stack <- envir_stack()
   selector <- as_selector_list(selector)
   # For every element...
   tag_graph_walk(els, function(el) {
@@ -783,11 +820,11 @@ tag_graph_find <- function(els, selector) {
     tag_graph_walk(el$children, function(child) {
       # Find decendent matching the `selector`
       tag_graph_find_(child, selector, function(found_el) {
-        found_map$set(found_el)
+        found_stack$push(found_el)
       })
     })
   })
-  found_map$values()
+  found_stack$unique_list()
 }
 
 # Recursive function to find all elements that match a selector
