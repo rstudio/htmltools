@@ -91,7 +91,7 @@ debug_message <- function(...) {
 #   * `onRender(x, expr)` will wrap create a tag function that will resolve the tags before running the expr.
 
 
-envir_key_fn <- format.default
+envir_key_fn <- function(x) { format.default(x) }
 
 envir_map <- function() {
   map <- fastmap::fastmap()
@@ -274,19 +274,19 @@ as.character.htmltools.tag.env <- function(x, ...) {
   as.character(tag_env_to_tags(x), ...)
 }
 #' @export
-str.htmltools.tag.env <- function(x, ...) {
+str.htmltools.tag.env <- function(object, ...) {
   debug_message("str.htmltools.tag.env()")
   cat(shiny_tag_el_str, "\n")
-  str(tag_env_to_tags(x), ...)
+  str(tag_env_to_tags(object), ...)
 }
 
 #' @export
-as.tags.htmltools.tag.graph <- function(x) {
+as.tags.htmltools.tag.graph <- function(x, ...) {
   stop("Method not allowed", call. = TRUE)
   # as.tags(x$selected_as_tags())
 }
 #' @export
-print.htmltools.tag.graph <- function(x) {
+print.htmltools.tag.graph <- function(x, ...) {
   cat("Root:\n")
   print(x$root_as_tags())
 
@@ -304,14 +304,14 @@ print.htmltools.tag.graph <- function(x) {
   }
 }
 #' @export
-format.htmltools.tag.graph <- function(x) {
+format.htmltools.tag.graph <- function(x, ...) {
   stop(
     "`format.htmltools.tag.graph(x)` not allowed.\n",
     "Please call `format()` the result of `$root_as_tags()` or `$selected_as_tags()`"
   )
 }
 #' @export
-as.character.htmltools.tag.graph <- function(x) {
+as.character.htmltools.tag.graph <- function(x, ...) {
   stop(
     "`as.character.htmltools.tag.graph(x)` not allowed.\n",
     "Please call `as.character()` the result of `$root_as_tags()` or `$selected_as_tags()`"
@@ -735,7 +735,7 @@ tag_graph_find_parents <- function(els) {
     next_els_map <- envir_map()
 
     # For each element in `cur_els`
-    tag_graph_walk(cur_els, function(el) {
+    tag_graph_walk(cur_els, function(cur_el) {
       # If the element has not been seen before...
       if (!ancestors_map$has(cur_el)) {
         # Add to next iteration set
