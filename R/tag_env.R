@@ -1,10 +1,11 @@
 # TODO-barret
 # * Add in `$env_key` to each tag env. This will avoid CONSTANT calling of format.default(tag_env)
-# * Rename `tag_graph_walk_*` to `selected_walk_*`
+# * First pass of tests
+# * Implement `>` in css selector
 # * Testing - find div, then find div. This should not return first div, but an inner div
-# * Remove obviously dead code
 # * Describe why using `props` and not `attr`
 #    * Skipping. The htmltools package has no concept of props. This would only create confusion.
+# * Remove obviously dead code
 
 # TODO-barret followup PR
 # * onRender(x, fn) - tagFunction(x, fn)
@@ -631,7 +632,7 @@ tag_graph_verify_selected <- function(els) {
 }
 
 # Return function that will verify elements before performing `func(els, fn)`
-tag_graph_walk_gen <- function(func) {
+selected_walk_gen <- function(func) {
   function(els, fn) {
     tag_graph_verify_selected(els)
     stopifnot(is.function(fn))
@@ -639,16 +640,16 @@ tag_graph_walk_gen <- function(func) {
     func(els, fn)
   }
 }
-tag_graph_walk <- tag_graph_walk_gen(walk)
-# tag_graph_walk_rev <- tag_graph_walk_gen(walk_rev)
-tag_graph_walk_i <- tag_graph_walk_gen(walk_i)
-tag_graph_walk_i_rev <- tag_graph_walk_gen(walk_i_rev)
+tag_graph_walk <- selected_walk_gen(walk)
+# selected_walk_rev <- selected_walk_gen(walk_rev)
+selected_walk_i <- selected_walk_gen(walk_i)
+selected_walk_i_rev <- selected_walk_gen(walk_i_rev)
 
 
 # Perform `fn` on each el in els
 tag_graph_each <- function(els, fn) {
   validate_fn_can_iterate(fn)
-  tag_graph_walk_i(els, fn)
+  selected_walk_i(els, fn)
 }
 
 
@@ -660,7 +661,7 @@ tag_graph_match_child_rev <- function(els, func) {
     el_key <- envir_key_fn(el)
     el_parent <- el$parent
     # Walk in reverse to be able to remove all matches in a single pass
-    tag_graph_walk_i_rev(el_parent$children, function(child, child_pos) {
+    selected_walk_i_rev(el_parent$children, function(child, child_pos) {
       child_key <- envir_key_fn(child)
       if (el_key == child_key) {
         func(el_parent, el, child_pos)
@@ -770,7 +771,7 @@ tag_graph_find_filter <- function(els, fn) {
   validate_fn_can_iterate(fn)
 
   filter_map <- envir_map()
-  tag_graph_walk_i(els, function(el, i) {
+  selected_walk_i(els, function(el, i) {
     if (fn(el, i)) {
       filter_map$set(el)
     }
