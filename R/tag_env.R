@@ -1,5 +1,4 @@
 # TODO-barret
-# * Add in `$env_key` to each tag env. This will avoid CONSTANT calling of format.default(tag_env)
 # * First pass of tests
 # * Implement `>` in css selector
 # * Testing - find div, then find div. This should not return first div, but an inner div
@@ -92,7 +91,12 @@ debug_message <- function(...) {
 #   * `onRender(x, expr)` will wrap create a tag function that will resolve the tags before running the expr.
 
 
+# Wrap in function so r cmd check is happy
 envir_key_fn <- function(x) { format.default(x) }
+# No need to contantly convert the envir to a key string. The value should be constant given an envir
+envir_key_or_stop <- function(x) {
+  x$env_key %||% stop("`x` is not a tag environment. `x$env_key` is missing")
+}
 
 envir_map <- function() {
   map <- fastmap::fastmap()
@@ -104,10 +108,10 @@ envir_map <- function() {
       map$values()
     },
     has = function(envir) {
-      map$has(envir_key_fn(envir))
+      map$has(envir_key_or_stop(envir))
     },
     set = function(envir, value = envir) {
-      map$set(envir_key_fn(envir), value)
+      map$set(envir_key_or_stop(envir), value)
     }
   )
 }
@@ -180,6 +184,9 @@ as_tag_env_ <- function(x, parent = NULL, seen_map = envir_map()) {
     if (!is_tag_env) {
       x_list <- x
       x <- safe_list_2_env(x_list, "htmltools.tag.env")
+      # add parent env and key
+      x$parent <- parent
+      x$env_key <- envir_key_fn(x)
     }
     if (seen_map$has(x)) {
       stop(
@@ -190,8 +197,6 @@ as_tag_env_ <- function(x, parent = NULL, seen_map = envir_map()) {
       )
     }
     seen_map$set(x, TRUE)
-    # add parent env
-    x$parent <- parent
     # recurse through children
     if (length(x$children) != 0) {
       # Possible optimization... name the children tags to the formatted values.
@@ -222,8 +227,9 @@ tag_env_to_tags <- function(x) {
     x_el <- x
     # convert to list first to avoid altering the original env obj
     x <- safe_env_2_list(x_el, c("htmltools.tag.env"))
-    # undo parent env
+    # undo parent env and key
     x$parent <- NULL
+    x$env_key <- NULL
     # recurse through children
     if (!is.null(x$children)) {
       x$children <- lapply(x$children, tag_env_to_tags)
@@ -658,11 +664,11 @@ tag_graph_each <- function(els, fn) {
 # Perform this matching in reverse order
 tag_graph_match_child_rev <- function(els, func) {
   tag_graph_walk(els, function(el) {
-    el_key <- envir_key_fn(el)
+    el_key <- envir_key_or_stop(el)
     el_parent <- el$parent
     # Walk in reverse to be able to remove all matches in a single pass
     selected_walk_i_rev(el_parent$children, function(child, child_pos) {
-      child_key <- envir_key_fn(child)
+      child_key <- envir_key_or_stop(child)
       if (el_key == child_key) {
         func(el_parent, el, child_pos)
       }
@@ -883,7 +889,7 @@ tag_env_explain <- function(x, ..., before = "", max = Inf, seen_map = envir_map
 
   if (is.environment(x)) {
     if (seen_map$has(x)) {
-      cat0(envir_key_fn(x))
+      cat0(envir_key_or_stop(x))
       return(invisible(x))
     }
     seen_map$set(x, TRUE)
@@ -898,7 +904,7 @@ tag_env_explain <- function(x, ..., before = "", max = Inf, seen_map = envir_map
     cat0("function(){}")
   } else if (inherits(x, "htmltools.tag.env")) {
     x_list <- as.list.environment(x)
-    cat0(envir_key_fn(x))
+    cat0(envir_key_or_stop(x))
     Map(x_list, rlang::names2(x_list), f = function(value, key) {
       cat0(key, if (max > 1) ":")
       tag_env_explain(value, before = paste0(before, ". "), seen_map = seen_map, max = max - 1)
