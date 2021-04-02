@@ -341,7 +341,7 @@ as.character.htmltools.tag.graph <- function(x, ...) {
 #'
 #' ## Tag graphs
 #'
-#' A `tag_graph()` behaves simliar to an R6 object (but a tag graph is not implemented with `R6`). The `tag_graph()`'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. `$get_selected()` or `$root_as_tags()`.
+#' A `tag_graph()` behaves simliar to an R6 object (but a tag graph is not implemented with `R6`). The `tag_graph()`'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. `$selected()` or `$root_as_tags()`.
 #'
 #' Internally, two important pieces of information are maintained: the root element and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to `tag_graph(tag=)`. However, the selected elements are a list of tag environments that update for every `$find(css_selector)` call.  The selected elements are initialized to a list containing the `root` tag environment. All `tag_graph()` methods will act on the selected elements unless declared otherwise.
 #'
@@ -528,8 +528,8 @@ tag_graph <- function(root) {
           rebuild()
           root
         },
-        #' * `$get_selected()`: Returns a list of selected tag environments.
-        get_selected = function() {
+        #' * `$selected()`: Returns a list of selected tag environments.
+        selected = function() {
           rebuild()
           get_selected()
         },
@@ -869,7 +869,7 @@ tag_env_explain <- function(x, ..., before = "", max = Inf, seen_map = envir_map
   if (isTagGraph(x)) {
     tag_env_explain(x$root(), before = before, max = max, seen_map = seen_map)
     cat0("search_list:")
-    tag_env_explain(x$get_selected(), before = before, max = 1, seen_map = seen_map)
+    tag_env_explain(x$selected(), before = before, max = 1, seen_map = seen_map)
     return(invisible(x))
   }
 
