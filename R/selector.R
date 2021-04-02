@@ -103,7 +103,7 @@ format.shiny_selector <- function(x, ...) {
   if (x$match_everything) {
     paste0("*")
   } else {
-    paste0(x$element, if (!is.null(x$id)) paste0("#", x$id), if (!is.null(x$classes)) paste0(".", x$classes, collapse = "")
+    paste0(x$element, if (!is.null(x$id)) paste0("#", x$id), if (!is.null(x$classes)) paste0(".", x$classes, collapse = ""))
   }
 }
 #' @export
