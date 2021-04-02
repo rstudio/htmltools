@@ -37,7 +37,7 @@ The set of tag environments in a pointing to each other within a tag graph can b
 
 \subsection{Tag graphs}{
 
-A \code{tag_graph()} behaves simliar to an R6 object (but a tag graph is not implemented with \code{R6}). The \code{tag_graph()}'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. \verb{$get_selected()} or \verb{$root_as_tags()}.
+A \code{tag_graph()} behaves simliar to an R6 object (but a tag graph is not implemented with \code{R6}). The \code{tag_graph()}'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. \verb{$selected()} or \verb{$root_as_tags()}.
 
 Internally, two important pieces of information are maintained: the root element and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to \code{tag_graph(tag=)}. However, the selected elements are a list of tag environments that update for every \verb{$find(css_selector)} call.  The selected elements are initialized to a list containing the \code{root} tag environment. All \code{tag_graph()} methods will act on the selected elements unless declared otherwise.
 }
@@ -81,7 +81,7 @@ All methods return the altered tag graph object unless otherwise stated.
 \itemize{
 \item \verb{$rebuild()}: Makes sure that all tags have been upgraded to tag environments. Objects wrapped in \code{HTML()} will not be inspected or altered. This method is internally called before each method executes and after any alterations where standard tag objects could be introduced into the tag structure.
 \item \verb{$root()}: Return the root tag environment.
-\item \verb{$get_selected()}: Returns a list of selected tag environments.
+\item \verb{$selected()}: Returns a list of selected tag environments.
 \item \verb{$get(position)}: Returns the selected tag element at the position \code{position}.
 }
 }
