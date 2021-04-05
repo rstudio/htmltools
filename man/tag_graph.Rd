@@ -4,10 +4,10 @@
 \alias{tag_graph}
 \title{Tag graph}
 \usage{
-tag_graph(root)
+tag_graph(tags)
 }
 \arguments{
-\item{root}{A single tag object with possibly many children tag objects. Currently, \code{\link[=tagList]{tagList()}} or \code{\link[=list]{list()}}s of tags are not allowed.}
+\item{tags}{Any standard tag object or \code{tagList()}. If a \code{list()} or \code{tagList()} is provided, a \code{tagList()} will be returned when calling \verb{$graph_as_tags()}.}
 }
 \value{
 A \code{tag_graph()} object. The \code{tag} supplied will be considered the \code{root} object. At the time of initialization, the \code{root} is also considered the single selected item. If any selections are made, the selected elements will be updated.
@@ -18,9 +18,9 @@ A \code{tag_graph()} object. The \code{tag} supplied will be considered the \cod
 \details{
 This function is VERY experimental. The result api will most likely change. \strong{Use at your own risk.}
 
-\code{tag_graph()} is modeled after \href{jquery.com}{\code{jQuery}}'s \href{https://api.jquery.com/category/manipulation/}{DOM maninipulation methods} and \href{https://api.jquery.com/category/traversing/tree-traversal/}{Tree Traversal} categories with some alterations. One of the main differences is that there is no centralized \code{window.document} object to use or reference. Instead, only the original \code{root} tag provided to \code{tag_graph(root=)} is fully search-able.
+\code{tag_graph()} is modeled after \href{jquery.com}{\code{jQuery}}'s \href{https://api.jquery.com/category/manipulation/}{DOM maninipulation methods} and \href{https://api.jquery.com/category/traversing/tree-traversal/}{Tree Traversal} categories with some alterations. One of the main differences is that there is no centralized \code{window.document} object to use or reference. Instead, only the original tags provided to \code{tag_graph(tags=)} are fully search-able.
 
-\code{tag_graph()} is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard \code{\link{tag}} objects. With \code{tag_graph()}, it is possible to find all \verb{<span>} tags that match the css selector \verb{div .inner span}, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r">}}\preformatted{tag_graph(root)$find("div .inner span")$parent()$parent()$add_class("custom-class")$root_as_tags()
+\code{tag_graph()} is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard \code{\link{tag}} objects. With \code{tag_graph()}, it is possible to find all \verb{<span>} tags that match the css selector \verb{div .inner span}, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r">}}\preformatted{tag_graph(ex_tags)$find("div .inner span")$parent()$parent()$add_class("custom-class")$graph_as_tags()
 }\if{html}{\out{</div>}}
 
 This style of alteration is not easily achieved when using typical "pass by value" R objects or standard tag objects.
@@ -28,16 +28,16 @@ This style of alteration is not easily achieved when using typical "pass by valu
 \section{Tag graph components}{
 \subsection{Tag environments}{
 
-"Tag environments" are the building blocks to \code{tag_graph()}. When creating a \code{tag_graph()}, each tag object is converted to a tag environment. This conversion allows for element alterations to happen in place (pass by reference). Meaning that if a css class is added to each selected tag environment using \verb{$add_class()} and the result of the method call is ignored, the selected tag environments in the tag graph will still contain the class addition.  The added class will exist when the tag graph is converted back to standard tags objects with \verb{$root_as_tags()} or \verb{$selected_as_tags()}.
+"Tag environments" are the building blocks to \code{tag_graph()}. When creating a \code{tag_graph()}, each tag object is converted to a tag environment. This conversion allows for element alterations to happen in place (pass by reference). Meaning that if a css class is added to each selected tag environment using \verb{$add_class()} and the result of the method call is ignored, the selected tag environments in the tag graph will still contain the class addition.  The added class will exist when the tag graph is converted back to standard tags objects with \verb{$graph_as_tags()} or \verb{$selected_as_tags()}.
 
-Tag environments also contain an extra field, \code{.$parent}. The \code{.$parent} value contains their parent tag environment. The \code{root} element will have a \code{NULL} value for \code{.$parent}.
+Tag environments also contain an extra field, \code{.$parent}. The \code{.$parent} value contains their parent tag environment. The top level tags supplied to \code{tag_graph()} will also have a shared parent element. (The shared parent element will have a \code{NULL} \code{.$parent} value.) This allows for performing sibling alterations at the top level of the graph.
 
 The set of tag environments in a pointing to each other within a tag graph can be thought of as a linked list while allowing for a "1 to many" parent to child relationship and up to 1 parent per child.
 }
 
 \subsection{Tag graphs}{
 
-A \code{tag_graph()} behaves simliar to an R6 object (but a tag graph is not implemented with \code{R6}). The \code{tag_graph()}'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. \verb{$selected()} or \verb{$root_as_tags()}.
+A \code{tag_graph()} behaves simliar to an R6 object (but a tag graph is not implemented with \code{R6}). The \code{tag_graph()}'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. \verb{$selected()} or \verb{$graph_as_tags()}.
 
 Internally, two important pieces of information are maintained: the root element and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to \code{tag_graph(tag=)}. However, the selected elements are a list of tag environments that update for every \verb{$find(css_selector)} call.  The selected elements are initialized to a list containing the \code{root} tag environment. All \code{tag_graph()} methods will act on the selected elements unless declared otherwise.
 }
@@ -52,6 +52,7 @@ All methods return the altered tag graph object unless otherwise stated.
 \item \verb{$children()}: Update the selected elements to contain all direct child elements of the selected elements.
 \item \verb{$parent()}: Update the selected elements to contain the unique set of direct parent of the selected elements.
 \item \verb{$parents()}: Update the selected elements to contain the unique set of all ancestors of the selected elements.
+\item \code{siblings()}: Get the siblings of each element in the set of matched elements.
 \item \verb{$reset()}: Resets the selected elements to the root.
 }
 }
@@ -80,7 +81,7 @@ All methods return the altered tag graph object unless otherwise stated.
 \subsection{Tag Graph functions}{
 \itemize{
 \item \verb{$rebuild()}: Makes sure that all tags have been upgraded to tag environments. Objects wrapped in \code{HTML()} will not be inspected or altered. This method is internally called before each method executes and after any alterations where standard tag objects could be introduced into the tag structure.
-\item \verb{$root()}: Return the root tag environment.
+\item \verb{$graph()}: Return all top level tags environments. If there are more than one, it will be returned within a \code{tagList()}. If there is only one tag, it will be returned.
 \item \verb{$selected()}: Returns a list of selected tag environments.
 \item \verb{$get(position)}: Returns the selected tag element at the position \code{position}.
 }
@@ -88,8 +89,10 @@ All methods return the altered tag graph object unless otherwise stated.
 
 \subsection{Convert to tags}{
 \itemize{
-\item \verb{$root_as_tags()}: Converts the root tag environment (and all of its children elements) back to standard tag objects and returns the root tag value.
+\item \verb{$graph_as_tags()}: Converts all root tag environments (and all of their children elements) back to standard tag objects. If there are more than one root tag elements, a \code{\link[=tagList]{tagList()}} will be returned, otherwise the single \code{tag()} will be return.
 \item \verb{$selected_as_tags()}: Converts each selected tag environments (and all of their child elements) back to standard tag objects. A \code{tagList()} is returned, wrapping around the set of selected tags.
+Internal methods
+\item \verb{$print()}: Prints the tag graph. Called by \code{print.htmltools.tag_graph()}
 }
 }
 }
@@ -97,6 +100,6 @@ All methods return the altered tag graph object unless otherwise stated.
 \section{Limitations}{
 
 
-\code{tag_graph()}s can \strong{not} be used directly within typical \code{tag} locations. An error should be thrown. Instead, please call \verb{$selected_as_tags()} or \verb{$root_as_tags()} to retrieve the tag structures of the selected tag elements or root element respectively.
+\code{tag_graph()}s can \strong{not} be used directly within typical \code{tag} locations. An error should be thrown. Instead, please call \verb{$selected_as_tags()} or \verb{$graph_as_tags()} to retrieve the tag structures of the selected tag elements or root element respectively.
 }
 

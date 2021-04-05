@@ -116,15 +116,12 @@ test_that("as_tag_env finds cycles", {
 
 
 
-
-
 test_that("tag_graph() root values", {
   expect_error(tag_graph(div()), NA)
-  expect_error(tag_graph(list()))
-  expect_error(tag_graph(tagList()))
-  expect_error(tag_graph(5))
-  expect_error(tag_graph("a"))
-  expect_error(tag_graph(new.env()))
+  expect_error(tag_graph(list()), NA)
+  expect_error(tag_graph(tagList()), NA)
+  expect_error(tag_graph(5), NA)
+  expect_error(tag_graph("a"), NA)
 })
 
 test_that("tag_graph() structure", {
@@ -143,6 +140,15 @@ test_that("tag_graph()$find()", {
     x$selected_as_tags(),
     tagList(span("a"), span("b"))
   )
+
+  ul <- tags$ul
+  li <- tags$li
+  x <- tag_graph(div(div(div(ul(li("a"), li("b"), li("c"))))))
+  x$find("div")
+  expect_length(x$selected(), 3)
+  x$find("div")
+  expect_length(x$selected(), 2)
+
 })
 
 test_that("tag_graph()$filter()", {
@@ -173,6 +179,7 @@ test_that("tag_graph()$filter()", {
 test_that("tag_graph()$children() & tag_graph()$parent()", {
   x <- tag_graph(div(span(1), span(2), span(3), span(4), span(5)))
 
+  x$find("div")
   expect_length(x$selected(), 1)
 
   x$children()
@@ -190,7 +197,7 @@ test_that("tag_graph()$children() & tag_graph()$parent()", {
 
   x$parent()
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$selected_as_tags(), tagList(x$root_as_tags()))
+  expect_equal_tags(x$selected_as_tags(), tagList(x$graph_as_tags()))
 
 })
 
@@ -204,7 +211,7 @@ test_that("tag_graph()$parents()", {
     )
   x <- tag_graph(x_tags)
 
-  expect_length(x$selected(), 1)
+  expect_length(x$selected(), 0)
   x$find("span")
   x$parents()
   expect_length(x$selected(), 2)
@@ -219,6 +226,36 @@ test_that("tag_graph()$parents()", {
 })
 
 
+test_that("tag_graph()$siblings()", {
+  x_tags <- tagList(
+    span("a"),
+    span("b"),
+    span("c"),
+    span("d"),
+    span("e")
+  )
+  x <- tag_graph(x_tags)
+  expect_length(x$selected(), 0)
+  x$find("span")
+  expect_length(x$selected(), 5)
+  x$siblings()
+  expect_length(x$selected(), 5)
+
+  x_tags <- tagList(
+    span("a"),
+    span("b"),
+    span("c", class = "middle"),
+    span("d"),
+    span("e")
+  )
+  x <- tag_graph(x_tags)
+  expect_length(x$selected(), 0)
+  x$find(".middle")
+  expect_length(x$selected(), 1)
+  x$siblings()
+  expect_length(x$selected(), 4)
+})
+
 test_that("tag_graph()$add_class() (& tag_graph()$add_attrs())", {
   x_tags <-
     div(class = "outer",
@@ -228,7 +265,7 @@ test_that("tag_graph()$add_class() (& tag_graph()$add_attrs())", {
     )
   x <- tag_graph(x_tags)
 
-  expect_length(x$selected(), 1)
+  expect_length(x$selected(), 0)
   x$find("div.inner")$add_class("test-class")
   expect_length(x$selected(), 1)
 
@@ -244,8 +281,11 @@ test_that("tag_graph()$append()", {
   newa <- span("a")
   x$append(newa)
   expect_equal_tags(
-    x$root_as_tags(),
-    div(newa)
+    x$graph_as_tags(),
+    tagList(
+      x_tags,
+      newa
+    )
   )
 
   new1 <- div("new1")
@@ -253,8 +293,13 @@ test_that("tag_graph()$append()", {
   x$append(new1, new2)
 
   expect_equal_tags(
-    x$root_as_tags(),
-    div(newa, new1, new2)
+    x$graph_as_tags(),
+    tagList(
+      x_tags,
+      newa,
+      new1,
+      new2
+    )
   )
 })
 
@@ -265,8 +310,11 @@ test_that("tag_graph()$prepend()", {
   newa <- span("a")
   x$prepend(newa)
   expect_equal_tags(
-    x$root_as_tags(),
-    div(newa)
+    x$graph_as_tags(),
+    tagList(
+      newa,
+      x_tags
+    )
   )
 
   new1 <- div("new1")
@@ -274,8 +322,12 @@ test_that("tag_graph()$prepend()", {
   x$prepend(new1, new2)
 
   expect_equal_tags(
-    x$root_as_tags(),
-    div(new1, new2, newa)
+    x$graph_as_tags(),
+    tagList(
+      new1, new2,
+      newa,
+      x_tags
+    )
   )
 })
 
@@ -295,27 +347,27 @@ test_that("tag_graph()$each()", {
   })
 
   expect_equal_tags(
-    x$root_as_tags(),
+    x$graph_as_tags(),
     div(span("A"), h1("title"), span("B"))
   )
 })
 
 
 
-test_that("tag_graph()$root() & tag_graph()$rebuild()", {
+test_that("tag_graph()$graph() & tag_graph()$rebuild()", {
 
   x_tags <- div(span("a"), h1("title"), span("b"))
   x <- tag_graph(x_tags)
 
   # pull out root el
-  root <- x$root()
+  root <- x$graph()
   # add a child to the root
   root$children[[length(root$children) + 1]] <- div("test")
   # rebuild the root within the graph (which is the root var in the line above)
   x$rebuild()
 
   # retrieve the root (and direct children) from graph
-  root_children <- x$root()$children
+  root_children <- x$graph()$children
   last_child <- root_children[[length(root_children)]]
 
   # make sure the last child is a tag env (not a standard tag)
@@ -326,7 +378,7 @@ test_that("tag_graph()$root() & tag_graph()$rebuild()", {
 
 
 
-test_that("tag_graph()$root() & tag_graph()$rebuild()", {
+test_that("tag_graph()$graph() & tag_graph()$rebuild()", {
 
   x_tags <- div(span("a"), span("b"), span("c"), span("d"), span("e"))
   x <- tag_graph(x_tags)
