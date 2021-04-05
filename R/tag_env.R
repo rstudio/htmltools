@@ -1,8 +1,11 @@
 #' @import fastmap
 
 # TODO-barret
-# * First pass of tests
-# * Testing - find div, then find div. This should not return first div, but an inner div
+# * `tag_graph()`
+#   * Wrap all root tags in a `ghost` tag class whose children are the supplied tags.
+#     * This allows for tagLists
+#   * The default selected tags should be the `ghost` tag. If `$selected()` is called and the single value is the `ghost` tag, then return `list()`
+#   * The `ghost` tag should be removed from all `$parent{s}()` calls (and similar calls where the `ghost` tag could be marked as _selected_)
 # * Implement `>` in css selector
 # * Support `tag_graph(tagList(....))`
 # * Describe why using `props` and not `attr`
