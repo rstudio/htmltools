@@ -473,24 +473,25 @@ tag_graph <- function(tags) {
           tag_graph_add_class(manually_selected(), class)
           self
         },
+        #' * `$remove_class(class)`: Removes a set of class values from all of the selected elements.
+        remove_class = function(class) {
+          rebuild()
+          tag_graph_remove_class(manually_selected(), class)
+          self
+        },
+        #' * `$has_class(class)`: Determine whether the selected elements have a given class. Returns a vector of logical values.
+        has_class = function(class) {
+          rebuild()
+          tag_graph_has_class(manually_selected(), class)
+        },
+        #' * `$toggle_class(class)`: If the a class value is missing, add it. If a  class value already exists, remove it.
+        toggle_class = function(class) {
+          rebuild()
+          tag_graph_toggle_class(manually_selected(), class)
+          self
+        },
 
-        # .hasClass() - Determine whether any of the matched elements are assigned the given class.
-        # TODO-followup PR has_class = function(class) { },
-        # .removeClass() - Remove a single class, multiple classes, or all classes from each element in the set of matched elements.
-        # TODO-followup PR remove_class = function(class) { },
-        # .toggleClass() - Add or remove one or more classes from each element in the set of matched elements, depending on either the class’s presence or the value of the state argument.
-        # TODO-followup PR toggle_class = function(class) { },
-
-        # TODO-later attr(). But this is difficult. Maybe separate out into `$set_attr(key, value)` or `$get_attr(key)`
-        # TODO-followup PR set_attrs = function(...) { },
-        # TODO-followup PR get_attrs = function(attributes) { },
-        # TODO-followup PR remove_attrs = function(attributes) { },
-          # .removeAttr()
-          # Remove an attribute from each element in the set of matched elements.
-          # TODO-Followup PR - Once all attrs are flattened, this should be easy to implement
-        # TODO-followup PR? has_attr = function(attribute) {},
-
-        #' * `$add_attrs(...)`: Add element attributes to all selected children. Similar to [`tagAppendAttributes()`].
+        #' * `$add_attrs(...)`: Add named attributes to all selected children. Similar to [`tagAppendAttributes()`].
         add_attrs = function(...) {
           rebuild()
           tag_graph_add_attrs(manually_selected(), ...)
@@ -807,12 +808,70 @@ tag_graph_prepend_children <- function(els, ...) {
 }
 
 
-tag_graph_add_class <- function(els, class) {
-  tag_graph_add_attrs(els, class = class)
+
+get_css_class <- function(class) {
+  class <- unlist(list2(class))
+  stopifnot(length(class) >= 1)
+  stopifnot(is.character(class))
+  split_css_class(class)
 }
-tag_graph_add_attrs <- function(els, ...) {
+split_css_class <- function(class) {
+  strsplit(class, " ")[[1]]
+}
+join_css_class <- function(classes) {
+  if (length(classes) == 0) {
+    NULL
+  } else {
+    paste0(classes, collapse = " ")
+  }
+}
+# return list of logical values telling if the classes exists
+tag_graph_has_class <- function(els, class) {
+  classes <- get_css_class(class)
+  unlist(tag_graph_lapply(els, function(el) {
+    class_val <- el$attribs$class
+    if (is.null(class_val)) {
+      return(FALSE)
+    }
+    el_classes <- split_css_class(class_val)
+    all(classes %in% el_classes)
+  }))
+}
+# add classes that don't already exist
+tag_graph_add_class <- function(els, class) {
+  classes <- get_css_class(class)
+  tag_graph_lapply(els, function(el) {
+    class_val <- el$attribs$class %||% ""
+    el_classes <- split_css_class(class_val)
+    new_classes <- c(el_classes, setdiff(classes, el_classes))
+    el$attribs$class <- join_css_class(new_classes)
+  })
+}
+# remove classes that exist
+tag_graph_remove_class <- function(els, class) {
+  classes <- get_css_class(class)
   tag_graph_walk(els, function(el) {
-    tagAppendAttributes(el, ...)
+    class_val <- el$attribs$class
+    if (is.null(class_val)) return()
+    el_classes <- split_css_class(class_val)
+    new_classes <- setdiff(el_classes, classes)
+    el$attribs$class <- join_css_class(new_classes)
+  })
+}
+# toggle class existence depending on if they already exist or not
+tag_graph_toggle_class <- function(els, class) {
+  classes <- get_css_class(class)
+  tag_graph_walk(els, function(el) {
+    class_val <- el$attribs$class %||% ""
+    el_classes <- split_css_class(class_val)
+    has_class <- (classes %in% el_classes)
+    if (any(has_class)) {
+      el_classes <- setdiff(el_classes, classes)
+    }
+    if (any(!has_class)) {
+      el_classes <- c(el_classes, classes[!has_class])
+    }
+    el$attribs$class <- join_css_class(el_classes)
   })
 }
 

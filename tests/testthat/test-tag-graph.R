@@ -273,6 +273,44 @@ test_that("tag_graph()$add_class() (& tag_graph()$add_attrs())", {
 
 })
 
+test_that("tag_graph()$has_class(), $toggle_class(), $remove_class()", {
+  x_tags <-
+    div(class = "outer",
+      div(class = "A B",
+        span(class = "odd", "a"),
+        span(class = "even", "b"),
+        span(class = "odd", "c"),
+        span(class = "even", "d"),
+        span(class = "odd", "e")
+      )
+    )
+  x <- tag_graph(x_tags)
+
+  x$find("div.A")
+  expect_length(x$selected(), 1)
+  expect_equal(x$has_class("B A"), TRUE)
+  expect_equal(x$has_class("A B"), TRUE)
+  expect_equal(x$has_class("B"), TRUE)
+  expect_equal(x$has_class("A"), TRUE)
+  expect_equal(x$has_class("C"), FALSE)
+  expect_equal(x$has_class("A C"), FALSE)
+
+  x$reset()
+  x$find("span")
+  expect_equal(x$has_class("even"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
+  expect_equal(x$has_class("odd"), c(TRUE, FALSE, TRUE, FALSE, TRUE))
+  x$toggle_class("even odd")
+  expect_equal(x$has_class("even"), c(TRUE, FALSE, TRUE, FALSE, TRUE))
+  expect_equal(x$has_class("odd"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
+
+  x$remove_class("even")
+  expect_equal(x$has_class("even"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$has_class("odd"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
+  x$remove_class("other odd")
+  expect_equal(x$has_class("odd"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+
+})
+
 
 test_that("tag_graph()$append()", {
   x_tags <- div()
