@@ -938,21 +938,40 @@ tag_graph_find_ <- function(el, selector, fn) {
     # Grab the first element
     cur_selector <- selector[[1]]
 
-    is_match <- TRUE
-    if (!cur_selector$match_everything) {
-      # match on element
-      if (is_match && !is.null(cur_selector$element)) {
-        is_match <- el$name == cur_selector$element
-      }
-      # match on id
-      if (is_match && !is.null(cur_selector$id)) {
-        is_match <- (el$attribs$id %||% "") == cur_selector$id
-      }
-      # match on class values
-      if (is_match && !is.null(cur_selector$classes)) {
-        is_match <- !is.null(el$attribs$class) && all(strsplit(el$attribs$class %||% "", " ")[[1]] %in% cur_selector$classes)
-      }
-    }
+    is_match <-
+      cur_selector$match_everything ||
+      local({
+        # match on element
+        if (!is.null(cur_selector$element)) {
+          # bad element match
+          if (el$name != cur_selector$element) {
+            return(FALSE)
+          }
+        }
+        # match on id
+        if (!is.null(cur_selector$id)) {
+          # bad id match
+          if ( (el$attribs$id %||% "") != cur_selector$id) {
+            return(FALSE)
+          }
+        }
+        # match on class values
+        if (!is.null(cur_selector$classes)) {
+          if (
+            # no tag class values at all
+            is.null(el$attribs$class) ||
+            # missing a class value in tag
+            ! all(
+              cur_selector$classes %in% strsplit(el$attribs$class %||% "", " ")[[1]]
+            )
+          ) {
+            return(FALSE)
+          }
+        }
+
+        # No other matches fail. Mark as a match
+        TRUE
+      })
 
     # If it was a match
     if (is_match) {
