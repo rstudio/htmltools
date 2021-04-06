@@ -26,19 +26,19 @@
 ## Skip these implementations for now as the tag graph methods are small and composable.
 ## Instead write them where they are needed since they are small. (Just like we don't wrap dplyr code)
 # tagReplaceAttributesAt <- function(tag, css_selector, ...) {
-#   tag_graph(tag)$find(css_selector)$replace_attrs(...)$graph_as_tags()
+#   tag_graph(tag)$find(css_selector)$replace_attrs(...)$as_tags(selected = FALSE)
 # }
 # tagAppendAttributesAt <- function(tag, css_selector, ...) {
-#   tag_graph(tag)$find(css_selector)$add_attrs(...)$graph_as_tags()
+#   tag_graph(tag)$find(css_selector)$add_attrs(...)$as_tags(selected = FALSE)
 # }
 # tagAddClassAt <- function(tag, css_selector, class) {
-#   tag_graph(tag)$find(css_selector)$add_class(class)$graph_as_tags()
+#   tag_graph(tag)$find(css_selector)$add_class(class)$as_tags(selected = FALSE)
 # }
 # tagMutateAt <- function(x, css_selector, fn) {
-#   tag_graph(tag)$find(css_selector)$each(fn)$graph_as_tags()
+#   tag_graph(tag)$find(css_selector)$each(fn)$as_tags(selected = FALSE)
 # }
 # tagFindAt <- function(x, css) {
-#   tag_graph(tag)$find(css_selector)$selected_as_tags()
+#   tag_graph(tag)$find(css_selector)$as_tags()
 # }
 
 
@@ -236,7 +236,7 @@ as_tag_env_ <- function(x, parent = NULL, seen_map = envir_map()) {
 }
 
 # This method MUST undo everything done in `as_tag_env(x)`
-# Do not export to encourage direct use of `tag_graph()$graph_as_tags()` or `tag_graph()$selected_as_tags()`
+# Do not export to encourage direct use of `tag_graph()$as_tags()`
 tag_env_to_tags <- function(x) {
   if (isTagEnv(x)) {
     x_el <- x
@@ -300,7 +300,6 @@ str.htmltools.tag.env <- function(object, ...) {
 #' @export
 as.tags.htmltools.tag.graph <- function(x, ...) {
   stop("Method not allowed", call. = TRUE)
-  # as.tags(x$selected_as_tags())
 }
 #' @export
 print.htmltools.tag.graph <- function(x, ...) {
@@ -310,14 +309,14 @@ print.htmltools.tag.graph <- function(x, ...) {
 format.htmltools.tag.graph <- function(x, ...) {
   stop(
     "`format.htmltools.tag.graph(x)` not allowed.\n",
-    "Please call `format()` the result of `$graph_as_tags()` or `$selected_as_tags()`"
+    "Please call `format()` the result of `$as_tags()`"
   )
 }
 #' @export
 as.character.htmltools.tag.graph <- function(x, ...) {
   stop(
     "`as.character.htmltools.tag.graph(x)` not allowed.\n",
-    "Please call `as.character()` the result of `$graph_as_tags()` or `$selected_as_tags()`"
+    "Please call `as.character()` the result of `$as_tags()`"
   )
 }
 
@@ -334,7 +333,7 @@ as.character.htmltools.tag.graph <- function(x, ...) {
 #' `tag_graph()` is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard [`tag`] objects. With `tag_graph()`, it is possible to find all `<span>` tags that match the css selector `div .inner span`, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to
 #'
 #' ```r
-#' tag_graph(ex_tags)$find("div .inner span")$parent()$parent()$add_class("custom-class")$graph_as_tags()
+#' tag_graph(ex_tags)$find("div .inner span")$parent()$parent()$add_class("custom-class")$as_tags(selected = FALSE)
 #' ```
 #'
 #' This style of alteration is not easily achieved when using typical "pass by value" R objects or standard tag objects.
@@ -343,7 +342,7 @@ as.character.htmltools.tag.graph <- function(x, ...) {
 #'
 #' ## Tag environments
 #'
-#' "Tag environments" are the building blocks to `tag_graph()`. When creating a `tag_graph()`, each tag object is converted to a tag environment. This conversion allows for element alterations to happen in place (pass by reference). Meaning that if a css class is added to each selected tag environment using `$add_class()` and the result of the method call is ignored, the selected tag environments in the tag graph will still contain the class addition.  The added class will exist when the tag graph is converted back to standard tags objects with `$graph_as_tags()` or `$selected_as_tags()`.
+#' "Tag environments" are the building blocks to `tag_graph()`. When creating a `tag_graph()`, each tag object is converted to a tag environment. This conversion allows for element alterations to happen in place (pass by reference). Meaning that if a css class is added to each selected tag environment using `$add_class()` and the result of the method call is ignored, the selected tag environments in the tag graph will still contain the class addition.  The added class will exist when the tag graph is converted back to standard tags objects with `$as_tags()`.
 #'
 #' Tag environments also contain an extra field, `.$parent`. The `.$parent` value contains their parent tag environment. The top level tags supplied to `tag_graph()` will also have a shared parent element. (The shared parent element will have a `NULL` `.$parent` value.) This allows for performing sibling alterations at the top level of the graph.
 #'
@@ -351,16 +350,16 @@ as.character.htmltools.tag.graph <- function(x, ...) {
 #'
 #' ## Tag graphs
 #'
-#' A `tag_graph()` behaves simliar to an R6 object (but a tag graph is not implemented with `R6`). The `tag_graph()`'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. `$selected()` or `$graph_as_tags()`.
+#' A `tag_graph()` behaves simliar to an R6 object (but a tag graph is not implemented with `R6`). The `tag_graph()`'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. `$selected()` or `$as_tags()`.
 #'
 #' Internally, two important pieces of information are maintained: the root element and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to `tag_graph(tag=)`. However, the selected elements are a list of tag environments that update for every `$find(css_selector)` call.  The selected elements are initialized to a list containing the `root` tag environment. All `tag_graph()` methods will act on the selected elements unless declared otherwise.
 #'
 #'
 #' @section Limitations:
 #'
-#' `tag_graph()`s can **not** be used directly within typical `tag` locations. An error should be thrown. Instead, please call `$selected_as_tags()` or `$graph_as_tags()` to retrieve the tag structures of the selected tag elements or root element respectively.
+#' `tag_graph()`s can **not** be used directly within typical `tag` locations. An error should be thrown. Instead, please call `$as_tags()` to retrieve the tag structures of the selected tag elements or root element respectively.
 #'
-#' @param tags Any standard tag object or `tagList()`. If a `list()` or `tagList()` is provided, a `tagList()` will be returned when calling `$graph_as_tags()`.
+#' @param tags Any standard tag object or `tagList()`. If a `list()` or `tagList()` is provided, a `tagList()` will be returned when calling `$as_tags()`.
 #' @return A `tag_graph()` object. The `tag` supplied will be considered the `root` object. At the time of initialization, the `root` is also considered the single selected item. If any selections are made, the selected elements will be updated.
 #' @md
 #' @export
@@ -593,17 +592,14 @@ tag_graph <- function(tags) {
 
         ## To tags
         #' ## Convert to tags
-        #' * `$graph_as_tags()`: Converts all root tag environments (and all of their children elements) back to standard tag objects. If there are more than one root tag elements, a [`tagList()`] will be returned, otherwise the single `tag()` will be return.
-        graph_as_tags = function() {
+        #' * `$as_tags(selected = TRUE)`: If `selected = TRUE`, then all previously found elements (and their decendents) will be converted to tags. If `selected = FALSE`, the top level tag elements (and their decendents) will be converted to standard tags. If there is more than one element being returned, a `tagList()` will be used to hold all of the objects.
+        as_tags = function(selected = TRUE) {
           rebuild()
-          tag_graph_graph_as_tags(root)
-        },
-        # = .html()
-        # Get the HTML contents of the first element in the set of matched elements or set the HTML contents of every matched element.
-        #' * `$selected_as_tags()`: Converts each selected tag environments (and all of their child elements) back to standard tag objects. A `tagList()` is returned, wrapping around the set of selected tags.
-        selected_as_tags = function() {
-          rebuild()
-          tag_graph_selected_as_tags(manually_selected())
+          if (isTRUE(selected)) {
+            tag_graph_selected_as_tags(manually_selected())
+          } else {
+            tag_graph_graph_as_tags(root)
+          }
         },
         ## end To tags
 

@@ -137,7 +137,7 @@ test_that("tag_graph()$find()", {
   x$find("span")
   expect_length(x$selected(), 2)
   expect_equal_tags(
-    x$selected_as_tags(),
+    x$as_tags(),
     tagList(span("a"), span("b"))
   )
 
@@ -172,7 +172,7 @@ test_that("tag_graph()$filter()", {
   expect_length(x$selected(), 1)
 
   # Compare to `"4"` as `flattenTags` calls `as.tags.default()` which calls `as.character()`
-  expect_equal_tags(x$selected_as_tags(), tagList(span("4")))
+  expect_equal_tags(x$as_tags(), tagList(span("4")))
 
 })
 
@@ -187,7 +187,7 @@ test_that("tag_graph()$children() & tag_graph()$parent()", {
   expect_length(x$selected(), 5)
 
   Map(
-    x$selected_as_tags(),
+    x$as_tags(),
     seq_len(5),
     f = function(s, i) {
       expect_equal(s$name, "span")
@@ -197,7 +197,7 @@ test_that("tag_graph()$children() & tag_graph()$parent()", {
 
   x$parent()
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$selected_as_tags(), tagList(x$graph_as_tags()))
+  expect_equal_tags(x$as_tags(), tagList(x$as_tags(selected = FALSE)))
 
 })
 
@@ -217,7 +217,7 @@ test_that("tag_graph()$parents()", {
   expect_length(x$selected(), 2)
 
   expect_equal_tags(
-    x$selected_as_tags(),
+    x$as_tags(),
     tagList(
       x_tags$children[[1]],
       x_tags
@@ -269,7 +269,7 @@ test_that("tag_graph()$add_class()", {
   x$find("div.inner")$add_class("test-class")
   expect_length(x$selected(), 1)
 
-  expect_equal(x$selected_as_tags()[[1]]$attribs$class, "inner test-class")
+  expect_equal(x$as_tags()[[1]]$attribs$class, "inner test-class")
 
 })
 
@@ -349,7 +349,7 @@ test_that("tag_graph()$append()", {
   newa <- span("a")
   x$append(newa)
   expect_equal_tags(
-    x$graph_as_tags(),
+    x$as_tags(selected = FALSE),
     tagList(
       x_tags,
       newa
@@ -361,7 +361,7 @@ test_that("tag_graph()$append()", {
   x$append(new1, new2)
 
   expect_equal_tags(
-    x$graph_as_tags(),
+    x$as_tags(selected = FALSE),
     tagList(
       x_tags,
       newa,
@@ -378,7 +378,7 @@ test_that("tag_graph()$prepend()", {
   newa <- span("a")
   x$prepend(newa)
   expect_equal_tags(
-    x$graph_as_tags(),
+    x$as_tags(selected = FALSE),
     tagList(
       newa,
       x_tags
@@ -390,7 +390,7 @@ test_that("tag_graph()$prepend()", {
   x$prepend(new1, new2)
 
   expect_equal_tags(
-    x$graph_as_tags(),
+    x$as_tags(selected = FALSE),
     tagList(
       new1, new2,
       newa,
@@ -415,7 +415,7 @@ test_that("tag_graph()$each()", {
   })
 
   expect_equal_tags(
-    x$graph_as_tags(),
+    x$as_tags(selected = FALSE),
     div(span("A"), h1("title"), span("B"))
   )
 })
