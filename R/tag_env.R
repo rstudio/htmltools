@@ -498,6 +498,23 @@ tag_graph <- function(tags) {
           # no need to rebuild(); already flattened in add attr function
           self
         },
+        #' * `$remove_attrs(attrs)`: Removes the provided attributes in each of the selected elements.
+        remove_attrs = function(attrs) {
+          rebuild()
+          tag_graph_remove_attrs(manually_selected(), attrs)
+          self
+        },
+        #' * `$empty_attrs()`: Removes all attributes in each of the selected elements.
+        empty_attrs = function() {
+          rebuild()
+          tag_graph_empty_attrs(manually_selected())
+          self
+        },
+        #' * `$has_attr(attr)`: Returns a vector whose values are whether the selected element contains the non-`NULL` attribute.
+        has_attr = function(attr) {
+          rebuild()
+          tag_graph_has_attr(manually_selected(), attr)
+        },
 
         #' ## Adjust child elements
         #' * `$append(...)`: Add all `...` objects as children **after** any existing children to the selected elements. Similar to [`tagAppendChildren()`]
@@ -747,6 +764,7 @@ tag_graph_walk <- selected_walk_gen(walk)
 # selected_walk_rev <- selected_walk_gen(walk_rev)
 selected_walk_i <- selected_walk_gen(walk_i)
 selected_walk_i_rev <- selected_walk_gen(walk_i_rev)
+tag_graph_lapply <- selected_walk_gen(lapply)
 
 
 # Perform `fn` on each el in els
@@ -807,6 +825,42 @@ tag_graph_prepend_children <- function(els, ...) {
   })
 }
 
+
+# Add attribute values
+tag_graph_add_attrs <- function(els, ...) {
+  tag_graph_walk(els, function(el) {
+    el <- tagAppendAttributes(el, ...)
+    el$attribs <- flattenTagAttribs(el$attribs)
+  })
+}
+# Remove attribute values
+tag_graph_remove_attrs <- function(els, attrs) {
+  attrs <- unlist(list2(attrs))
+  stopifnot(length(attrs) >= 1)
+  stopifnot(is.character(attrs))
+  tag_graph_walk(els, function(el) {
+    for (attr_val in attrs) {
+      el$attribs[[attr_val]] <- NULL
+    }
+  })
+}
+# Remove attribute values
+tag_graph_empty_attrs <- function(els) {
+  tag_graph_walk(els, function(el) {
+    el$attribs <- list()
+  })
+}
+# Check if els have attributes
+tag_graph_has_attr <- function(els, attr) {
+  attr <- unlist(list2(attr))[[1]]
+  stopifnot(length(attr) == 1)
+  stopifnot(is.character(attr))
+  unlist(
+    tag_graph_lapply(els, function(el) {
+      !is.null(el$attribs[[attr]])
+    })
+  )
+}
 
 
 get_css_class <- function(class) {

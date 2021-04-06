@@ -256,7 +256,7 @@ test_that("tag_graph()$siblings()", {
   expect_length(x$selected(), 4)
 })
 
-test_that("tag_graph()$add_class() (& tag_graph()$add_attrs())", {
+test_that("tag_graph()$add_class()", {
   x_tags <-
     div(class = "outer",
       div(class = "inner",
@@ -311,6 +311,36 @@ test_that("tag_graph()$has_class(), $toggle_class(), $remove_class()", {
 
 })
 
+
+test_that("tag_graph()$add_attrs(), $remove_attrs(), $empty_attrs(), $has_attr", {
+  x_tags <- tagList(
+      span(key = "value - a", "a"),
+      span(key = "value - b", "b"),
+      span(                   "c"),
+      span(                   "d"),
+      span(key = "value - e", "e")
+    )
+  x <- tag_graph(x_tags)
+
+  x$find("span")
+  expect_length(x$selected(), 5)
+  expect_equal(x$has_attr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
+
+  x$add_attrs(key2 = "val2", key3 = "val3")
+  expect_equal(x$has_attr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
+  expect_equal(x$has_attr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  expect_equal(x$has_attr("key3"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+
+  x$remove_attrs(c("key", "key3"))
+  expect_equal(x$has_attr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$has_attr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  expect_equal(x$has_attr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+
+  x$empty_attrs()
+  expect_equal(x$has_attr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$has_attr("key2"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$has_attr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+})
 
 test_that("tag_graph()$append()", {
   x_tags <- div()
