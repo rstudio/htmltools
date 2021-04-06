@@ -379,7 +379,12 @@ tag_graph <- function(tags) {
     }
     selected_env$data <- selected
   }
+  # get elements selected by the user; Also includes the default root element
   get_selected <- function() { selected_env$data }
+  # get elements selected by the user; Remove the root element
+  manually_selected <- function() {
+    tag_graph_selected(get_selected())
+  }
 
   # make sure all elements are tag envs
   rebuild <- function() {
@@ -397,7 +402,7 @@ tag_graph <- function(tags) {
         #'
         #' ## Select tags
         #' * `$find(css_selector)`: Find all tag elements matching the `css_selector` starting from each selected element. The selected elements will be updated with the found set of tag environment.
-        find = function(css_selector) {
+        find = function(css_selector, all = TRUE) {
           rebuild()
           set_selected(
             tag_graph_find(get_selected(), css_selector)
@@ -408,7 +413,7 @@ tag_graph <- function(tags) {
         filter = function(fn) {
           rebuild()
           set_selected(
-            tag_graph_find_filter(get_selected(), fn)
+            tag_graph_find_filter(manually_selected(), fn)
           )
           rebuild() # the fn could have altered the content
           self
@@ -417,7 +422,7 @@ tag_graph <- function(tags) {
         children = function() {
           rebuild()
           set_selected(
-            tag_graph_find_children(get_selected())
+            tag_graph_find_children(manually_selected())
           )
           self
         },
@@ -425,7 +430,7 @@ tag_graph <- function(tags) {
         parent = function() {
           rebuild()
           set_selected(
-            tag_graph_find_parent(get_selected())
+            tag_graph_find_parent(manually_selected())
           )
           self
         },
@@ -433,7 +438,7 @@ tag_graph <- function(tags) {
         parents = function() {
           rebuild()
           set_selected(
-            tag_graph_find_parents(get_selected())
+            tag_graph_find_parents(manually_selected())
           )
           self
         },
@@ -441,7 +446,7 @@ tag_graph <- function(tags) {
         siblings = function() {
           rebuild()
           set_selected(
-            tag_graph_find_siblings(get_selected())
+            tag_graph_find_siblings(manually_selected())
           )
           self
         },
@@ -465,7 +470,7 @@ tag_graph <- function(tags) {
         #' * `$add_class(class)`: Apps class(es) to each of the the selected elements.
         add_class = function(class) {
           rebuild()
-          tag_graph_add_class(get_selected(), class)
+          tag_graph_add_class(manually_selected(), class)
           self
         },
 
@@ -488,7 +493,8 @@ tag_graph <- function(tags) {
         #' * `$add_attrs(...)`: Add element attributes to all selected children. Similar to [`tagAppendAttributes()`].
         add_attrs = function(...) {
           rebuild()
-          tag_graph_add_attrs(get_selected(), ...)
+          tag_graph_add_attrs(manually_selected(), ...)
+          # no need to rebuild(); already flattened in add attr function
           self
         },
 
@@ -496,21 +502,21 @@ tag_graph <- function(tags) {
         #' * `$append(...)`: Add all `...` objects as children **after** any existing children to the selected elements. Similar to [`tagAppendChildren()`]
         append = function(...) {
           rebuild()
-          tag_graph_append_children(get_selected(), ...)
+          tag_graph_append_children(manually_selected(), ...)
           rebuild()
           self
         },
         #' * `$prepend(...)`: Add all `...` objects as children **before** any existing children to the selected elements. A variation of [`tagAppendChildren()`]
         prepend = function(...) {
           rebuild()
-          tag_graph_prepend_children(get_selected(), ...)
+          tag_graph_prepend_children(manually_selected(), ...)
           rebuild()
           self
         },
         #' * `$empty(...)`: Remove all children in the selected elements. Use this method before calling `$append(...)` to replace all selected elements' children.
         empty = function() {
           rebuild()
-          tag_graph_empty_children(get_selected())
+          tag_graph_empty_children(manually_selected())
           # no need to rebuild
           self
         },
@@ -521,7 +527,7 @@ tag_graph <- function(tags) {
         # Remove the set of matched elements from the DOM.
         # remove = function() {
         #   rebuild()
-        #   tag_graph_remove(get_selected())
+        #   tag_graph_remove(manually_selected())
         #   rebuild()
         #   self
         # },
@@ -538,7 +544,7 @@ tag_graph <- function(tags) {
         #' * `$each(fn)`: Perform function `fn` on each of the selected elements. `fn` should accept two arguments: a selected element and the selected element's position within the selected elements. This argument order is different than jQuery's `$().each()` as there is no concept of a `this` object inside the function execution. To stay consistent with other methods, the each of the selected tag environments will be given first, followed by the index position. Any alterations to the provided tag environments will persist in calling tag graph.
         each = function(fn) {
           rebuild()
-          tag_graph_each(get_selected(), fn)
+          tag_graph_each(manually_selected(), fn)
           rebuild()
           self
         },
@@ -558,12 +564,12 @@ tag_graph <- function(tags) {
         #' * `$selected()`: Returns a list of selected tag environments.
         selected = function() {
           rebuild()
-          tag_graph_selected(get_selected())
+          manually_selected()
         },
         #' * `$get(position)`: Returns the selected tag element at the position `position`.
         get = function(position) {
           rebuild()
-          tag_graph_get(get_selected(), position)
+          tag_graph_get(manually_selected(), position)
         },
         ## end Tag Graph fns
 
@@ -579,7 +585,7 @@ tag_graph <- function(tags) {
         #' * `$selected_as_tags()`: Converts each selected tag environments (and all of their child elements) back to standard tag objects. A `tagList()` is returned, wrapping around the set of selected tags.
         selected_as_tags = function() {
           rebuild()
-          tag_graph_selected_as_tags(get_selected())
+          tag_graph_selected_as_tags(manually_selected())
         },
         ## end To tags
 
@@ -663,10 +669,6 @@ tag_graph_graph_as_tags <- function(root) {
 }
 
 tag_graph_selected_as_tags <- function(selected) {
-  # if it is the root element, get it's children instead
-  if (length(selected) == 1 && is_root_tag(selected[[1]])) {
-    selected <- selected$children
-  }
   # return as tagList
   do.call(tagList, lapply(selected, tag_env_to_tags))
 }
