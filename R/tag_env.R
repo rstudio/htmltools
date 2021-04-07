@@ -751,6 +751,7 @@ tag_graph_verify_selected <- function(els) {
 
 # Return function that will verify elements before performing `func(els, fn)`
 selected_walk_gen <- function(func) {
+  force(func)
   function(els, fn) {
     tag_graph_verify_selected(els)
     stopifnot(is.function(fn))
