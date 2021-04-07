@@ -149,7 +149,7 @@ safe_list_2_env <- function(x, new_class = NULL) {
   ret <- list2env(x_list, new.env(parent = emptyenv()))
 
   attr_vals <- safe_attr_values(x_list)
-  Map(names(attr_vals), attr_vals, f = function(attr_name, attr_value) {
+  walk2(names(attr_vals), attr_vals, function(attr_name, attr_value) {
     attr(ret, attr_name) <<- attr_value
   })
 
@@ -163,7 +163,7 @@ safe_env_2_list <- function(x, old_class = NULL) {
   ret <- as.list.environment(x_env)
 
   attr_vals <- safe_attr_values(x_env)
-  Map(names(attr_vals), attr_vals, f = function(attr_name, attr_value) {
+  walk2(names(attr_vals), attr_vals, function(attr_name, attr_value) {
     attr(ret, attr_name) <<- attr_value
   })
 
@@ -731,6 +731,15 @@ walk <- function(.x, .f, ...) {
   }
   NULL
 }
+walk2 <- function(.x, .y, .f, ...) {
+  if (length(.x) != length(.y)) {
+    stop(".x and .y must be the same length.")
+  }
+  for (i in seq_along(.x)) {
+    .f(.x[[i]], .y[[i]], ...)
+  }
+  NULL
+}
 # Call `.f(x[[i]])` in reverse order
 # walk_rev <- function(.x, .f, ...) {
 #   for (i in rev(seq_along(.x))) {
@@ -1215,7 +1224,7 @@ tag_env_explain <- function(x, ..., before = "", max = Inf, seen_map = envir_map
   } else if (inherits(x, "htmltools.tag.env")) {
     x_list <- as.list.environment(x)
     cat0(envir_key_or_stop(x))
-    Map(x_list, rlang::names2(x_list), f = function(value, key) {
+    walk2(x_list, rlang::names2(x_list), function(value, key) {
       cat0(key, if (max > 1) ":")
       tag_env_explain(value, before = paste0(before, ". "), seen_map = seen_map, max = max - 1)
     })
@@ -1224,7 +1233,7 @@ tag_env_explain <- function(x, ..., before = "", max = Inf, seen_map = envir_map
       if (length(x) == 0) {
         cat0("list()")
       }
-      Map(x, rlang::names2(x), f = function(value, key) {
+      walk2(x, rlang::names2(x), function(value, key) {
 
         pre <-
           if (key == "") {
