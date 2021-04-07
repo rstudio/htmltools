@@ -521,21 +521,21 @@ tag_graph <- function(tags) {
         #' * `$append(...)`: Add all `...` objects as children **after** any existing children to the selected elements. Similar to [`tagAppendChildren()`]
         append = function(...) {
           rebuild()
-          tag_graph_append_children(manually_selected(), ...)
+          tag_graph_append_children(get_selected(), ...)
           rebuild()
           self
         },
         #' * `$prepend(...)`: Add all `...` objects as children **before** any existing children to the selected elements. A variation of [`tagAppendChildren()`]
         prepend = function(...) {
           rebuild()
-          tag_graph_prepend_children(manually_selected(), ...)
+          tag_graph_prepend_children(get_selected(), ...)
           rebuild()
           self
         },
         #' * `$empty(...)`: Remove all children in the selected elements. Use this method before calling `$append(...)` to replace all selected elements' children.
         empty = function() {
           rebuild()
-          tag_graph_empty_children(manually_selected())
+          tag_graph_empty_children(get_selected())
           # no need to rebuild
           self
         },
