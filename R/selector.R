@@ -200,8 +200,8 @@ str_trim <- function(text, side = "both") {
   text
 }
 
-str_detect <- function(x, pattern, ...) {
-  grepl(pattern, x, ...)
+str_detect <- function(text, pattern, fixed = FALSE) {
+  grepl(pattern = pattern, x = text, perl = !fixed, fixed = fixed)
 }
 
 # finds first, NOT all
