@@ -160,7 +160,7 @@ safe_list_2_env <- function(x, new_class = NULL) {
 # Convert an environment to a list and keep class and attribute information
 safe_env_2_list <- function(x, old_class = NULL) {
   x_env <- x
-  ret <- as.list.environment(x_env)
+  ret <- as.list.environment(x_env, all.names = TRUE)
 
   attr_vals <- safe_attr_values(x_env)
   walk2(names(attr_vals), attr_vals, function(attr_name, attr_value) {
@@ -1222,7 +1222,7 @@ tag_env_explain <- function(x, ..., before = "", max = Inf, seen_map = envir_map
   if (is.function(x)) {
     cat0("function(){}")
   } else if (inherits(x, "htmltools.tag.env")) {
-    x_list <- as.list.environment(x)
+    x_list <- as.list.environment(x, all.names = TRUE)
     cat0(envir_key_or_stop(x))
     walk2(x_list, rlang::names2(x_list), function(value, key) {
       cat0(key, if (max > 1) ":")
