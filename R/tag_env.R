@@ -97,9 +97,7 @@ envir_key_or_stop <- function(x) {
 envir_map <- function() {
   map <- fastmap()
   list(
-    keys = function() {
-      map$keys()
-    },
+    keys = map$keys,
     as_list = function() {
       unname(map$as_list())
     },
