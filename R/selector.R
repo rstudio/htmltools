@@ -167,11 +167,37 @@ print.shiny_selector_list <- function(x, ...) {
 
 
 
-str_trim <- function(x) {
-  sub(
-    "\\s+$", "",
-    sub("^\\s+", "", x)
-  )
+str_replace <- function(text, pattern, replacement) {
+  sub(pattern = pattern, replacement = replacement, x = text, perl = TRUE)
+}
+
+str_replace_all <- function(text, pattern, replacement) {
+  gsub(pattern = pattern, replacement = replacement, x = text, perl = TRUE)
+}
+
+str_remove <- function(x, pattern, ...) {
+  str_replace(x, pattern, "", ...)
+}
+str_remove_all <- function(x, pattern, ...) {
+  str_replace_all(x, pattern, "", ...)
+}
+
+trim_leading <- function(text) {
+  str_remove_all(text, pattern = "^\\s+")
+}
+
+trim_trailing <- function(text) {
+  str_remove_all(text, pattern = "\\s+$")
+}
+
+str_trim <- function(text, side = "both") {
+  if (side == "both" || side == "left") {
+    text <- trim_leading(text)
+  }
+  if (side == "both" || side == "right") {
+    text <- trim_trailing(text)
+  }
+  text
 }
 
 str_detect <- function(x, pattern, ...) {
@@ -200,32 +226,6 @@ str_match_all <- function(x, pattern, ...) {
   regmatches(x, reg_info)[[1]]
 }
 
-str_replace <- function(x, pattern, value, ...) {
-  reg_info <- regexpr(pattern, x, ...)
-  if (length(reg_info) == 1 && reg_info == -1) {
-    return(x)
-  }
-
-  regmatches(x, reg_info) <- value
-  x
-}
-
-str_replace_all <- function(x, pattern, value, ...) {
-  reg_info <- gregexpr(pattern, x, ...)
-  if (length(reg_info[[1]]) == 1 && reg_info[[1]] == -1) {
-    return(x)
-  }
-
-  regmatches(x, reg_info) <- value
-  x
-}
-
-str_remove <- function(x, pattern, ...) {
-  str_replace(x, pattern, "", ...)
-}
-str_remove_all <- function(x, pattern, ...) {
-  str_replace_all(x, pattern, "", ...)
-}
 
 
 is_html <- function(x) {
