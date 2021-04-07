@@ -7,7 +7,7 @@
 tag_graph(tags)
 }
 \arguments{
-\item{tags}{Any standard tag object or \code{tagList()}. If a \code{list()} or \code{tagList()} is provided, a \code{tagList()} will be returned when calling \verb{$graph_as_tags()}.}
+\item{tags}{Any standard tag object or \code{tagList()}. If a \code{list()} or \code{tagList()} is provided, a \code{tagList()} will be returned when calling \verb{$as_tags()}.}
 }
 \value{
 A \code{tag_graph()} object. The \code{tag} supplied will be considered the \code{root} object. At the time of initialization, the \code{root} is also considered the single selected item. If any selections are made, the selected elements will be updated.
@@ -20,7 +20,7 @@ This function is VERY experimental. The result api will most likely change. \str
 
 \code{tag_graph()} is modeled after \href{jquery.com}{\code{jQuery}}'s \href{https://api.jquery.com/category/manipulation/}{DOM maninipulation methods} and \href{https://api.jquery.com/category/traversing/tree-traversal/}{Tree Traversal} categories with some alterations. One of the main differences is that there is no centralized \code{window.document} object to use or reference. Instead, only the original tags provided to \code{tag_graph(tags=)} are fully search-able.
 
-\code{tag_graph()} is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard \code{\link{tag}} objects. With \code{tag_graph()}, it is possible to find all \verb{<span>} tags that match the css selector \verb{div .inner span}, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r">}}\preformatted{tag_graph(ex_tags)$find("div .inner span")$parent()$parent()$add_class("custom-class")$graph_as_tags()
+\code{tag_graph()} is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard \code{\link{tag}} objects. With \code{tag_graph()}, it is possible to find all \verb{<span>} tags that match the css selector \verb{div .inner span}, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r">}}\preformatted{tag_graph(ex_tags)$find("div .inner span")$parent()$parent()$add_class("custom-class")$as_tags(selected = FALSE)
 }\if{html}{\out{</div>}}
 
 This style of alteration is not easily achieved when using typical "pass by value" R objects or standard tag objects.
@@ -28,7 +28,7 @@ This style of alteration is not easily achieved when using typical "pass by valu
 \section{Tag graph components}{
 \subsection{Tag environments}{
 
-"Tag environments" are the building blocks to \code{tag_graph()}. When creating a \code{tag_graph()}, each tag object is converted to a tag environment. This conversion allows for element alterations to happen in place (pass by reference). Meaning that if a css class is added to each selected tag environment using \verb{$add_class()} and the result of the method call is ignored, the selected tag environments in the tag graph will still contain the class addition.  The added class will exist when the tag graph is converted back to standard tags objects with \verb{$graph_as_tags()} or \verb{$selected_as_tags()}.
+"Tag environments" are the building blocks to \code{tag_graph()}. When creating a \code{tag_graph()}, each tag object is converted to a tag environment. This conversion allows for element alterations to happen in place (pass by reference). Meaning that if a css class is added to each selected tag environment using \verb{$add_class()} and the result of the method call is ignored, the selected tag environments in the tag graph will still contain the class addition.  The added class will exist when the tag graph is converted back to standard tags objects with \verb{$as_tags()}.
 
 Tag environments also contain an extra field, \code{.$parent}. The \code{.$parent} value contains their parent tag environment. The top level tags supplied to \code{tag_graph()} will also have a shared parent element. (The shared parent element will have a \code{NULL} \code{.$parent} value.) This allows for performing sibling alterations at the top level of the graph.
 
@@ -37,7 +37,7 @@ The set of tag environments in a pointing to each other within a tag graph can b
 
 \subsection{Tag graphs}{
 
-A \code{tag_graph()} behaves simliar to an R6 object (but a tag graph is not implemented with \code{R6}). The \code{tag_graph()}'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. \verb{$selected()} or \verb{$graph_as_tags()}.
+A \code{tag_graph()} behaves simliar to an R6 object (but a tag graph is not implemented with \code{R6}). The \code{tag_graph()}'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. \verb{$selected()} or \verb{$as_tags()}.
 
 Internally, two important pieces of information are maintained: the root element and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to \code{tag_graph(tag=)}. However, the selected elements are a list of tag environments that update for every \verb{$find(css_selector)} call.  The selected elements are initialized to a list containing the \code{root} tag environment. All \code{tag_graph()} methods will act on the selected elements unless declared otherwise.
 }
@@ -60,7 +60,13 @@ All methods return the altered tag graph object unless otherwise stated.
 \subsection{Update selected tag info}{
 \itemize{
 \item \verb{$add_class(class)}: Apps class(es) to each of the the selected elements.
-\item \verb{$add_attrs(...)}: Add element attributes to all selected children. Similar to \code{\link[=tagAppendAttributes]{tagAppendAttributes()}}.
+\item \verb{$remove_class(class)}: Removes a set of class values from all of the selected elements.
+\item \verb{$has_class(class)}: Determine whether the selected elements have a given class. Returns a vector of logical values.
+\item \verb{$toggle_class(class)}: If the a class value is missing, add it. If a  class value already exists, remove it.
+\item \verb{$add_attrs(...)}: Add named attributes to all selected children. Similar to \code{\link[=tagAppendAttributes]{tagAppendAttributes()}}.
+\item \verb{$remove_attrs(attrs)}: Removes the provided attributes in each of the selected elements.
+\item \verb{$empty_attrs()}: Removes all attributes in each of the selected elements.
+\item \verb{$has_attr(attr)}: Returns a vector whose values are whether the selected element contains the non-\code{NULL} attribute.
 }
 }
 
@@ -89,8 +95,7 @@ All methods return the altered tag graph object unless otherwise stated.
 
 \subsection{Convert to tags}{
 \itemize{
-\item \verb{$graph_as_tags()}: Converts all root tag environments (and all of their children elements) back to standard tag objects. If there are more than one root tag elements, a \code{\link[=tagList]{tagList()}} will be returned, otherwise the single \code{tag()} will be return.
-\item \verb{$selected_as_tags()}: Converts each selected tag environments (and all of their child elements) back to standard tag objects. A \code{tagList()} is returned, wrapping around the set of selected tags.
+\item \verb{$as_tags(selected = TRUE)}: If \code{selected = TRUE}, then all previously found elements (and their decendents) will be converted to tags. If \code{selected = FALSE}, the top level tag elements (and their decendents) will be converted to standard tags. If there is more than one element being returned, a \code{tagList()} will be used to hold all of the objects.
 Internal methods
 \item \verb{$print()}: Prints the tag graph. Called by \code{print.htmltools.tag_graph()}
 }
@@ -100,6 +105,6 @@ Internal methods
 \section{Limitations}{
 
 
-\code{tag_graph()}s can \strong{not} be used directly within typical \code{tag} locations. An error should be thrown. Instead, please call \verb{$selected_as_tags()} or \verb{$graph_as_tags()} to retrieve the tag structures of the selected tag elements or root element respectively.
+\code{tag_graph()}s can \strong{not} be used directly within typical \code{tag} locations. An error should be thrown. Instead, please call \verb{$as_tags()} to retrieve the tag structures of the selected tag elements or root element respectively.
 }
 
