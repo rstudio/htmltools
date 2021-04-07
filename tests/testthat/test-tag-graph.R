@@ -149,6 +149,34 @@ test_that("tag_graph()$find()", {
   x$find("div")
   expect_length(x$selected(), 2)
 
+  x <- tag_graph(
+    tagList(
+      div(a(span(p("text1")))),
+      div(a(p("text2")))
+    )
+  )
+  x$find("a")
+  expect_length(x$selected(), 2)
+  x$reset()
+
+  x$find("a > p")
+  expect_length(x$selected(), 1)
+  expect_equal_tags(x$as_tags(), tagList(p("text2")))
+  x$reset()
+
+  x$find("a > > p")
+  expect_length(x$selected(), 1)
+  expect_equal_tags(x$as_tags(), tagList(p("text1")))
+  x$reset()
+
+  x$find("div > *")
+  expect_length(x$selected(), 2)
+  expect_equal_tags(x$as_tags(), tagList(a(span(p("text1"))), a(p("text2"))))
+  x$reset()
+
+  x$find("div>>p")
+  expect_length(x$selected(), 1)
+  expect_equal_tags(x$as_tags(), tagList(p("text2")))
 })
 
 test_that("tag_graph()$filter()", {
@@ -198,8 +226,9 @@ test_that("tag_graph()$children() & tag_graph()$parent()", {
   x$parent()
   expect_length(x$selected(), 1)
   expect_equal_tags(x$as_tags(), tagList(x$as_tags(selected = FALSE)))
-
 })
+
+
 
 
 test_that("tag_graph()$parents()", {

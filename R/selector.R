@@ -5,6 +5,10 @@
 #> CombinedSelector[CombinedSelector[Class[Hash[Element[*]#a].warning] > Negation[Class[Element[b].mine]:not(Class[Element[*].theres])]] <followed> Element[d]]
 ## ^^ R6 output
 
+SELECTOR_EVERYTHING <- "everything"
+SELECTOR_CHILD <- "child"
+SELECTOR_REGULAR <- "regular"
+
 # only handles id and classes
 as_selector <- function(selector) {
   if (inherits(selector, "shiny_selector") || inherits(selector, "shiny_selector_list")) {
@@ -12,7 +16,7 @@ as_selector <- function(selector) {
   }
 
   # make sure it's a trimmed string
-  selector <- str_trim(selector)
+  selector <- str_trim(paste0(selector, collapse = " "))
 
   # yell if there is a comma
   if (str_detect(selector, ",", fixed = TRUE)) {
@@ -23,30 +27,60 @@ as_selector <- function(selector) {
     stop("Do not know how to handle `[` in selector values")
   }
 
+  # yell if there is a `:`
+  if (str_detect(selector, ":", fixed = TRUE)) {
+    stop("Do not know how to handle special pseudo classes like `:first-child` or `:not()` in selector values")
+  }
+
   # if it contains multiple elements, recurse
   if (str_detect(selector, "* ", fixed = TRUE)) {
     # we already match on all elements. No need to know about this selector
-    selector <- str_remove(selector, "* ", fixed = TRUE)
+    warning("Removing `* ` from selector. ")
+    selector <- str_remove_all(selector, "* ", fixed = TRUE)
   }
-  if (str_detect(selector, " ")) {
+
+  # Check here to avoid inf recursion
+  if (selector != ">") {
+    # If there is a `>`, pad it with spaces
+    if (str_detect(selector, "(^>)|(>$)")) {
+      stop(
+        "Direct children selector, `>`, must not be the first element or last element",
+        " in a css selector. Please add more selector information, such as `*`."
+      )
+    }
+    while(str_detect(selector, ">\\s*>")) {
+      # If there are any `>>`, replace them with `> * >`
+      selector <- str_replace_all(selector, ">\\s*>", "> * >")
+    }
+
+    # Pad `>` in selector. Extra spaces will be removed.
+    # Prevents `a>b>c` which should be `a > b > c`
+    # Do this before splitting by `\s+`
+    selector <- str_replace_all(selector, ">", " > ", fixed = TRUE)
+  }
+
+  # Split into a selector list and recurse?
+  if (str_detect(selector, "\\s")) {
     selector_items <- lapply(strsplit(selector, "\\s+")[[1]], as_selector)
     selector_list <- structure(class = "shiny_selector_list", selector_items)
     return(selector_list)
   }
 
-  if (str_detect(selector, ":", fixed = TRUE)) {
-    stop("Do not know how to handle special pseudo classes like `:first-child` or `:text` in selector values")
-  }
-
   # https://www.w3.org/TR/selectors-3/#selectors
 
-  match_everything <- isTRUE(all.equal(selector, "*"))
-
+  type <- NULL
   element <- NULL
   id <- NULL
   classes <- NULL
+  direct <-
 
-  if (!match_everything) {
+  if (isTRUE(selector == "*")) {
+    type <- SELECTOR_EVERYTHING
+  } else if (isTRUE(selector == ">")) {
+    type <- SELECTOR_CHILD
+  } else {
+    type <- SELECTOR_REGULAR
+
     ## Not needed as the regex values below work around this.
     # # if there is more than a `*`, such as `*.warning`, treat as `.warning`
     # if (str_detect(selector, "^\\*"))
@@ -84,7 +118,7 @@ as_selector <- function(selector) {
     element = element,
     id = id,
     classes = classes,
-    match_everything = match_everything
+    type = type
   ))
 }
 
@@ -94,17 +128,26 @@ as_selector_list <- function(selector) {
   if (inherits(selector, "shiny_selector")) {
     selector <- structure(class = "shiny_selector_list", list(selector))
   }
+  if (length(selector) == 1) {
+    if (selector[[1]]$type == SELECTOR_CHILD) {
+      stop(
+        "Direct children selector, `>`, must not be the only element in a css selector.\n",
+        "Please add more selector information, such as `div > span`."
+      )
+    }
+  }
+
 
   selector
 }
 
 #' @export
 format.shiny_selector <- function(x, ...) {
-  if (x$match_everything) {
-    paste0("*")
-  } else {
+  switch(x$type,
+    "everything" = "*",
+    "child" = ">",
     paste0(x$element, if (!is.null(x$id)) paste0("#", x$id), if (!is.null(x$classes)) paste0(".", x$classes, collapse = ""))
-  }
+  )
 }
 #' @export
 format.shiny_selector_list <- function(x, ...) {
@@ -167,8 +210,21 @@ str_replace <- function(x, pattern, value, ...) {
   x
 }
 
+str_replace_all <- function(x, pattern, value, ...) {
+  reg_info <- gregexpr(pattern, x, ...)
+  if (length(reg_info[[1]]) == 1 && reg_info[[1]] == -1) {
+    return(x)
+  }
+
+  regmatches(x, reg_info) <- value
+  x
+}
+
 str_remove <- function(x, pattern, ...) {
   str_replace(x, pattern, "", ...)
+}
+str_remove_all <- function(x, pattern, ...) {
+  str_replace_all(x, pattern, "", ...)
 }
 
 

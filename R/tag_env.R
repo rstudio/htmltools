@@ -1,10 +1,12 @@
 #' @import fastmap
 
 # TODO-barret
-# * Implement `>` in css selector
 # * Describe why using `props` and not `attr`
 #    * Skipping. The htmltools package has no concept of props. This would only create confusion.
 # * Remove obviously dead code
+# * Change name to `tagQuery`; Camelcase all the things; :-(
+# * Implement `tag_graph_find(css, all = FALSE)` which finds the first element and stops
+
 
 # TODO-barret followup PR
 # * onRender(x, fn) - tagFunction(x, fn)
@@ -1035,20 +1037,26 @@ tag_graph_find <- function(els, selector) {
 
 # Recursive function to find all elements that match a selector
 # If a match is found, call `fn(matched_el)`
-tag_graph_find_ <- function(el, selector, fn) {
+tag_graph_find_ <- function(el, selector, fn, is_direct_child = FALSE) {
 
   if (isTagEnv(el)) {
-    # If there are children and remaining selectors,
-    # Recurse through without matching
-    if (length(selector) > 0 && length(el$children) > 0) {
-      walk(el$children, tag_graph_find_, fn = fn, selector = selector)
-    }
-
     # Grab the first element
     cur_selector <- selector[[1]]
 
+    # Get the current selection type
+    cur_type <- cur_selector$type %||% stop("No `$type` found for css selector")
+
+    # If the selector wants a direct child,
+    # recall the _find_ function with `is_direct_child = TRUE`
+    # This will prevent from traversing onto grandchildren without matching the child first
+    if (cur_type == SELECTOR_CHILD) {
+      return(
+        tag_graph_find_(el, selector[-1], fn = fn, is_direct_child = TRUE)
+      )
+    }
+
     is_match <-
-      cur_selector$match_everything ||
+      cur_type == SELECTOR_EVERYTHING ||
       local({
         # match on element
         if (!is.null(cur_selector$element)) {
@@ -1082,30 +1090,54 @@ tag_graph_find_ <- function(el, selector, fn) {
         TRUE
       })
 
+
     # If it was a match
     if (is_match) {
       # Remove first element while maintaining class info
-      selector[[1]] <- NULL
+      child_selector <- selector
+      child_selector[[1]] <- NULL
 
       # If there are children and remaining selectors, recurse through
-      if (length(selector) > 0 && length(el$children) > 0) {
-        walk(el$children, tag_graph_find_, fn = fn, selector = selector)
+      if (
+        length(el$children) > 0 &&
+        length(child_selector) > 0
+      ) {
+        walk(
+          el$children,
+          tag_graph_find_,
+          fn = fn,
+          selector = child_selector,
+          is_direct_child = FALSE
+        )
       }
 
       if (
         # it is a "leaf" match
-        length(selector) == 0 ||
-        # or should match everything
-        cur_selector$match_everything
+        length(child_selector) == 0
       ) {
         # run method it
         fn(el)
       }
     }
 
+    # If we can traverse to non-direct children...
+    if (!is_direct_child) {
+      # If there are children and remaining selectors,
+      # Recurse through without matching
+      # (Only allowed if `>` is not found)
+      if (length(selector) > 0 && length(el$children) > 0) {
+        walk(
+          el$children,
+          tag_graph_find_,
+          fn = fn,
+          selector = selector,
+          is_direct_child = FALSE
+        )
+      }
+    }
   } else if (is.list(el)) {
     # For each item in the list like object, recurse through
-    walk(el, tag_graph_find_, fn = fn, selector = selector)
+    walk(el, tag_graph_find_, fn = fn, selector = selector, is_direct_child = is_direct_child)
   } else if (is.atomic(el) || is.function(el)) {
     # Can not match on atomics or functions
     return()

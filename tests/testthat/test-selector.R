@@ -41,10 +41,16 @@ test_that("* checks", {
 })
 
 
-test_that("* checks", {
-  expect_equal(format(as_selector(" * ")), "*")
-  expect_equal(format(as_selector(" *.class-name")), ".class-name")
-  expect_s3_class(as_selector(" * "), "shiny_selector")
+test_that("> checks", {
+  expect_error(as_selector("> div"), "first element")
+  expect_error(as_selector("div >"), "last element")
+  expect_error(as_selector_list("> div"), "first element")
+  expect_error(as_selector_list("div >"), "last element")
+
+  expect_error(as_selector_list(">"), "only element")
+
+  expect_equal(format(as_selector("div>span")), "div > span")
+  expect_equal(format(as_selector("div>>span")), "div > * > span")
 })
 
 
