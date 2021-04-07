@@ -218,7 +218,9 @@ str_match_first <- function(x, pattern, ...) {
 
 # return a vector of matches or NULL
 str_match_all <- function(x, pattern, ...) {
-  stopifnot(length(x) == 1)
+  if (length(x) != 1) {
+    stop("`x` must have a length of 1")
+  }
   reg_info <- gregexpr(pattern, x, ...)
   first <- reg_info[[1]]
   if (length(first) == 1 && first == -1) {

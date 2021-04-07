@@ -372,7 +372,9 @@ tag_graph <- function(tags) {
   selected_env <- new.env(parent = emptyenv())
   selected_env$data <- tag_graph_find_reset(root)
   set_selected <- function(selected, filter_root = TRUE) {
-    stopifnot(is.list(selected))
+    if (!is.list(selected)) {
+      stop("`selected` must be a `list()`")
+    }
     if (filter_root) {
       selected <- Filter(selected, f = function(s) {
         !is_root_tag(s)
@@ -620,14 +622,27 @@ tag_graph <- function(tags) {
 
 
 validate_position <- function(position, selected) {
-  stopifnot(is.numeric(position))
-  stopifnot(length(position) == 1)
-  stopifnot(position > 0)
-  stopifnot(position <= length(selected))
+  if (!is.numeric(position)) {
+    stop("`position` must be a numeric value")
+  }
+  if (length(position) != 1) {
+    stop("`position` must have a length equal to 1")
+  }
+  if (position <= 0) {
+    stop("`position` must be greater than 0")
+  }
+  if (position > length(selected)) {
+    stop(
+      "`position` must be less than or equal to the length of the selected elements: ",
+      length(selected)
+    )
+  }
 }
 
 validate_fn_can_iterate <- function(fn) {
-  stopifnot(is.function(fn))
+  if (!is.function(fn)) {
+    stop("`fn` must be a function")
+  }
   fn_formals <- formals(fn)
   if (! ("..." %in% names(fn_formals))) {
     if (length(fn_formals) < 2) {
@@ -741,7 +756,9 @@ walk_i_rev <- function(.x, .f, ...) {
 
 # Make sure each item in list is a tag env
 tag_graph_verify_selected <- function(els) {
-  stopifnot(is.list(els))
+  if (!is.list(els)) {
+    stop("A list must be supplied")
+  }
   walk_i(els, function(el, i) {
     if (!isTagEnv(el)) {
       stop("Object in position `", i, "` is not a tag environment")
@@ -754,7 +771,9 @@ selected_walk_gen <- function(func) {
   force(func)
   function(els, fn) {
     tag_graph_verify_selected(els)
-    stopifnot(is.function(fn))
+    if (!is.function(fn)) {
+      stop("`fn` must be a function")
+    }
 
     func(els, fn)
   }
@@ -835,8 +854,10 @@ tag_graph_add_attrs <- function(els, ...) {
 # Remove attribute values
 tag_graph_remove_attrs <- function(els, attrs) {
   attrs <- unlist(list2(attrs))
-  stopifnot(length(attrs) >= 1)
-  stopifnot(is.character(attrs))
+  if (length(attrs) < 1) return()
+  if (!is.character(attrs)) {
+    stop("`attrs` must be a charcter vector of attributes to remove")
+  }
   tag_graph_walk(els, function(el) {
     for (attr_val in attrs) {
       el$attribs[[attr_val]] <- NULL
@@ -852,8 +873,9 @@ tag_graph_empty_attrs <- function(els) {
 # Check if els have attributes
 tag_graph_has_attr <- function(els, attr) {
   attr <- unlist(list2(attr))[[1]]
-  stopifnot(length(attr) == 1)
-  stopifnot(is.character(attr))
+  if (length(attr) != 1 || !is.character(attr)) {
+    stop("`attr` must be a single character value")
+  }
   unlist(
     tag_graph_lapply(els, function(el) {
       !is.null(el$attribs[[attr]])
@@ -864,11 +886,15 @@ tag_graph_has_attr <- function(els, attr) {
 
 get_css_class <- function(class) {
   class <- unlist(list2(class))
-  stopifnot(length(class) >= 1)
-  stopifnot(is.character(class))
+  if (length(class) == 0 || !is.character(class)) {
+    stop("`class` must resolve to a character value with a length of at least 1")
+  }
   split_css_class(class)
 }
 split_css_class <- function(class) {
+  if (length(class) > 1) {
+    class <- paste0(class, collapse = " ")
+  }
   strsplit(class, " ")[[1]]
 }
 join_css_class <- function(classes) {
