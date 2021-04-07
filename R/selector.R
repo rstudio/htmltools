@@ -72,7 +72,6 @@ as_selector <- function(selector) {
   element <- NULL
   id <- NULL
   classes <- NULL
-  direct <-
 
   if (isTRUE(selector == "*")) {
     type <- SELECTOR_EVERYTHING
@@ -109,6 +108,9 @@ as_selector <- function(selector) {
     }
 
     classes <- str_remove(str_match_all(selector, "\\.[^.:[]+"), "^\\.")
+    if (length(classes) == 0) {
+      classes <- NULL
+    }
     # if (!is.null(classes)) {
     #   selector <- str_remove(selector, "\\.[^.:[]+")
     # }
@@ -167,12 +169,12 @@ print.shiny_selector_list <- function(x, ...) {
 
 
 
-str_replace <- function(text, pattern, replacement) {
-  sub(pattern = pattern, replacement = replacement, x = text, perl = TRUE)
+str_replace <- function(text, pattern, replacement, fixed = FALSE) {
+  sub(pattern = pattern, replacement = replacement, x = text, perl = !fixed, fixed = fixed)
 }
 
-str_replace_all <- function(text, pattern, replacement) {
-  gsub(pattern = pattern, replacement = replacement, x = text, perl = TRUE)
+str_replace_all <- function(text, pattern, replacement, fixed = FALSE) {
+  gsub(pattern = pattern, replacement = replacement, x = text, perl = !fixed, fixed = fixed)
 }
 
 str_remove <- function(x, pattern, ...) {
