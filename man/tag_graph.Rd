@@ -48,7 +48,7 @@ All methods return the altered tag graph object unless otherwise stated.
 \subsection{Select tags}{
 \itemize{
 \item \verb{$find(css_selector)}: Find all tag elements matching the \code{css_selector} starting from each selected element. The selected elements will be updated with the found set of tag environment.
-\item \verb{$fitler(fn)}: Update the selected elements to contain all direct child elements of the selected elements.
+\item \verb{$fitler(fn)}: Update the selected elements to a subset of the selected elements given \code{fn(el, i)} returns \code{TRUE}. If \code{fn} is a CSS selector, then the selected elements will be filtered if they match the single selector value.
 \item \verb{$children()}: Update the selected elements to contain all direct child elements of the selected elements.
 \item \verb{$parent()}: Update the selected elements to contain the unique set of direct parent of the selected elements.
 \item \verb{$parents()}: Update the selected elements to contain the unique set of all ancestors of the selected elements.
@@ -95,7 +95,7 @@ All methods return the altered tag graph object unless otherwise stated.
 
 \subsection{Convert to tags}{
 \itemize{
-\item \verb{$as_tags(selected = TRUE)}: If \code{selected = TRUE}, then all previously found elements (and their decendents) will be converted to tags. If \code{selected = FALSE}, the top level tag elements (and their decendents) will be converted to standard tags. If there is more than one element being returned, a \code{tagList()} will be used to hold all of the objects.
+\item \verb{$as_tags(selected = TRUE)}: If \code{selected = TRUE}, then all previously found elements (and their descendants) will be converted to tags. If \code{selected = FALSE}, the top level tag elements (and their descendants) will be converted to standard tags. If there is more than one element being returned, a \code{tagList()} will be used to hold all of the objects.
 Internal methods
 \item \verb{$print()}: Prints the tag graph. Called by \code{print.htmltools.tag_graph()}
 }

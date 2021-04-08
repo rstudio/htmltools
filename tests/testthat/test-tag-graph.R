@@ -161,12 +161,12 @@ test_that("tag_graph()$find()", {
 
   x$find("a > p")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$as_tags(), tagList(p("text2")))
+  expect_equal_tags(x$as_tags(), p("text2"))
   x$reset()
 
   x$find("a > > p")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$as_tags(), tagList(p("text1")))
+  expect_equal_tags(x$as_tags(), p("text1"))
   x$reset()
 
   x$find("div > *")
@@ -176,7 +176,7 @@ test_that("tag_graph()$find()", {
 
   x$find("div>>p")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$as_tags(), tagList(p("text2")))
+  expect_equal_tags(x$as_tags(), p("text2"))
 })
 
 test_that("tag_graph()$filter()", {
@@ -200,32 +200,54 @@ test_that("tag_graph()$filter()", {
   expect_length(x$selected(), 1)
 
   # Compare to `"4"` as `flattenTags` calls `as.tags.default()` which calls `as.character()`
-  expect_equal_tags(x$as_tags(), tagList(span("4")))
+  expect_equal_tags(x$as_tags(), span("4"))
 
 })
 
 test_that("tag_graph()$children() & tag_graph()$parent()", {
-  x <- tag_graph(div(span(1), span(2), span(3), span(4), span(5)))
+  x <- tag_graph(
+    tagList(
+      div(class="a",
+        span(class="A", "1"),
+        span(class="B", "2")),
+      div(class = "b",
+        span(class = "C", "3"),
+        span(class = "D", "4")
+      )
+    )
+  )
 
   x$find("div")
-  expect_length(x$selected(), 1)
+  expect_length(x$selected(), 2)
 
   x$children()
-
-  expect_length(x$selected(), 5)
-
-  Map(
+  expect_length(x$selected(), 4)
+  expect_equal_tags(
     x$as_tags(),
-    seq_len(5),
-    f = function(s, i) {
-      expect_equal(s$name, "span")
-      expect_equal(s$children, list(as.character(i)))
-    }
+    tagList(
+      span(class = "A", "1"),
+      span(class = "B", "2"),
+      span(class = "C", "3"),
+      span(class = "D", "4")
+    )
   )
+
+  x$parents()
+  expect_length(x$selected(), 2)
+
+  x$children(".C")
+  expect_length(x$selected(), 1)
 
   x$parent()
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$as_tags(), tagList(x$as_tags(selected = FALSE)))
+  second_div <- div(class = "b", span(class = "C", "3"), span(class = "D", "4"))
+  expect_equal_tags(x$as_tags(), second_div)
+
+  x$reset()
+  x$find("span")
+  x$parents(".b")
+  expect_length(x$selected(), 1)
+  expect_equal_tags(x$as_tags(), second_div)
 })
 
 
@@ -251,6 +273,16 @@ test_that("tag_graph()$parents()", {
       x_tags$children[[1]],
       x_tags
     )
+  )
+
+  x$reset()
+  x$find("span")
+  x$parents(".outer")
+  expect_length(x$selected(), 1)
+
+  expect_equal_tags(
+    x$as_tags(),
+    x_tags
   )
 })
 
@@ -298,7 +330,7 @@ test_that("tag_graph()$add_class()", {
   x$find("div.inner")$add_class("test-class")
   expect_length(x$selected(), 1)
 
-  expect_equal(x$as_tags()[[1]]$attribs$class, "inner test-class")
+  expect_equal(x$as_tags()$attribs$class, "inner test-class")
 
 })
 

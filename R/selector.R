@@ -6,12 +6,21 @@
 ## ^^ R6 output
 
 SELECTOR_EVERYTHING <- "everything"
-SELECTOR_CHILD <- "child"
 SELECTOR_REGULAR <- "regular"
+
+SELECTOR_SPACE <- "space"
+SELECTOR_CHILD <- "child"
+
+is_selector <- function(x) {
+  inherits(x, "shiny_selector")
+}
+is_selector_list <- function(x) {
+  inherits(x, "shiny_selector_list")
+}
 
 # only handles id and classes
 as_selector <- function(selector) {
-  if (inherits(selector, "shiny_selector") || inherits(selector, "shiny_selector_list")) {
+  if (is_selector(selector) || is_selector_list(selector)) {
     return(selector)
   }
 
@@ -40,7 +49,7 @@ as_selector <- function(selector) {
   }
 
   # Check here to avoid inf recursion
-  if (selector != ">") {
+  if (str_detect(selector, ">", fixed = TRUE)) {
     # If there is a `>`, pad it with spaces
     if (str_detect(selector, "(^>)|(>$)")) {
       stop(
@@ -48,35 +57,52 @@ as_selector <- function(selector) {
         " in a css selector. Please add more selector information, such as `*`."
       )
     }
+    # While there are any consecutive `> >` items...
     while(str_detect(selector, ">\\s*>")) {
       # If there are any `>>`, replace them with `> * >`
       selector <- str_replace_all(selector, ">\\s*>", "> * >")
     }
 
-    # Pad `>` in selector. Extra spaces will be removed.
-    # Prevents `a>b>c` which should be `a > b > c`
-    # Do this before splitting by `\s+`
-    selector <- str_replace_all(selector, ">", " > ", fixed = TRUE)
+    # Split by `>` and convert to selectors
+    # Alter parts (execpt first) to say they are a direct child
+    # Return selector list
+    selector_items <- lapply(strsplit(selector, ">")[[1]], as_selector)
+    selector_list_items <- Map(
+      selector_items,
+      seq_along(selector_items),
+      f = function(selector_item, i) {
+        if (is_selector(selector_item)) {
+          if (i > 1) selector_item$traversal <- SELECTOR_CHILD
+          as_selector_list(selector_item)
+        } else {
+          if (i > 1) selector_item[[1]]$traversal <- SELECTOR_CHILD
+          selector_item
+        }
+      }
+    )
+    selector_list <- as_selector_list(
+      unlist(selector_list_items, recursive = FALSE)
+    )
+    return(selector_list)
   }
 
-  # Split into a selector list and recurse?
+  # Split into a selector parts and recurse one more time
   if (str_detect(selector, "\\s")) {
     selector_items <- lapply(strsplit(selector, "\\s+")[[1]], as_selector)
-    selector_list <- structure(class = "shiny_selector_list", selector_items)
+    selector_list <- as_selector_list(selector_items)
     return(selector_list)
   }
 
   # https://www.w3.org/TR/selectors-3/#selectors
 
   type <- NULL
+  traversal <- SELECTOR_SPACE
   element <- NULL
   id <- NULL
   classes <- NULL
 
   if (isTRUE(selector == "*")) {
     type <- SELECTOR_EVERYTHING
-  } else if (isTRUE(selector == ">")) {
-    type <- SELECTOR_CHILD
   } else {
     type <- SELECTOR_REGULAR
 
@@ -120,35 +146,49 @@ as_selector <- function(selector) {
     element = element,
     id = id,
     classes = classes,
-    type = type
+    type = type,
+    traversal = traversal
   ))
 }
 
 
 as_selector_list <- function(selector) {
-  selector <- as_selector(selector)
-  if (inherits(selector, "shiny_selector")) {
-    selector <- structure(class = "shiny_selector_list", list(selector))
+  if (is_selector_list(selector)) {
+    return(selector)
   }
-  if (length(selector) == 1) {
-    if (selector[[1]]$type == SELECTOR_CHILD) {
-      stop(
-        "Direct children selector, `>`, must not be the only element in a css selector.\n",
-        "Please add more selector information, such as `div > span`."
-      )
-    }
+  if (is.character(selector)) {
+    selector <- as_selector(selector)
+  }
+  if (is_selector(selector)) {
+    selector <- list(selector)
+  }
+  if (!is.list(selector)) {
+    stop("Do not know how to convert non list object into a `shiny_selector_list`")
   }
 
-
-  selector
+  is_selector_vals <- vapply(selector, is_selector, logical(1))
+  if (!all(is_selector_vals)) {
+    stop("Can only convert a list of selectors to a `shiny_selector_list`")
+  }
+  structure(class = "shiny_selector_list", selector)
 }
 
 #' @export
 format.shiny_selector <- function(x, ...) {
-  switch(x$type,
-    "everything" = "*",
-    "child" = ">",
-    paste0(x$element, if (!is.null(x$id)) paste0("#", x$id), if (!is.null(x$classes)) paste0(".", x$classes, collapse = ""))
+  paste0(
+    c(
+      if (x$traversal == SELECTOR_CHILD) "> ",
+      if (x$type == SELECTOR_EVERYTHING) {
+        "*"
+      } else {
+        c(
+          x$element,
+          if (!is.null(x$id)) paste0("#", x$id),
+          if (!is.null(x$classes)) paste0(".", x$classes)
+        )
+      }
+    ),
+    collapse = ""
   )
 }
 #' @export

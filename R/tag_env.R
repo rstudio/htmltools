@@ -3,13 +3,11 @@
 NULL
 
 # TODO-barret
-# * Implement single css selector for `$children()` `$parent()` and `$parents()`
-# * Turn `$find("div > .foo span")` into `$find("div")$children(".foo")$find("span")`
-#    * Will require big alterations to `$find()`
 # * Implement `tag_graph_find(css, all = FALSE)` which finds the first element and stops
 # * Change name to `tagQuery`; Camelcase all the things; :-(
 # * Work with a child node as a html_dep
 #   * Tag lists and tag objects must work with this
+# * Adjust Siblings
 # * Remove obviously dead code
 # * Describe why using `props` and not `attr`
 #    * Skipping. The htmltools package has no concept of props. This would only create confusion.
@@ -139,6 +137,9 @@ uni_envir_stack <- function() {
     push = function(env) {
       key <- envir_key_or_stop(env)
       if (!map$has(key)) {
+        # mark the key as _seen_
+        map$set(key, TRUE)
+        # add the env
         stack$push(env)
       }
     },
@@ -444,14 +445,14 @@ tag_graph <- function(tags) {
         #'
         #' ## Select tags
         #' * `$find(css_selector)`: Find all tag elements matching the `css_selector` starting from each selected element. The selected elements will be updated with the found set of tag environment.
-        find = function(css_selector, all = TRUE) {
+        find = function(css_selector) {
           rebuild()
           set_selected(
             tag_graph_find(get_selected(), css_selector)
           )
           self
         },
-        #' * `$fitler(fn)`: Update the selected elements to contain all direct child elements of the selected elements.
+        #' * `$fitler(fn)`: Update the selected elements to a subset of the selected elements given `fn(el, i)` returns `TRUE`. If `fn` is a CSS selector, then the selected elements will be filtered if they match the single selector value.
         filter = function(fn) {
           rebuild()
           set_selected(
@@ -461,34 +462,34 @@ tag_graph <- function(tags) {
           self
         },
         #' * `$children()`: Update the selected elements to contain all direct child elements of the selected elements.
-        children = function() {
+        children = function(css_selector = NULL) {
           rebuild()
           set_selected(
-            tag_graph_find_children(manually_selected())
+            tag_graph_find_children(manually_selected(), css_selector)
           )
           self
         },
         #' * `$parent()`: Update the selected elements to contain the unique set of direct parent of the selected elements.
-        parent = function() {
+        parent = function(css_selector = NULL) {
           rebuild()
           set_selected(
-            tag_graph_find_parent(manually_selected())
+            tag_graph_find_parent(manually_selected(), css_selector)
           )
           self
         },
         #' * `$parents()`: Update the selected elements to contain the unique set of all ancestors of the selected elements.
-        parents = function() {
+        parents = function(css_selector = NULL) {
           rebuild()
           set_selected(
-            tag_graph_find_parents(manually_selected())
+            tag_graph_find_parents(manually_selected(), css_selector)
           )
           self
         },
         #' * `siblings()`: Get the siblings of each element in the set of matched elements.
-        siblings = function() {
+        siblings = function(css_selector = NULL) {
           rebuild()
           set_selected(
-            tag_graph_find_siblings(manually_selected())
+            tag_graph_find_siblings(manually_selected(), css_selector)
           )
           self
         },
@@ -498,6 +499,20 @@ tag_graph <- function(tags) {
           set_selected(
             tag_graph_find_reset(root),
             filter_root = FALSE
+          )
+          self
+        },
+        find_descendant = function(css_selector) {
+          rebuild()
+          set_selected(
+            tag_graph_find_descendant(get_selected(), css_selector)
+          )
+          self
+        },
+        find_descendants = function(css_selector) {
+          rebuild()
+          set_selected(
+            tag_graph_find_descendants(get_selected(), css_selector)
           )
           self
         },
@@ -635,7 +650,7 @@ tag_graph <- function(tags) {
 
         ## To tags
         #' ## Convert to tags
-        #' * `$as_tags(selected = TRUE)`: If `selected = TRUE`, then all previously found elements (and their decendents) will be converted to tags. If `selected = FALSE`, the top level tag elements (and their decendents) will be converted to standard tags. If there is more than one element being returned, a `tagList()` will be used to hold all of the objects.
+        #' * `$as_tags(selected = TRUE)`: If `selected = TRUE`, then all previously found elements (and their descendants) will be converted to tags. If `selected = FALSE`, the top level tag elements (and their descendants) will be converted to standard tags. If there is more than one element being returned, a `tagList()` will be used to hold all of the objects.
         as_tags = function(selected = TRUE) {
           rebuild()
           if (isTRUE(selected)) {
@@ -694,6 +709,9 @@ is_root_tag <- function(x) {
   name <- x$name
   isTag(x) && !is.null(name) && isTRUE(name == "tag_graph")
 }
+# Wrap the top level tags in the tag_graph() in a `tag_graph` tag object.
+# This allows for appending and prepending elements to the top level tags.
+# (Don't fight the structures... embrace them!)
 wrap_with_root_tag <- function(x) {
 
   if (isTagGraph(x)) {
@@ -705,6 +723,7 @@ wrap_with_root_tag <- function(x) {
 }
 
 
+# Return a tag env, tagList(tag envs), or NULL
 tag_graph_get_graph <- function(root) {
   children <- root$children
   len <- length(children)
@@ -718,6 +737,7 @@ tag_graph_get_graph <- function(root) {
   }
 }
 
+# Return a list of the manually selected elements
 tag_graph_selected <- function(selected) {
   if (length(selected) == 1 && is_root_tag(selected[[1]])) {
     list()
@@ -726,21 +746,26 @@ tag_graph_selected <- function(selected) {
   }
 }
 
+# Return the `i`th position of the manually selected elements
 tag_graph_get <- function(selected, position) {
   selected <- tag_graph_selected(selected)
   validate_position(position, selected)
 
   selected[[position]]
-
 }
 
+# Return the graph as tags
 tag_graph_graph_as_tags <- function(root) {
   tag_graph_get_graph(tag_env_to_tags(root))
 }
 
 tag_graph_selected_as_tags <- function(selected) {
-  # return as tagList
-  do.call(tagList, lapply(selected, tag_env_to_tags))
+  if (length(selected) == 1) {
+    tag_env_to_tags(selected[[1]])
+  } else {
+    # return as tagList
+    do.call(tagList, lapply(selected, tag_env_to_tags))
+  }
 }
 
 tag_graph_print <- function(root, selected) {
@@ -802,26 +827,29 @@ walk_i_rev <- function(.x, .f, ...) {
 }
 
 
-# Make sure each item in list is a tag env
-tag_graph_verify_selected <- function(els) {
-  if (!is.list(els)) {
-    stop("A list must be supplied")
-  }
-  walk_i(els, function(el, i) {
-    if (!isTagEnv(el)) {
-      stop("Object in position `", i, "` is not a tag environment")
-    }
-  })
-}
-
 # Return function that will verify elements before performing `func(els, fn)`
 selected_walk_gen <- function(func) {
   force(func)
   function(els, fn) {
-    tag_graph_verify_selected(els)
+    if (is.null(els)) return(list())
+    if (!is.list(els)) {
+      stop("A list() must be supplied")
+    }
     if (!is.function(fn)) {
       stop("`fn` must be a function")
     }
+
+    # Make sure each item in list is a tag env
+    walk_i(els, function(el, i) {
+      if (!is.null(el)) {
+        if (isTag(el) && !isTagEnv(el)) {
+          str(el)
+          stop(
+            "Object in position `", i, "` is a regular `tag()` and not a tag environment"
+          )
+        }
+      }
+    })
 
     func(els, fn)
   }
@@ -845,10 +873,12 @@ tag_graph_each <- function(els, fn) {
 # Perform this matching in reverse order
 tag_graph_match_child_rev <- function(els, func) {
   tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     el_key <- envir_key_or_stop(el)
     el_parent <- el$parent
     # Walk in reverse to be able to remove all matches in a single pass
     selected_walk_i_rev(el_parent$children, function(child, child_pos) {
+      if (!isTagEnv(el)) return()
       child_key <- envir_key_or_stop(child)
       if (el_key == child_key) {
         func(el_parent, el, child_pos)
@@ -869,6 +899,7 @@ tag_graph_remove <- function(els) {
 
 tag_graph_set_children <- function(els, ...) {
   tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     tagSetChildren(el, ...)
   })
 }
@@ -877,11 +908,13 @@ tag_graph_empty_children <- function(els) {
 }
 tag_graph_append_children <- function(els, ...) {
   tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     tagAppendChildren(el, ...)
   })
 }
 tag_graph_prepend_children <- function(els, ...) {
   tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     cur_children <- el$children
     if (length(cur_children) == 0) {
       tagSetChildren(el, ...)
@@ -895,6 +928,7 @@ tag_graph_prepend_children <- function(els, ...) {
 # Add attribute values
 tag_graph_add_attrs <- function(els, ...) {
   tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     el <- tagAppendAttributes(el, ...)
     el$attribs <- flattenTagAttribs(el$attribs)
   })
@@ -907,6 +941,7 @@ tag_graph_remove_attrs <- function(els, attrs) {
     stop("`attrs` must be a charcter vector of attributes to remove")
   }
   tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     for (attr_val in attrs) {
       el$attribs[[attr_val]] <- NULL
     }
@@ -915,6 +950,7 @@ tag_graph_remove_attrs <- function(els, attrs) {
 # Remove attribute values
 tag_graph_empty_attrs <- function(els) {
   tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     el$attribs <- list()
   })
 }
@@ -926,6 +962,7 @@ tag_graph_has_attr <- function(els, attr) {
   }
   unlist(
     tag_graph_lapply(els, function(el) {
+      if (!isTagEnv(el)) return(FALSE)
       !is.null(el$attribs[[attr]])
     })
   )
@@ -956,6 +993,7 @@ join_css_class <- function(classes) {
 tag_graph_has_class <- function(els, class) {
   classes <- get_css_class(class)
   unlist(tag_graph_lapply(els, function(el) {
+    if (!isTagEnv(el)) return(FALSE)
     class_val <- el$attribs$class
     if (is.null(class_val)) {
       return(FALSE)
@@ -967,7 +1005,8 @@ tag_graph_has_class <- function(els, class) {
 # add classes that don't already exist
 tag_graph_add_class <- function(els, class) {
   classes <- get_css_class(class)
-  tag_graph_lapply(els, function(el) {
+  tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     class_val <- el$attribs$class %||% ""
     el_classes <- split_css_class(class_val)
     new_classes <- c(el_classes, setdiff(classes, el_classes))
@@ -978,6 +1017,7 @@ tag_graph_add_class <- function(els, class) {
 tag_graph_remove_class <- function(els, class) {
   classes <- get_css_class(class)
   tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     class_val <- el$attribs$class
     if (is.null(class_val)) return()
     el_classes <- split_css_class(class_val)
@@ -989,6 +1029,7 @@ tag_graph_remove_class <- function(els, class) {
 tag_graph_toggle_class <- function(els, class) {
   classes <- get_css_class(class)
   tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     class_val <- el$attribs$class %||% ""
     el_classes <- split_css_class(class_val)
     has_class <- (classes %in% el_classes)
@@ -1009,22 +1050,29 @@ tag_graph_find_reset <- function(root) {
   list(root)
 }
 # Return a list of the unique set of parent elements
-tag_graph_find_parent <- function(els) {
+tag_graph_find_parent <- function(els, css_selector = NULL) {
   parent_stack <- unique_envir_stack()
+  push_fn <- push_fn_wrapper(parent_stack, css_selector)
   tag_graph_walk(els, function(el) {
-    parent_stack$push(el$parent)
+    if (!isTagEnv(el)) return()
+    push_fn(el$parent)
   })
   parent_stack$unique_list()
 }
 # Return a list of the unique set of ancestor elements
 # By only looking for elements that have not been seen before, searching is as lazy as possible
-tag_graph_find_parents <- function(els) {
+# Must traverse all parents; If css_selector exists, only return found parents that match selector.
+tag_graph_find_parents <- function(els, css_selector = NULL) {
   # use the map for `has()` and stack for `values()`
   ancestors_map <- envir_map()
   ancestors_stack <- unique_envir_stack()
 
+  # func to add to the ancestor stack
+  push_fn <- push_fn_wrapper(ancestors_stack, css_selector)
+
   # First pass should contain the current elements' direct parents
-  cur_els <- tag_graph_find_parent(els)
+  # Do not include css_selector here. That is only for adding to ancestors_stack
+  cur_els <- tag_graph_find_parent(els, css_selector = NULL)
 
   while(length(cur_els) > 0) {
     # Make a map of elements to explore in the next loop iteration
@@ -1032,6 +1080,7 @@ tag_graph_find_parents <- function(els) {
 
     # For each element in `cur_els`
     tag_graph_walk(cur_els, function(cur_el) {
+      if (!isTagEnv(cur_el)) return()
       # If the element has not been seen before...
       if (!ancestors_map$has(cur_el)) {
         # Add parent el to next iteration set
@@ -1041,7 +1090,7 @@ tag_graph_find_parents <- function(els) {
 
         # Add cur_el to all ancestors info
         ancestors_map$set(cur_el, TRUE)
-        ancestors_stack$push(cur_el)
+        push_fn(cur_el)
       }
     })
 
@@ -1049,29 +1098,31 @@ tag_graph_find_parents <- function(els) {
     # Update `cur_els` to contain all tag envs to continue exploration
     cur_els <- next_els_stack$unique_list()
   }
-
   ancestors_stack$unique_list()
 }
 # Get all unique children tag envs
-tag_graph_find_children <- function(els) {
+tag_graph_find_children <- function(els, css_selector = NULL) {
   children_stack <- unique_envir_stack()
+  push_fn <- push_fn_wrapper(children_stack, css_selector)
   tag_graph_walk(els, function(el) {
-    tag_graph_walk(el$children, function(child) {
-      children_stack$push(child)
-    })
+    if (!isTagEnv(el)) return()
+    tag_graph_walk(el$children, push_fn)
   })
   children_stack$unique_list()
 }
 
 # Return all unique siblings of each el in els
-tag_graph_find_siblings <- function(els) {
+tag_graph_find_siblings <- function(els, css_selector = NULL) {
   sibling_stack <- unique_envir_stack()
+  push_fn <- push_fn_wrapper(sibling_stack, css_selector)
   tag_graph_walk(els, function(el) {
+    if (!isTagEnv(el)) return()
     el_key <- envir_key_or_stop(el)
     tag_graph_walk(el$parent$children, function(sibling) {
+      if (!isTagEnv(sibling)) return()
       sibling_key <- envir_key_or_stop(sibling)
       if (el_key != sibling_key) {
-        sibling_stack$push(sibling)
+        push_fn(sibling)
       }
     })
   })
@@ -1081,7 +1132,12 @@ tag_graph_find_siblings <- function(els) {
 # Filter the selected elements using a function
 # The answer of `fn(el, i)` should work in an `if` block
 tag_graph_find_filter <- function(els, fn) {
-
+  if (is.character(fn)) {
+    selector <- css_selector_to_selector(fn)
+    fn <- function(el, i) {
+      el_matches_selector(el, selector)
+    }
+  }
   validate_fn_can_iterate(fn)
 
   filter_stack <- envir_stack()
@@ -1094,137 +1150,176 @@ tag_graph_find_filter <- function(els, fn) {
   filter_stack$as_list()
 }
 
-# Find all elements within `els` that match the `selector`
-tag_graph_find <- function(els, selector) {
+
+
+css_selector_to_selector <- function(css_selector) {
+  selector <-
+    if (is_selector(css_selector)) {
+      css_selector
+    } else {
+      selector_list <- as_selector_list(css_selector)
+      if (length(selector_list) > 1) {
+        stop("Can only match a single element selector. Looking for descendant elements is not allowed.")
+      }
+      selector_list[[1]]
+    }
+
+  # if (selector$type == SELECTOR_CHILD) {
+  #   stop("Direct child selector is not allowed when looking for a single element matching a selector")
+  # }
+
+  selector
+}
+
+push_fn_wrapper <- function(stack, css_selector) {
+  if (is.null(css_selector)) {
+    stack$push
+  } else {
+    selector <- css_selector_to_selector(css_selector)
+    function(el) {
+      if (el_matches_selector(el, selector)) {
+        stack$push(el)
+      }
+    }
+  }
+}
+
+
+el_matches_selector <- function(el, selector) {
+  if (!isTagEnv(el)) return(FALSE)
+
+  if (!is_selector(selector)) {
+    stop("`el_matches_selector(selector=)` must be an object of class `\"shiny_selector\"`")
+  }
+
+  if (selector$type == SELECTOR_EVERYTHING) {
+    return(TRUE)
+  }
+
+  # match on element
+  if (!is.null(selector$element)) {
+    # bad element match
+    if (el$name != selector$element) {
+      return(FALSE)
+    }
+  }
+
+  # match on id
+  if (!is.null(selector$id)) {
+    # bad id match
+    if ( (el$attribs$id %||% "") != selector$id) {
+      return(FALSE)
+    }
+  }
+
+  # match on class values
+  if (!is.null(selector$classes)) {
+    if (
+      # no tag class values at all
+      is.null(el$attribs$class) ||
+      # missing a class value in tag
+      ! all(
+        selector$classes %in% strsplit(el$attribs$class %||% "", " ")[[1]]
+      )
+    ) {
+      return(FALSE)
+    }
+  }
+
+  # No other matches fail. Mark as a match
+  TRUE
+}
+
+
+tag_graph_find_descendant <- function(els, selector) {
+  tag_graph_find_descendants(els, selector, return_on_first = TRUE)
+}
+
+tag_graph_find_descendants <- function(els, selector, return_on_first = FALSE) {
+  matched_fn <-
+    if (return_on_first) {
+      this_env <- current_env()
+      function(found_el) {
+        # IMMEDIATELY return from
+        return_from(this_env, list(found_el))
+      }
+    } else {
+      function(found_el) {
+        found_stack$push(found_el)
+      }
+    }
+
+  if (!is_selector(selector)) {
+    selector <- css_selector_to_selector(css_selector)
+  }
+
   found_stack <- unique_envir_stack()
-  selector <- as_selector_list(selector)
   # For every element...
   tag_graph_walk(els, function(el) {
     # Ignore the element and
     # Walk through each child...
+    if (!isTagEnv(el)) return()
     tag_graph_walk(el$children, function(child) {
-      # Find decendent matching the `selector`
-      tag_graph_find_(child, selector, function(found_el) {
-        found_stack$push(found_el)
-      })
+      # Find descendant matching the `selector`
+      tag_graph_find_descendants_(child, selector, matched_fn)
     })
   })
   found_stack$unique_list()
 }
 
-# Recursive function to find all elements that match a selector
-# If a match is found, call `fn(matched_el)`
-tag_graph_find_ <- function(el, selector, fn, is_direct_child = FALSE) {
-
+tag_graph_find_descendants_ <- function(el, selector, fn) {
   if (isTagEnv(el)) {
-    # Grab the first element
-    cur_selector <- selector[[1]]
 
-    # Get the current selection type
-    cur_type <- cur_selector$type %||% stop("No `$type` found for css selector")
-
-    # If the selector wants a direct child,
-    # recall the _find_ function with `is_direct_child = TRUE`
-    # This will prevent from traversing onto grandchildren without matching the child first
-    if (cur_type == SELECTOR_CHILD) {
-      return(
-        tag_graph_find_(el, selector[-1], fn = fn, is_direct_child = TRUE)
-      )
-    }
-
-    is_match <-
-      cur_type == SELECTOR_EVERYTHING ||
-      local({
-        # match on element
-        if (!is.null(cur_selector$element)) {
-          # bad element match
-          if (el$name != cur_selector$element) {
-            return(FALSE)
-          }
-        }
-        # match on id
-        if (!is.null(cur_selector$id)) {
-          # bad id match
-          if ( (el$attribs$id %||% "") != cur_selector$id) {
-            return(FALSE)
-          }
-        }
-        # match on class values
-        if (!is.null(cur_selector$classes)) {
-          if (
-            # no tag class values at all
-            is.null(el$attribs$class) ||
-            # missing a class value in tag
-            ! all(
-              cur_selector$classes %in% strsplit(el$attribs$class %||% "", " ")[[1]]
-            )
-          ) {
-            return(FALSE)
-          }
-        }
-
-        # No other matches fail. Mark as a match
-        TRUE
-      })
-
+    is_match <- el_matches_selector(el, selector)
 
     # If it was a match
     if (is_match) {
-      # Remove first element while maintaining class info
-      child_selector <- selector
-      child_selector[[1]] <- NULL
-
-      # If there are children and remaining selectors, recurse through
-      if (
-        length(el$children) > 0 &&
-        length(child_selector) > 0
-      ) {
-        walk(
-          el$children,
-          tag_graph_find_,
-          fn = fn,
-          selector = child_selector,
-          is_direct_child = FALSE
-        )
-      }
-
-      if (
-        # it is a "leaf" match
-        length(child_selector) == 0
-      ) {
-        # run method it
-        fn(el)
-      }
+      fn(el)
     }
 
-    # If we can traverse to non-direct children...
-    if (!is_direct_child) {
-      # If there are children and remaining selectors,
-      # Recurse through without matching
-      # (Only allowed if `>` is not found)
-      if (length(selector) > 0 && length(el$children) > 0) {
-        walk(
-          el$children,
-          tag_graph_find_,
-          fn = fn,
-          selector = selector,
-          is_direct_child = FALSE
-        )
-      }
+    # If there are children and remaining selectors,
+    # Recurse through without matching
+    # (Only allowed if `>` is not found)
+    if (length(el$children) > 0) {
+      walk(
+        el$children,
+        tag_graph_find_descendants_,
+        fn = fn,
+        selector = selector
+      )
     }
+
   } else if (is.list(el)) {
     # For each item in the list like object, recurse through
-    walk(el, tag_graph_find_, fn = fn, selector = selector, is_direct_child = is_direct_child)
+    walk(el, tag_graph_find_descendants_, fn = fn, selector = selector)
   } else if (is.atomic(el) || is.function(el)) {
     # Can not match on atomics or functions
     return()
   } else {
-    message("tag_graph_find_() - Unknown Type! This has not happened before:")
+    message("tag_graph_find_descendants_() - Unknown Type! This has not happened before:")
     str(el)
-    stop("Unknown type in tag_graph_find_()")
+    stop("Unknown type in tag_graph_find_descendants_()")
   }
 
   invisible()
+}
+
+# Find all elements within `els` that match the `selector`
+tag_graph_find <- function(els, selector) {
+  selector_list <- as_selector_list(selector)
+
+  cur_els <- els
+  walk(selector_list, function(selector) {
+    cur_els <<-
+      if (selector$traversal == SELECTOR_CHILD) {
+        tag_graph_find_children(cur_els, selector)
+      } else {
+        # any descendant traversal
+        tag_graph_find_descendants(cur_els, selector)
+      }
+  })
+
+  cur_els
 }
 
 
