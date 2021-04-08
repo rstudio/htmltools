@@ -47,8 +47,6 @@ test_that("> checks", {
   expect_error(as_selector_list("> div"), "first element")
   expect_error(as_selector_list("div >"), "last element")
 
-  expect_error(as_selector_list(">"), "only element")
-
   expect_equal(format(as_selector("div>span")), "div > span")
   expect_equal(format(as_selector("div>>span")), "div > * > span")
 })
