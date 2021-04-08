@@ -77,7 +77,7 @@ test_that("as_tag_env upgrades objects", {
   expect_s3_class(x_tag_env, "shiny.tag")
 
   expect_null(x_tag_env$parent)
-  expect_equal(x_tag_env$env_key, format.default(x_tag_env))
+  expect_equal(x_tag_env$env_key, sexp_address(x_tag_env))
   expect_equal(x_tag_env$name, x$name)
   expect_equal(x_tag_env$attribs, x$attribs)
 

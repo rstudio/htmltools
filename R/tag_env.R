@@ -1,4 +1,6 @@
-#' @import fastmap
+#' @importFrom fastmap fastmap faststack
+#' @importFrom rlang sexp_address
+NULL
 
 # TODO-barret
 # * Describe why using `props` and not `attr`
@@ -86,14 +88,14 @@
 #   * `onRender(x, expr)` will wrap create a tag function that will resolve the tags before running the expr.
 
 
-# Wrap in function so r cmd check is happy
-envir_key_fn <- function(x) { format.default(x) }
-# No need to contantly convert the envir to a key string. The value should be constant given an envir
-envir_key_or_stop <- function(x) {
-  x$env_key %||% stop("`x` is not a tag environment. `x$env_key` is missing")
+## rlang::sexp_address()
+# Use rlang::sexp_address() any time the environment name is needed.
+# Use to get a unique key for stacks
+envir_key_or_stop <- function(env) {
+  env$env_key %||% stop("`env$env_key` not found")
 }
 
-# use for `has()` functionality
+# Use for `has()` functionality
 envir_map <- function() {
   map <- fastmap()
   list(
@@ -112,7 +114,7 @@ envir_map <- function() {
     }
   )
 }
-# use for consistent `as_list()` order
+# Use for consistent `as_list()` order
 envir_stack <- function() {
   stack <- faststack()
   list(
@@ -123,6 +125,40 @@ envir_stack <- function() {
     }
   )
 }
+
+# (Used for `unique_envir_stack()` only. Do not use directly!)
+uni_envir_stack <- function() {
+  map <- fastmap()
+  stack <- faststack()
+  list(
+    push = function(env) {
+      key <- envir_key_or_stop(env)
+      if (!map$has(key)) {
+        stack$push(env)
+      }
+    },
+    unique_list = stack$as_list
+  )
+}
+# Use to retrieve unique environments (eg: `tq$parent()`)
+unique_envir_stack <- function() {
+  stack <- envir_stack()
+  count <- 0
+  list(
+    push = function(env) {
+      count <<- count + 1
+      if (count == 500) {
+        # convert the current stack to a `uni_envir_stack()`
+        new_stack <- uni_envir_stack()
+        walk(stack$as_list(), new_stack$push)
+        stack <<- new_stack
+      }
+      stack$push(env)
+    },
+    unique_list = function() {stack$unique_list()}
+  )
+}
+
 
 
 
@@ -194,11 +230,11 @@ as_tag_env_ <- function(x, parent = NULL, seen_map = envir_map()) {
       x <- safe_list_2_env(x_list, "htmltools.tag.env")
       # add parent env and key
       x$parent <- parent
-      x$env_key <- envir_key_fn(x)
+      x$env_key <- sexp_address(x)
     }
     if (seen_map$has(x)) {
       stop(
-        "Circular family tree found with tag environment: ", envir_key_fn(x), "\n",
+        "Circular family tree found with tag environment: ", sexp_address(x), "\n",
         # Not necessarily the order of the circular dependency
         # TODO-later show actual circular dependency and not all visited nodes? This should be rare
         "Tags processed:\n", paste0("* ", seen_map$keys(), collapse = "\n")
@@ -969,7 +1005,7 @@ tag_graph_find_reset <- function(root) {
 }
 # Return a list of the unique set of parent elements
 tag_graph_find_parent <- function(els) {
-  parent_stack <- envir_stack()
+  parent_stack <- unique_envir_stack()
   tag_graph_walk(els, function(el) {
     parent_stack$push(el$parent)
   })
@@ -980,21 +1016,23 @@ tag_graph_find_parent <- function(els) {
 tag_graph_find_parents <- function(els) {
   # use the map for `has()` and stack for `values()`
   ancestors_map <- envir_map()
-  ancestors_stack <- envir_stack()
+  ancestors_stack <- unique_envir_stack()
 
   # First pass should contain the current elements' direct parents
   cur_els <- tag_graph_find_parent(els)
 
   while(length(cur_els) > 0) {
     # Make a map of elements to explore in the next loop iteration
-    next_els_stack <- envir_stack()
+    next_els_stack <- unique_envir_stack()
 
     # For each element in `cur_els`
     tag_graph_walk(cur_els, function(cur_el) {
       # If the element has not been seen before...
       if (!ancestors_map$has(cur_el)) {
         # Add parent el to next iteration set
-        next_els_stack$push(cur_el$parent)
+        if (!is.null(cur_el$parent)) {
+          next_els_stack$push(cur_el$parent)
+        }
 
         # Add cur_el to all ancestors info
         ancestors_map$set(cur_el, TRUE)
@@ -1004,14 +1042,14 @@ tag_graph_find_parents <- function(els) {
 
     # At this point, we have found a new set of unexplored ancestors: next_els_stack
     # Update `cur_els` to contain all tag envs to continue exploration
-    cur_els <- dropNulls(next_els_stack$unique_list())
+    cur_els <- next_els_stack$unique_list()
   }
 
   ancestors_stack$unique_list()
 }
 # Get all unique children tag envs
 tag_graph_find_children <- function(els) {
-  children_stack <- envir_stack()
+  children_stack <- unique_envir_stack()
   tag_graph_walk(els, function(el) {
     tag_graph_walk(el$children, function(child) {
       children_stack$push(child)
@@ -1022,7 +1060,7 @@ tag_graph_find_children <- function(els) {
 
 # Return all unique siblings of each el in els
 tag_graph_find_siblings <- function(els) {
-  sibling_stack <- envir_stack()
+  sibling_stack <- unique_envir_stack()
   tag_graph_walk(els, function(el) {
     el_key <- envir_key_or_stop(el)
     tag_graph_walk(el$parent$children, function(sibling) {
@@ -1053,7 +1091,7 @@ tag_graph_find_filter <- function(els, fn) {
 
 # Find all elements within `els` that match the `selector`
 tag_graph_find <- function(els, selector) {
-  found_stack <- envir_stack()
+  found_stack <- unique_envir_stack()
   selector <- as_selector_list(selector)
   # For every element...
   tag_graph_walk(els, function(el) {
@@ -1206,7 +1244,7 @@ tag_env_explain <- function(x, ..., before = "", max = Inf, seen_map = envir_map
 
   if (is.environment(x)) {
     if (seen_map$has(x)) {
-      cat0(envir_key_or_stop(x))
+      cat0(sexp_address(x))
       return(invisible(x))
     }
     seen_map$set(x, TRUE)
@@ -1221,7 +1259,7 @@ tag_env_explain <- function(x, ..., before = "", max = Inf, seen_map = envir_map
     cat0("function(){}")
   } else if (inherits(x, "htmltools.tag.env")) {
     x_list <- as.list.environment(x, all.names = TRUE)
-    cat0(envir_key_or_stop(x))
+    cat0(sexp_address(x))
     walk2(x_list, rlang::names2(x_list), function(value, key) {
       cat0(key, if (max > 1) ":")
       tag_env_explain(value, before = paste0(before, ". "), seen_map = seen_map, max = max - 1)
