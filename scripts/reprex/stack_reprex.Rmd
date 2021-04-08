@@ -5,11 +5,6 @@ date: "4/8/2021"
 output: html_document
 ---
 
-```{r setup, include=FALSE, cache = FALSE}
-knitr::opts_chunk$set(cache = TRUE)
-```
-
-
 
 # Which stack produces unique environments the fastest?
 
@@ -83,19 +78,20 @@ uni_stack <- function() {
     push = function(env) {
       key <- addr(env)
       if (!map$has(key)) {
+        map$set(key, TRUE)
         stack$push(env)
       }
     },
-    as_list = stack$as_list
+    unique_list = stack$as_list
   )
 }
 ```
 
 ### Hybrid stack
 
-Performs like a standard stack until it hits 500 elements. At 500 elements, the internal stack is converted to a `uni_stack()`.
+Performs like a standard stack until it hits 1000 elements. At 1000 elements, the internal stack is converted to a `uni_stack()`.
 
-While there is overhead at the 500 mark, the time penalty should be recovered as `n` becomes larger as it will behave like a `uni_stack()`.
+While there is overhead at the 1000 mark, the time penalty should be recovered as `n` becomes larger as it will behave like a `uni_stack()`.
 
 ```{r hybrid_stack}
 hybrid_stack <- function() {
@@ -104,7 +100,7 @@ hybrid_stack <- function() {
   list(
     push = function(env) {
       count <<- count + 1
-      if (count == 500) {
+      if (count == 1000) {
         # convert the current stack to a `uni_stack()`
         new_stack <- uni_stack()
         walk(stack$as_list(), new_stack$push)
@@ -112,7 +108,7 @@ hybrid_stack <- function() {
       }
       stack$push(env)
     },
-    as_list = function() {stack$as_list()}
+    unique_list = function() {stack$unique_list()}
   )
 }
 ```
@@ -128,9 +124,9 @@ Let's run a benchmark 10 times over increasing values of `n` for all three stack
 
 ```{r bench}
 info <-
-  lapply(1:10, function(i) {
+  lapply(1:5, function(i) {
     lapply(
-      c(10,50,100, 250,500, 750,1000,5000),
+      c(10,25,50,75,100, 250,500,750,1000,2500,5000,7500),
       function(n) {
         cat("i: ", i, "; n: ", n, "\n", sep = "")
         envs <- lapply(seq_len(n), function(i) {
@@ -147,8 +143,8 @@ info <-
         ret <-
           bench::mark(
             populate(standard_stack())$unique_list(),
-            populate(uni_stack())$as_list(),
-            populate(hybrid_stack())$as_list()
+            populate(uni_stack())$unique_list(),
+            populate(hybrid_stack())$unique_list()
           )
         ret$n <- n
         ret$i <- i
@@ -189,7 +185,7 @@ ggplot(dt, aes(n, median * 100000, color = run)) +
   scale_x_log10() +
   scale_y_log10() +
   geom_line(data = dt_avg) +
-  geom_vline(xintercept = 500) +
+  geom_vline(xintercept = 1000) +
   labs(y = "median bench time (micro sec)")
 ```
 
