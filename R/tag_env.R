@@ -502,20 +502,6 @@ tag_graph <- function(tags) {
           )
           self
         },
-        find_descendant = function(css_selector) {
-          rebuild()
-          set_selected(
-            tag_graph_find_descendant(get_selected(), css_selector)
-          )
-          self
-        },
-        find_descendants = function(css_selector) {
-          rebuild()
-          set_selected(
-            tag_graph_find_descendants(get_selected(), css_selector)
-          )
-          self
-        },
         # TODO-later
         #  .closest()
         #    For each element in the set, get the first element that matches the selector by testing the element itself and traversing up through its ancestors in the DOM tree.
@@ -1231,24 +1217,7 @@ el_matches_selector <- function(el, selector) {
 }
 
 
-tag_graph_find_descendant <- function(els, selector) {
-  tag_graph_find_descendants(els, selector, return_on_first = TRUE)
-}
-
-tag_graph_find_descendants <- function(els, selector, return_on_first = FALSE) {
-  matched_fn <-
-    if (return_on_first) {
-      this_env <- current_env()
-      function(found_el) {
-        # IMMEDIATELY return from
-        return_from(this_env, list(found_el))
-      }
-    } else {
-      function(found_el) {
-        found_stack$push(found_el)
-      }
-    }
-
+tag_graph_find_descendants <- function(els, selector) {
   if (!is_selector(selector)) {
     selector <- css_selector_to_selector(css_selector)
   }
@@ -1261,7 +1230,9 @@ tag_graph_find_descendants <- function(els, selector, return_on_first = FALSE) {
     if (!isTagEnv(el)) return()
     tag_graph_walk(el$children, function(child) {
       # Find descendant matching the `selector`
-      tag_graph_find_descendants_(child, selector, matched_fn)
+      tag_graph_find_descendants_(child, selector, function(found_el) {
+        found_stack$push(found_el)
+      })
     })
   })
   found_stack$unique_list()
