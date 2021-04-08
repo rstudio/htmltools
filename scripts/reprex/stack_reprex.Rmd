@@ -1,0 +1,212 @@
+---
+title: "Stack benchmarks"
+author: "Barret Schloerke"
+date: "4/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE, cache = FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+
+
+# Which stack produces unique environments the fastest?
+
+Finding the unique environments is required for `tagQuery()`'s internal methods.  However, `unique()` has `O(n^2)` complexity. At some point it performs poorly.
+
+## Goal
+
+Find a stack that performs well given different stack sizes (`n`).
+
+## Setup
+
+If unique keys needs to be managed, `rlang::sexp_address(env)` will be used.  This method is MUCH faster than `format.default(env)` and achieves the same goal of providing a unique key for each environment.
+
+
+```{r bench_addr}
+library(fastmap)
+library(rlang)
+library(magrittr)
+library(ggplot2)
+
+# iterate over items in `x` with function `f`
+walk <- function(.x, .f, ...) {
+  for (i in seq_along(.x)) {
+    .f(.x[[i]], ...)
+  }
+  NULL
+}
+
+# Show that `rlang:::sexp_address(env)` is faster than `format.default(env)`
+local({
+  rlang_addr <- rlang:::sexp_address
+  format_addr <- format.default
+  env <- new.env()
+  bench::mark(check = FALSE,
+    rlang_addr(env),
+    format_addr(env)
+  )
+})
+```
+
+
+# Stacks
+
+### Standard stack
+
+Very low overhead. Performs poorly as `n` becomes large due to `unique()` call.
+
+```{r standard_stack}
+standard_stack <- function() {
+  stack <- faststack()
+  list(
+    push = stack$push,
+    as_list = stack$as_list,
+    unique_list = function() {
+      unique(stack$as_list())
+    }
+  )
+}
+```
+
+### Unique stack
+
+Only allows unique elements into the stack. Leverages a `fastmap()` to know which elements have been entered into the stack.
+
+```{r uni_stack}
+uni_stack <- function() {
+  addr <- rlang:::sexp_address
+  map <- fastmap()
+  stack <- faststack()
+  list(
+    push = function(env) {
+      key <- addr(env)
+      if (!map$has(key)) {
+        stack$push(env)
+      }
+    },
+    as_list = stack$as_list
+  )
+}
+```
+
+### Hybrid stack
+
+Performs like a standard stack until it hits 500 elements. At 500 elements, the internal stack is converted to a `uni_stack()`.
+
+While there is overhead at the 500 mark, the time penalty should be recovered as `n` becomes larger as it will behave like a `uni_stack()`.
+
+```{r hybrid_stack}
+hybrid_stack <- function() {
+  stack <- standard_stack()
+  count <- 0
+  list(
+    push = function(env) {
+      count <<- count + 1
+      if (count == 500) {
+        # convert the current stack to a `uni_stack()`
+        new_stack <- uni_stack()
+        walk(stack$as_list(), new_stack$push)
+        stack <<- new_stack
+      }
+      stack$push(env)
+    },
+    as_list = function() {stack$as_list()}
+  )
+}
+```
+
+
+# Testing
+
+We are interested in where the hybrid stack should be converted from a standard stack to a uni stack.  Testing needs to be execute both the ingestion of environments and retrieval of the unique list.
+
+### Benchmark
+
+Let's run a benchmark 10 times over increasing values of `n` for all three stacks.
+
+```{r bench}
+info <-
+  lapply(1:10, function(i) {
+    lapply(
+      c(10,50,100, 250,500, 750,1000,5000),
+      function(n) {
+        cat("i: ", i, "; n: ", n, "\n", sep = "")
+        envs <- lapply(seq_len(n), function(i) {
+          new.env(parent = emptyenv())
+        })
+
+        populate <- function(set) {
+          walk(envs, function(env) {
+            set$push(env)
+          })
+          set
+        }
+
+        ret <-
+          bench::mark(
+            populate(standard_stack())$unique_list(),
+            populate(uni_stack())$as_list(),
+            populate(hybrid_stack())$as_list()
+          )
+        ret$n <- n
+        ret$i <- i
+        ret
+      }
+    )
+  })
+```
+
+### Data
+
+Quick inspection of the data...
+
+```{r inspect_data}
+dt <- info %>%
+  unlist(recursive = FALSE) %>%
+  dplyr::bind_rows() %>%
+  dplyr::select(expression, median, n) %>%
+  dplyr::mutate(
+    run = purrr::map_chr(expression, as.character)) %>%
+  dplyr::select(-expression) %>%
+  tibble::glimpse()
+
+dt_avg <-
+  dt %>%
+  dplyr::group_by(run, n) %>%
+  dplyr::summarise(median = median(median)) %>%
+  tibble::glimpse()
+```
+
+# Results
+
+Switching from a standard stack to a unique stack at ~ 500 seems to make sense as that is where the `standard_stack()` line and the `uni_stack()` line cross. 
+
+```{r plot}
+ggplot(dt, aes(n, median * 100000, color = run)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_line(data = dt_avg) +
+  geom_vline(xintercept = 500) +
+  labs(y = "median bench time (micro sec)")
+```
+
+
+```{r}
+ratios <- 
+  dt_avg %>% 
+  dplyr::ungroup() %>% 
+  dplyr::filter(n %in% c(10, 5000)) %>% 
+  tidyr::pivot_wider(run, names_from = n, names_prefix = "n_", values_from = median) %>%
+  dplyr::mutate(
+    ratio_10 = as.numeric(n_10) / as.numeric(n_10)[1], 
+    ratio_5000 = as.numeric(n_5000) / as.numeric(n_5000)[1]
+  ) %>% 
+  print()
+```
+
+The hybrid stack is `r ratios$ratio_10[3]` times faster than `uni_stack()` when `n` is 10.
+
+The hybrid stack is `r ratios$ratio_5000[2]` times faster than `standard_stack()` when `n` is 5000.
