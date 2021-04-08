@@ -3,11 +3,16 @@
 NULL
 
 # TODO-barret
+# * Implement single css selector for `$children()` `$parent()` and `$parents()`
+# * Turn `$find("div > .foo span")` into `$find("div")$children(".foo")$find("span")`
+#    * Will require big alterations to `$find()`
+# * Implement `tag_graph_find(css, all = FALSE)` which finds the first element and stops
+# * Change name to `tagQuery`; Camelcase all the things; :-(
+# * Work with a child node as a html_dep
+#   * Tag lists and tag objects must work with this
+# * Remove obviously dead code
 # * Describe why using `props` and not `attr`
 #    * Skipping. The htmltools package has no concept of props. This would only create confusion.
-# * Remove obviously dead code
-# * Change name to `tagQuery`; Camelcase all the things; :-(
-# * Implement `tag_graph_find(css, all = FALSE)` which finds the first element and stops
 
 
 # TODO-barret followup PR
