@@ -348,6 +348,12 @@ tagSetChildren <- function(tag, ..., list = NULL) {
   tag
 }
 
+tagInsertChildren <- function(tag, after, ..., list = NULL) {
+  throw_if_tag_function(tag)
+  tag$children <- unname(append(tag$children, c(dots_list(...), list), after))
+  tag
+}
+
 throw_if_tag_function <- function(tag) {
   if (is_tag_function(tag))
     stop("`tag` can not be a `tagFunction()`")

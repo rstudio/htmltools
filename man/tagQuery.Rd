@@ -47,7 +47,7 @@ Internally, two important pieces of information are maintained: the root element
 All methods return the altered tag query object unless otherwise stated.
 \subsection{Select tags}{
 
-The \code{cssSelector} is any CSS selector that can be parsed with \code{\link[=as_selector]{as_selector()}}
+The \code{cssSelector} is any CSS selector that can be parsed with \code{\link[=asSelector]{asSelector()}}
 \itemize{
 \item \verb{$find(cssSelector)}: Find all tag elements matching the \code{cssSelector} starting from each selected element. The selected elements will be updated with the found set of tag environment.
 \item \verb{$fitler(fn)}: Update the selected elements to a subset of the selected elements given \code{fn(el, i)} returns \code{TRUE}. If \code{fn} is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector.
@@ -76,7 +76,11 @@ The \code{cssSelector} is any CSS selector that can be parsed with \code{\link[=
 \itemize{
 \item \verb{$append(...)}: Add all \code{...} objects as children \strong{after} any existing children to the selected elements. Similar to \code{\link[=tagAppendChildren]{tagAppendChildren()}}
 \item \verb{$prepend(...)}: Add all \code{...} objects as children \strong{before} any existing children to the selected elements. A variation of \code{\link[=tagAppendChildren]{tagAppendChildren()}}
-\item \verb{$empty(...)}: Remove all children in the selected elements. Use this method before calling \verb{$append(...)} to replace all selected elements' children.
+\item \verb{$empty()}: Remove all children in the selected elements. Use this method before calling \verb{$append(...)} to replace all selected elements' children.
+\item \verb{$after(...)}: Add all \code{...} objects as siblings after each of the selected elements.
+\item \verb{$before(...)}: Add all \code{...} objects as siblings before each of the selected elements.
+\item \verb{$replaceWith(...)}: Replace all selected elements with \code{...}. This also sets the selected elements to an empty set.
+\item \verb{$remove(...)}: Remove all selected elements from the \code{tagQuery()} object. The selected elements is set to an empty set.
 }
 }
 

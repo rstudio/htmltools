@@ -3,7 +3,6 @@
 NULL
 
 # TODO-barret
-# * Adjust Siblings
 # * Work with a child node as a html_dep
 #   * Tag lists and tag objects must work with this
 # * Remove obviously dead code
@@ -439,7 +438,7 @@ tagQuery <- function(tags) {
         #'
         #' ## Select tags
         #'
-        #' The `cssSelector` is any CSS selector that can be parsed with [`as_selector()`]
+        #' The `cssSelector` is any CSS selector that can be parsed with [`asSelector()`]
         #'
         #' * `$find(cssSelector)`: Find all tag elements matching the `cssSelector` starting from each selected element. The selected elements will be updated with the found set of tag environment.
         find = function(cssSelector) {
@@ -560,41 +559,58 @@ tagQuery <- function(tags) {
         #' * `$append(...)`: Add all `...` objects as children **after** any existing children to the selected elements. Similar to [`tagAppendChildren()`]
         append = function(...) {
           rebuild()
-          tagQueryChildrenAppend(getSelected(), ...)
+          tagQueryChildrenAppend(manuallySelected(), ...)
           rebuild()
           self
         },
         #' * `$prepend(...)`: Add all `...` objects as children **before** any existing children to the selected elements. A variation of [`tagAppendChildren()`]
         prepend = function(...) {
           rebuild()
-          tagQueryChildrenPrepend(getSelected(), ...)
+          tagQueryChildrenPrepend(manuallySelected(), ...)
           rebuild()
           self
         },
         #' * `$empty()`: Remove all children in the selected elements. Use this method before calling `$append(...)` to replace all selected elements' children.
         empty = function() {
           rebuild()
-          tagQueryChildrenEmpty(getSelected())
+          tagQueryChildrenEmpty(manuallySelected())
           # no need to rebuild
           self
         },
         ## end Adjust Children
 
         ## Adjust Siblings
-        # TODO-followup pr - All methods below
-        # Remove the set of matched elements from the DOM.
-        # remove = function() {
-        #   rebuild()
-        #   tagQueryRemove(manuallySelected())
-        #   rebuild()
-        #   self
-        # },
-        # .after()
-        # Insert content, specified by the parameter, after each element in the set of matched elements.
-        # .before()
-        # Insert content, specified by the parameter, before each element in the set of matched elements.
-        # .replaceWith()
-        # Replace each element in the set of matched elements with the provided new content and return the set of elements that was removed.
+        #' * `$after(...)`: Add all `...` objects as siblings after each of the selected elements.
+        after = function(...) {
+          rebuild()
+          tagQuerySiblingAfter(manuallySelected(), ...)
+          rebuild()
+          self
+        },
+        #' * `$before(...)`: Add all `...` objects as siblings before each of the selected elements.
+        before = function(...) {
+          rebuild()
+          tagQuerySiblingBefore(manuallySelected(), ...)
+          rebuild()
+          self
+        },
+        #' * `$replaceWith(...)`: Replace all selected elements with `...`. This also sets the selected elements to an empty set.
+        replaceWith = function(...) {
+          rebuild()
+          tagQuerySiblingReplaceWith(manuallySelected(), ...)
+          setSelected(list())
+          rebuild()
+          self
+        },
+        #' * `$remove(...)`: Remove all selected elements from the `tagQuery()` object. The selected elements is set to an empty set.
+        remove = function() {
+          rebuild()
+          tagQuerySiblingRemove(manuallySelected())
+          # Remove items from selected info
+          setSelected(list())
+          rebuild()
+          self
+        },
         ## end Adjust Siblings
 
         ## Generic Methods
@@ -878,6 +894,28 @@ tagQuerySiblingRemove <- function(els) {
     elParent$children[[childPos]] <- NULL
   })
 }
+# Add siblings after each el
+tagQuerySiblingAfter <- function(els, ...) {
+  tagQueryMatchChildRev(els, function(elParent, el, childPos) {
+    tagInsertChildren(elParent, after = childPos, ...)
+  })
+}
+# Add siblings before each el
+tagQuerySiblingBefore <- function(els, ...) {
+  tagQueryMatchChildRev(els, function(elParent, el, childPos) {
+    tagInsertChildren(elParent, after = childPos - 1, ...)
+  })
+}
+# Replace all `el` objects with `...`
+tagQuerySiblingReplaceWith <- function(els, ...) {
+  tagQueryMatchChildRev(els, function(elParent, el, childPos) {
+    # Remove the current element
+    el$parent <- NULL
+    elParent$children[[childPos]] <- NULL
+    # Replace with ... content where the child was
+    tagInsertChildren(elParent, after = childPos - 1, ...)
+  })
+}
 
 
 tagQuerySetChildren <- function(els, ...) {
@@ -887,23 +925,23 @@ tagQuerySetChildren <- function(els, ...) {
   })
 }
 tagQueryChildrenEmpty <- function(els) {
-  tagQuerySetChildren(els, list())
+  # do not include any arguments.
+  # `dots_list()` returns an empty named list()
+  tagQuerySetChildren(els)
 }
 tagQueryChildrenAppend <- function(els, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
-    tagAppendChildren(el, ...)
+    tagInsertChildren(el, after = length(el$children), ...)
   })
 }
 tagQueryChildrenPrepend <- function(els, ...) {
+  tagQueryChildrenInsert(els, after = 0, ...)
+}
+tagQueryChildrenInsert <- function(els, after, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
-    curChildren <- el$children
-    if (length(curChildren) == 0) {
-      tagSetChildren(el, ...)
-    } else {
-      tagSetChildren(el, ..., curChildren)
-    }
+    tagInsertChildren(el, after = after, ...)
   })
 }
 
@@ -946,7 +984,7 @@ tagQueryAttrHas <- function(els, attr) {
   unlist(
     tagQueryLapply(els, function(el) {
       if (!isTagEnv(el)) return(FALSE)
-      !is.null(el$attribs[[attr]])
+      tagHasAttribute(el, attr)
     })
   )
 }

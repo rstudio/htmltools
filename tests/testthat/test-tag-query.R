@@ -404,17 +404,15 @@ test_that("tagQuery()$addAttrs(), $removeAttrs(), $emptyAttrs(), $hasAttr", {
 })
 
 test_that("tagQuery()$append()", {
-  xTags <- div()
+  xTags <- div(span("child"))
   x <- tagQuery(xTags)
+  x$find("div")
 
   newa <- span("a")
   x$append(newa)
   expect_equal_tags(
     x$asTags(selected = FALSE),
-    tagList(
-      xTags,
-      newa
-    )
+    div(span("child"), newa)
   )
 
   new1 <- div("new1")
@@ -423,27 +421,21 @@ test_that("tagQuery()$append()", {
 
   expect_equal_tags(
     x$asTags(selected = FALSE),
-    tagList(
-      xTags,
-      newa,
-      new1,
-      new2
-    )
+    div(span("child"), newa, new1, new2)
   )
 })
 
 test_that("tagQuery()$prepend()", {
-  xTags <- div()
+  xTags <- div(span("child"))
   x <- tagQuery(xTags)
+
+  x$find("div")
 
   newa <- span("a")
   x$prepend(newa)
   expect_equal_tags(
     x$asTags(selected = FALSE),
-    tagList(
-      newa,
-      xTags
-    )
+    div(newa, span("child"))
   )
 
   new1 <- div("new1")
@@ -452,11 +444,7 @@ test_that("tagQuery()$prepend()", {
 
   expect_equal_tags(
     x$asTags(selected = FALSE),
-    tagList(
-      new1, new2,
-      newa,
-      xTags
-    )
+    div(new1, new2, newa, span("child"))
   )
 })
 
@@ -527,6 +515,79 @@ test_that("tagQuery()$root() & tagQuery()$rebuild()", {
 })
 
 
+
+
+
+test_that("tagQuery()$remove()", {
+
+  xTags <- div(span("a"), span("b", class = "A"), span("c"), span("d", class = "A"), span("e"))
+  x <- tagQuery(xTags)
+  x$find(".A")
+  x$remove()
+
+  expect_length(x$selected(), 0)
+
+  expect_equal_tags(
+    x$asTags(selected = FALSE),
+    div(span("a"), span("c"), span("e"))
+  )
+
+  x$reset()
+  x$find("span")
+  expect_length(x$selected(), 3)
+  x$remove()
+  expect_equal_tags(
+    x$asTags(selected = FALSE),
+    div()
+  )
+})
+
+
+test_that("tagQuery()$after()", {
+  xTags <- div()
+  x <- tagQuery(xTags)
+
+  x$find("div")
+
+  newa <- span("a")
+  x$after(newa)
+  expect_equal_tags(
+    x$asTags(selected = FALSE),
+    tagList(xTags, newa)
+  )
+
+  new1 <- div("new1")
+  new2 <- div("new2")
+  x$after(new1, new2)
+
+  expect_equal_tags(
+    x$asTags(selected = FALSE),
+    tagList(xTags, new1, new2, newa)
+  )
+})
+
+test_that("tagQuery()$before()", {
+  xTags <- div()
+  x <- tagQuery(xTags)
+
+  x$find("div")
+
+  newa <- span("a")
+  x$before(newa)
+  expect_equal_tags(
+    x$asTags(selected = FALSE),
+    tagList(newa, xTags)
+  )
+
+  new1 <- div("new1")
+  new2 <- div("new2")
+  x$before(new1, new2)
+
+  expect_equal_tags(
+    x$asTags(selected = FALSE),
+    tagList(newa, new1, new2, xTags)
+  )
+})
 
 
 
