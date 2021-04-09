@@ -29,7 +29,7 @@ NULL
 
 
 
-## Skip these implementations for now as the tag graph methods are small and composable.
+## Skip these implementations for now as the tagQuery methods are small and composable.
 ## Instead write them where they are needed since they are small. (Just like we don't wrap dplyr code)
 # tagReplaceAttributesAt <- function(tag, css_selector, ...) {
 #   tagQuery(tag)$find(css_selector)$replace_attrs(...)$as_tags(selected = FALSE)
@@ -48,8 +48,7 @@ NULL
 # }
 
 
-# # Design notes for tag graph..
-
+# # Design notes for tagQuery:
 # ## Using stock R objects
 #
 # Advantages of standard R objects recursion
@@ -65,7 +64,7 @@ NULL
 # ## Using environments elements
 #
 # Advantages
-# * Fast to convert to a "linked list graph" of elements
+# * Fast to convert to a "linked list" of tag environments
 # * Access to parents
 # * Calculations on siblings can now be done, even after alterations have been completed
 # * Once a `find(".x")` has been completed, a set of element environment pointers can be stored.
@@ -84,7 +83,7 @@ NULL
 # ----------
 
 # # Current design decisions
-# * Tag graphs or tag environments can NOT be used in UI. These objects MUST be converted back to standard tag objects.
+# * tagQuery objects or tag environments can NOT be used in UI. These objects MUST be converted back to standard tag objects.
 # * tagFunctions will not be altered in place
 #   * To alter tagFunction()s, use the `onRender(x)` method to register a method to be called after `as.tags(x)` is called.
 #   * `onRender(x, expr)` will wrap create a tag function that will resolve the tags before running the expr.
@@ -210,8 +209,8 @@ safeEnvToList <- function(x, oldClass = NULL) {
 
 # Do not export to encourage direct use of `tagQuery()`
 asTagEnv <- function(x) {
-  if (isTagGraph(x)) {
-    return(asTagEnv(x$graph()))
+  if (isTagQuery(x)) {
+    return(asTagEnv(x$root()))
   }
 
   if (!isTagEnv(x)) {
@@ -274,7 +273,7 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
 }
 
 # This method MUST undo everything done in `asTagEnv(x)`
-# Do not export to encourage direct use of `tagGraph()$asTags()`
+# Do not export to encourage direct use of `tagQuery()$asTags()`
 tagEnvToTags <- function(x) {
   if (isTagEnv(x)) {
     xEl <- x
@@ -295,15 +294,15 @@ tagEnvToTags <- function(x) {
 isTagEnv <- function(x) {
   inherits(x, "htmltools.tag.env")
 }
-isTagGraph <- function(x) {
-  inherits(x, "htmltools.tag.graph")
+isTagQuery <- function(x) {
+  inherits(x, "htmltools.tag.query")
 }
 assertNotTagEnvLike <- function(x, fnName) {
   if (isTagEnv(x)) {
-    stop("Tag environment objects which inherit `htmltools.tag.env` are not allowed to be processed in `", fnName, "()`")
+    stop("Tag environment objects (which inherit `htmltools.tag.env`) are not allowed to be processed in `", fnName, "()`")
   }
-  if (isTagGraph(x)) {
-    stop("Tag graphs which inherit `htmltools.tag.graph` are not allowed to be processed in `", fnName, "()`")
+  if (isTagQuery(x)) {
+    stop("`tagQuery()` structures (which inherit `htmltools.tag.query`) are not allowed to be processed in `", fnName, "()`")
   }
   invisible()
 }
@@ -336,31 +335,31 @@ str.htmltools.tag.env <- function(object, ...) {
 }
 
 #' @export
-as.tags.htmltools.tag.graph <- function(x, ...) {
+as.tags.htmltools.tag.query <- function(x, ...) {
   stop("Method not allowed", call. = TRUE)
 }
 #' @export
-print.htmltools.tag.graph <- function(x, ...) {
+print.htmltools.tag.query <- function(x, ...) {
   x$print()
 }
 #' @export
-format.htmltools.tag.graph <- function(x, ...) {
+format.htmltools.tag.query <- function(x, ...) {
   stop(
-    "`format.htmltools.tag.graph(x)` not allowed.\n",
+    "`format.htmltools.tag.query(x)` not allowed.\n",
     "Please call `format()` the result of `$asTags()`"
   )
 }
 #' @export
-as.character.htmltools.tag.graph <- function(x, ...) {
+as.character.htmltools.tag.query <- function(x, ...) {
   stop(
-    "`as.character.htmltools.tag.graph(x)` not allowed.\n",
+    "`as.character.htmltools.tag.query(x)` not allowed.\n",
     "Please call `as.character()` the result of `$asTags()`"
   )
 }
 
 
 
-#' Tag graph
+#' Tag Query
 #'
 #' `r lifecycle::badge("experimental")`
 #'
@@ -376,21 +375,21 @@ as.character.htmltools.tag.graph <- function(x, ...) {
 #'
 #' This style of alteration is not easily achieved when using typical "pass by value" R objects or standard tag objects.
 #'
-#' # Tag graph components
+#' # Tag Query components
 #'
 #' ## Tag environments
 #'
-#' "Tag environments" are the building blocks to `tagQuery()`. When creating a `tagQuery()`, each tag object is converted to a tag environment. This conversion allows for element alterations to happen in place (pass by reference). Meaning that if a css class is added to each selected tag environment using `$addClass()` and the result of the method call is ignored, the selected tag environments in the tag graph will still contain the class addition.  The added class will exist when the tag graph is converted back to standard tags objects with `$asTags()`.
+#' "Tag environments" are the building blocks to `tagQuery()`. When creating a `tagQuery()`, each tag object is converted to a tag environment. This conversion allows for element alterations to happen in place (pass by reference). Meaning that if a css class is added to each selected tag environment using `$addClass()` and the result of the method call is ignored, the selected tag environments within the tag query object will still contain the class addition.  The added class will exist when the tag query tag environment are converted back to standard tags objects with `$asTags()`.
 #'
-#' Tag environments also contain an extra field, `.$parent`. The `.$parent` value contains their parent tag environment. The top level tags supplied to `tagQuery()` will also have a shared parent element. (The shared parent element will have a `NULL` `.$parent` value.) This allows for performing sibling alterations at the top level of the graph.
+#' Tag environments also contain an extra field, `.$parent`. The `.$parent` value contains their parent tag environment. The top level tags supplied to `tagQuery()` will also have a shared parent element. (The shared parent element will have a `NULL` `.$parent` value.) This allows for performing sibling alterations at the top level of the tag query object.
 #'
-#' The set of tag environments in a pointing to each other within a tag graph can be thought of as a linked list while allowing for a "1 to many" parent to child relationship and up to 1 parent per child.
+#' The set of tag environments in a pointing to each other within a tag query object can be thought of as a linked list while allowing for a "1 to many" parent to child relationship and up to 1 parent per child.
 #'
-#' ## Tag graphs
+#' ## Tag Query
 #'
-#' A `tagQuery()` behaves simliar to an R6 object (but a tag graph is not implemented with `R6`). The `tagQuery()`'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. `$selected()` or `$asTags()`.
+#' A `tagQuery()` behaves simliar to an R6 object (but a `tagQuery()` object is not implemented with `R6`). The `tagQuery()`'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. `$selected()` or `$asTags()`.
 #'
-#' Internally, two important pieces of information are maintained: the root element and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to `tagQuery(tag=)`. However, the selected elements are a list of tag environments that update for every `$find(cssSelector)` call.  The selected elements are initialized to a list containing the `root` tag environment. All `tagQuery()` methods will act on the selected elements unless declared otherwise.
+#' Internally, two important pieces of information are maintained: the root elements and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to `tagQuery(tag=)`. However, the selected elements are a list of tag environments that update for every `$find(cssSelector)` call.  The selected elements are initialized to a list containing the `root` tag environment. All `tagQuery()` methods will act on the selected elements unless declared otherwise.
 #'
 #'
 #' @section Limitations:
@@ -433,11 +432,11 @@ tagQuery <- function(tags) {
 
   self <-
     structure(
-      class = "htmltools.tag.graph",
+      class = "htmltools.tag.query",
       list(
         #' @details # Methods
         #'
-        #' All methods return the altered tag graph object unless otherwise stated.
+        #' All methods return the altered tag query object unless otherwise stated.
         #'
         #' ## Select tags
         #' * `$find(cssSelector)`: Find all tag elements matching the `cssSelector` starting from each selected element. The selected elements will be updated with the found set of tag environment.
@@ -598,7 +597,7 @@ tagQuery <- function(tags) {
 
         ## Generic Methods
         #' ## Generic methods
-        #' * `$each(fn)`: Perform function `fn` on each of the selected elements. `fn` should accept two arguments: a selected element and the selected element's position within the selected elements. This argument order is different than jQuery's `$().each()` as there is no concept of a `this` object inside the function execution. To stay consistent with other methods, the each of the selected tag environments will be given first, followed by the index position. Any alterations to the provided tag environments will persist in calling tag graph.
+        #' * `$each(fn)`: Perform function `fn` on each of the selected elements. `fn` should accept two arguments: a selected element and the selected element's position within the selected elements. This argument order is different than jQuery's `$().each()` as there is no concept of a `this` object inside the function execution. To stay consistent with other methods, the each of the selected tag environments will be given first, followed by the index position. Any alterations to the provided tag environments will persist in calling tag query object.
         each = function(fn) {
           rebuild()
           tagQueryEach(manuallySelected(), fn)
@@ -607,16 +606,16 @@ tagQuery <- function(tags) {
         },
         ## end Generic Methods
 
-        #' ## Tag Graph functions
+        #' ## Tag Query methods
         #' * `$rebuild()`: Makes sure that all tags have been upgraded to tag environments. Objects wrapped in `HTML()` will not be inspected or altered. This method is internally called before each method executes and after any alterations where standard tag objects could be introduced into the tag structure.
         rebuild = function() {
           rebuild()
           self
         },
-        #' * `$graph()`: Return all top level tags environments. If there are more than one, it will be returned within a `tagList()`. If there is only one tag, it will be returned.
-        graph = function() {
+        #' * `$root()`: Return all top level (root) tags environments. If there are more than one, it will be returned within a `tagList()`. If there is only one tag, it will be returned.
+        root = function() {
           rebuild()
-          tagQueryGetGraph(root)
+          tagQueryGetRoot(root)
         },
         #' * `$selected()`: Returns a list of selected tag environments.
         selected = function() {
@@ -628,7 +627,7 @@ tagQuery <- function(tags) {
           rebuild()
           tagQueryGet(manuallySelected(), position)
         },
-        ## end Tag Graph fns
+        ## end Tag Query fns
 
         ## To tags
         #' ## Convert to tags
@@ -638,13 +637,13 @@ tagQuery <- function(tags) {
           if (isTRUE(selected)) {
             tagQuerySelectedAsTags(manuallySelected())
           } else {
-            tagQueryGraphAsTags(root)
+            tagQueryRootAsTags(root)
           }
         },
         ## end To tags
 
         #' Internal methods
-        #' * `$print()`: Prints the tag graph. Called by `print.htmltools.tagQuery()`
+        #' * `$print()`: Prints the `tagQuery()` object. Called by `print.htmltools.tag.query()`
         print = function() {
           rebuild()
           # Allows `$print()` to know if there is a root el
@@ -696,8 +695,8 @@ isRootTag <- function(x) {
 # (Don't fight the structures... embrace them!)
 wrapWithRootTag <- function(x) {
 
-  if (isTagGraph(x)) {
-    x <- x$graph()
+  if (isTagQuery(x)) {
+    x <- x$root()
   }
 
   root <- tag("tagQuery", list())
@@ -706,7 +705,7 @@ wrapWithRootTag <- function(x) {
 
 
 # Return a tag env, tagList(tag envs), or NULL
-tagQueryGetGraph <- function(root) {
+tagQueryGetRoot <- function(root) {
   children <- root$children
   len <- length(children)
   if (len == 1) {
@@ -736,9 +735,9 @@ tagQueryGet <- function(selected, position) {
   selected[[position]]
 }
 
-# Return the graph as tags
-tagQueryGraphAsTags <- function(root) {
-  tagQueryGetGraph(tagEnvToTags(root))
+# Return the top level tags as tags
+tagQueryRootAsTags <- function(root) {
+  tagQueryGetRoot(tagEnvToTags(root))
 }
 
 tagQuerySelectedAsTags <- function(selected) {
@@ -751,16 +750,16 @@ tagQuerySelectedAsTags <- function(selected) {
 }
 
 tagQueryPrint <- function(root, selected) {
-  cat("Graph:\n")
-  print(tagQueryGraphAsTags(root))
+  cat("Root:\n")
+  print(tagQueryRootAsTags(root))
 
-  cat("\nSelected Elements:")
+  cat("\nSelected:")
 
   if (length(selected) == 0) {
     cat(" (Empty)\n")
   } else {
     if (length(selected) == 1 && isRootTag(selected[[1]])) {
-      cat(" (Graph)\n")
+      cat(" (Root)\n")
     } else {
       cat("\n")
       print(tagQuerySelectedAsTags(selected))
@@ -1215,7 +1214,7 @@ elMatchesSelector <- function(el, selector) {
 
 tagQueryFindDescendants <- function(els, selector) {
   if (!isSelector(selector)) {
-    selector <- cssSelectorToSelector(cssSelector)
+    selector <- cssSelectorToSelector(selector)
   }
 
   foundStack <- envirStackUnique()
@@ -1302,9 +1301,9 @@ tagEnvExplain <- function(x, ..., before = "", max = Inf, seenMap = envirMap()) 
     cat(before, ..., "\n", sep = "")
   }
 
-  if (isTagGraph(x)) {
-    cat0("Graph:\n")
-    tagEnvExplain(x$graph(), before = before, max = max, seenMap = seenMap)
+  if (isTagQuery(x)) {
+    cat0("Tags:\n")
+    tagEnvExplain(x$root(), before = before, max = max, seenMap = seenMap)
     cat0("Selected:\n")
     tagEnvExplain(x$selected(), before = before, max = 1, seenMap = seenMap)
     return(invisible(x))

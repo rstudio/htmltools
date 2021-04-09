@@ -127,7 +127,7 @@ test_that("tagQuery() root values", {
 test_that("tagQuery() structure", {
   x <- tagQuery(div(span()))
 
-  expect_s3_class(x, "htmltools.tag.graph")
+  expect_s3_class(x, "htmltools.tag.query")
   lapply(x, function(xI) { expect_true(is.function(xI)) })
 })
 
@@ -483,20 +483,20 @@ test_that("tagQuery()$each()", {
 
 
 
-test_that("tagQuery()$graph() & tagQuery()$rebuild()", {
+test_that("tagQuery()$root() & tagQuery()$rebuild()", {
 
   xTags <- div(span("a"), h1("title"), span("b"))
   x <- tagQuery(xTags)
 
   # pull out root el
-  root <- x$graph()
+  root <- x$root()
   # add a child to the root
   root$children[[length(root$children) + 1]] <- div("test")
   # rebuild the root within the graph (which is the root var in the line above)
   x$rebuild()
 
   # retrieve the root (and direct children) from graph
-  rootChildren <- x$graph()$children
+  rootChildren <- x$root()$children
   lastChild <- rootChildren[[length(rootChildren)]]
 
   # make sure the last child is a tag env (not a standard tag)
@@ -507,7 +507,7 @@ test_that("tagQuery()$graph() & tagQuery()$rebuild()", {
 
 
 
-test_that("tagQuery()$graph() & tagQuery()$rebuild()", {
+test_that("tagQuery()$root() & tagQuery()$rebuild()", {
 
   xTags <- div(span("a"), span("b"), span("c"), span("d"), span("e"))
   x <- tagQuery(xTags)

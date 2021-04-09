@@ -2,7 +2,7 @@
 % Please edit documentation in R/tag_env.R
 \name{tagQuery}
 \alias{tagQuery}
-\title{Tag graph}
+\title{Tag Query}
 \usage{
 tagQuery(tags)
 }
@@ -25,26 +25,26 @@ This function is VERY experimental. The result api will most likely change. \str
 
 This style of alteration is not easily achieved when using typical "pass by value" R objects or standard tag objects.
 }
-\section{Tag graph components}{
+\section{Tag Query components}{
 \subsection{Tag environments}{
 
-"Tag environments" are the building blocks to \code{tagQuery()}. When creating a \code{tagQuery()}, each tag object is converted to a tag environment. This conversion allows for element alterations to happen in place (pass by reference). Meaning that if a css class is added to each selected tag environment using \verb{$addClass()} and the result of the method call is ignored, the selected tag environments in the tag graph will still contain the class addition.  The added class will exist when the tag graph is converted back to standard tags objects with \verb{$asTags()}.
+"Tag environments" are the building blocks to \code{tagQuery()}. When creating a \code{tagQuery()}, each tag object is converted to a tag environment. This conversion allows for element alterations to happen in place (pass by reference). Meaning that if a css class is added to each selected tag environment using \verb{$addClass()} and the result of the method call is ignored, the selected tag environments within the tag query object will still contain the class addition.  The added class will exist when the tag query tag environment are converted back to standard tags objects with \verb{$asTags()}.
 
-Tag environments also contain an extra field, \code{.$parent}. The \code{.$parent} value contains their parent tag environment. The top level tags supplied to \code{tagQuery()} will also have a shared parent element. (The shared parent element will have a \code{NULL} \code{.$parent} value.) This allows for performing sibling alterations at the top level of the graph.
+Tag environments also contain an extra field, \code{.$parent}. The \code{.$parent} value contains their parent tag environment. The top level tags supplied to \code{tagQuery()} will also have a shared parent element. (The shared parent element will have a \code{NULL} \code{.$parent} value.) This allows for performing sibling alterations at the top level of the tag query object.
 
-The set of tag environments in a pointing to each other within a tag graph can be thought of as a linked list while allowing for a "1 to many" parent to child relationship and up to 1 parent per child.
+The set of tag environments in a pointing to each other within a tag query object can be thought of as a linked list while allowing for a "1 to many" parent to child relationship and up to 1 parent per child.
 }
 
-\subsection{Tag graphs}{
+\subsection{Tag Query}{
 
-A \code{tagQuery()} behaves simliar to an R6 object (but a tag graph is not implemented with \code{R6}). The \code{tagQuery()}'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. \verb{$selected()} or \verb{$asTags()}.
+A \code{tagQuery()} behaves simliar to an R6 object (but a \code{tagQuery()} object is not implemented with \code{R6}). The \code{tagQuery()}'s methods will return itself as much as possible, unless the method is directly asking for information, e.g. \verb{$selected()} or \verb{$asTags()}.
 
-Internally, two important pieces of information are maintained: the root element and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to \code{tagQuery(tag=)}. However, the selected elements are a list of tag environments that update for every \verb{$find(cssSelector)} call.  The selected elements are initialized to a list containing the \code{root} tag environment. All \code{tagQuery()} methods will act on the selected elements unless declared otherwise.
+Internally, two important pieces of information are maintained: the root elements and the selected elements. The root tag environment will always point (after upgrading to a tag environment) to the original tag object provided to \code{tagQuery(tag=)}. However, the selected elements are a list of tag environments that update for every \verb{$find(cssSelector)} call.  The selected elements are initialized to a list containing the \code{root} tag environment. All \code{tagQuery()} methods will act on the selected elements unless declared otherwise.
 }
 }
 
 \section{Methods}{
-All methods return the altered tag graph object unless otherwise stated.
+All methods return the altered tag query object unless otherwise stated.
 \subsection{Select tags}{
 \itemize{
 \item \verb{$find(cssSelector)}: Find all tag elements matching the \code{cssSelector} starting from each selected element. The selected elements will be updated with the found set of tag environment.
@@ -80,14 +80,14 @@ All methods return the altered tag graph object unless otherwise stated.
 
 \subsection{Generic methods}{
 \itemize{
-\item \verb{$each(fn)}: Perform function \code{fn} on each of the selected elements. \code{fn} should accept two arguments: a selected element and the selected element's position within the selected elements. This argument order is different than jQuery's \verb{$().each()} as there is no concept of a \code{this} object inside the function execution. To stay consistent with other methods, the each of the selected tag environments will be given first, followed by the index position. Any alterations to the provided tag environments will persist in calling tag graph.
+\item \verb{$each(fn)}: Perform function \code{fn} on each of the selected elements. \code{fn} should accept two arguments: a selected element and the selected element's position within the selected elements. This argument order is different than jQuery's \verb{$().each()} as there is no concept of a \code{this} object inside the function execution. To stay consistent with other methods, the each of the selected tag environments will be given first, followed by the index position. Any alterations to the provided tag environments will persist in calling tag query object.
 }
 }
 
-\subsection{Tag Graph functions}{
+\subsection{Tag Query methods}{
 \itemize{
 \item \verb{$rebuild()}: Makes sure that all tags have been upgraded to tag environments. Objects wrapped in \code{HTML()} will not be inspected or altered. This method is internally called before each method executes and after any alterations where standard tag objects could be introduced into the tag structure.
-\item \verb{$graph()}: Return all top level tags environments. If there are more than one, it will be returned within a \code{tagList()}. If there is only one tag, it will be returned.
+\item \verb{$root()}: Return all top level (root) tags environments. If there are more than one, it will be returned within a \code{tagList()}. If there is only one tag, it will be returned.
 \item \verb{$selected()}: Returns a list of selected tag environments.
 \item \verb{$get(position)}: Returns the selected tag element at the position \code{position}.
 }
@@ -97,7 +97,7 @@ All methods return the altered tag graph object unless otherwise stated.
 \itemize{
 \item \verb{$asTags(selected = TRUE)}: If \code{selected = TRUE}, then all previously found elements (and their descendants) will be converted to tags. If \code{selected = FALSE}, the top level tag elements (and their descendants) will be converted to standard tags. If there is more than one element being returned, a \code{tagList()} will be used to hold all of the objects.
 Internal methods
-\item \verb{$print()}: Prints the tag graph. Called by \code{print.htmltools.tagQuery()}
+\item \verb{$print()}: Prints the \code{tagQuery()} object. Called by \code{print.htmltools.tag.query()}
 }
 }
 }
