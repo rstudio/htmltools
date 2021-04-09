@@ -2,13 +2,6 @@
 #' @importFrom rlang sexp_address
 NULL
 
-# TODO-barret
-# * Work with a child node as a html_dep
-#   * Tag lists and tag objects must work with this
-# * Remove obviously dead code
-# * Describe why using `props` and not `attr`
-#    * Skipping. The htmltools package has no concept of props. This would only create confusion.
-
 
 # TODO-barret followup PR
 # * onRender(x, fn) - tagFunction(x, fn)
@@ -256,7 +249,7 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
       x$children <- unname(lapply(
         # Simplify the structures by flatting the tags
         # Does NOT recurse to grand-children etc.
-        flattenTags(x$children, validate = FALSE),
+        flattenTagsRaw(x$children),
         # recurse through each child
         asTagEnv_,
         parent = x,
@@ -363,7 +356,7 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #'
 #' This function is VERY experimental. The result api will most likely change. **Use at your own risk.**
 #'
-#' `tagQuery()` is modeled after [`jQuery`](jquery.com)'s [DOM maninipulation methods](https://api.jquery.com/category/manipulation/) and [Tree Traversal](https://api.jquery.com/category/traversing/tree-traversal/) categories with some alterations. One of the main differences is that there is no centralized `window.document` object to use or reference. Instead, only the original tags provided to `tagQuery(tags=)` are fully search-able.
+#' `tagQuery()` is modeled after [`jQuery`](https://jquery.com/)'s [DOM maninipulation methods](https://api.jquery.com/category/manipulation/) and [Tree Traversal](https://api.jquery.com/category/traversing/tree-traversal/) categories with some alterations. One of the main differences is that there is no centralized `window.document` object to use or reference. Instead, only the original tags provided to `tagQuery(tags=)` are fully search-able. This difference requires a call to `$find(cssSelector)` to make any meaningful alterations to the `tagQuery()` object.
 #'
 #' `tagQuery()` is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard [`tag`] objects. With `tagQuery()`, it is possible to find all `<span>` tags that match the css selector `div .inner span`, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to
 #'
@@ -432,15 +425,24 @@ tagQuery <- function(tags) {
     structure(
       class = "htmltools.tag.query",
       list(
-        #' @details # Methods
+        #' @details
+        #' # CSS Selector
+        #'
+        #' The `cssSelector` parameter to many methods is a typical CSS selector. Currently `tagQuery()` understands how to handle any combination of the following CSS selector information:
+        #' * `element`: Match against a tag name. Example: `div`
+        #' * `id`: Match against a tag `id` attribute. Example: `#myID`
+        #' * `class`: Match against a tag's class attribute. Example: `.my-class`. This may include multiple classes in any order.
+        #'
+        #' The `$find(cssSelector)` method allows for a CSS selector with multiple selections. Example: `div span` or `.outer > span.inner`. All other functions only allow for single-element CSS selections, such as `div#myID.my-class`.
+        #'
+        #' # Methods
         #'
         #' All methods return the altered tag query object unless otherwise stated.
         #'
         #' ## Select tags
         #'
-        #' The `cssSelector` is any CSS selector that can be parsed with [`asSelector()`]
         #'
-        #' * `$find(cssSelector)`: Find all tag elements matching the `cssSelector` starting from each selected element. The selected elements will be updated with the found set of tag environment.
+        #' * `$find(cssSelector)`: Find all tag elements matching the multi-element `cssSelector` starting from each selected element's children. If nothing has been selected, it will start from the root elements. The tag query object's selected elements will be updated with the matching set of tag environments.
         find = function(cssSelector) {
           rebuild()
           setSelected(
@@ -714,11 +716,16 @@ isRootTag <- function(x) {
 wrapWithRootTag <- function(x) {
 
   if (isTagQuery(x)) {
-    x <- x$root()
+    x <- x$asTags(selected = FALSE)
   }
 
   root <- tag("tagQuery", list())
-  tagSetChildren(root, x)
+  root <- tagSetChildren(root, x)
+  root$children <- flattenTagsRaw(root$children)
+  if (!is.list(root$children) || (sum(vapply(root$children, isTag, logical(1))) == 0)) {
+    stop("The initial set of tags must have at least 1 standard tag object. Ex: `div()`")
+  }
+  root
 }
 
 
@@ -1409,78 +1416,4 @@ tagEnvExplain <- function(x, ..., before = "", max = Inf, seenMap = envirMap()) 
 
   invisible(x)
 
-}
-
-
-if (FALSE) {
-  s <-
-    div(
-      class = "outer",
-      div(
-        class = "inner",
-        shiny::sliderInput("x", "X", 1, 4, 2)
-      )
-    )
-  tagQuery(s) $ find(".inner") $ parent() $ addClass("bar") $ graphAsTags()
-
-  # Using square bracket
-  tagQuery(s)[[1]]
-  tagQuery(s)[[1]] <- div("hello")  # Needs to convert to env
-
-  # Using getter/setter
-  tagQuery(s)$get(1)
-  tagQuery(s)$set(1, div("hello"))
-  tagQuery(s)$append(div("hello"))
-
-
-
-  x <- list(a =1, b =2)
-  e <- list2env(x)
-
-  system.time({
-    for (i in 1:1000000) {
-      as.list.environment(e)
-    }
-  })
-
-  system.time({
-    for (i in 1:1000) {
-      x <- asTagEnv(s)
-      x1 <- to_list(x)
-    }
-  })
-
-  library(magrittr)
-
-  s <- sliderInput("x", "X", 1, 4, 2)
-
-  s <- asTagEnv(s)
-  # goal
-  s %>% el_children() %>% add_child(div(class = "foo", "Hello")) %>% find(".foo") %>%
-    to_list()
-
-  s <- asTagEnv(sliderInput("x", "X", 1, 4, 2))
-  s <- asTagEnv(s)
-
-  # library(shiny)
-  ui <- fluidPage(
-    asTagEnv(sliderInput("obs", "Number of observations:",
-      min = 0, max = 1000, value = 500
-    )),
-    # # for html dependencies only
-    # sliderInput("s", "For deps only:",
-    #   min = 0, max = 1000, value = 500
-    # ),
-    plotOutput("distPlot")
-  )
-
-  # Server logic
-  server <- function(input, output) {
-    output$distPlot <- renderPlot({
-      hist(rnorm(input$obs))
-    })
-  }
-
-  # Complete app with UI and server components
-  shinyApp(ui, server)
 }

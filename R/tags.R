@@ -930,10 +930,8 @@ tagify <- function(x) {
 # Given a list of tags, lists, and other items, return a flat list, where the
 # items from the inner, nested lists are pulled to the top level, recursively.
 # Be sure to check for tagEnvLike objects and not allow them
-flattenTags <- function(x, validate = TRUE) {
-  if (validate) {
-    assertNotTagEnvLike(x, "flattenTags")
-  }
+flattenTags <- function(x) {
+  assertNotTagEnvLike(x, "flattenTags")
   if (isTag(x) || isTagEnv(x)) {
     # For tags, wrap them into a list (which will be unwrapped by caller)
     list(x)
@@ -943,7 +941,7 @@ flattenTags <- function(x, validate = TRUE) {
       x
     } else {
       # For items that are lists (but not tags), recurse
-      unlist(lapply(x, flattenTags, validate = validate), recursive = FALSE)
+      unlist(lapply(x, flattenTags), recursive = FALSE)
     }
   } else if (is.character(x)){
     # This will preserve attributes if x is a character with attribute,
@@ -954,6 +952,24 @@ flattenTags <- function(x, validate = TRUE) {
     # For other items, coerce to character and wrap them into a list (which
     # will be unwrapped by caller). Note that this will strip attributes.
     flattenTags(as.tags(x))
+  }
+}
+flattenTagsRaw <- function(x) {
+  if (isTag(x) || isTagEnv(x)) {
+    # For tags, wrap them into a list (which will be unwrapped by caller)
+    list(x)
+  } else if (isTagList(x)) {
+    if (length(x) == 0) {
+      # Empty lists are simply returned
+      x
+    } else {
+      # For items that are lists (but not tags), recurse
+      unlist(lapply(x, flattenTagsRaw), recursive = FALSE)
+    }
+  } else {
+    # This will preserve attributes if x is a character with attribute,
+    # like what HTML() produces
+    list(x)
   }
 }
 

@@ -1,4 +1,7 @@
 
+fakeJqueryDep <- htmlDependency("jquery", "1.11.3", c(href="shared"), script = "jquery.js")
+fakeTagFunction <- tagFunction(function(){ span("inner span") })
+
 sortInternalNames <- function(x) {
   if (is.list(x) && is_named(x)) {
     x[order(names(x))]
@@ -118,14 +121,17 @@ test_that("asTagEnv finds cycles", {
 
 test_that("tagQuery() root values", {
   expect_error(tagQuery(div()), NA)
-  expect_error(tagQuery(list()), NA)
-  expect_error(tagQuery(tagList()), NA)
-  expect_error(tagQuery(5), NA)
-  expect_error(tagQuery("a"), NA)
+  expect_error(tagQuery(list()), "initial set")
+  expect_error(tagQuery(tagList()), "initial set")
+  expect_error(tagQuery(tagList(div())), NA)
+  expect_error(tagQuery(5), "initial set")
+  expect_error(tagQuery("a"), "initial set")
+  expect_error(tagQuery(fakeJqueryDep), "initial set")
+  expect_error(tagQuery(fakeTagFunction), "initial set")
 })
 
 test_that("tagQuery() structure", {
-  x <- tagQuery(div(span()))
+  x <- tagQuery(div())
 
   expect_s3_class(x, "htmltools.tag.query")
   lapply(x, function(xI) { expect_true(is.function(xI)) })
@@ -199,9 +205,7 @@ test_that("tagQuery()$filter()", {
   })
   expect_length(x$selected(), 1)
 
-  # Compare to `"4"` as `flattenTags` calls `as.tags.default()` which calls `as.character()`
-  expect_equal_tags(x$asTags(), span("4"))
-
+  expect_equal_tags(x$asTags(), span(4))
 })
 
 test_that("tagQuery()$children() & tagQuery()$parent()", {
@@ -589,6 +593,23 @@ test_that("tagQuery()$before()", {
   )
 })
 
+
+test_that("tagQuery(x)$asTags(selected = FALSE)", {
+
+  xTags <- tagList(
+    fakeJqueryDep,
+    div(
+      fakeTagFunction
+    )
+  )
+
+  x <- tagQuery(xTags)
+
+  expect_equal_tags(
+    x$asTags(selected = FALSE),
+    xTags
+  )
+})
 
 
 

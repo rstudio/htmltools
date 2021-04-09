@@ -18,7 +18,7 @@ A \code{tagQuery()} object. The \code{tag} supplied will be considered the \code
 \details{
 This function is VERY experimental. The result api will most likely change. \strong{Use at your own risk.}
 
-\code{tagQuery()} is modeled after \href{jquery.com}{\code{jQuery}}'s \href{https://api.jquery.com/category/manipulation/}{DOM maninipulation methods} and \href{https://api.jquery.com/category/traversing/tree-traversal/}{Tree Traversal} categories with some alterations. One of the main differences is that there is no centralized \code{window.document} object to use or reference. Instead, only the original tags provided to \code{tagQuery(tags=)} are fully search-able.
+\code{tagQuery()} is modeled after \href{https://jquery.com/}{\code{jQuery}}'s \href{https://api.jquery.com/category/manipulation/}{DOM maninipulation methods} and \href{https://api.jquery.com/category/traversing/tree-traversal/}{Tree Traversal} categories with some alterations. One of the main differences is that there is no centralized \code{window.document} object to use or reference. Instead, only the original tags provided to \code{tagQuery(tags=)} are fully search-able. This difference requires a call to \verb{$find(cssSelector)} to make any meaningful alterations to the \code{tagQuery()} object.
 
 \code{tagQuery()} is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard \code{\link{tag}} objects. With \code{tagQuery()}, it is possible to find all \verb{<span>} tags that match the css selector \verb{div .inner span}, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r">}}\preformatted{tagQuery(ex_tags)$find("div .inner span")$parent()$parent()$add_class("custom-class")$as_tags(selected = FALSE)
 }\if{html}{\out{</div>}}
@@ -43,13 +43,22 @@ Internally, two important pieces of information are maintained: the root element
 }
 }
 
+\section{CSS Selector}{
+The \code{cssSelector} parameter to many methods is a typical CSS selector. Currently \code{tagQuery()} understands how to handle any combination of the following CSS selector information:
+\itemize{
+\item \code{element}: Match against a tag name. Example: \code{div}
+\item \code{id}: Match against a tag \code{id} attribute. Example: \verb{#myID}
+\item \code{class}: Match against a tag's class attribute. Example: \code{.my-class}. This may include multiple classes in any order.
+}
+
+The \verb{$find(cssSelector)} method allows for a CSS selector with multiple selections. Example: \verb{div span} or \code{.outer > span.inner}. All other functions only allow for single-element CSS selections, such as \code{div#myID.my-class}.
+}
+
 \section{Methods}{
 All methods return the altered tag query object unless otherwise stated.
 \subsection{Select tags}{
-
-The \code{cssSelector} is any CSS selector that can be parsed with \code{\link[=asSelector]{asSelector()}}
 \itemize{
-\item \verb{$find(cssSelector)}: Find all tag elements matching the \code{cssSelector} starting from each selected element. The selected elements will be updated with the found set of tag environment.
+\item \verb{$find(cssSelector)}: Find all tag elements matching the multi-element \code{cssSelector} starting from each selected element's children. If nothing has been selected, it will start from the root elements. The tag query object's selected elements will be updated with the matching set of tag environments.
 \item \verb{$fitler(fn)}: Update the selected elements to a subset of the selected elements given \code{fn(el, i)} returns \code{TRUE}. If \code{fn} is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector.
 \item \verb{$children(cssSelector = NULL)}: Update the selected elements to contain all direct child elements of the selected elements. If a CSS selector is provided, only the direct children matching the single-element CSS selector will be selected.
 \item \verb{$parent(cssSelector = NULL)}: Update the selected elements to contain the unique set of direct parent of the selected elements. If a CSS selector is provided, only the direct parents matching the single-element CSS selector will be selected.
