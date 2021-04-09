@@ -3,10 +3,9 @@
 NULL
 
 # TODO-barret
-# * Change name to `tagQuery`; Camelcase all the things; :-(
+# * Adjust Siblings
 # * Work with a child node as a html_dep
 #   * Tag lists and tag objects must work with this
-# * Adjust Siblings
 # * Remove obviously dead code
 # * Describe why using `props` and not `attr`
 #    * Skipping. The htmltools package has no concept of props. This would only create confusion.
@@ -439,6 +438,9 @@ tagQuery <- function(tags) {
         #' All methods return the altered tag query object unless otherwise stated.
         #'
         #' ## Select tags
+        #'
+        #' The `cssSelector` is any CSS selector that can be parsed with [`as_selector()`]
+        #'
         #' * `$find(cssSelector)`: Find all tag elements matching the `cssSelector` starting from each selected element. The selected elements will be updated with the found set of tag environment.
         find = function(cssSelector) {
           rebuild()
@@ -447,7 +449,7 @@ tagQuery <- function(tags) {
           )
           self
         },
-        #' * `$fitler(fn)`: Update the selected elements to a subset of the selected elements given `fn(el, i)` returns `TRUE`. If `fn` is a CSS selector, then the selected elements will be filtered if they match the single selector value.
+        #' * `$fitler(fn)`: Update the selected elements to a subset of the selected elements given `fn(el, i)` returns `TRUE`. If `fn` is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector.
         filter = function(fn) {
           rebuild()
           setSelected(
@@ -456,7 +458,7 @@ tagQuery <- function(tags) {
           rebuild() # the fn could have altered the content
           self
         },
-        #' * `$children()`: Update the selected elements to contain all direct child elements of the selected elements.
+        #' * `$children(cssSelector = NULL)`: Update the selected elements to contain all direct child elements of the selected elements. If a CSS selector is provided, only the direct children matching the single-element CSS selector will be selected.
         children = function(cssSelector = NULL) {
           rebuild()
           setSelected(
@@ -464,7 +466,7 @@ tagQuery <- function(tags) {
           )
           self
         },
-        #' * `$parent()`: Update the selected elements to contain the unique set of direct parent of the selected elements.
+        #' * `$parent(cssSelector = NULL)`: Update the selected elements to contain the unique set of direct parent of the selected elements. If a CSS selector is provided, only the direct parents matching the single-element CSS selector will be selected.
         parent = function(cssSelector = NULL) {
           rebuild()
           setSelected(
@@ -472,7 +474,7 @@ tagQuery <- function(tags) {
           )
           self
         },
-        #' * `$parents()`: Update the selected elements to contain the unique set of all ancestors of the selected elements.
+        #' * `$parents(cssSelector = NULL)`: Update the selected elements to contain the unique set of all ancestors of the selected elements. If a CSS selector is provided, only the ancestors matching the single-element CSS selector will be selected.
         parents = function(cssSelector = NULL) {
           rebuild()
           setSelected(
@@ -480,7 +482,7 @@ tagQuery <- function(tags) {
           )
           self
         },
-        #' * `siblings()`: Get the siblings of each element in the set of matched elements.
+        #' * `siblings(cssSelector = NULL)`: Get the siblings of each element in the set of matched elements. If a CSS selector is provided, only the siblings matching the single-element CSS selector will be selected.
         siblings = function(cssSelector = NULL) {
           rebuild()
           setSelected(
@@ -488,7 +490,7 @@ tagQuery <- function(tags) {
           )
           self
         },
-        #' * `$reset()`: Resets the selected elements to the root.
+        #' * `$reset()`: Resets the selected elements to the top level (root) tags.
         reset = function() {
           rebuild()
           setSelected(

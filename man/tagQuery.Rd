@@ -46,14 +46,16 @@ Internally, two important pieces of information are maintained: the root element
 \section{Methods}{
 All methods return the altered tag query object unless otherwise stated.
 \subsection{Select tags}{
+
+The \code{cssSelector} is any CSS selector that can be parsed with \code{\link[=as_selector]{as_selector()}}
 \itemize{
 \item \verb{$find(cssSelector)}: Find all tag elements matching the \code{cssSelector} starting from each selected element. The selected elements will be updated with the found set of tag environment.
-\item \verb{$fitler(fn)}: Update the selected elements to a subset of the selected elements given \code{fn(el, i)} returns \code{TRUE}. If \code{fn} is a CSS selector, then the selected elements will be filtered if they match the single selector value.
-\item \verb{$children()}: Update the selected elements to contain all direct child elements of the selected elements.
-\item \verb{$parent()}: Update the selected elements to contain the unique set of direct parent of the selected elements.
-\item \verb{$parents()}: Update the selected elements to contain the unique set of all ancestors of the selected elements.
-\item \code{siblings()}: Get the siblings of each element in the set of matched elements.
-\item \verb{$reset()}: Resets the selected elements to the root.
+\item \verb{$fitler(fn)}: Update the selected elements to a subset of the selected elements given \code{fn(el, i)} returns \code{TRUE}. If \code{fn} is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector.
+\item \verb{$children(cssSelector = NULL)}: Update the selected elements to contain all direct child elements of the selected elements. If a CSS selector is provided, only the direct children matching the single-element CSS selector will be selected.
+\item \verb{$parent(cssSelector = NULL)}: Update the selected elements to contain the unique set of direct parent of the selected elements. If a CSS selector is provided, only the direct parents matching the single-element CSS selector will be selected.
+\item \verb{$parents(cssSelector = NULL)}: Update the selected elements to contain the unique set of all ancestors of the selected elements. If a CSS selector is provided, only the ancestors matching the single-element CSS selector will be selected.
+\item \code{siblings(cssSelector = NULL)}: Get the siblings of each element in the set of matched elements. If a CSS selector is provided, only the siblings matching the single-element CSS selector will be selected.
+\item \verb{$reset()}: Resets the selected elements to the top level (root) tags.
 }
 }
 
