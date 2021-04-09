@@ -445,7 +445,7 @@ tagQuery <- function(tags) {
         find = function(cssSelector) {
           rebuild()
           setSelected(
-            tagQueryFind(getSelected(), cssSelector)
+            tagQueryFindAll(getSelected(), cssSelector)
           )
           self
         },
@@ -510,71 +510,71 @@ tagQuery <- function(tags) {
         #' * `$addClass(class)`: Apps class(es) to each of the the selected elements.
         addClass = function(class) {
           rebuild()
-          tagQueryAddClass(manuallySelected(), class)
+          tagQueryClassAdd(manuallySelected(), class)
           self
         },
         #' * `$removeClass(class)`: Removes a set of class values from all of the selected elements.
         removeClass = function(class) {
           rebuild()
-          tagQueryRemoveClass(manuallySelected(), class)
+          tagQueryClassRemove(manuallySelected(), class)
           self
         },
         #' * `$hasClass(class)`: Determine whether the selected elements have a given class. Returns a vector of logical values.
         hasClass = function(class) {
           rebuild()
-          tagQueryHasClass(manuallySelected(), class)
+          tagQueryClassHas(manuallySelected(), class)
         },
         #' * `$toggleClass(class)`: If the a class value is missing, add it. If a  class value already exists, remove it.
         toggleClass = function(class) {
           rebuild()
-          tagQueryToggleClass(manuallySelected(), class)
+          tagQueryClassToggle(manuallySelected(), class)
           self
         },
 
         #' * `$addAttrs(...)`: Add named attributes to all selected children. Similar to [`tagAppendAttributes()`].
         addAttrs = function(...) {
           rebuild()
-          tagQueryAddAttrs(manuallySelected(), ...)
+          tagQueryAttrsAdd(manuallySelected(), ...)
           # no need to rebuild(); already flattened in add attr function
           self
         },
         #' * `$removeAttrs(attrs)`: Removes the provided attributes in each of the selected elements.
         removeAttrs = function(attrs) {
           rebuild()
-          tagQueryRemoveAttrs(manuallySelected(), attrs)
+          tagQueryAttrsRemove(manuallySelected(), attrs)
           self
         },
         #' * `$emptyAttrs()`: Removes all attributes in each of the selected elements.
         emptyAttrs = function() {
           rebuild()
-          tagQueryEmptyAttrs(manuallySelected())
+          tagQueryAttrsEmpty(manuallySelected())
           self
         },
         #' * `$hasAttr(attr)`: Returns a vector whose values are whether the selected element contains the non-`NULL` attribute.
         hasAttr = function(attr) {
           rebuild()
-          tagQueryHasAttr(manuallySelected(), attr)
+          tagQueryAttrHas(manuallySelected(), attr)
         },
 
         #' ## Adjust child elements
         #' * `$append(...)`: Add all `...` objects as children **after** any existing children to the selected elements. Similar to [`tagAppendChildren()`]
         append = function(...) {
           rebuild()
-          tagQueryAppendChildren(getSelected(), ...)
+          tagQueryChildrenAppend(getSelected(), ...)
           rebuild()
           self
         },
         #' * `$prepend(...)`: Add all `...` objects as children **before** any existing children to the selected elements. A variation of [`tagAppendChildren()`]
         prepend = function(...) {
           rebuild()
-          tagQueryPrependChildren(getSelected(), ...)
+          tagQueryChildrenPrepend(getSelected(), ...)
           rebuild()
           self
         },
-        #' * `$empty(...)`: Remove all children in the selected elements. Use this method before calling `$append(...)` to replace all selected elements' children.
+        #' * `$empty()`: Remove all children in the selected elements. Use this method before calling `$append(...)` to replace all selected elements' children.
         empty = function() {
           rebuild()
-          tagQueryEmptyChildren(getSelected())
+          tagQueryChildrenEmpty(getSelected())
           # no need to rebuild
           self
         },
@@ -871,7 +871,7 @@ tagQueryMatchChildRev <- function(els, func) {
 }
 # Remove each el in els from their parent.
 # Also remove parent pointer from within el
-tagQueryRemove <- function(els) {
+tagQuerySiblingRemove <- function(els) {
   tagQueryMatchChildRev(els, function(elParent, el, childPos) {
     # remove parent / child relationship
     el$parent <- NULL
@@ -886,16 +886,16 @@ tagQuerySetChildren <- function(els, ...) {
     tagSetChildren(el, ...)
   })
 }
-tagQueryEmptyChildren <- function(els) {
+tagQueryChildrenEmpty <- function(els) {
   tagQuerySetChildren(els, list())
 }
-tagQueryAppendChildren <- function(els, ...) {
+tagQueryChildrenAppend <- function(els, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
     tagAppendChildren(el, ...)
   })
 }
-tagQueryPrependChildren <- function(els, ...) {
+tagQueryChildrenPrepend <- function(els, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
     curChildren <- el$children
@@ -909,7 +909,7 @@ tagQueryPrependChildren <- function(els, ...) {
 
 
 # Add attribute values
-tagQueryAddAttrs <- function(els, ...) {
+tagQueryAttrsAdd <- function(els, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
     el <- tagAppendAttributes(el, ...)
@@ -917,7 +917,7 @@ tagQueryAddAttrs <- function(els, ...) {
   })
 }
 # Remove attribute values
-tagQueryRemoveAttrs <- function(els, attrs) {
+tagQueryAttrsRemove <- function(els, attrs) {
   attrs <- unlist(list2(attrs))
   if (length(attrs) < 1) return()
   if (!is.character(attrs)) {
@@ -931,14 +931,14 @@ tagQueryRemoveAttrs <- function(els, attrs) {
   })
 }
 # Remove attribute values
-tagQueryEmptyAttrs <- function(els) {
+tagQueryAttrsEmpty <- function(els) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
     el$attribs <- list()
   })
 }
 # Check if els have attributes
-tagQueryHasAttr <- function(els, attr) {
+tagQueryAttrHas <- function(els, attr) {
   attr <- unlist(list2(attr))[[1]]
   if (length(attr) != 1 || !is.character(attr)) {
     stop("`attr` must be a single character value")
@@ -973,7 +973,7 @@ joinCssClass <- function(classes) {
   }
 }
 # return list of logical values telling if the classes exists
-tagQueryHasClass <- function(els, class) {
+tagQueryClassHas <- function(els, class) {
   classes <- getCssClass(class)
   unlist(tagQueryLapply(els, function(el) {
     if (!isTagEnv(el)) return(FALSE)
@@ -986,7 +986,7 @@ tagQueryHasClass <- function(els, class) {
   }))
 }
 # add classes that don't already exist
-tagQueryAddClass <- function(els, class) {
+tagQueryClassAdd <- function(els, class) {
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
@@ -997,7 +997,7 @@ tagQueryAddClass <- function(els, class) {
   })
 }
 # remove classes that exist
-tagQueryRemoveClass <- function(els, class) {
+tagQueryClassRemove <- function(els, class) {
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
@@ -1009,7 +1009,7 @@ tagQueryRemoveClass <- function(els, class) {
   })
 }
 # toggle class existence depending on if they already exist or not
-tagQueryToggleClass <- function(els, class) {
+tagQueryClassToggle <- function(els, class) {
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
@@ -1273,7 +1273,7 @@ tagQueryFindDescendants_ <- function(el, selector, fn) {
 }
 
 # Find all elements within `els` that match the `selector`
-tagQueryFind <- function(els, selector) {
+tagQueryFindAll <- function(els, selector) {
   selectorList <- asSelectorList(selector)
 
   curEls <- els
