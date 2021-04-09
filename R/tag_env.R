@@ -3,7 +3,6 @@
 NULL
 
 # TODO-barret
-# * Implement `tag_graph_find(css, all = FALSE)` which finds the first element and stops
 # * Change name to `tagQuery`; Camelcase all the things; :-(
 # * Work with a child node as a html_dep
 #   * Tag lists and tag objects must work with this
