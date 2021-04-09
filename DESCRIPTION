@@ -5,7 +5,8 @@ Version: 0.5.1.9000
 Authors@R: c(
   person("Joe", "Cheng", role = "aut", email = "joe@rstudio.com"),
   person("Carson", "Sievert", role = c("aut", "cre"), email = "carson@rstudio.com", comment = c(ORCID = "0000-0002-4958-2844")),
-  person("Winston", "Chang", role = "aut", email = "winston@rstudio.com"),
+  person("Barret", "Schloerke", role = "aut", email = "barret@rstudio.com", comment = c(ORCID = "0000-0001-9986-114X")),
+  person("Winston", "Chang", role = "aut", email = "winston@rstudio.com", comment = c(ORCID = "0000-0002-1576-2126")),
   person("Yihui", "Xie", role = "aut", email = "yihui@rstudio.com"),
   person("Jeff", "Allen", role = "aut", email = "jeff@rstudio.com"),
   person(family = "RStudio", role = "cph")
