@@ -11,16 +11,18 @@ SELECTOR_REGULAR <- "regular"
 SELECTOR_SPACE <- "space"
 SELECTOR_CHILD <- "child"
 
-is_selector <- function(x) {
-  inherits(x, "shiny_selector")
+selectorClass <- "htmltools.selector"
+selectorListClass <- "htmltools.selector.list"
+isSelector <- function(x) {
+  inherits(x, selectorClass)
 }
-is_selector_list <- function(x) {
-  inherits(x, "shiny_selector_list")
+isSelectorList <- function(x) {
+  inherits(x, selectorListClass)
 }
 
 # only handles id and classes
-as_selector <- function(selector) {
-  if (is_selector(selector) || is_selector_list(selector)) {
+asSelector <- function(selector) {
+  if (isSelector(selector) || isSelectorList(selector)) {
     return(selector)
   }
 
@@ -66,31 +68,31 @@ as_selector <- function(selector) {
     # Split by `>` and convert to selectors
     # Alter parts (execpt first) to say they are a direct child
     # Return selector list
-    selector_items <- lapply(strsplit(selector, ">")[[1]], as_selector)
-    selector_list_items <- Map(
-      selector_items,
-      seq_along(selector_items),
-      f = function(selector_item, i) {
-        if (is_selector(selector_item)) {
-          if (i > 1) selector_item$traversal <- SELECTOR_CHILD
-          as_selector_list(selector_item)
+    selectorItems <- lapply(strsplit(selector, ">")[[1]], asSelector)
+    selectorListItems <- Map(
+      selectorItems,
+      seq_along(selectorItems),
+      f = function(selectorItem, i) {
+        if (isSelector(selectorItem)) {
+          if (i > 1) selectorItem$traversal <- SELECTOR_CHILD
+          asSelectorList(selectorItem)
         } else {
-          if (i > 1) selector_item[[1]]$traversal <- SELECTOR_CHILD
-          selector_item
+          if (i > 1) selectorItem[[1]]$traversal <- SELECTOR_CHILD
+          selectorItem
         }
       }
     )
-    selector_list <- as_selector_list(
-      unlist(selector_list_items, recursive = FALSE)
+    selectorList <- asSelectorList(
+      unlist(selectorListItems, recursive = FALSE)
     )
-    return(selector_list)
+    return(selectorList)
   }
 
   # Split into a selector parts and recurse one more time
   if (str_detect(selector, "\\s")) {
-    selector_items <- lapply(strsplit(selector, "\\s+")[[1]], as_selector)
-    selector_list <- as_selector_list(selector_items)
-    return(selector_list)
+    selectorItems <- lapply(strsplit(selector, "\\s+")[[1]], asSelector)
+    selectorList <- asSelectorList(selectorItems)
+    return(selectorList)
   }
 
   # https://www.w3.org/TR/selectors-3/#selectors
@@ -115,10 +117,10 @@ as_selector <- function(selector) {
     #   }
     # }
 
-    element_regex <- "^[a-zA-Z0-9]+"
-    element <- str_match_first(selector, element_regex)
+    elementRegex <- "^[a-zA-Z0-9]+"
+    element <- str_match_first(selector, elementRegex)
     if (!is.null(element)) {
-      selector <- str_remove(selector, element_regex)
+      selector <- str_remove(selector, elementRegex)
     }
 
     ## https://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
@@ -127,10 +129,10 @@ as_selector <- function(selector) {
     # id_regex <- "^#[^#.:[\\s]+" # `#` then everything that isn't a `#`, `.`, `:`, or white space
     # class_regex <- "^\\.[^#.:[\\s]+" # `.` then everything that isn't a `.`, `:`, or white space
 
-    tmp_id <- str_match_first(selector, "#[^.:[]+")
-    if (!is.null(tmp_id)) {
-      id <- str_remove(tmp_id, "^#")
-      selector <- str_remove(selector, tmp_id, fixed = TRUE)
+    tmpId <- str_match_first(selector, "#[^.:[]+")
+    if (!is.null(tmpId)) {
+      id <- str_remove(tmpId, "^#")
+      selector <- str_remove(selector, tmpId, fixed = TRUE)
     }
 
     classes <- str_remove(str_match_all(selector, "\\.[^.:[]+"), "^\\.")
@@ -142,7 +144,7 @@ as_selector <- function(selector) {
     # }
   }
 
-  structure(class = "shiny_selector", list(
+  structure(class = selectorClass, list(
     element = element,
     id = id,
     classes = classes,
@@ -152,57 +154,57 @@ as_selector <- function(selector) {
 }
 
 
-as_selector_list <- function(selector) {
-  if (is_selector_list(selector)) {
+asSelectorList <- function(selector) {
+  if (isSelectorList(selector)) {
     return(selector)
   }
   if (is.character(selector)) {
-    selector <- as_selector(selector)
+    selector <- asSelector(selector)
   }
-  if (is_selector(selector)) {
+  if (isSelector(selector)) {
     selector <- list(selector)
   }
   if (!is.list(selector)) {
-    stop("Do not know how to convert non list object into a `shiny_selector_list`")
+    stop("Do not know how to convert non list object into a `htmltools.selector.list`")
   }
 
-  is_selector_vals <- vapply(selector, is_selector, logical(1))
-  if (!all(is_selector_vals)) {
-    stop("Can only convert a list of selectors to a `shiny_selector_list`")
+  isSelectorVals <- vapply(selector, isSelector, logical(1))
+  if (!all(isSelectorVals)) {
+    stop("Can only convert a list of selectors to a `htmltools.selector.list`")
   }
-  structure(class = "shiny_selector_list", selector)
+  structure(class = selectorListClass, selector)
 }
 
 #' @export
-format.shiny_selector <- function(x, ...) {
+format.htmltools.selector <- function(x, ...) {
   paste0(
     c(
       if (x$traversal == SELECTOR_CHILD) "> ",
       if (x$type == SELECTOR_EVERYTHING) {
         "*"
       } else {
-        c(
+        paste0(c(
           x$element,
           if (!is.null(x$id)) paste0("#", x$id),
           if (!is.null(x$classes)) paste0(".", x$classes)
-        )
+        ))
       }
     ),
     collapse = ""
   )
 }
 #' @export
-format.shiny_selector_list <- function(x, ...) {
+format.htmltools.selector.list <- function(x, ...) {
   paste0(unlist(lapply(x, format, ...)), collapse = " ")
 }
 
 #' @export
-print.shiny_selector <- function(x, ...) {
+print.htmltools.selector <- function(x, ...) {
   cat("// htmltools css selector\n")
   cat(format(x, ...), "\n")
 }
 #' @export
-print.shiny_selector_list <- function(x, ...) {
+print.htmltools.selector.list <- function(x, ...) {
   cat("// htmltools css selector list\n")
   cat(format(x, ...), "\n")
 }
@@ -248,12 +250,12 @@ str_detect <- function(text, pattern, fixed = FALSE) {
 
 # finds first, NOT all
 str_match_first <- function(x, pattern, ...) {
-  reg_info <- regexpr(pattern, x, ...)
-  if (length(reg_info) == 1 && reg_info == -1) {
+  regInfo <- regexpr(pattern, x, ...)
+  if (length(regInfo) == 1 && regInfo == -1) {
     return(NULL)
   }
 
-  regmatches(x, reg_info)
+  regmatches(x, regInfo)
 }
 
 # return a vector of matches or NULL
@@ -261,13 +263,13 @@ str_match_all <- function(x, pattern, ...) {
   if (length(x) != 1) {
     stop("`x` must have a length of 1")
   }
-  reg_info <- gregexpr(pattern, x, ...)
-  first <- reg_info[[1]]
+  regInfo <- gregexpr(pattern, x, ...)
+  first <- regInfo[[1]]
   if (length(first) == 1 && first == -1) {
     return(NULL)
   }
 
-  regmatches(x, reg_info)[[1]]
+  regmatches(x, regInfo)[[1]]
 }
 
 

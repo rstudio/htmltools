@@ -593,7 +593,7 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
-  assert_not_tag_env_like(x, "doRenderTags")
+  assertNotTagEnvLike(x, "doRenderTags")
 
   textWriter <- WSTextWriter()
   tagWrite(x, textWriter, indent)
@@ -606,7 +606,7 @@ doRenderTags <- function(x, indent = 0) {
 # preorder=TRUE means preorder tree traversal, that is, an object
 # should be rewritten before its children.
 rewriteTags <- function(ui, func, preorder) {
-  assert_not_tag_env_like(ui, "rewriteTags")
+  assertNotTagEnvLike(ui, "rewriteTags")
 
   if (preorder)
     ui <- func(ui)
@@ -926,7 +926,7 @@ tagify <- function(x) {
 # Be sure to check for tagEnvLike objects and not allow them
 flattenTags <- function(x, validate = TRUE) {
   if (validate) {
-    assert_not_tag_env_like(x, "flattenTags")
+    assertNotTagEnvLike(x, "flattenTags")
   }
   if (isTag(x) || isTagEnv(x)) {
     # For tags, wrap them into a list (which will be unwrapped by caller)

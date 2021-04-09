@@ -1,6 +1,6 @@
 
-make_tags <- function(text1, text2) {
-  input_tags <- div(
+makeTags <- function(text1, text2) {
+  inputTags <- div(
     class = "outer",
     tagList(
       div(
@@ -14,19 +14,19 @@ make_tags <- function(text1, text2) {
     )
   )
 
-  input_tags <- span(list(input_tags, input_tags))
-  input_tags
+  inputTags <- span(list(inputTags, inputTags))
+  inputTags
 }
 
 test_that("error checks", {
-  expect_error(as_selector("div, span"), "comma")
-  expect_error(as_selector("div[foo]"), "`[`", fixed = TRUE)
-  expect_error(as_selector("div:text"), "pseudo classes")
+  expect_error(asSelector("div, span"), "comma")
+  expect_error(asSelector("div[foo]"), "`[`", fixed = TRUE)
+  expect_error(asSelector("div:text"), "pseudo classes")
 })
 
 
 test_that("selector parses string", {
-  selector <- as_selector("h1#myId-value.class-name .child-class#child-id_value")
+  selector <- asSelector("h1#myId-value.class-name .child-class#child-id_value")
 
   expect_equal(
     format(selector),
@@ -35,20 +35,20 @@ test_that("selector parses string", {
 })
 
 test_that("* checks", {
-  expect_equal(format(as_selector(" * ")), "*")
-  expect_equal(format(as_selector(" *.class-name")), ".class-name")
-  expect_s3_class(as_selector(" * "), "shiny_selector")
+  expect_equal(format(asSelector(" * ")), "*")
+  expect_equal(format(asSelector(" *.class-name")), ".class-name")
+  expect_s3_class(asSelector(" * "), selectorClass)
 })
 
 
 test_that("> checks", {
-  expect_error(as_selector("> div"), "first element")
-  expect_error(as_selector("div >"), "last element")
-  expect_error(as_selector_list("> div"), "first element")
-  expect_error(as_selector_list("div >"), "last element")
+  expect_error(asSelector("> div"), "first element")
+  expect_error(asSelector("div >"), "last element")
+  expect_error(asSelectorList("> div"), "first element")
+  expect_error(asSelectorList("div >"), "last element")
 
-  expect_equal(format(as_selector("div>span")), "div > span")
-  expect_equal(format(as_selector("div>>span")), "div > * > span")
+  expect_equal(format(asSelector("div>span")), "div > span")
+  expect_equal(format(asSelector("div>>span")), "div > * > span")
 })
 
 

@@ -1,5 +1,5 @@
 
-sort_internal_names <- function(x) {
+sortInternalNames <- function(x) {
   if (is.list(x) && is_named(x)) {
     x[order(names(x))]
   } else {
@@ -14,10 +14,10 @@ expect_equal_tags <- function(x, y) {
     expect_true(isTag(y))
     expect_equal(x$parent, NULL)
     expect_equal(y$parent, NULL)
-    expect_equal(x$env_key, NULL)
-    expect_equal(y$env_key, NULL)
-    x <- sort_internal_names(x)
-    y <- sort_internal_names(y)
+    expect_equal(x$envKey, NULL)
+    expect_equal(y$envKey, NULL)
+    x <- sortInternalNames(x)
+    y <- sortInternalNames(y)
     # compare everything but the children
     expect_equal(
       x[setdiff(names(x), "children")],
@@ -38,7 +38,7 @@ expect_equal_tags <- function(x, y) {
   }
 }
 
-test_that("safe_list_2_env and safe_env_2_list undo each other", {
+test_that("safeListToEnv and safeEnvToList undo each other", {
 
   x <- structure(
     list(
@@ -50,57 +50,57 @@ test_that("safe_list_2_env and safe_env_2_list undo each other", {
     other_dep = "exists"
   )
 
-  x_expected <- x
+  xExpected <- x
 
-  x_env <- safe_list_2_env(x, "extra_class")
+  xEnv <- safeListToEnv(x, "extra_class")
 
-  expect_type(x_env, "environment")
-  expect_s3_class(x_env, "test_class")
-  expect_s3_class(x_env, "extra_class")
+  expect_type(xEnv, "environment")
+  expect_s3_class(xEnv, "test_class")
+  expect_s3_class(xEnv, "extra_class")
 
-  expect_equal(names(x_env), c("A", "B"))
-  expect_equal(safe_attr_values(x_env), list(extra_dep = list(42), other_dep = "exists"))
+  expect_equal(names(xEnv), c("A", "B"))
+  expect_equal(safeAttrValues(xEnv), list(extra_dep = list(42), other_dep = "exists"))
 
-  expect_equal(safe_env_2_list(x_env, "extra_class"), x_expected)
+  expect_equal(safeEnvToList(xEnv, "extra_class"), xExpected)
 })
 
 
-test_that("as_tag_env upgrades objects", {
+test_that("asTagEnv upgrades objects", {
 
-  expect_error(as_tag_env(list()), "does not accept")
-  expect_error(as_tag_env(tagList()), "does not accept")
+  expect_error(asTagEnv(list()), "does not accept")
+  expect_error(asTagEnv(tagList()), "does not accept")
 
   x <- div(class = "test_class", span(class = "inner"))
-  x_tag_env <- as_tag_env(x)
+  xTagEnv <- asTagEnv(x)
 
-  expect_s3_class(x_tag_env, "htmltools.tag.env")
-  expect_s3_class(x_tag_env, "shiny.tag")
+  expect_s3_class(xTagEnv, "htmltools.tag.env")
+  expect_s3_class(xTagEnv, "shiny.tag")
 
-  expect_null(x_tag_env$parent)
-  expect_equal(x_tag_env$env_key, sexp_address(x_tag_env))
-  expect_equal(x_tag_env$name, x$name)
-  expect_equal(x_tag_env$attribs, x$attribs)
+  expect_null(xTagEnv$parent)
+  expect_equal(xTagEnv$envKey, sexp_address(xTagEnv))
+  expect_equal(xTagEnv$name, x$name)
+  expect_equal(xTagEnv$attribs, x$attribs)
 
-  expect_equal(length(x_tag_env$children), length(x$children))
-  lapply(x_tag_env$children, function(child) {
+  expect_equal(length(xTagEnv$children), length(x$children))
+  lapply(xTagEnv$children, function(child) {
     expect_s3_class(child, "htmltools.tag.env")
-    expect_equal(child$parent$env_key, x_tag_env$env_key)
+    expect_equal(child$parent$envKey, xTagEnv$envKey)
   })
 
 })
 
-test_that("as_tag_env finds cycles", {
+test_that("asTagEnv finds cycles", {
   x <- div(class = "test_class", span(class = "inner"))
-  x_tag_env <- as_tag_env(x)
-  expect_error(as_tag_env(x_tag_env), NA)
+  xTagEnv <- asTagEnv(x)
+  expect_error(asTagEnv(xTagEnv), NA)
 
-  test_span_env <- x_tag_env$children[[1]]
-  x_tag_env$children[[2]] <- test_span_env
-  x_tag_env$children[[3]] <- test_span_env
+  testSpanEnv <- xTagEnv$children[[1]]
+  xTagEnv$children[[2]] <- testSpanEnv
+  xTagEnv$children[[3]] <- testSpanEnv
 
-  expect_error(as_tag_env(x_tag_env), NA)
+  expect_error(asTagEnv(xTagEnv), NA)
   expect_equal_tags(
-    tag_env_to_tags(x_tag_env),
+    tagEnvToTags(xTagEnv),
     div(
       class = "test_class",
       span(class = "inner"),
@@ -110,46 +110,46 @@ test_that("as_tag_env finds cycles", {
   )
 
   # make a cycle
-  test_span_env$children[[1]] <- x_tag_env
-  expect_error(as_tag_env(x_tag_env), "Circular")
+  testSpanEnv$children[[1]] <- xTagEnv
+  expect_error(asTagEnv(xTagEnv), "Circular")
 })
 
 
 
-test_that("tag_graph() root values", {
-  expect_error(tag_graph(div()), NA)
-  expect_error(tag_graph(list()), NA)
-  expect_error(tag_graph(tagList()), NA)
-  expect_error(tag_graph(5), NA)
-  expect_error(tag_graph("a"), NA)
+test_that("tagQuery() root values", {
+  expect_error(tagQuery(div()), NA)
+  expect_error(tagQuery(list()), NA)
+  expect_error(tagQuery(tagList()), NA)
+  expect_error(tagQuery(5), NA)
+  expect_error(tagQuery("a"), NA)
 })
 
-test_that("tag_graph() structure", {
-  x <- tag_graph(div(span()))
+test_that("tagQuery() structure", {
+  x <- tagQuery(div(span()))
 
   expect_s3_class(x, "htmltools.tag.graph")
-  lapply(x, function(x_i) { expect_true(is.function(x_i)) })
+  lapply(x, function(xI) { expect_true(is.function(xI)) })
 })
 
-test_that("tag_graph()$find()", {
-  x <- tag_graph(div(span("a"), span("b")))
+test_that("tagQuery()$find()", {
+  x <- tagQuery(div(span("a"), span("b")))
 
   x$find("span")
   expect_length(x$selected(), 2)
   expect_equal_tags(
-    x$as_tags(),
+    x$asTags(),
     tagList(span("a"), span("b"))
   )
 
   ul <- tags$ul
   li <- tags$li
-  x <- tag_graph(div(div(div(ul(li("a"), li("b"), li("c"))))))
+  x <- tagQuery(div(div(div(ul(li("a"), li("b"), li("c"))))))
   x$find("div")
   expect_length(x$selected(), 3)
   x$find("div")
   expect_length(x$selected(), 2)
 
-  x <- tag_graph(
+  x <- tagQuery(
     tagList(
       div(a(span(p("text1")))),
       div(a(p("text2")))
@@ -161,26 +161,26 @@ test_that("tag_graph()$find()", {
 
   x$find("a > p")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$as_tags(), p("text2"))
+  expect_equal_tags(x$asTags(), p("text2"))
   x$reset()
 
   x$find("a > > p")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$as_tags(), p("text1"))
+  expect_equal_tags(x$asTags(), p("text1"))
   x$reset()
 
   x$find("div > *")
   expect_length(x$selected(), 2)
-  expect_equal_tags(x$as_tags(), tagList(a(span(p("text1"))), a(p("text2"))))
+  expect_equal_tags(x$asTags(), tagList(a(span(p("text1"))), a(p("text2"))))
   x$reset()
 
   x$find("div>>p")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$as_tags(), p("text2"))
+  expect_equal_tags(x$asTags(), p("text2"))
 })
 
-test_that("tag_graph()$filter()", {
-  x <- tag_graph(div(span(1), span(2), span(3), span(4), span(5)))
+test_that("tagQuery()$filter()", {
+  x <- tagQuery(div(span(1), span(2), span(3), span(4), span(5)))
 
   x$find("span")
   expect_length(x$selected(), 5)
@@ -200,12 +200,12 @@ test_that("tag_graph()$filter()", {
   expect_length(x$selected(), 1)
 
   # Compare to `"4"` as `flattenTags` calls `as.tags.default()` which calls `as.character()`
-  expect_equal_tags(x$as_tags(), span("4"))
+  expect_equal_tags(x$asTags(), span("4"))
 
 })
 
-test_that("tag_graph()$children() & tag_graph()$parent()", {
-  x <- tag_graph(
+test_that("tagQuery()$children() & tagQuery()$parent()", {
+  x <- tagQuery(
     tagList(
       div(class="a",
         span(class="A", "1"),
@@ -223,7 +223,7 @@ test_that("tag_graph()$children() & tag_graph()$parent()", {
   x$children()
   expect_length(x$selected(), 4)
   expect_equal_tags(
-    x$as_tags(),
+    x$asTags(),
     tagList(
       span(class = "A", "1"),
       span(class = "B", "2"),
@@ -240,27 +240,27 @@ test_that("tag_graph()$children() & tag_graph()$parent()", {
 
   x$parent()
   expect_length(x$selected(), 1)
-  second_div <- div(class = "b", span(class = "C", "3"), span(class = "D", "4"))
-  expect_equal_tags(x$as_tags(), second_div)
+  secondDiv <- div(class = "b", span(class = "C", "3"), span(class = "D", "4"))
+  expect_equal_tags(x$asTags(), secondDiv)
 
   x$reset()
   x$find("span")
   x$parents(".b")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$as_tags(), second_div)
+  expect_equal_tags(x$asTags(), secondDiv)
 })
 
 
 
 
-test_that("tag_graph()$parents()", {
-  x_tags <-
+test_that("tagQuery()$parents()", {
+  xTags <-
     div(class = "outer",
       div(class = "inner",
         span("a"), span("b"), span("c"), span("d"), span("e")
       )
     )
-  x <- tag_graph(x_tags)
+  x <- tagQuery(xTags)
 
   expect_length(x$selected(), 0)
   x$find("span")
@@ -268,10 +268,10 @@ test_that("tag_graph()$parents()", {
   expect_length(x$selected(), 2)
 
   expect_equal_tags(
-    x$as_tags(),
+    x$asTags(),
     tagList(
-      x_tags$children[[1]],
-      x_tags
+      xTags$children[[1]],
+      xTags
     )
   )
 
@@ -281,35 +281,35 @@ test_that("tag_graph()$parents()", {
   expect_length(x$selected(), 1)
 
   expect_equal_tags(
-    x$as_tags(),
-    x_tags
+    x$asTags(),
+    xTags
   )
 })
 
 
-test_that("tag_graph()$siblings()", {
-  x_tags <- tagList(
+test_that("tagQuery()$siblings()", {
+  xTags <- tagList(
     span("a"),
     span("b"),
     span("c"),
     span("d"),
     span("e")
   )
-  x <- tag_graph(x_tags)
+  x <- tagQuery(xTags)
   expect_length(x$selected(), 0)
   x$find("span")
   expect_length(x$selected(), 5)
   x$siblings()
   expect_length(x$selected(), 5)
 
-  x_tags <- tagList(
+  xTags <- tagList(
     span("a"),
     span("b"),
     span("c", class = "middle"),
     span("d"),
     span("e")
   )
-  x <- tag_graph(x_tags)
+  x <- tagQuery(xTags)
   expect_length(x$selected(), 0)
   x$find(".middle")
   expect_length(x$selected(), 1)
@@ -317,25 +317,25 @@ test_that("tag_graph()$siblings()", {
   expect_length(x$selected(), 4)
 })
 
-test_that("tag_graph()$add_class()", {
-  x_tags <-
+test_that("tagQuery()$addClass()", {
+  xTags <-
     div(class = "outer",
       div(class = "inner",
         span("a"), span("b"), span("c"), span("d"), span("e")
       )
     )
-  x <- tag_graph(x_tags)
+  x <- tagQuery(xTags)
 
   expect_length(x$selected(), 0)
-  x$find("div.inner")$add_class("test-class")
+  x$find("div.inner")$addClass("test-class")
   expect_length(x$selected(), 1)
 
-  expect_equal(x$as_tags()$attribs$class, "inner test-class")
+  expect_equal(x$asTags()$attribs$class, "inner test-class")
 
 })
 
-test_that("tag_graph()$has_class(), $toggle_class(), $remove_class()", {
-  x_tags <-
+test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
+  xTags <-
     div(class = "outer",
       div(class = "A B",
         span(class = "odd", "a"),
@@ -345,74 +345,74 @@ test_that("tag_graph()$has_class(), $toggle_class(), $remove_class()", {
         span(class = "odd", "e")
       )
     )
-  x <- tag_graph(x_tags)
+  x <- tagQuery(xTags)
 
   x$find("div.A")
   expect_length(x$selected(), 1)
-  expect_equal(x$has_class("B A"), TRUE)
-  expect_equal(x$has_class("A B"), TRUE)
-  expect_equal(x$has_class("B"), TRUE)
-  expect_equal(x$has_class("A"), TRUE)
-  expect_equal(x$has_class("C"), FALSE)
-  expect_equal(x$has_class("A C"), FALSE)
+  expect_equal(x$hasClass("B A"), TRUE)
+  expect_equal(x$hasClass("A B"), TRUE)
+  expect_equal(x$hasClass("B"), TRUE)
+  expect_equal(x$hasClass("A"), TRUE)
+  expect_equal(x$hasClass("C"), FALSE)
+  expect_equal(x$hasClass("A C"), FALSE)
 
   x$reset()
   x$find("span")
-  expect_equal(x$has_class("even"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
-  expect_equal(x$has_class("odd"), c(TRUE, FALSE, TRUE, FALSE, TRUE))
-  x$toggle_class("even odd")
-  expect_equal(x$has_class("even"), c(TRUE, FALSE, TRUE, FALSE, TRUE))
-  expect_equal(x$has_class("odd"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
+  expect_equal(x$hasClass("even"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
+  expect_equal(x$hasClass("odd"), c(TRUE, FALSE, TRUE, FALSE, TRUE))
+  x$toggleClass("even odd")
+  expect_equal(x$hasClass("even"), c(TRUE, FALSE, TRUE, FALSE, TRUE))
+  expect_equal(x$hasClass("odd"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
 
-  x$remove_class("even")
-  expect_equal(x$has_class("even"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-  expect_equal(x$has_class("odd"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
-  x$remove_class("other odd")
-  expect_equal(x$has_class("odd"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  x$removeClass("even")
+  expect_equal(x$hasClass("even"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$hasClass("odd"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
+  x$removeClass("other odd")
+  expect_equal(x$hasClass("odd"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
 
 })
 
 
-test_that("tag_graph()$add_attrs(), $remove_attrs(), $empty_attrs(), $has_attr", {
-  x_tags <- tagList(
+test_that("tagQuery()$addAttrs(), $removeAttrs(), $emptyAttrs(), $hasAttr", {
+  xTags <- tagList(
       span(key = "value - a", "a"),
       span(key = "value - b", "b"),
       span(                   "c"),
       span(                   "d"),
       span(key = "value - e", "e")
     )
-  x <- tag_graph(x_tags)
+  x <- tagQuery(xTags)
 
   x$find("span")
   expect_length(x$selected(), 5)
-  expect_equal(x$has_attr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
+  expect_equal(x$hasAttr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
 
-  x$add_attrs(key2 = "val2", key3 = "val3")
-  expect_equal(x$has_attr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
-  expect_equal(x$has_attr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
-  expect_equal(x$has_attr("key3"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  x$addAttrs(key2 = "val2", key3 = "val3")
+  expect_equal(x$hasAttr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
+  expect_equal(x$hasAttr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  expect_equal(x$hasAttr("key3"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
 
-  x$remove_attrs(c("key", "key3"))
-  expect_equal(x$has_attr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-  expect_equal(x$has_attr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
-  expect_equal(x$has_attr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  x$removeAttrs(c("key", "key3"))
+  expect_equal(x$hasAttr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$hasAttr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  expect_equal(x$hasAttr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
 
-  x$empty_attrs()
-  expect_equal(x$has_attr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-  expect_equal(x$has_attr("key2"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-  expect_equal(x$has_attr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  x$emptyAttrs()
+  expect_equal(x$hasAttr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$hasAttr("key2"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$hasAttr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
 })
 
-test_that("tag_graph()$append()", {
-  x_tags <- div()
-  x <- tag_graph(x_tags)
+test_that("tagQuery()$append()", {
+  xTags <- div()
+  x <- tagQuery(xTags)
 
   newa <- span("a")
   x$append(newa)
   expect_equal_tags(
-    x$as_tags(selected = FALSE),
+    x$asTags(selected = FALSE),
     tagList(
-      x_tags,
+      xTags,
       newa
     )
   )
@@ -422,9 +422,9 @@ test_that("tag_graph()$append()", {
   x$append(new1, new2)
 
   expect_equal_tags(
-    x$as_tags(selected = FALSE),
+    x$asTags(selected = FALSE),
     tagList(
-      x_tags,
+      xTags,
       newa,
       new1,
       new2
@@ -432,17 +432,17 @@ test_that("tag_graph()$append()", {
   )
 })
 
-test_that("tag_graph()$prepend()", {
-  x_tags <- div()
-  x <- tag_graph(x_tags)
+test_that("tagQuery()$prepend()", {
+  xTags <- div()
+  x <- tagQuery(xTags)
 
   newa <- span("a")
   x$prepend(newa)
   expect_equal_tags(
-    x$as_tags(selected = FALSE),
+    x$asTags(selected = FALSE),
     tagList(
       newa,
-      x_tags
+      xTags
     )
   )
 
@@ -451,18 +451,18 @@ test_that("tag_graph()$prepend()", {
   x$prepend(new1, new2)
 
   expect_equal_tags(
-    x$as_tags(selected = FALSE),
+    x$asTags(selected = FALSE),
     tagList(
       new1, new2,
       newa,
-      x_tags
+      xTags
     )
   )
 })
 
-test_that("tag_graph()$each()", {
-  x_tags <- div(span("a"), h1("title"), span("b"))
-  x <- tag_graph(x_tags)
+test_that("tagQuery()$each()", {
+  xTags <- div(span("a"), h1("title"), span("b"))
+  x <- tagQuery(xTags)
 
   x$find("span")
 
@@ -476,17 +476,17 @@ test_that("tag_graph()$each()", {
   })
 
   expect_equal_tags(
-    x$as_tags(selected = FALSE),
+    x$asTags(selected = FALSE),
     div(span("A"), h1("title"), span("B"))
   )
 })
 
 
 
-test_that("tag_graph()$graph() & tag_graph()$rebuild()", {
+test_that("tagQuery()$graph() & tagQuery()$rebuild()", {
 
-  x_tags <- div(span("a"), h1("title"), span("b"))
-  x <- tag_graph(x_tags)
+  xTags <- div(span("a"), h1("title"), span("b"))
+  x <- tagQuery(xTags)
 
   # pull out root el
   root <- x$graph()
@@ -496,21 +496,21 @@ test_that("tag_graph()$graph() & tag_graph()$rebuild()", {
   x$rebuild()
 
   # retrieve the root (and direct children) from graph
-  root_children <- x$graph()$children
-  last_child <- root_children[[length(root_children)]]
+  rootChildren <- x$graph()$children
+  lastChild <- rootChildren[[length(rootChildren)]]
 
   # make sure the last child is a tag env (not a standard tag)
-  expect_true(isTagEnv(last_child))
+  expect_true(isTagEnv(lastChild))
   # make sure it equals what was manually added
-  expect_equal_tags(tag_env_to_tags(last_child), div("test"))
+  expect_equal_tags(tagEnvToTags(lastChild), div("test"))
 })
 
 
 
-test_that("tag_graph()$graph() & tag_graph()$rebuild()", {
+test_that("tagQuery()$graph() & tagQuery()$rebuild()", {
 
-  x_tags <- div(span("a"), span("b"), span("c"), span("d"), span("e"))
-  x <- tag_graph(x_tags)
+  xTags <- div(span("a"), span("b"), span("c"), span("d"), span("e"))
+  x <- tagQuery(xTags)
 
   x$find("span")
 
@@ -521,7 +521,7 @@ test_that("tag_graph()$graph() & tag_graph()$rebuild()", {
   expect_error(x$get(2), NA)
 
   expect_equal_tags(
-    tag_env_to_tags(x$get(4)),
+    tagEnvToTags(x$get(4)),
     span("d")
   )
 })
