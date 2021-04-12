@@ -932,7 +932,7 @@ tagify <- function(x) {
 # Be sure to check for tagEnvLike objects and not allow them
 flattenTags <- function(x) {
   assertNotTagEnvLike(x, "flattenTags")
-  if (isTag(x) || isTagEnv(x)) {
+  if (isTag(x)) {
     # For tags, wrap them into a list (which will be unwrapped by caller)
     list(x)
   } else if (isTagList(x)) {
