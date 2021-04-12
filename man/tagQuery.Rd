@@ -43,6 +43,12 @@ Internally, two important pieces of information are maintained: the root element
 }
 }
 
+\section{Limitations}{
+
+
+\code{tagQuery()}s can \strong{not} be used directly within typical \code{tag} locations. An error should be thrown. Instead, please call \verb{$asTags()} to retrieve the tag structures of the selected tag elements or root element respectively.
+}
+
 \section{CSS Selector}{
 The \code{cssSelector} parameter to many methods is a typical CSS selector. Currently \code{tagQuery()} understands how to handle any combination of the following CSS selector information:
 \itemize{
@@ -114,11 +120,5 @@ All methods return the altered tag query object unless otherwise stated.
 \item \verb{$print()}: Internal print method. Called by \code{print.htmltools.tag.query()}
 }
 }
-}
-
-\section{Limitations}{
-
-
-\code{tagQuery()}s can \strong{not} be used directly within typical \code{tag} locations. An error should be thrown. Instead, please call \verb{$asTags()} to retrieve the tag structures of the selected tag elements or root element respectively.
 }
 

@@ -140,7 +140,16 @@ test_that("tagQuery() structure", {
 test_that("tagQuery()$find()", {
   x <- tagQuery(div(span("a"), span("b")))
 
-  x$find("span")
+  # Make sure the found elements do not persist
+  newX <- x$find("span")
+  expect_failure(
+    expect_equal(
+      x$selected(),
+      newX$selected()
+    )
+  )
+
+  x <- x$find("span")
   expect_length(x$selected(), 2)
   expect_equal_tags(
     x$asTags(),
@@ -150,37 +159,39 @@ test_that("tagQuery()$find()", {
   ul <- tags$ul
   li <- tags$li
   x <- tagQuery(div(div(div(ul(li("a"), li("b"), li("c"))))))
-  x$find("div")
-  expect_length(x$selected(), 3)
-  x$find("div")
+  expect_length(x$selected(), 1)
+  x <- x$find("div")
   expect_length(x$selected(), 2)
+  x <- x$find("div")
+  expect_length(x$selected(), 1)
 
   x <- tagQuery(
-    tagList(
+    div(
+      class = "outer",
       div(a(span(p("text1")))),
       div(a(p("text2")))
     )
   )
-  x$find("a")
+  x <- x$find("a")
   expect_length(x$selected(), 2)
-  x$reset()
+  x <- x$reset()
 
-  x$find("a > p")
+  x <- x$find("a > p")
   expect_length(x$selected(), 1)
   expect_equal_tags(x$asTags(), p("text2"))
-  x$reset()
+  x <- x$reset()
 
-  x$find("a > > p")
+  x <- x$find("a > > p")
   expect_length(x$selected(), 1)
   expect_equal_tags(x$asTags(), p("text1"))
-  x$reset()
+  x <- x$reset()
 
-  x$find("div > *")
+  x <- x$find("div > *")
   expect_length(x$selected(), 2)
   expect_equal_tags(x$asTags(), tagList(a(span(p("text1"))), a(p("text2"))))
-  x$reset()
+  x <- x$reset()
 
-  x$find("div>>p")
+  x <- x$find("div>>p")
   expect_length(x$selected(), 1)
   expect_equal_tags(x$asTags(), p("text2"))
 })
@@ -188,18 +199,18 @@ test_that("tagQuery()$find()", {
 test_that("tagQuery()$filter()", {
   x <- tagQuery(div(span(1), span(2), span(3), span(4), span(5)))
 
-  x$find("span")
+  x <- x$find("span")
   expect_length(x$selected(), 5)
 
   # keep the even found elements
-  x$filter(function(item, i) {
+  x <- x$filter(function(item, i) {
     # is even
     (i %% 2) == 0
   })
   expect_length(x$selected(), 2)
 
   # keep the filtered even elements. Should only have the 4th one remaining
-  x$filter(function(item, i) {
+  x <- x$filter(function(item, i) {
     # is even
     (i %% 2) == 0
   })
@@ -210,7 +221,7 @@ test_that("tagQuery()$filter()", {
 
 test_that("tagQuery()$children() & tagQuery()$parent()", {
   x <- tagQuery(
-    tagList(
+    div(class="outer",
       div(class="a",
         span(class="A", "1"),
         span(class="B", "2")),
@@ -221,10 +232,10 @@ test_that("tagQuery()$children() & tagQuery()$parent()", {
     )
   )
 
-  x$find("div")
+  x <- x$find("div")
   expect_length(x$selected(), 2)
 
-  x$children()
+  x <- x$children()
   expect_length(x$selected(), 4)
   expect_equal_tags(
     x$asTags(),
@@ -236,20 +247,18 @@ test_that("tagQuery()$children() & tagQuery()$parent()", {
     )
   )
 
-  x$parents()
+  x <- x$parent()
   expect_length(x$selected(), 2)
 
-  x$children(".C")
+  x <- x$children(".C")
   expect_length(x$selected(), 1)
 
-  x$parent()
+  x <- x$parent()
   expect_length(x$selected(), 1)
   secondDiv <- div(class = "b", span(class = "C", "3"), span(class = "D", "4"))
   expect_equal_tags(x$asTags(), secondDiv)
 
-  x$reset()
-  x$find("span")
-  x$parents(".b")
+  x <- x$reset()$find("span")$parents(".b")
   expect_length(x$selected(), 1)
   expect_equal_tags(x$asTags(), secondDiv)
 })
@@ -266,9 +275,8 @@ test_that("tagQuery()$parents()", {
     )
   x <- tagQuery(xTags)
 
-  expect_length(x$selected(), 0)
-  x$find("span")
-  x$parents()
+  expect_length(x$selected(), 1)
+  x <- x$find("span")$parents()
   expect_length(x$selected(), 2)
 
   expect_equal_tags(
@@ -279,9 +287,7 @@ test_that("tagQuery()$parents()", {
     )
   )
 
-  x$reset()
-  x$find("span")
-  x$parents(".outer")
+  x <- x$reset()$find("span")$parents(".outer")
   expect_length(x$selected(), 1)
 
   expect_equal_tags(
@@ -300,10 +306,8 @@ test_that("tagQuery()$siblings()", {
     span("e")
   )
   x <- tagQuery(xTags)
-  expect_length(x$selected(), 0)
-  x$find("span")
   expect_length(x$selected(), 5)
-  x$siblings()
+  x <- x$siblings()
   expect_length(x$selected(), 5)
 
   xTags <- tagList(
@@ -314,10 +318,10 @@ test_that("tagQuery()$siblings()", {
     span("e")
   )
   x <- tagQuery(xTags)
-  expect_length(x$selected(), 0)
-  x$find(".middle")
+  expect_length(x$selected(), 5)
+  x <- x$filter(".middle")
   expect_length(x$selected(), 1)
-  x$siblings()
+  x <- x$siblings()
   expect_length(x$selected(), 4)
 })
 
@@ -330,8 +334,8 @@ test_that("tagQuery()$addClass()", {
     )
   x <- tagQuery(xTags)
 
-  expect_length(x$selected(), 0)
-  x$find("div.inner")$addClass("test-class")
+  expect_length(x$selected(), 1)
+  x <- x$find("div.inner")$addClass("test-class")
   expect_length(x$selected(), 1)
 
   expect_equal(x$asTags()$attribs$class, "inner test-class")
@@ -351,7 +355,7 @@ test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
     )
   x <- tagQuery(xTags)
 
-  x$find("div.A")
+  x <- x$find("div.A")
   expect_length(x$selected(), 1)
   expect_equal(x$hasClass("B A"), TRUE)
   expect_equal(x$hasClass("A B"), TRUE)
@@ -360,8 +364,7 @@ test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
   expect_equal(x$hasClass("C"), FALSE)
   expect_equal(x$hasClass("A C"), FALSE)
 
-  x$reset()
-  x$find("span")
+  x <- x$reset()$find("span")
   expect_equal(x$hasClass("even"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
   expect_equal(x$hasClass("odd"), c(TRUE, FALSE, TRUE, FALSE, TRUE))
   x$toggleClass("even odd")
@@ -387,7 +390,6 @@ test_that("tagQuery()$addAttrs(), $removeAttrs(), $emptyAttrs(), $hasAttr", {
     )
   x <- tagQuery(xTags)
 
-  x$find("span")
   expect_length(x$selected(), 5)
   expect_equal(x$hasAttr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
 
@@ -410,7 +412,6 @@ test_that("tagQuery()$addAttrs(), $removeAttrs(), $emptyAttrs(), $hasAttr", {
 test_that("tagQuery()$append()", {
   xTags <- div(span("child"))
   x <- tagQuery(xTags)
-  x$find("div")
 
   newa <- span("a")
   x$append(newa)
@@ -433,8 +434,6 @@ test_that("tagQuery()$prepend()", {
   xTags <- div(span("child"))
   x <- tagQuery(xTags)
 
-  x$find("div")
-
   newa <- span("a")
   x$prepend(newa)
   expect_equal_tags(
@@ -456,7 +455,7 @@ test_that("tagQuery()$each()", {
   xTags <- div(span("a"), h1("title"), span("b"))
   x <- tagQuery(xTags)
 
-  x$find("span")
+  x <- x$find("span")
 
   expect_error(x$each("4"), "function")
   expect_error(x$each(function(item) {}), "two")
@@ -504,7 +503,7 @@ test_that("tagQuery()$root() & tagQuery()$rebuild()", {
   xTags <- div(span("a"), span("b"), span("c"), span("d"), span("e"))
   x <- tagQuery(xTags)
 
-  x$find("span")
+  x <- x$find("span")
 
   expect_error(x$get("a"))
   expect_error(x$get(numeric(0)))
@@ -524,11 +523,17 @@ test_that("tagQuery()$root() & tagQuery()$rebuild()", {
 
 test_that("tagQuery()$remove()", {
 
-  xTags <- div(span("a"), span("b", class = "A"), span("c"), span("d", class = "A"), span("e"))
-  x <- tagQuery(xTags)
-  x$find(".A")
-  x$remove()
-
+  xTags <-
+    div(
+      span("a"),
+      span("b", class = "A"),
+      span("c"),
+      span("d", class = "A"),
+      span("e")
+    )
+  x <- tagQuery(xTags)$find("span")
+  expect_length(x$selected(), 5)
+  x <- x$filter(".A")$remove()
   expect_length(x$selected(), 0)
 
   expect_equal_tags(
@@ -536,10 +541,9 @@ test_that("tagQuery()$remove()", {
     div(span("a"), span("c"), span("e"))
   )
 
-  x$reset()
-  x$find("span")
+  x <- x$reset()$find("span")
   expect_length(x$selected(), 3)
-  x$remove()
+  x <- x$remove()
   expect_equal_tags(
     x$asTags(selected = FALSE),
     div()
@@ -550,8 +554,6 @@ test_that("tagQuery()$remove()", {
 test_that("tagQuery()$after()", {
   xTags <- div()
   x <- tagQuery(xTags)
-
-  x$find("div")
 
   newa <- span("a")
   x$after(newa)
@@ -573,8 +575,6 @@ test_that("tagQuery()$after()", {
 test_that("tagQuery()$before()", {
   xTags <- div()
   x <- tagQuery(xTags)
-
-  x$find("div")
 
   newa <- span("a")
   x$before(newa)
