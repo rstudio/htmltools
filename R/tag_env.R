@@ -780,7 +780,15 @@ tagQueryPrint <- function(root, selected) {
       cat(" (Root)\n")
     } else {
       cat("\n")
-      print(tagQuerySelectedAsTags(selected))
+      selectedTags <- tagQuerySelectedAsTags(selected)
+      if (!isTagList(selectedTags)) {
+        selectedTags <- tagList(selectedTags)
+      }
+      # add separator
+      walkI(selectedTags, function(selectedTag, i) {
+        cat("[[", i, "]]\n", sep = "")
+        print(selectedTag)
+      })
     }
   }
 
