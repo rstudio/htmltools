@@ -450,7 +450,7 @@ tagQuery <- function(tags) {
           )
           self
         },
-        #' * `$fitler(fn)`: Update the selected elements to a subset of the selected elements given `fn(el, i)` returns `TRUE`. If `fn` is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector.
+        #' * `$filter(fn)`: Update the selected elements to a subset of the selected elements given `fn(el, i)` returns `TRUE`. If `fn` is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector.
         filter = function(fn) {
           rebuild()
           setSelected(
@@ -581,7 +581,7 @@ tagQuery <- function(tags) {
         },
         ## end Adjust Children
 
-        ## Adjust Siblings
+        #' ## Adjust Siblings
         #' * `$after(...)`: Add all `...` objects as siblings after each of the selected elements.
         after = function(...) {
           rebuild()
@@ -627,10 +627,14 @@ tagQuery <- function(tags) {
         ## end Generic Methods
 
         #' ## Tag Query methods
-        #' * `$rebuild()`: Makes sure that all tags have been upgraded to tag environments. Objects wrapped in `HTML()` will not be inspected or altered. This method is internally called before each method executes and after any alterations where standard tag objects could be introduced into the tag structure.
-        rebuild = function() {
+        #' * `$asTags(selected = TRUE)`: If `selected = TRUE`, then all previously found elements (and their descendants) will be converted to tags. If `selected = FALSE`, the top level tag elements (and their descendants) will be converted to standard tags. If there is more than one element being returned, a `tagList()` will be used to hold all of the objects.
+        asTags = function(selected = TRUE) {
           rebuild()
-          self
+          if (isTRUE(selected)) {
+            tagQuerySelectedAsTags(manuallySelected())
+          } else {
+            tagQueryRootAsTags(root)
+          }
         },
         #' * `$root()`: Return all top level (root) tags environments. If there are more than one, it will be returned within a `tagList()`. If there is only one tag, it will be returned.
         root = function() {
@@ -647,23 +651,12 @@ tagQuery <- function(tags) {
           rebuild()
           tagQueryGet(manuallySelected(), position)
         },
-        ## end Tag Query fns
-
-        ## To tags
-        #' ## Convert to tags
-        #' * `$asTags(selected = TRUE)`: If `selected = TRUE`, then all previously found elements (and their descendants) will be converted to tags. If `selected = FALSE`, the top level tag elements (and their descendants) will be converted to standard tags. If there is more than one element being returned, a `tagList()` will be used to hold all of the objects.
-        asTags = function(selected = TRUE) {
+        #' * `$rebuild()`: Makes sure that all tags have been upgraded to tag environments. Objects wrapped in `HTML()` will not be inspected or altered. This method is internally called before each method executes and after any alterations where standard tag objects could be introduced into the tag structure.
+        rebuild = function() {
           rebuild()
-          if (isTRUE(selected)) {
-            tagQuerySelectedAsTags(manuallySelected())
-          } else {
-            tagQueryRootAsTags(root)
-          }
+          self
         },
-        ## end To tags
-
-        #' Internal methods
-        #' * `$print()`: Prints the `tagQuery()` object. Called by `print.htmltools.tag.query()`
+        #' * `$print()`: Internal print method. Called by `print.htmltools.tag.query()`
         print = function() {
           rebuild()
           # Allows `$print()` to know if there is a root el

@@ -59,7 +59,7 @@ All methods return the altered tag query object unless otherwise stated.
 \subsection{Select tags}{
 \itemize{
 \item \verb{$find(cssSelector)}: Find all tag elements matching the multi-element \code{cssSelector} starting from each selected element's children. If nothing has been selected, it will start from the root elements. The tag query object's selected elements will be updated with the matching set of tag environments.
-\item \verb{$fitler(fn)}: Update the selected elements to a subset of the selected elements given \code{fn(el, i)} returns \code{TRUE}. If \code{fn} is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector.
+\item \verb{$filter(fn)}: Update the selected elements to a subset of the selected elements given \code{fn(el, i)} returns \code{TRUE}. If \code{fn} is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector.
 \item \verb{$children(cssSelector = NULL)}: Update the selected elements to contain all direct child elements of the selected elements. If a CSS selector is provided, only the direct children matching the single-element CSS selector will be selected.
 \item \verb{$parent(cssSelector = NULL)}: Update the selected elements to contain the unique set of direct parent of the selected elements. If a CSS selector is provided, only the direct parents matching the single-element CSS selector will be selected.
 \item \verb{$parents(cssSelector = NULL)}: Update the selected elements to contain the unique set of all ancestors of the selected elements. If a CSS selector is provided, only the ancestors matching the single-element CSS selector will be selected.
@@ -86,6 +86,11 @@ All methods return the altered tag query object unless otherwise stated.
 \item \verb{$append(...)}: Add all \code{...} objects as children \strong{after} any existing children to the selected elements. Similar to \code{\link[=tagAppendChildren]{tagAppendChildren()}}
 \item \verb{$prepend(...)}: Add all \code{...} objects as children \strong{before} any existing children to the selected elements. A variation of \code{\link[=tagAppendChildren]{tagAppendChildren()}}
 \item \verb{$empty()}: Remove all children in the selected elements. Use this method before calling \verb{$append(...)} to replace all selected elements' children.
+}
+}
+
+\subsection{Adjust Siblings}{
+\itemize{
 \item \verb{$after(...)}: Add all \code{...} objects as siblings after each of the selected elements.
 \item \verb{$before(...)}: Add all \code{...} objects as siblings before each of the selected elements.
 \item \verb{$replaceWith(...)}: Replace all selected elements with \code{...}. This also sets the selected elements to an empty set.
@@ -101,18 +106,12 @@ All methods return the altered tag query object unless otherwise stated.
 
 \subsection{Tag Query methods}{
 \itemize{
-\item \verb{$rebuild()}: Makes sure that all tags have been upgraded to tag environments. Objects wrapped in \code{HTML()} will not be inspected or altered. This method is internally called before each method executes and after any alterations where standard tag objects could be introduced into the tag structure.
+\item \verb{$asTags(selected = TRUE)}: If \code{selected = TRUE}, then all previously found elements (and their descendants) will be converted to tags. If \code{selected = FALSE}, the top level tag elements (and their descendants) will be converted to standard tags. If there is more than one element being returned, a \code{tagList()} will be used to hold all of the objects.
 \item \verb{$root()}: Return all top level (root) tags environments. If there are more than one, it will be returned within a \code{tagList()}. If there is only one tag, it will be returned.
 \item \verb{$selected()}: Returns a list of selected tag environments.
 \item \verb{$get(position)}: Returns the selected tag element at the position \code{position}.
-}
-}
-
-\subsection{Convert to tags}{
-\itemize{
-\item \verb{$asTags(selected = TRUE)}: If \code{selected = TRUE}, then all previously found elements (and their descendants) will be converted to tags. If \code{selected = FALSE}, the top level tag elements (and their descendants) will be converted to standard tags. If there is more than one element being returned, a \code{tagList()} will be used to hold all of the objects.
-Internal methods
-\item \verb{$print()}: Prints the \code{tagQuery()} object. Called by \code{print.htmltools.tag.query()}
+\item \verb{$rebuild()}: Makes sure that all tags have been upgraded to tag environments. Objects wrapped in \code{HTML()} will not be inspected or altered. This method is internally called before each method executes and after any alterations where standard tag objects could be introduced into the tag structure.
+\item \verb{$print()}: Internal print method. Called by \code{print.htmltools.tag.query()}
 }
 }
 }
