@@ -392,12 +392,9 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' @md
 #' @export
 tagQuery <- function(tags) {
-  registerTagQueryDevmodeOptions()
-
   root <- asTagEnv(
     wrapWithRootTag(tags)
   )
-
   selectedEnv <- new.env(parent = emptyenv())
   selectedEnv$data <- tagQueryFindReset(root)
   setSelected <- function(selected, filterRoot = TRUE) {
@@ -742,11 +739,6 @@ tagQueryGetRoot <- function(root) {
 # Return a list of the manually selected elements
 tagQuerySelected <- function(selected) {
   if (length(selected) == 1 && isRootTag(selected[[1]])) {
-    if (devmodeOption("htmltools.tagQuery.requireFind", FALSE)) {
-      # TODO-Should this be a stop?
-      # TODO-Should this be a devmode options?
-      warning("`tagQuery(tags)` objects should call `$find(cssSelector)` before calling methods that alter the selected elements.")
-    }
     list()
   } else {
     selected
@@ -755,6 +747,7 @@ tagQuerySelected <- function(selected) {
 
 # Return the `i`th position of the manually selected elements
 tagQueryGet <- function(selected, position) {
+  selected <- tagQuerySelected(selected)
   validatePosition(position, selected)
 
   selected[[position]]
@@ -1424,34 +1417,4 @@ tagEnvExplain <- function(x, ..., before = "", max = Inf, seenMap = envirMap()) 
 
   invisible(x)
 
-}
-
-
-
-#' @include utils.R
-hasDevmode <- local({
-  hasTried <- FALSE
-  ret <- NULL
-  function() {
-    if (hasTried) return(ret)
-    hasTried <<- TRUE
-    ret <<- isInstalled("shiny", "1.6.0")
-    ret
-  }
-})
-devmodeOption <- function(opt, default) {
-  if (!hasDevmode()) {
-    return(default)
-  }
-  shiny::get_devmode_option(opt, default)
-}
-registerTagQueryDevmodeOptions <- function() {
-  if (hasDevmode()) {
-    # Warn to developers that they have not made a selection before performing alterations
-    shiny::register_devmode_option(
-      "htmltools.tagQuery.requireFind",
-      "Turning on messages about requiring tagQuery objects to call `$find(cssSelector)` before performing alterations. To disable message, call `options(htmltools.tagQuery.requireFind = FALSE)`",
-      devmode_default = TRUE
-    )
-  }
 }

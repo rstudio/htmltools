@@ -29,7 +29,6 @@ Suggests:
     ragg,
     shiny
 Remotes:
-    rstudio/shiny,
     r-lib/rlang
 Enhances: knitr
 License: GPL (>= 2)
@@ -46,7 +45,7 @@ Collate:
     'known_tags.R'
     'selector.R'
     'shim.R'
-    'utils.R'
     'tag_env.R'
+    'utils.R'
     'tags.R'
     'template.R'
