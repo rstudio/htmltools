@@ -229,7 +229,7 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
         "Circular family tree found with tag environment: ", sexp_address(x), "\n",
         # Not necessarily the order of the circular dependency
         # TODO-later show actual circular dependency and not all visited nodes? This should be rare
-        "Tags processed:\n", paste0("* ", seenMap$keys(), collapse = "\n")
+        "Tags processed: (unordered set)\n", paste0("* ", seenMap$keys(), collapse = "\n")
       )
     }
     # Add the item to the seen map to help with cycle detection
