@@ -45,7 +45,7 @@ Collate:
     'known_tags.R'
     'selector.R'
     'shim.R'
-    'tag_env.R'
+    'tag_query.R'
     'utils.R'
     'tags.R'
     'template.R'
