@@ -257,7 +257,6 @@ test_that("tagQuery()$children() & tagQuery()$parent()", {
   expect_length(x$selected(), 1)
   secondDiv <- div(class = "b", span(class = "C", "3"), span(class = "D", "4"))
   expect_equal_tags(x$asTags(), secondDiv)
-
   x <- x$reset()$find("span")$parents(".b")
   expect_length(x$selected(), 1)
   expect_equal_tags(x$asTags(), secondDiv)
@@ -266,22 +265,39 @@ test_that("tagQuery()$children() & tagQuery()$parent()", {
 
 
 
-test_that("tagQuery()$parents()", {
+test_that("tagQuery()$parents() && tagQuery()$closest()", {
   xTags <-
     div(class = "outer",
       div(class = "inner",
-        span("a"), span("b"), span("c"), span("d"), span("e")
+        p(class="p",
+          span("a"), span("b"), span("c"), span("d"), span("e")
+        )
       )
     )
   x <- tagQuery(xTags)
 
   expect_length(x$selected(), 1)
+
+  xc <- x$find("span")$closest("div")
+  expect_length(xc$selected(), 1)
+  expect_true(xc$hasClass("inner"))
+
+  xc <- x$find("span")$closest()
+  expect_length(xc$selected(), 1)
+  expect_true(xc$hasClass("p"))
+
+  xp <- x$find("span")$parents("div")
+  expect_length(xp$selected(), 2)
+  expect_equal(xp$hasClass("outer"), c(FALSE, TRUE))
+  expect_equal(xp$hasClass("inner"), c(TRUE, FALSE))
+
   x <- x$find("span")$parents()
-  expect_length(x$selected(), 2)
+  expect_length(x$selected(), 3)
 
   expect_equal_tags(
     x$asTags(),
     tagList(
+      xTags$children[[1]]$children[[1]],
       xTags$children[[1]],
       xTags
     )

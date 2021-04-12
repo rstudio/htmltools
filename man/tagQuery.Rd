@@ -20,7 +20,7 @@ This function is VERY experimental. The result api will most likely change. \str
 
 \code{tagQuery()} is modeled after \href{https://jquery.com/}{\code{jQuery}}'s \href{https://api.jquery.com/category/manipulation/}{DOM maninipulation methods} and \href{https://api.jquery.com/category/traversing/tree-traversal/}{Tree Traversal} categories with some alterations. One of the main differences is that there is no centralized \code{window.document} object to use or reference. Instead, only the original tags provided to \code{tagQuery(tags=)} are fully search-able. This difference requires a call to \verb{$find(cssSelector)} to make any meaningful alterations to the \code{tagQuery()} object.
 
-\code{tagQuery()} is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard \code{\link{tag}} objects. With \code{tagQuery()}, it is possible to find all \verb{<span>} tags that match the css selector \verb{div .inner span}, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r">}}\preformatted{tagQuery(ex_tags)$find("div .inner span")$parent()$parent()$add_class("custom-class")$as_tags(selected = FALSE)
+\code{tagQuery()} is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard \code{\link{tag}} objects. With \code{tagQuery()}, it is possible to find all \verb{<span>} tags that match the css selector \verb{div .inner span}, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r">}}\preformatted{tagQuery(ex_tags)$find("div .inner span")$parent()$parent()$addClass("custom-class")$asTags(selected = FALSE)
 }\if{html}{\out{</div>}}
 
 This style of alteration is not easily achieved when using typical "pass by value" R objects or standard tag objects.
@@ -64,13 +64,14 @@ The \verb{$find(cssSelector)} method allows for a CSS selector with multiple sel
 All methods return the altered tag query object unless otherwise stated.
 \subsection{Select tags}{
 \itemize{
-\item \verb{$find(cssSelector)}: Find all tag elements matching the multi-element \code{cssSelector} starting from each selected element's children. If nothing has been selected, it will start from the root elements. The tag query object's selected elements will be updated with the matching set of tag environments.
-\item \verb{$filter(fn)}: Update the selected elements to a subset of the selected elements given \code{fn(el, i)} returns \code{TRUE}. If \code{fn} is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector.
-\item \verb{$children(cssSelector = NULL)}: Update the selected elements to contain all direct child elements of the selected elements. If a CSS selector is provided, only the direct children matching the single-element CSS selector will be selected.
-\item \verb{$parent(cssSelector = NULL)}: Update the selected elements to contain the unique set of direct parent of the selected elements. If a CSS selector is provided, only the direct parents matching the single-element CSS selector will be selected.
-\item \verb{$parents(cssSelector = NULL)}: Update the selected elements to contain the unique set of all ancestors of the selected elements. If a CSS selector is provided, only the ancestors matching the single-element CSS selector will be selected.
-\item \code{siblings(cssSelector = NULL)}: Get the siblings of each element in the set of matched elements. If a CSS selector is provided, only the siblings matching the single-element CSS selector will be selected.
-\item \verb{$reset()}: Resets the selected elements to the top level (root) tags.
+\item \verb{$find(cssSelector)}: Find all tag elements matching the multi-element \code{cssSelector} starting from each selected element's children. If nothing has been selected, it will start from the root elements. The tag query object's selected elements will be updated with the matching set of tag environments. A new \code{tagQuery()} object will be created with the selected items set to the found elements.
+\item \verb{$children(cssSelector = NULL)}: Update the selected elements to contain all direct child elements of the selected elements. If a CSS selector is provided, only the direct children matching the single-element CSS selector will be selected. A new \code{tagQuery()} object will be created with the selected items set to the children elements.
+\item \verb{$parent(cssSelector = NULL)}: Update the selected elements to contain the unique set of direct parent of the selected elements. If a CSS selector is provided, only the direct parents matching the single-element CSS selector will be selected. A new \code{tagQuery()} object will be created with the selected items set to the parent elements.
+\item \verb{$parents(cssSelector = NULL)}: Update the selected elements to contain the unique set of all ancestors of the selected elements. If a CSS selector is provided, only the ancestors matching the single-element CSS selector will be selected. A new \code{tagQuery()} object will be created with the selected items set to the ancestor elements.
+\item \verb{$closest(cssSelector = NULL)}: For each selected element, get the closest ancestor element (including itself) that matches the single-element CSS selector. If \code{cssSelector = NULL}, it is equivalent to calling \verb{$parent()}. A new \code{tagQuery()} object will be created with the selected items set to the closest matching elements.
+\item \code{siblings(cssSelector = NULL)}: Get the siblings of each element in the set of matched elements. If a CSS selector is provided, only the siblings matching the single-element CSS selector will be selected. A new \code{tagQuery()} object will be created with the selected items set to the sibling elements.
+\item \verb{$filter(fn)}: Update the selected elements to a subset of the selected elements given \code{fn(el, i)} returns \code{TRUE}. If \code{fn} is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector. A new \code{tagQuery()} object will be created with the selected items set to the filtered selected elements.
+\item \verb{$reset()}: A new \code{tagQuery()} object will be created with the selected items set to the top level tag objects.
 }
 }
 
@@ -99,8 +100,8 @@ All methods return the altered tag query object unless otherwise stated.
 \itemize{
 \item \verb{$after(...)}: Add all \code{...} objects as siblings after each of the selected elements.
 \item \verb{$before(...)}: Add all \code{...} objects as siblings before each of the selected elements.
-\item \verb{$replaceWith(...)}: Replace all selected elements with \code{...}. This also sets the selected elements to an empty set.
-\item \verb{$remove(...)}: Remove all selected elements from the \code{tagQuery()} object. The selected elements is set to an empty set.
+\item \verb{$replaceWith(...)}: Replace all selected elements with \code{...}. This also sets the selected elements to an empty set. A new \code{tagQuery()} object will be created with an empty set of selected elements.
+\item \verb{$remove(...)}: Remove all selected elements from the \code{tagQuery()} object. The selected elements is set to an empty set. A new \code{tagQuery()} object will be created with an empty set of selected elements.
 }
 }
 

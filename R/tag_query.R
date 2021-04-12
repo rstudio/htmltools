@@ -22,20 +22,17 @@ NULL
 
 ## Skip these implementations for now as the tagQuery methods are small and composable.
 ## Instead write them where they are needed since they are small. (Just like we don't wrap dplyr code)
-# tagReplaceAttributesAt <- function(tag, css_selector, ...) {
-#   tagQuery(tag)$find(css_selector)$replace_attrs(...)$as_tags(selected = FALSE)
+# tagAppendAttributesAt <- function(tag, cssSelector, ...) {
+#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$asTags(selected = FALSE)
 # }
-# tagAppendAttributesAt <- function(tag, css_selector, ...) {
-#   tagQuery(tag)$find(css_selector)$add_attrs(...)$as_tags(selected = FALSE)
+# tagAddClassAt <- function(tag, cssSelector, class) {
+#   tagQuery(tag)$find(cssSelector)$addClass(class)$asTags(selected = FALSE)
 # }
-# tagAddClassAt <- function(tag, css_selector, class) {
-#   tagQuery(tag)$find(css_selector)$add_class(class)$as_tags(selected = FALSE)
-# }
-# tagMutateAt <- function(x, css_selector, fn) {
-#   tagQuery(tag)$find(css_selector)$each(fn)$as_tags(selected = FALSE)
+# tagMutateAt <- function(x, cssSelector, fn) {
+#   tagQuery(tag)$find(cssSelector)$each(fn)$asTags(selected = FALSE)
 # }
 # tagFindAt <- function(x, css) {
-#   tagQuery(tag)$find(css_selector)$as_tags()
+#   tagQuery(tag)$find(cssSelector)$asTags()
 # }
 
 
@@ -361,7 +358,7 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' `tagQuery()` is built to perform complex alterations within a set of tags. For example, it is difficult to find a set of tags and alter the parent tag when working with standard [`tag`] objects. With `tagQuery()`, it is possible to find all `<span>` tags that match the css selector `div .inner span`, then ask for the grandparent tag objects, then add a class to these grandparent tag elements.  This could be accomplished using code similar to
 #'
 #' ```r
-#' tagQuery(ex_tags)$find("div .inner span")$parent()$parent()$add_class("custom-class")$as_tags(selected = FALSE)
+#' tagQuery(ex_tags)$find("div .inner span")$parent()$parent()$addClass("custom-class")$asTags(selected = FALSE)
 #' ```
 #'
 #' This style of alteration is not easily achieved when using typical "pass by value" R objects or standard tag objects.
@@ -464,7 +461,7 @@ tagQuery_ <- function(root, selected) {
         #' ## Select tags
         #'
         #'
-        #' * `$find(cssSelector)`: Find all tag elements matching the multi-element `cssSelector` starting from each selected element's children. If nothing has been selected, it will start from the root elements. The tag query object's selected elements will be updated with the matching set of tag environments.
+        #' * `$find(cssSelector)`: Find all tag elements matching the multi-element `cssSelector` starting from each selected element's children. If nothing has been selected, it will start from the root elements. The tag query object's selected elements will be updated with the matching set of tag environments. A new `tagQuery()` object will be created with the selected items set to the found elements.
         find = function(cssSelector) {
           rebuild_()
 
@@ -472,7 +469,42 @@ tagQuery_ <- function(root, selected) {
             tagQueryFindAll(selected_, cssSelector)
           )
         },
-        #' * `$filter(fn)`: Update the selected elements to a subset of the selected elements given `fn(el, i)` returns `TRUE`. If `fn` is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector.
+        #' * `$children(cssSelector = NULL)`: Update the selected elements to contain all direct child elements of the selected elements. If a CSS selector is provided, only the direct children matching the single-element CSS selector will be selected. A new `tagQuery()` object will be created with the selected items set to the children elements.
+        children = function(cssSelector = NULL) {
+          rebuild_()
+          newTagQuery(
+            tagQueryFindChildren(selected_, cssSelector)
+          )
+        },
+        #' * `$parent(cssSelector = NULL)`: Update the selected elements to contain the unique set of direct parent of the selected elements. If a CSS selector is provided, only the direct parents matching the single-element CSS selector will be selected. A new `tagQuery()` object will be created with the selected items set to the parent elements.
+        parent = function(cssSelector = NULL) {
+          rebuild_()
+          newTagQuery(
+            tagQueryFindParent(selected_, cssSelector)
+          )
+        },
+        #' * `$parents(cssSelector = NULL)`: Update the selected elements to contain the unique set of all ancestors of the selected elements. If a CSS selector is provided, only the ancestors matching the single-element CSS selector will be selected. A new `tagQuery()` object will be created with the selected items set to the ancestor elements.
+        parents = function(cssSelector = NULL) {
+          rebuild_()
+          newTagQuery(
+            tagQueryFindParents(selected_, cssSelector)
+          )
+        },
+        #' * `$closest(cssSelector = NULL)`: For each selected element, get the closest ancestor element (including itself) that matches the single-element CSS selector. If `cssSelector = NULL`, it is equivalent to calling `$parent()`. A new `tagQuery()` object will be created with the selected items set to the closest matching elements.
+        closest = function(cssSelector = NULL) {
+          rebuild_()
+          newTagQuery(
+            tagQueryFindClosest(selected_, cssSelector)
+          )
+        },
+        #' * `siblings(cssSelector = NULL)`: Get the siblings of each element in the set of matched elements. If a CSS selector is provided, only the siblings matching the single-element CSS selector will be selected. A new `tagQuery()` object will be created with the selected items set to the sibling elements.
+        siblings = function(cssSelector = NULL) {
+          rebuild_()
+          newTagQuery(
+            tagQueryFindSiblings(selected_, cssSelector)
+          )
+        },
+        #' * `$filter(fn)`: Update the selected elements to a subset of the selected elements given `fn(el, i)` returns `TRUE`. If `fn` is a CSS selector, then the selected elements will be filtered if they match the single-element CSS selector. A new `tagQuery()` object will be created with the selected items set to the filtered selected elements.
         filter = function(fn) {
           rebuild_()
           newTagQuery(
@@ -480,45 +512,13 @@ tagQuery_ <- function(root, selected) {
             rebuild = TRUE
           )
         },
-        #' * `$children(cssSelector = NULL)`: Update the selected elements to contain all direct child elements of the selected elements. If a CSS selector is provided, only the direct children matching the single-element CSS selector will be selected.
-        children = function(cssSelector = NULL) {
-          rebuild_()
-          newTagQuery(
-            tagQueryFindChildren(selected_, cssSelector)
-          )
-        },
-        #' * `$parent(cssSelector = NULL)`: Update the selected elements to contain the unique set of direct parent of the selected elements. If a CSS selector is provided, only the direct parents matching the single-element CSS selector will be selected.
-        parent = function(cssSelector = NULL) {
-          rebuild_()
-          newTagQuery(
-            tagQueryFindParent(selected_, cssSelector)
-          )
-        },
-        #' * `$parents(cssSelector = NULL)`: Update the selected elements to contain the unique set of all ancestors of the selected elements. If a CSS selector is provided, only the ancestors matching the single-element CSS selector will be selected.
-        parents = function(cssSelector = NULL) {
-          rebuild_()
-          newTagQuery(
-            tagQueryFindParents(selected_, cssSelector)
-          )
-        },
-        #' * `siblings(cssSelector = NULL)`: Get the siblings of each element in the set of matched elements. If a CSS selector is provided, only the siblings matching the single-element CSS selector will be selected.
-        siblings = function(cssSelector = NULL) {
-          rebuild_()
-          newTagQuery(
-            tagQueryFindSiblings(selected_, cssSelector)
-          )
-        },
-        #' * `$reset()`: Resets the selected elements to the top level (root) tags.
+        #' * `$reset()`: A new `tagQuery()` object will be created with the selected items set to the top level tag objects.
         reset = function() {
           rebuild_()
           newTagQuery(
             tagQueryFindReset(root)
           )
         },
-        # TODO-later
-        #  .closest()
-        #    For each element in the set, get the first element that matches the selector by testing the element itself and traversing up through its ancestors in the DOM tree.
-        #    Find the nearest el (starting with self) that matches "css selector"
         ## end Find
 
 
@@ -611,14 +611,13 @@ tagQuery_ <- function(root, selected) {
           rebuild_()
           self
         },
-        #' * `$replaceWith(...)`: Replace all selected elements with `...`. This also sets the selected elements to an empty set.
+        #' * `$replaceWith(...)`: Replace all selected elements with `...`. This also sets the selected elements to an empty set. A new `tagQuery()` object will be created with an empty set of selected elements.
         replaceWith = function(...) {
           rebuild_()
           tagQuerySiblingReplaceWith(selected_, ...)
           newTagQuery(list(), rebuild = TRUE)
-          rebuild_()
         },
-        #' * `$remove(...)`: Remove all selected elements from the `tagQuery()` object. The selected elements is set to an empty set.
+        #' * `$remove(...)`: Remove all selected elements from the `tagQuery()` object. The selected elements is set to an empty set. A new `tagQuery()` object will be created with an empty set of selected elements.
         remove = function() {
           rebuild_()
           tagQuerySiblingRemove(selected_)
@@ -1105,43 +1104,78 @@ tagQueryFindParent <- function(els, cssSelector = NULL) {
 # Return a list of the unique set of ancestor elements
 # By only looking for elements that have not been seen before, searching is as lazy as possible
 # Must traverse all parents; If cssSelector exists, only return found parents that match selector.
+# Search using breadth-first. This is as close to jQuery's implementation.
+#  (I'd prefer to do depth first, like `$closest()`. No need to make a new stack for each iteration)
 tagQueryFindParents <- function(els, cssSelector = NULL) {
-  # use the map for `has()` and stack for `values()`
+  # Use the map for `has()` and stack for `values()`
   ancestorsMap <- envirMap()
   ancestorsStack <- envirStackUnique()
 
   # func to add to the ancestor stack
   pushFn <- pushFnWrapper(ancestorsStack, cssSelector)
 
-  # First pass should contain the current elements' direct parents
-  # Do not include cssSelector here. That is only for adding to ancestorsStack
-  curEls <- tagQueryFindParent(els, cssSelector = NULL)
+  # Make sure all els are tag envs
+  els <- Filter(els, f = isTagEnv)
 
-  while(length(curEls) > 0) {
-    # Make a map of elements to explore in the next loop iteration
-    nextElsStack <- envirStackUnique()
-
-    # For each element in `curEls`
-    tagQueryWalk(curEls, function(curEl) {
-      if (!isTagEnv(curEl)) return()
-      # If the element has not been seen before...
-      if (!ancestorsMap$has(curEl)) {
-        # Add parent el to next iteration set
-        if (!is.null(curEl$parent)) {
-          nextElsStack$push(curEl$parent)
-        }
-
-        # Add curEl to all ancestors info
-        ancestorsMap$set(curEl, TRUE)
-        pushFn(curEl)
-      }
-    })
-
-    # At this point, we have found a new set of unexplored ancestors: nextElsStack
-    # Update `curEls` to contain all tag envs to continue exploration
-    curEls <- nextElsStack$uniqueList()
+  # While there are elements still available to search...
+  while (length(els) > 0) {
+    # (Do not include cssSelector here. That is only for adding to ancestorsStack)
+    parents <- tagQueryFindParent(els, cssSelector = NULL)
+    # Set up a stack for the next iteration of parents
+    nextStack <- envirStack()
+    for (parent in parents) {
+      if (!isTagEnv(parent)) next
+      if (ancestorsMap$has(parent)) next
+      # Mark element
+      ancestorsMap$set(parent, TRUE)
+      # Add to final set
+      pushFn(parent)
+      # Add to next iteration
+      nextStack$push(parent)
+    }
+    els <- nextStack$asList()
   }
   ancestorsStack$uniqueList()
+}
+# Return a unique list of the closest ancestor elements that match the css selector
+# Should behave very similarly to ancestors
+tagQueryFindClosest <- function(els, cssSelector = NULL) {
+  if (is.null(cssSelector)) {
+    return(
+      tagQueryFindParent(els, NULL)
+    )
+  }
+  selector <- cssSelectorToSelector(cssSelector)
+  # use the map for `has()` and stack for `values()`
+  ancestorsMap <- envirMap()
+  closestStack <- envirStackUnique()
+
+  # For every element
+  tagQueryWalk(els, function(el) {
+    # Make sure it is a tag environment
+    if (!isTagEnv(el)) return()
+
+    # While traversing up the parents...
+    while (!is.null(el)) {
+      # If the element has been seen before...
+      if (ancestorsMap$has(el)) {
+        # Stop traversing, as any matching parent found would be removed (unique info only)
+        return()
+      }
+      # Mark the ancestor as visited
+      ancestorsMap$set(el, TRUE)
+      # If it is a match...
+      if (elMatchesSelector(el, selector)) {
+        # Add to return value
+        closestStack$push(el)
+        return()
+      }
+      # set to parent element and repeat
+      el <- el$parent
+    }
+  })
+
+  closestStack$uniqueList()
 }
 # Get all unique children tag envs
 tagQueryFindChildren <- function(els, cssSelector = NULL) {
