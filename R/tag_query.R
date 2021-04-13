@@ -200,7 +200,18 @@ safeEnvToList <- function(x, oldClass = NULL) {
 }
 
 
-# Do not export to encourage direct use of `tagQuery()`
+# Convert any mixture of standard tag structures and tag environments into just tag environments.
+#
+# This method is heavily used within `tagQuery()$rebuild()` to enforce all standard tag objects are upgraded to tag environments.
+#
+# If the object is already a tag environment, it will recurse the conversion for each of the children
+#
+# Extras done:
+# * Flatten all attributes by combining duplicate keys
+# * Flatten the tag's children to a single list
+# * Check for circular dependencies of tag environments
+#
+# (Do not export to encourage direct use of `tagQuery()`)
 asTagEnv <- function(x) {
   if (isTagQuery(x)) {
     stop("`tagQuery()` object can not be provided to `asTagEnv()`")
@@ -409,7 +420,7 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #'
 #' ## Tag Query
 #'
-#' A `tagQuery()` behaves simliar to an R6 object (but a `tagQuery()` object is
+#' A `tagQuery()` behaves simliar to an R6 object in that internal values are altered in place. (but a `tagQuery()` object is
 #' not implemented with `R6`). The `tagQuery()`'s methods will return itself as
 #' much as possible, unless the method is directly asking for information, e.g.
 #' `$selected()` or `$asTags()`.
@@ -422,6 +433,27 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' selected elements are initialized to a list containing the `root` tag
 #' environment. All `tagQuery()` methods will act on the selected elements
 #' unless declared otherwise.
+#'
+#' Tag query objects can be created from other tag query objects. Note, unless there is an intermediate call to `$asTags()`, the original and new tag query objects will share the same tag environments. The new tag query object will have its selected elements reset. For example:
+#'
+#' ```r
+#' x <- tagQuery(div())
+#' y <- tagQuery(x)
+#' z <- tagQuery(x$asTags(selected = FALSE))
+#'
+#' # Add an example class
+#' y$addClass("example")
+#'
+#' # Show `x` and `y` both have the new class
+#' x$asTags()
+#' #> <div class="example"></div>
+#' y$asTags()
+#' #> <div class="example"></div>
+#'
+#' # `z` is isolated from the changes in `x` and `y` due to the `$asTags()`
+#' z$asTags()
+#' #> <div></div>
+#' ```
 #'
 #'
 #' @section Limitations:
@@ -454,7 +486,11 @@ tagQuery <- function(tags) {
 #' @aliases NULL
 #' @usage NULL
 #' @md
-tagQuery_ <- function(root, selected) {
+tagQuery_ <- function(
+  root,
+  # Using a trailing `_` to avoid name collisions
+  selected_
+) {
   if (!isTagEnv(root)) {
     stop("`tagQuery_(root=)` must be a tag environment")
   }
@@ -465,7 +501,6 @@ tagQuery_ <- function(root, selected) {
     # safe to do as `root` will never be turned into a standard list
     asTagEnv(root)
   }
-  selected_ <- selected
 
   newTagQuery <- function(selected, rebuild = FALSE) {
     if (rebuild) {
@@ -479,12 +514,15 @@ tagQuery_ <- function(root, selected) {
     if (!is.list(selected)) {
       stop("`selected` must be a `list()`")
     }
+    walkI(selected, function(el, i) {
+      if (!isTagEnv(el)) {
+        stop("`setSelected(selected[[", i, "]])` received a list item that was not a tag environment")
+      }
+    })
     if (filterRoot) {
       selected <- Filter(selected, f = function(s) {
-        isTagEnv(s) && !isRootTag(s)
+        !isRootTag(s)
       })
-    } else {
-      selected <- Filter(selected, f = isTagEnv)
     }
     selected
   }
