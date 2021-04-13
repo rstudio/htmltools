@@ -203,14 +203,12 @@ safeEnvToList <- function(x, oldClass = NULL) {
 # Do not export to encourage direct use of `tagQuery()`
 asTagEnv <- function(x) {
   if (isTagQuery(x)) {
-    return(asTagEnv(x$root()))
+    stop("`tagQuery()` object can not be provided to `asTagEnv()`")
   }
 
-  if (!isTagEnv(x)) {
-    if (!isTag(x)) {
-      # force all methods to send in tags, lists / tagLists are not allowed
-      stop("`asTagEnv()` can only accept tag envs or tag objects. It does not accept `lists()` or `tagLists()`")
-    }
+  if (!isTagEnv(x) && !isTag(x)) {
+    # force all methods to send in tags, lists / tagLists are not allowed
+    stop("`asTagEnv()` can only accept tag envs or tag objects. It does not accept `lists()` or `tagLists()`")
   }
   asTagEnv_(x, parent = x$parent)
 }
