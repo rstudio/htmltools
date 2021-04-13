@@ -1194,7 +1194,8 @@ tagQueryAttrHas <- function(els, attr) {
     tagQueryLapply(els, function(el) {
       if (!isTagEnv(el)) return(FALSE)
       tagHasAttribute(el, attr)
-    })
+    }),
+    use.names = FALSE
   )
 }
 
@@ -1222,15 +1223,18 @@ joinCssClass <- function(classes) {
 # return list of logical values telling if the classes exists
 tagQueryClassHas <- function(els, class) {
   classes <- getCssClass(class)
-  unlist(tagQueryLapply(els, function(el) {
-    if (!isTagEnv(el)) return(FALSE)
-    classVal <- el$attribs$class
-    if (is.null(classVal)) {
-      return(FALSE)
-    }
-    elClasses <- splitCssClass(classVal)
-    all(classes %in% elClasses)
-  }))
+  unlist(
+    tagQueryLapply(els, function(el) {
+      if (!isTagEnv(el)) return(FALSE)
+      classVal <- el$attribs$class
+      if (is.null(classVal)) {
+        return(FALSE)
+      }
+      elClasses <- splitCssClass(classVal)
+      all(classes %in% elClasses)
+    }),
+    use.names = FALSE
+  )
 }
 # add classes that don't already exist
 tagQueryClassAdd <- function(els, class) {
