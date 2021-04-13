@@ -271,9 +271,3 @@ str_match_all <- function(x, pattern, ...) {
 
   regmatches(x, regInfo)[[1]]
 }
-
-
-
-is_html <- function(x) {
-  identical(attr(x, "html"), TRUE)
-}
