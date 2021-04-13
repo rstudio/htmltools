@@ -1281,7 +1281,10 @@ tagQueryClassToggle <- function(els, class) {
 # Return a list of `root`.
 # This may change if root ends up becoming a list of elements
 tagQueryFindReset <- function(root) {
-  root$children
+  if (!isTagEnv(root)) {
+    stop("`root` must be a tag environment")
+  }
+  Filter(root$children, f = isTagEnv)
 }
 # Return a list of the unique set of parent elements
 tagQueryFindParent <- function(els, cssSelector = NULL) {
