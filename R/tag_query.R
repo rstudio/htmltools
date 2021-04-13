@@ -113,6 +113,9 @@ envirStack <- function() {
 }
 
 # (Used for `unique_envirStack()` only. Do not use directly!)
+# Provides same interface as `envirStack()`, but checks for duplicates when
+# when items are on their way in (with `push()`) instead of on the way out
+# (with `uniqueList()`). This is faster when size is ~500 and above.
 envirStackUni_ <- function() {
   map <- fastmap()
   stack <- faststack()
@@ -130,6 +133,8 @@ envirStackUni_ <- function() {
   )
 }
 # Use to retrieve unique environments (eg: `tq$parent()`)
+# Provides same interface as `envirStack()`, but switches to the faster
+# `envirStackUni_()` implementation when size hits 500.
 envirStackUnique <- function() {
   stack <- envirStack()
   count <- 0
