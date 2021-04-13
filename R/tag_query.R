@@ -441,7 +441,6 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' @export
 tagQuery <- function(tags) {
 
-  tags <- flattenTagsRaw(tags %||% list())
   tags <- asTagEnv(
     wrapWithRootTag(tags)
   )
@@ -859,16 +858,27 @@ isRootTag <- function(x) {
 # (Don't fight the structures... embrace them!)
 wrapWithRootTag <- function(x) {
   if (isTagQuery(x)) {
-    x <- x$asTags(selected = FALSE)
+    x <- x$root()
   }
+  x <- flattenTagsRaw(x %||% list())
 
   root <- tag("tagQuery", list())
 
   if (!is.null(x)) {
     root <- tagSetChildren(root, x)
   }
-  if (!is.list(root$children) || (sum(vapply(root$children, isTag, logical(1))) == 0)) {
   root$children <- flattenTagsRaw(root$children)
+  isTagOrTagEnv <- vapply(
+    root$children,
+    function(child) {
+      isTag(child) || isTagEnv(child)
+    },
+    logical(1)
+  )
+  if (
+    (!is.list(root$children)) ||
+    (sum(isTagOrTagEnv) == 0)
+  ) {
     stop("The initial set of tags must have at least 1 standard tag object. Ex: `div()`")
   }
   root

@@ -629,6 +629,17 @@ test_that("tagQuery(x)$asTags(selected = FALSE)", {
 
 
 
+test_that("tagQuery() objects inherit from each other", {
+  xTags <- div("text")
+  x <- tagQuery(xTags)
+  y <- tagQuery(x)
+  y$addClass("extra")
+
+  expected <- div(class="extra", "text")
+  expect_equal_tags(x$asTags(), expected)
+  expect_equal_tags(y$asTags(), expected)
+})
+
 
 
 
