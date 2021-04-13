@@ -92,8 +92,8 @@ envirMap <- function() {
     has = function(envir) {
       map$has(envir$envKey)
     },
-    set = function(envir, value = envir) {
-      map$set(envir$envKey, value)
+    add = function(envir) {
+      map$set(envir$envKey, TRUE)
     },
     remove = function(envir) {
       map$remove(envir$envKey)
@@ -235,7 +235,7 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
       )
     }
     # Add the item to the seen map to help with cycle detection
-    seenMap$set(x, TRUE)
+    seenMap$add(x)
 
     # Make sure all attribs are unique
     x$attribs <- flattenTagAttribs(x$attribs)
@@ -1265,7 +1265,7 @@ tagQueryFindParents <- function(els, cssSelector = NULL) {
       if (!isTagEnv(parent)) next
       if (ancestorsMap$has(parent)) next
       # Mark element
-      ancestorsMap$set(parent, TRUE)
+      ancestorsMap$add(parent)
       # Add to final set
       pushFn(parent)
       # Add to next iteration
@@ -1301,7 +1301,7 @@ tagQueryFindClosest <- function(els, cssSelector = NULL) {
         return()
       }
       # Mark the ancestor as visited
-      ancestorsMap$set(el, TRUE)
+      ancestorsMap$add(el)
       # If it is a match...
       if (elMatchesSelector(el, selector)) {
         # Add to return value
@@ -1548,7 +1548,7 @@ tagEnvExplain <- function(x, ..., before = "", max = Inf, seenMap = envirMap()) 
       cat0(sexp_address(x))
       return(invisible(x))
     }
-    seenMap$set(x, TRUE)
+    seenMap$add(x)
   }
 
   if (is.null(x)) {
