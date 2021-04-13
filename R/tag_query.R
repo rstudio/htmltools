@@ -246,7 +246,7 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
       # Attributes may be dropped
       # * Could replace with `x$children[] <- ....`
       # * Leaving as is to see if people mis-use the children field
-      x$children <- unname(lapply(
+      x$children <- lapply(
         # Simplify the structures by flatting the tags
         # Does NOT recurse to grand-children etc.
         flattenTagsRaw(x$children),
@@ -254,7 +254,7 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
         asTagEnv_,
         parent = x,
         seenMap = seenMap
-      ))
+      )
     }
     # Remove the item from the map to allow for checks for ciruclar deps
     # Having multiple child objects that are the same is ok, as long as a cycle is not found
@@ -274,9 +274,7 @@ tagEnvToTags <- function(x) {
     x$parent <- NULL
     x$envKey <- NULL
     # recurse through children
-    if (!is.null(x$children)) {
-      x$children <- unname(lapply(x$children, tagEnvToTags))
-    }
+    x$children <- lapply(x$children, tagEnvToTags_)
   }
   x
 }
@@ -863,8 +861,8 @@ wrapWithRootTag <- function(x) {
   if (!is.null(x)) {
     root <- tagSetChildren(root, x)
   }
-  root$children <- dropNulls(flattenTagsRaw(root$children))
   if (!is.list(root$children) || (sum(vapply(root$children, isTag, logical(1))) == 0)) {
+  root$children <- flattenTagsRaw(root$children)
     stop("The initial set of tags must have at least 1 standard tag object. Ex: `div()`")
   }
   root
