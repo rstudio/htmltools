@@ -266,6 +266,12 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
 # This method MUST undo everything done in `asTagEnv(x)`
 # Do not export to encourage direct use of `tagQuery()$asTags()`
 tagEnvToTags <- function(x) {
+  if (!isTagEnv(x)) {
+    stop("`tagEnvToTags(x)` must start with a tag environment")
+  }
+  tagEnvToTags_(x)
+}
+tagEnvToTags_ <- function(x) {
   if (isTagEnv(x)) {
     xEl <- x
     # convert to list first to avoid altering the original env obj
