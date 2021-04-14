@@ -83,7 +83,7 @@ asSelector <- function(selector) {
       }
     )
     selectorList <- asSelectorList(
-      unlist(selectorListItems, recursive = FALSE)
+      unlist(selectorListItems, recursive = FALSE, use.names = FALSE)
     )
     return(selectorList)
   }
@@ -195,7 +195,7 @@ format.htmltools.selector <- function(x, ...) {
 }
 #' @export
 format.htmltools.selector.list <- function(x, ...) {
-  paste0(unlist(lapply(x, format, ...)), collapse = " ")
+  paste0(as.character(lapply(x, format, ...)), collapse = " ")
 }
 
 #' @export

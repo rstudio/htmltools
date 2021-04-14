@@ -1073,10 +1073,13 @@ tagQueryPrint <- function(root, selected) {
 }
 
 
+as_character2 <- function(...) {
+  as.character(list2(...))
+}
 FilterI <- function (f, x) {
-  ind <- as.logical(unlist(
+  ind <- as.logical(
     Map(x, seq_along(x), f = f)
-  ))
+  )
   x[which(ind)]
 }
 # Call `.f(x[[i]], ...)` for all values of i
@@ -1248,7 +1251,7 @@ tagQueryAttrsAdd <- function(els, ...) {
 }
 # Remove attribute values
 tagQueryAttrsRemove <- function(els, attrs) {
-  attrs <- unlist(list2(attrs))
+  attrs <- as_character2(attrs)
   if (length(attrs) < 1) return()
   if (!is.character(attrs)) {
     stop("`attrs` must be a charcter vector of attributes to remove")
@@ -1269,7 +1272,7 @@ tagQueryAttrsEmpty <- function(els) {
 }
 # Check if els have attributes
 tagQueryAttrHas <- function(els, attr) {
-  attr <- unlist(list2(attr))[[1]]
+  attr <- as_character2(attr)[[1]]
   if (length(attr) != 1 || !is.character(attr)) {
     stop("`attr` must be a single character value")
   }
@@ -1284,7 +1287,7 @@ tagQueryAttrHas <- function(els, attr) {
 
 
 getCssClass <- function(class) {
-  class <- unlist(list2(class))
+  class <- as_character2(class)
   if (length(class) == 0 || !is.character(class)) {
     stop("`class` must resolve to a character value with a length of at least 1")
   }
