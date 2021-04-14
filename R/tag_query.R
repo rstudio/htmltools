@@ -1410,7 +1410,7 @@ tagQueryFindParents <- function(els, cssSelector = NULL) {
     if (!isTagEnv(el)) return()
 
     # While traversing up the parents...
-    while (!is.null(el)) {
+    while (!is.null(el <- el$parent)) {
       # If the element has been seen before...
       if (ancestorsMap$has(el)) {
         # Stop traversing, as any matching parent found would be removed
@@ -1421,8 +1421,6 @@ tagQueryFindParents <- function(els, cssSelector = NULL) {
       ancestorsMap$add(el)
       # Add the element to the return set
       pushFn(el)
-      # Set `el` to parent element and repeat
-      el <- el$parent
     }
   })
   ancestorsStack$uniqueList()
