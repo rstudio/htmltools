@@ -1603,9 +1603,7 @@ tagQueryFindDescendants <- function(els, selector) {
     # Walk through each child...
     tagQueryWalk(el$children, function(child) {
       # Find descendant matching the `selector`
-      tagQueryFindDescendants_(child, selector, function(foundEl) {
-        foundStack$push(foundEl)
-      })
+      tagQueryFindDescendants_(child, selector, foundStack$push)
     })
   })
   foundStack$uniqueList()
