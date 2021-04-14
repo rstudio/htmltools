@@ -1075,7 +1075,13 @@ tagQueryPrint <- function(root, selected) {
 
 
 as_character2 <- function(...) {
-  as.character(list2(...))
+  as.character(
+    # MUST call `unlist()` to allow for vector items in `list2()`
+    unlist(
+      list2(...),
+      use.names = FALSE
+    )
+  )
 }
 FilterI <- function (f, x) {
   ind <- as.logical(
