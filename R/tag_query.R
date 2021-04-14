@@ -1511,7 +1511,11 @@ tagQueryFindFilter <- function(els, fn) {
 }
 
 
-
+# Convert a CSS selection character value to a selector object
+# @param cssSelector A character value representing a CSS search pattern
+# @return A single item of a selector list. (See `asSelectorList()`).
+#   A single-element CSS selector object with full CSS element match information.
+#   (Child selectors are not allowed in single-element selectors)
 cssSelectorToSelector <- function(cssSelector) {
   selector <-
     if (isSelector(cssSelector)) {
