@@ -216,7 +216,7 @@ safeEnvToList <- function(x, classToRemove = NULL) {
     attr(ret, attrName) <<- attrValue
   })
 
-  oldClass(ret) <- setdiff(oldClass(x), c(classToRemove)
+  oldClass(ret) <- setdiff(oldClass(x), c(classToRemove))
   ret
 }
 
