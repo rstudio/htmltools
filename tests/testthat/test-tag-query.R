@@ -101,7 +101,7 @@ test_that("asTagEnv finds cycles", {
   xTagEnv$children[[2]] <- testSpanEnv
   xTagEnv$children[[3]] <- testSpanEnv
 
-  expect_error(asTagEnv(xTagEnv), NA)
+  expect_error(asTagEnv(xTagEnv), "Duplicate tag environment found")
   expect_equal_tags(
     tagEnvToTags(xTagEnv),
     div(
@@ -114,7 +114,7 @@ test_that("asTagEnv finds cycles", {
 
   # make a cycle
   testSpanEnv$children[[1]] <- xTagEnv
-  expect_error(asTagEnv(xTagEnv), "Circular")
+  expect_error(asTagEnv(xTagEnv), "Duplicate tag environment")
 })
 
 
