@@ -629,17 +629,49 @@ test_that("tagQuery(x)$asTags(selected = FALSE)", {
 
 
 
-test_that("tagQuery() objects inherit from each other", {
-  xTags <- div("text")
-  x <- tagQuery(xTags)
+test_that("tagQuery() objects inherit from each other objects", {
+  xTags <- div(span("text"))
+  x <- tagQuery(xTags)$find("span")
   y <- tagQuery(x)
+  z <- tagQuery(x$get(1))
+  w <- tagQuery(x$selected())
   y$addClass("extra")
 
-  expected <- div(class="extra", "text")
-  expect_equal_tags(x$asTags(), expected)
-  expect_equal_tags(y$asTags(), expected)
+  expected <- div(span(class="extra", "text"))
+
+  expect_equal_tags(x$asTags(), expected$children[[1]])
+  expect_equal_tags(y$asTags(), expected$children[[1]])
+  expect_equal_tags(z$asTags(), expected$children[[1]])
+  expect_equal_tags(w$asTags(), expected$children[[1]])
+
+  expect_equal_tags(x$asTags(selected = FALSE), expected)
+  expect_equal_tags(y$asTags(selected = FALSE), expected)
+  expect_equal_tags(z$asTags(selected = FALSE), expected)
+  expect_equal_tags(w$asTags(selected = FALSE), expected)
 })
 
+
+
+test_that("tagQuery() objects can not inherit from mixed objects", {
+  xTags <- div(span("text"), span("extra"))
+  x <- tagQuery(xTags)$find("span")
+  y <- tagQuery(xTags)$find("span")
+
+  expect_error(
+    tagQuery(tagList(
+      div(),
+      x$get(1)
+    )),
+    "not be a mix"
+  )
+  expect_error(
+    tagQuery(tagList(
+      x$get(1),
+      y$get(1)
+    )),
+    "share the same root"
+  )
+})
 
 
 

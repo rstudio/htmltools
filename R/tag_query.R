@@ -473,12 +473,51 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' @export
 tagQuery <- function(tags) {
 
+  if (isTagQuery(tags)) {
+    # Return tag query object as is
+    return(tags)
+  }
+
+  # Make a new tag query object from the root element of `tags`
+  # * Set the selected to `list(tags)`
+  if (isTagEnv(tags)) {
+    return(tagQuery_(findRootTag(tags), list(tags)))
+  }
+
+  # If `tags` is a list of tagEnvs...
+  # * Make sure they share the same root element and
+  # * Set the selected elements to `tags`
+  if (!isTagEnv(tags) && (is.list(tags) || isTagList(tags))) {
+    tagsIsTagEnv <- vapply(tags, isTagEnv, logical(1))
+    if (any(tagsIsTagEnv)) {
+      if (any(!tagsIsTagEnv)) {
+        notTagEnvPos <- which(!tagsIsTagEnv)
+        stop(
+          "`tagQuery(tags=)` can not be a mix of tag environments and standard tag objects.\n",
+          "Items at positions `c(", paste0(notTagEnvPos, collapse = ", "), ")` ",
+          "are not tag environments."
+        )
+      }
+      rootStack <- envirStackUnique()
+      walk(tags, function(el) {
+        rootStack$push(findRootTag(el))
+      })
+      roots <- rootStack$uniqueList()
+      if (length(roots) != 1) {
+        stop("All tag environments supplied to `tagQuery()` must share the same root element.")
+      }
+      return(
+        tagQuery_(roots[[1]], tags)
+      )
+    }
+  }
+
+  # Convert standard tags to tag envs
   tags <- asTagEnv(
     wrapWithRootTag(tags)
   )
-
+  # Select the top level tags
   selected <- tagQueryFindReset(tags)
-
   tagQuery_(tags, selected)
 }
 
@@ -491,8 +530,8 @@ tagQuery_ <- function(
   # Using a trailing `_` to avoid name collisions
   selected_
 ) {
-  if (!isTagEnv(root)) {
-    stop("`tagQuery_(root=)` must be a tag environment")
+  if (!isRootTag(root)) {
+    stop("`tagQuery_(root=)` must be a root tag environment")
   }
 
   # Use `var_` names to avoid namespace collision
@@ -509,24 +548,23 @@ tagQuery_ <- function(
     tagQuery_(root, selected)
   }
 
-  setSelected <- function(selected, filterRoot = TRUE) {
+  setSelected <- function(selected) {
     selected <- selected %||% list()
     if (!is.list(selected)) {
       stop("`selected` must be a `list()`")
     }
-    walkI(selected, function(el, i) {
+    selected <- FilterI(selected, f = function(el, i) {
       if (!isTagEnv(el)) {
-        stop("`setSelected(selected[[", i, "]])` received a list item that was not a tag environment")
+        stop(
+          "`setSelected(selected=)` received a list item at position `", i, "`",
+          " that was not a tag environment"
+        )
       }
+      !isRootTag(el)
     })
-    if (filterRoot) {
-      selected <- Filter(selected, f = function(s) {
-        !isRootTag(s)
-      })
-    }
     selected
   }
-  selected_ <- setSelected(selected_, filterRoot = TRUE)
+  selected_ <- setSelected(selected_)
 
   self <-
     structure(
@@ -891,6 +929,14 @@ isRootTag <- function(x) {
   name <- x$name
   isTag(x) && !is.null(name) && isTRUE(name == "tagQuery")
 }
+
+findRootTag <- function(el) {
+  while (!is.null(el$parent)) {
+    el <- el$parent
+  }
+  el
+}
+
 # Wrap the top level tags in the tagQuery() in a `tagQuery` tag object.
 # This allows for appending and prepending elements to the top level tags.
 # (Don't fight the structures... embrace them!)
@@ -996,6 +1042,12 @@ tagQueryPrint <- function(root, selected) {
 }
 
 
+FilterI <- function (f, x) {
+  ind <- as.logical(unlist(
+    Map(x, seq_along(x), f = f)
+  ))
+  x[which(ind)]
+}
 # Call `.f(x[[i]], ...)` for all values of i
 walk <- function(.x, .f, ...) {
   for (i in seq_along(.x)) {
