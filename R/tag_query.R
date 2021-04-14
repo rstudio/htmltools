@@ -675,7 +675,7 @@ tagQuery_ <- function(
         #' * `$closest(cssSelector = NULL)`: For each selected element, get the
         #' closest ancestor element (including itself) that matches the
         #' single-element CSS selector. If `cssSelector = NULL`, it is
-        #' equivalent to calling `$parent()`. A new `tagQuery()` object will be
+        #' equivalent to calling `$selected()`. A new `tagQuery()` object will be
         #' created with the selected items set to the closest matching elements.
         closest = function(cssSelector = NULL) {
           rebuild_()
@@ -1425,9 +1425,7 @@ tagQueryFindParents <- function(els, cssSelector = NULL) {
 # Should behave VERY similarly to $parents()
 tagQueryFindClosest <- function(els, cssSelector = NULL) {
   if (is.null(cssSelector)) {
-    return(
-      tagQueryFindParent(els, NULL)
-    )
+    return(els)
   }
   selector <- cssSelectorToSelector(cssSelector)
   # use the map for `has()` and stack for `values()`

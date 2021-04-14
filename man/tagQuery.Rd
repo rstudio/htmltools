@@ -162,7 +162,7 @@ elements.
 \item \verb{$closest(cssSelector = NULL)}: For each selected element, get the
 closest ancestor element (including itself) that matches the
 single-element CSS selector. If \code{cssSelector = NULL}, it is
-equivalent to calling \verb{$parent()}. A new \code{tagQuery()} object will be
+equivalent to calling \verb{$selected()}. A new \code{tagQuery()} object will be
 created with the selected items set to the closest matching elements.
 \item \code{siblings(cssSelector = NULL)}: Get the siblings of each element in
 the set of matched elements. If a CSS selector is provided, only the

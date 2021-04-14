@@ -283,8 +283,10 @@ test_that("tagQuery()$parents() && tagQuery()$closest()", {
   expect_true(xc$hasClass("inner"))
 
   xc <- x$find("span")$closest()
-  expect_length(xc$selected(), 1)
-  expect_true(xc$hasClass("p"))
+  expect_length(xc$selected(), 5)
+  xc$each(function(el, i) {
+    expect_equal(el$name, "span")
+  })
 
   xp <- x$find("span")$parents("div")
   expect_length(xp$selected(), 2)
