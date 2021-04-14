@@ -261,10 +261,9 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
     }
     if (seenMap$has(x)) {
       stop(
-        "Circular family tree found with tag environment: ", sexp_address(x), "\n",
-        # Not necessarily the order of the circular dependency
-        # TODO-later show actual circular dependency and not all visited nodes? This should be rare
-        "Tags processed: (unordered set)\n", paste0("* ", seenMap$keys(), collapse = "\n")
+        "Duplicate tag environment found: ", sexp_address(x), "\n",
+        "Call `lobstr::tree(x$root(), show_environments = TRUE)` to inspect the tag environments,\n",
+        "where `x` is your tag query object."
       )
     }
     # Add the item to the seen map to help with cycle detection
@@ -291,9 +290,8 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
         seenMap = seenMap
       )
     }
-    # Remove the item from the map to allow for checks for ciruclar deps
-    # Having multiple child objects that are the same is ok, as long as a cycle is not found
-    seenMap$remove(x)
+    ## No need to remove as found cycles are not explained.
+    # seenMap$remove(x)
   }
   x
 }
