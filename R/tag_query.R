@@ -1500,14 +1500,14 @@ tagQueryFindFilter <- function(els, fn) {
   }
   validateFnCanIterate(fn)
 
-  filterStack <- envirStack()
+  filterStack <- envirStackUnique()
   selectedWalkI(els, function(el, i) {
     if (fn(el, i)) {
       filterStack$push(el)
     }
   })
 
-  filterStack$asList()
+  filterStack$uniqueList()
 }
 
 
