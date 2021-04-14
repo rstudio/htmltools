@@ -1389,9 +1389,7 @@ tagQueryFindParent <- function(els, cssSelector = NULL) {
 # lazy as possible
 # * Must traverse all parents; If cssSelector exists, only return found parents
 # that match selector.
-# * Search using breadth-first. This is as close to jQuery's implementation.
-# * (I'd prefer to do depth first, like `$closest()`. No need to make a new
-# stack for each iteration)
+# * Search using depth-first. This does not match jQuery's implementation.
 tagQueryFindParents <- function(els, cssSelector = NULL) {
   # Use the map for `has()` and stack for `values()`
   ancestorsMap <- envirMap()
@@ -1400,31 +1398,31 @@ tagQueryFindParents <- function(els, cssSelector = NULL) {
   # func to add to the ancestor stack
   pushFn <- pushFnWrapper(ancestorsStack, cssSelector)
 
-  # Make sure all els are tag envs
-  els <- Filter(els, f = isTagEnv)
+  # For every element
+  tagQueryWalk(els, function(el) {
+    # Make sure it is a tag environment
+    if (!isTagEnv(el)) return()
 
-  # While there are elements still available to search...
-  while (length(els) > 0) {
-    # (Do not include cssSelector here. That is only for adding to ancestorsStack)
-    parents <- tagQueryFindParent(els, cssSelector = NULL)
-    # Set up a stack for the next iteration of parents
-    nextStack <- envirStack()
-    for (parent in parents) {
-      if (!isTagEnv(parent)) next
-      if (ancestorsMap$has(parent)) next
-      # Mark element
-      ancestorsMap$add(parent)
-      # Add to final set
-      pushFn(parent)
-      # Add to next iteration
-      nextStack$push(parent)
+    # While traversing up the parents...
+    while (!is.null(el)) {
+      # If the element has been seen before...
+      if (ancestorsMap$has(el)) {
+        # Stop traversing, as any matching parent found would be removed
+        # (unique info only)
+        return()
+      }
+      # Mark the ancestor as visited
+      ancestorsMap$add(el)
+      # Add the element to the return set
+      pushFn(el)
+      # Set `el` to parent element and repeat
+      el <- el$parent
     }
-    els <- nextStack$asList()
-  }
+  })
   ancestorsStack$uniqueList()
 }
 # Return a unique list of the closest ancestor elements that match the css selector
-# Should behave very similarly to ancestors
+# Should behave VERY similarly to $parents()
 tagQueryFindClosest <- function(els, cssSelector = NULL) {
   if (is.null(cssSelector)) {
     return(
