@@ -27,42 +27,42 @@ asSelector <- function(selector) {
   }
 
   # make sure it's a trimmed string
-  selector <- str_trim(paste0(selector, collapse = " "))
+  selector <- txt_trim(paste0(selector, collapse = " "))
 
   # yell if there is a comma
-  if (str_detect(selector, ",", fixed = TRUE)) {
+  if (txt_detect(selector, ",", fixed = TRUE)) {
     stop("Do not know how to handle comma separated selector values")
   }
   # yell if there is a `[`
-  if (str_detect(selector, "[", fixed = TRUE)) {
+  if (txt_detect(selector, "[", fixed = TRUE)) {
     stop("Do not know how to handle `[` in selector values")
   }
 
   # yell if there is a `:`
-  if (str_detect(selector, ":", fixed = TRUE)) {
+  if (txt_detect(selector, ":", fixed = TRUE)) {
     stop("Do not know how to handle special pseudo classes like `:first-child` or `:not()` in selector values")
   }
 
   # if it contains multiple elements, recurse
-  if (str_detect(selector, "* ", fixed = TRUE)) {
+  if (txt_detect(selector, "* ", fixed = TRUE)) {
     # we already match on all elements. No need to know about this selector
     warning("Removing `* ` from selector. ")
-    selector <- str_remove_all(selector, "* ", fixed = TRUE)
+    selector <- txt_remove_all(selector, "* ", fixed = TRUE)
   }
 
   # Check here to avoid inf recursion
-  if (str_detect(selector, ">", fixed = TRUE)) {
+  if (txt_detect(selector, ">", fixed = TRUE)) {
     # If there is a `>`, pad it with spaces
-    if (str_detect(selector, "(^>)|(>$)")) {
+    if (txt_detect(selector, "(^>)|(>$)")) {
       stop(
         "Direct children selector, `>`, must not be the first element or last element",
         " in a css selector. Please add more selector information, such as `*`."
       )
     }
     # While there are any consecutive `> >` items...
-    while(str_detect(selector, ">\\s*>")) {
+    while(txt_detect(selector, ">\\s*>")) {
       # If there are any `>>`, replace them with `> * >`
-      selector <- str_replace_all(selector, ">\\s*>", "> * >")
+      selector <- txt_replace_all(selector, ">\\s*>", "> * >")
     }
 
     # Split by `>` and convert to selectors
@@ -89,7 +89,7 @@ asSelector <- function(selector) {
   }
 
   # Split into a selector parts and recurse one more time
-  if (str_detect(selector, "\\s")) {
+  if (txt_detect(selector, "\\s")) {
     selectorItems <- lapply(strsplit(selector, "\\s+")[[1]], asSelector)
     selectorList <- asSelectorList(selectorItems)
     return(selectorList)
@@ -110,7 +110,7 @@ asSelector <- function(selector) {
 
     ## Not needed as the regex values below work around this.
     # # if there is more than a `*`, such as `*.warning`, treat as `.warning`
-    # if (str_detect(selector, "^\\*"))
+    # if (txt_detect(selector, "^\\*"))
     #   selector <- sub("^\\*", "", selector)
     #   if (grepl("^\\*", selector)) {
     #     stop("malformed css selector. Found at least two `**` that were not separated by a space")
@@ -118,9 +118,9 @@ asSelector <- function(selector) {
     # }
 
     elementRegex <- "^[a-zA-Z0-9]+"
-    element <- str_match_first(selector, elementRegex)
+    element <- txt_match_first(selector, elementRegex)
     if (!is.null(element)) {
-      selector <- str_remove(selector, elementRegex)
+      selector <- txt_remove(selector, elementRegex)
     }
 
     ## https://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
@@ -129,18 +129,18 @@ asSelector <- function(selector) {
     # id_regex <- "^#[^#.:[\\s]+" # `#` then everything that isn't a `#`, `.`, `:`, or white space
     # class_regex <- "^\\.[^#.:[\\s]+" # `.` then everything that isn't a `.`, `:`, or white space
 
-    tmpId <- str_match_first(selector, "#[^.:[]+")
+    tmpId <- txt_match_first(selector, "#[^.:[]+")
     if (!is.null(tmpId)) {
-      id <- str_remove(tmpId, "^#")
-      selector <- str_remove(selector, tmpId, fixed = TRUE)
+      id <- txt_remove(tmpId, "^#")
+      selector <- txt_remove(selector, tmpId, fixed = TRUE)
     }
 
-    classes <- str_remove(str_match_all(selector, "\\.[^.:[]+"), "^\\.")
+    classes <- txt_remove(txt_match_all(selector, "\\.[^.:[]+"), "^\\.")
     if (length(classes) == 0) {
       classes <- NULL
     }
     # if (!is.null(classes)) {
-    #   selector <- str_remove(selector, "\\.[^.:[]+")
+    #   selector <- txt_remove(selector, "\\.[^.:[]+")
     # }
   }
 
@@ -211,30 +211,36 @@ print.htmltools.selector.list <- function(x, ...) {
 
 
 
-str_replace <- function(text, pattern, replacement, fixed = FALSE) {
+# When `fixed = TRUE`, `sub()`, `gsub()`, `grepl()` perform ~4x faster
+# #> bench::mark(grepl("* ", "A B * C"), grepl("* ", "A B * C", fixed = TRUE))
+#   expression                               min median
+#   <bch:expr>                           <bch:t> <bch:>
+# 1 grepl("* ", "A B * C")                3.91µs 5.23µs
+# 2 grepl("* ", "A B * C", fixed = TRUE)   1.1µs 1.34µs
+txt_replace <- function(text, pattern, replacement, fixed = FALSE) {
   sub(pattern = pattern, replacement = replacement, x = text, perl = !fixed, fixed = fixed)
 }
 
-str_replace_all <- function(text, pattern, replacement, fixed = FALSE) {
+txt_replace_all <- function(text, pattern, replacement, fixed = FALSE) {
   gsub(pattern = pattern, replacement = replacement, x = text, perl = !fixed, fixed = fixed)
 }
 
-str_remove <- function(x, pattern, ...) {
-  str_replace(x, pattern, "", ...)
+txt_remove <- function(x, pattern, ...) {
+  txt_replace(x, pattern, "", ...)
 }
-str_remove_all <- function(x, pattern, ...) {
-  str_replace_all(x, pattern, "", ...)
+txt_remove_all <- function(x, pattern, ...) {
+  txt_replace_all(x, pattern, "", ...)
 }
 
 trim_leading <- function(text) {
-  str_remove_all(text, pattern = "^\\s+")
+  txt_remove_all(text, pattern = "^\\s+")
 }
 
 trim_trailing <- function(text) {
-  str_remove_all(text, pattern = "\\s+$")
+  txt_remove_all(text, pattern = "\\s+$")
 }
 
-str_trim <- function(text, side = "both") {
+txt_trim <- function(text, side = "both") {
   if (side == "both" || side == "left") {
     text <- trim_leading(text)
   }
@@ -244,12 +250,12 @@ str_trim <- function(text, side = "both") {
   text
 }
 
-str_detect <- function(text, pattern, fixed = FALSE) {
+txt_detect <- function(text, pattern, fixed = FALSE) {
   grepl(pattern = pattern, x = text, perl = !fixed, fixed = fixed)
 }
 
 # finds first, NOT all
-str_match_first <- function(x, pattern, ...) {
+txt_match_first <- function(x, pattern, ...) {
   regInfo <- regexpr(pattern, x, ...)
   if (length(regInfo) == 1 && regInfo == -1) {
     return(NULL)
@@ -259,7 +265,7 @@ str_match_first <- function(x, pattern, ...) {
 }
 
 # return a vector of matches or NULL
-str_match_all <- function(x, pattern, ...) {
+txt_match_all <- function(x, pattern, ...) {
   if (length(x) != 1) {
     stop("`x` must have a length of 1")
   }
