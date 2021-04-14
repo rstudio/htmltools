@@ -68,10 +68,10 @@ parent to child relationship and up to 1 parent per child.
 
 \subsection{Tag Query}{
 
-A \code{tagQuery()} behaves simliar to an R6 object in that internal values are altered in place. (but a \code{tagQuery()} object is
-not implemented with \code{R6}). The \code{tagQuery()}'s methods will return itself as
-much as possible, unless the method is directly asking for information, e.g.
-\verb{$selected()} or \verb{$asTags()}.
+A \code{tagQuery()} behaves simliar to an R6 object in that internal values are
+altered in place. (but a \code{tagQuery()} object is not implemented with \code{R6}).
+The \code{tagQuery()}'s methods will return itself as much as possible, unless the
+method is directly asking for information, e.g. \verb{$selected()} or \verb{$asTags()}.
 
 Internally, two important pieces of information are maintained: the root
 elements and the selected elements. The root tag environment will always
@@ -82,7 +82,10 @@ selected elements are initialized to a list containing the \code{root} tag
 environment. All \code{tagQuery()} methods will act on the selected elements
 unless declared otherwise.
 
-Tag query objects can be created from other tag query objects. Note, unless there is an intermediate call to \verb{$asTags()}, the original and new tag query objects will share the same tag environments. The new tag query object will have its selected elements reset. For example:\if{html}{\out{<div class="r">}}\preformatted{x <- tagQuery(div())
+Tag query objects can be created from other tag query objects. Note, unless
+there is an intermediate call to \verb{$asTags()}, the original and new tag query
+objects will share the same tag environments. The new tag query object will
+have its selected elements reset. For example:\if{html}{\out{<div class="r">}}\preformatted{x <- tagQuery(div())
 y <- tagQuery(x)
 z <- tagQuery(x$asTags(selected = FALSE))
 
@@ -117,7 +120,8 @@ combination of the following CSS selector information:
 \itemize{
 \item \code{element}:Match against a tag name. Example: \code{div}
 \item \code{id}: Match against a tag \code{id} attribute. Example: \verb{#myID}
-\item \code{class}: Match against a tag's class attribute. Example: \code{.my-class}. This may include multiple classes in any order.
+\item \code{class}: Match against a tag's class attribute. Example:
+\code{.my-class}. This may include multiple classes in any order.
 }
 
 The \verb{$find(cssSelector)} method allows for a CSS selector with

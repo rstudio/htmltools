@@ -7,21 +7,33 @@ NULL
 # * onRender(x, fn) - tagFunction(x, fn)
 
 ## Methods not implemented
-# `$set_selected(selected)` & `$set(selected_item, pos)` - These methods are not available in jQuery and is very brittle in implementation. Do not pursue!
-# With `$set(selected, pos)` not implemented, `[[<-.tagQuery` should not be implemented
-# With `$set(selected, pos_vector)` not implemented, `[<-.tagQuery` should not be implemented
-# If not doing, `[[<-.tagQuery` or `[<-.tagQuery`, then `[[.tagQuery` and `[.tagQuery` should not be implemented. Same with `length.tagQuery`
-# `$set_children(...)` - jQuery does not have this. Instead, you can call `$empty()$append(...)`
-# jQuery.val() - Get the current value of the first element in the set of matched elements or set the value of every matched element.
-# jQuery.text() - Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements.
-# jQuery.css() - Get the value of a computed style property for the first element in the set of matched elements or set one or more CSS properties for every matched element.
-# jQuery.prop() - Get the value of a property for the first element in the set of matched elements or set one or more properties for every matched element.
+# * `$set_selected(selected)` & `$set(selected_item, pos)` - These methods are
+# not available in jQuery and is very brittle in implementation. Do not pursue!
+# * With `$set(selected, pos)` not implemented, `[[<-.tagQuery` should not be
+# implemented
+# * With `$set(selected, pos_vector)` not implemented, `[<-.tagQuery` should not
+# be implemented
+# * If not doing, `[[<-.tagQuery` or `[<-.tagQuery`, then `[[.tagQuery` and
+# `[.tagQuery` should not be implemented. Same with `length.tagQuery`
+# * `$set_children(...)` - jQuery does not have this. Instead, you can call
+# `$empty()$append(...)`
+# * jQuery.val() - Get the current value of the first element in the set of
+# matched elements or set the value of every matched element.
+# * jQuery.text() - Get the combined text contents of each element in the set of
+# matched elements, including their descendants, or set the text contents of the
+# matched elements.
+# * jQuery.css() - Get the value of a computed style property for the first
+# element in the set of matched elements or set one or more CSS properties for
+# every matched element.
+# * jQuery.prop() - Get the value of a property for the first element in the set
+# of matched elements or set one or more properties for every matched element.
 
 
 
 
 ## Skip these implementations for now as the tagQuery methods are small and composable.
-## Instead write them where they are needed since they are small. (Just like we don't wrap dplyr code)
+## Instead write them where they are needed since they are small.
+## (Just like we don't wrap dplyr code)
 # tagAppendAttributesAt <- function(tag, cssSelector, ...) {
 #   tagQuery(tag)$find(cssSelector)$addAttrs(...)$asTags(selected = FALSE)
 # }
@@ -56,25 +68,34 @@ NULL
 # * Access to parents
 # * Calculations on siblings can now be done, even after alterations have been completed
 # * Once a `find(".x")` has been completed, a set of element environment pointers can be stored.
-#   * This makes followup alterations have the minimal O(k) complexity (where k is _found_ elements), not O(n) + O(k) graph search + reconstruction and k _found_ element alterations
+#   * This makes followup alterations have the minimal O(k) complexity (where k
+#   is _found_ elements), not O(n) + O(k) graph search + reconstruction and k
+#   _found_ element alterations
 #
 # Disadvantages
-# * MUST be careful not alter the environment object before converting back to a list. (Ex: Do not remove the element environment's children)
-# * The item returned is a set of environments that will alter in place. We will need to be careful about documenting and/or safeguarding this
+# * MUST be careful not alter the environment object before converting back to a
+# list. (Ex: Do not remove the element environment's children)
+# * The item returned is a set of environments that will alter in place. We will
+# need to be careful about documenting and/or safeguarding this
 
 
 # ## Final design choice:
 # Use environment elements
-# * Being able to search and have a list of eles to immediately look at and alter in place is AMAZING!
-# * Being able to ask for a grandparent (or obj$parent$parent) and be able to alter it in place is AMAZING! This has a strongly influenced by jquery.
+# * Being able to search and have a list of eles to immediately look at and
+# alter in place is AMAZING!
+# * Being able to ask for a grandparent (or obj$parent$parent) and be able to
+# alter it in place is AMAZING! This has a strongly influenced by jquery.
 
 # ----------
 
 # # Current design decisions
-# * tagQuery objects or tag environments can NOT be used in UI. These objects MUST be converted back to standard tag objects.
+# * tagQuery objects or tag environments can NOT be used in UI. These objects
+# MUST be converted back to standard tag objects.
 # * tagFunctions will not be altered in place
-#   * To alter tagFunction()s, use the `onRender(x)` method to register a method to be called after `as.tags(x)` is called.
-#   * `onRender(x, expr)` will wrap create a tag function that will resolve the tags before running the expr.
+#   * To alter tagFunction()s, use the `onRender(x)` method to register a method
+#   to be called after `as.tags(x)` is called.
+#   * `onRender(x, expr)` will wrap create a tag function that will resolve the
+#   tags before running the expr.
 
 
 ## rlang::sexp_address()
@@ -200,16 +221,19 @@ safeEnvToList <- function(x, oldClass = NULL) {
 }
 
 
-# Convert any mixture of standard tag structures and tag environments into just tag environments.
+# Convert any mixture of standard tag structures and tag environments into just
+# tag environments.
 #
-# This method is heavily used within `tagQuery()$rebuild()` to enforce all standard tag objects are upgraded to tag environments.
+# This method is heavily used within `tagQuery()$rebuild()` to enforce all
+# standard tag objects are upgraded to tag environments.
 #
-# If the object is already a tag environment, it will recurse the conversion for each of the children
+# If the object is already a tag environment, it will recurse the conversion for
+# each of the children
 #
 # Extras done:
 # * Flatten all attributes by combining duplicate keys
-# * Flatten the tag's children to a single list
-# * Check for circular dependencies of tag environments
+# * Flatten the tag's children to a single list * Check for circular
+# dependencies of tag environments
 #
 # (Do not export to encourage direct use of `tagQuery()`)
 asTagEnv <- function(x) {
@@ -420,10 +444,10 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #'
 #' ## Tag Query
 #'
-#' A `tagQuery()` behaves simliar to an R6 object in that internal values are altered in place. (but a `tagQuery()` object is
-#' not implemented with `R6`). The `tagQuery()`'s methods will return itself as
-#' much as possible, unless the method is directly asking for information, e.g.
-#' `$selected()` or `$asTags()`.
+#' A `tagQuery()` behaves simliar to an R6 object in that internal values are
+#' altered in place. (but a `tagQuery()` object is not implemented with `R6`).
+#' The `tagQuery()`'s methods will return itself as much as possible, unless the
+#' method is directly asking for information, e.g. `$selected()` or `$asTags()`.
 #'
 #' Internally, two important pieces of information are maintained: the root
 #' elements and the selected elements. The root tag environment will always
@@ -434,7 +458,10 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' environment. All `tagQuery()` methods will act on the selected elements
 #' unless declared otherwise.
 #'
-#' Tag query objects can be created from other tag query objects. Note, unless there is an intermediate call to `$asTags()`, the original and new tag query objects will share the same tag environments. The new tag query object will have its selected elements reset. For example:
+#' Tag query objects can be created from other tag query objects. Note, unless
+#' there is an intermediate call to `$asTags()`, the original and new tag query
+#' objects will share the same tag environments. The new tag query object will
+#' have its selected elements reset. For example:
 #'
 #' ```r
 #' x <- tagQuery(div())
@@ -579,7 +606,8 @@ tagQuery_ <- function(
         #'
         #' * `element`:Match against a tag name. Example: `div`
         #' * `id`: Match against a tag `id` attribute. Example: `#myID`
-        #' * `class`: Match against a tag's class attribute. Example: `.my-class`. This may include multiple classes in any order.
+        #' * `class`: Match against a tag's class attribute. Example:
+        #' `.my-class`. This may include multiple classes in any order.
         #'
         #' The `$find(cssSelector)` method allows for a CSS selector with
         #' multiple selections. Example: `div span` or `.outer > span.inner`.
@@ -920,7 +948,10 @@ validateFnCanIterate <- function(fn) {
   fnFormals <- formals(fn)
   if (! ("..." %in% names(fnFormals))) {
     if (length(fnFormals) < 2) {
-      stop("`fn(selected_i, i)` must be a function that accepts at least two arguments: `selected[[i]]` and `i` ")
+      stop(
+        "`fn(selected_i, i)` must be a function that accepts at least two arguments: ",
+        "`selected[[i]]` and `i` "
+      )
     }
   }
 }
@@ -1349,10 +1380,14 @@ tagQueryFindParent <- function(els, cssSelector = NULL) {
   parentStack$uniqueList()
 }
 # Return a list of the unique set of ancestor elements
-# By only looking for elements that have not been seen before, searching is as lazy as possible
-# Must traverse all parents; If cssSelector exists, only return found parents that match selector.
-# Search using breadth-first. This is as close to jQuery's implementation.
-#  (I'd prefer to do depth first, like `$closest()`. No need to make a new stack for each iteration)
+
+# * By only looking for elements that have not been seen before, searching is as
+# lazy as possible
+# * Must traverse all parents; If cssSelector exists, only return found parents
+# that match selector.
+# * Search using breadth-first. This is as close to jQuery's implementation.
+# * (I'd prefer to do depth first, like `$closest()`. No need to make a new
+# stack for each iteration)
 tagQueryFindParents <- function(els, cssSelector = NULL) {
   # Use the map for `has()` and stack for `values()`
   ancestorsMap <- envirMap()
@@ -1406,7 +1441,8 @@ tagQueryFindClosest <- function(els, cssSelector = NULL) {
     while (!is.null(el)) {
       # If the element has been seen before...
       if (ancestorsMap$has(el)) {
-        # Stop traversing, as any matching parent found would be removed (unique info only)
+        # Stop traversing, as any matching parent found would be removed
+        # (unique info only)
         return()
       }
       # Mark the ancestor as visited
@@ -1483,14 +1519,13 @@ cssSelectorToSelector <- function(cssSelector) {
     } else {
       selectorList <- asSelectorList(cssSelector)
       if (length(selectorList) > 1) {
-        stop("Can only match a single element selector. Looking for descendant elements is not allowed.")
+        stop(
+          "Can only match a single element selector. ",
+          "Looking for descendant elements is not allowed."
+        )
       }
       selectorList[[1]]
     }
-
-  # if (selector$type == SELECTOR_CHILD) {
-  #   stop("Direct child selector is not allowed when looking for a single element matching a selector")
-  # }
 
   selector
 }

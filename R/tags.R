@@ -954,8 +954,11 @@ flattenTags <- function(x) {
     flattenTags(as.tags(x))
   }
 }
-# This method should be just like `flattenTags()`, except the final `else` will return `list(x)`, rather than calling `flattenTags(as.tags(x))`.
-# By not calling `as.tags(x)`, tagFunctions are not evaluated and other items are not converted.
+# This method should be just like `flattenTags()`, except the final `else` will
+# return `list(x)`, rather than calling `flattenTags(as.tags(x))`.
+#
+# By not calling `as.tags(x)`, tagFunctions are not evaluated and other items
+# are not converted.
 flattenTagsRaw <- function(x) {
   if (isTag(x) || isTagEnv(x)) {
     # For tags, wrap them into a list (which will be unwrapped by caller)
