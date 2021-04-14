@@ -192,7 +192,7 @@ safeAttrValues <- function(x) {
 }
 
 # Convert a list to an environment and keep class and attribute information
-safeListToEnv <- function(x, newClass = NULL) {
+safeListToEnv <- function(x, classToAdd = NULL) {
   xList <- x
 
   ret <- list2env(xList, new.env(parent = emptyenv()))
@@ -202,12 +202,12 @@ safeListToEnv <- function(x, newClass = NULL) {
     attr(ret, attrName) <<- attrValue
   })
 
-  class(ret) <- c(newClass, class(xList), "environment")
+  oldClass(ret) <- c(classToAdd, oldClass(xList))
   ret
 }
 
 # Convert an environment to a list and keep class and attribute information
-safeEnvToList <- function(x, oldClass = NULL) {
+safeEnvToList <- function(x, classToRemove = NULL) {
   xEnv <- x
   ret <- as.list.environment(xEnv, all.names = TRUE)
 
@@ -216,7 +216,7 @@ safeEnvToList <- function(x, oldClass = NULL) {
     attr(ret, attrName) <<- attrValue
   })
 
-  class(ret) <- setdiff(class(x), c(oldClass, "environment"))
+  oldClass(ret) <- setdiff(oldClass(x), c(classToRemove)
   ret
 }
 
