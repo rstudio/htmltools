@@ -348,6 +348,7 @@ tagSetChildren <- function(tag, ..., list = NULL) {
   tag
 }
 
+# (Please make an issue if you'd like this method to be exported)
 tagInsertChildren <- function(tag, after, ..., list = NULL) {
   throw_if_tag_function(tag)
   tag$children <- unname(append(tag$children, c(dots_list(...), list), after))
