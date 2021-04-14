@@ -300,12 +300,15 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
 
 # This method MUST undo everything done in `asTagEnv(x)`
 # Do not export to encourage direct use of `tagQuery()$asTags()`
+# Only allow for tag environments to be passed in.
 tagEnvToTags <- function(x) {
   if (!isTagEnv(x)) {
     stop("`tagEnvToTags(x)` must start with a tag environment")
   }
   tagEnvToTags_(x)
 }
+# Allows for all types of objects that can be put in a tag environment's `$children` field.
+# Ex: tag environment, "text", 5, tagFunctions, etc.
 tagEnvToTags_ <- function(x) {
   if (isTagEnv(x)) {
     xEl <- x
