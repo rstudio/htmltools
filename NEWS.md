@@ -1,5 +1,9 @@
 # htmltools (development version)
 
+## Breaking Changes
+
+* Tag attributes are now combined when the tag object is created, when appending new tag attributes, and when retrieving tag attributes. For example, before this change, it was possible to have attributes that looked like `list(class = "A", class = "B")`. Now, it will be stored as `list(class = "A B")`. (#212)
+
 ## New Features & Improvements
 
 * Added `tagQuery(tags)`. A tag query object implements many popular features of jQuery.  Similar to jQuery, tag query objects can find internal html using CSS selections. Given a selection (which defaults to the original `tags`), many alterations may be performed before converting the tag query object back to tag objects. (#208)
