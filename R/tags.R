@@ -348,6 +348,13 @@ tagSetChildren <- function(tag, ..., list = NULL) {
   tag
 }
 
+# (Please make an issue if you'd like this method to be exported)
+tagInsertChildren <- function(tag, after, ..., list = NULL) {
+  throw_if_tag_function(tag)
+  tag$children <- unname(append(tag$children, c(dots_list(...), list), after))
+  tag
+}
+
 throw_if_tag_function <- function(tag) {
   if (is_tag_function(tag))
     stop("`tag` can not be a `tagFunction()`")
@@ -481,22 +488,7 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   # write tag name
   textWriter$write(concat8("<", tag$name))
 
-  # Convert all attribs to chars explicitly; prevents us from messing up factors
-  attribs <- lapply(tag$attribs, as.character)
-  # concatenate attributes
-  # split() is very slow, so avoid it if possible
-  if (anyDuplicated(names(attribs))) {
-    attribs <- lapply(split(attribs, names(attribs)), function(x) {
-      na_idx <- is.na(x)
-      if (any(na_idx)) {
-        if (all(na_idx)) {
-          return(NA)
-        }
-        x <- x[!na_idx]
-      }
-      paste(x, collapse = " ")
-    })
-  }
+  attribs <- flattenTagAttribs(tag$attribs)
 
   # write attributes
   for (attrib in names(attribs)) {
@@ -608,6 +600,8 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
+  assertNotTagEnvLike(x, "doRenderTags")
+
   textWriter <- WSTextWriter()
   tagWrite(x, textWriter, indent)
   # Strip off trailing \n (if present?)
@@ -619,6 +613,8 @@ doRenderTags <- function(x, indent = 0) {
 # preorder=TRUE means preorder tree traversal, that is, an object
 # should be rewritten before its children.
 rewriteTags <- function(ui, func, preorder) {
+  assertNotTagEnvLike(ui, "rewriteTags")
+
   if (preorder)
     ui <- func(ui)
 
@@ -934,7 +930,9 @@ tagify <- function(x) {
 
 # Given a list of tags, lists, and other items, return a flat list, where the
 # items from the inner, nested lists are pulled to the top level, recursively.
+# Be sure to check for tagEnvLike objects and not allow them
 flattenTags <- function(x) {
+  assertNotTagEnvLike(x, "flattenTags")
   if (isTag(x)) {
     # For tags, wrap them into a list (which will be unwrapped by caller)
     list(x)
@@ -946,7 +944,6 @@ flattenTags <- function(x) {
       # For items that are lists (but not tags), recurse
       unlist(lapply(x, flattenTags), recursive = FALSE)
     }
-
   } else if (is.character(x)){
     # This will preserve attributes if x is a character with attribute,
     # like what HTML() produces
@@ -957,6 +954,52 @@ flattenTags <- function(x) {
     # will be unwrapped by caller). Note that this will strip attributes.
     flattenTags(as.tags(x))
   }
+}
+# This method should be just like `flattenTags()`, except the final `else` will
+# return `list(x)`, rather than calling `flattenTags(as.tags(x))`.
+#
+# By not calling `as.tags(x)`, tagFunctions are not evaluated and other items
+# are not converted.
+flattenTagsRaw <- function(x) {
+  if (isTag(x) || isTagEnv(x)) {
+    # For tags, wrap them into a list (which will be unwrapped by caller)
+    list(x)
+  } else if (isTagList(x)) {
+    if (length(x) == 0) {
+      # Empty lists are simply returned
+      x
+    } else {
+      # For items that are lists (but not tags), recurse
+      unlist(lapply(x, flattenTagsRaw), recursive = FALSE)
+    }
+  } else {
+    # This will preserve attributes if x is a character with attribute,
+    # like what HTML() produces
+    list(x)
+  }
+}
+
+flattenTagAttribs <- function(attribs) {
+
+  # Convert all attribs to chars explicitly; prevents us from messing up factors
+  attribs <- lapply(attribs, as.character)
+  # concatenate attributes
+  # split() is very slow, so avoid it if possible
+  if (anyDuplicated(names(attribs))) {
+    attribs <- lapply(split(attribs, names(attribs)), function(x) {
+      na_idx <- is.na(x)
+      if (any(na_idx)) {
+        if (all(na_idx)) {
+          return(NA)
+        }
+        x <- x[!na_idx]
+      }
+      paste(x, collapse = " ")
+    })
+  }
+
+  attribs
+
 }
 
 #' Convert a value to tags
