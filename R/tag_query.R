@@ -390,7 +390,7 @@ as.character.htmltools.tag.query <- function(x, ...) {
 
 
 
-#' Tag Query - Perform jQuery-like alterations on tag objects
+#' Perform jQuery-like alterations on tags
 #'
 #' `r lifecycle::badge("experimental")`
 #'
