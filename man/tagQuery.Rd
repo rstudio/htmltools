@@ -2,7 +2,7 @@
 % Please edit documentation in R/tag_query.R
 \name{tagQuery}
 \alias{tagQuery}
-\title{Tag Query}
+\title{Tag Query - Perform jQuery-like alterations on tag objects}
 \usage{
 tagQuery(tags)
 }
