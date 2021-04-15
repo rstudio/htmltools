@@ -2,6 +2,8 @@
 
 ## New Features & Improvements
 
+* Added `tagQuery(tags)`. A tag query object implements many popular features of jQuery.  Similar to jQuery, tag query objects can find internal html using CSS selections. Given a selection (which defaults to the original `tags`), many alterations may be performed before converting the tag query object back to tag objects. (#208)
+
 ## Bug Fixes
 
 * Closed #197: Fixed rendering of boolean attributes in <script> tags rendered via renderDependencies() (#197, thanks @atusy).
