@@ -22,14 +22,14 @@ encountered should have the singleton attribute removed.}
 }
 \value{
 \code{surroundSingletons} preprocesses a tag object by changing any
-  singleton X into <!--SHINY.SINGLETON[sig]-->X'<!--/SHINY.SINGLETON[sig]-->
-  where sig is the sha1 of X, and X' is X minus the singleton attribute.
+singleton X into \verb{<!--SHINY.SINGLETON[sig]-->X'<!--/SHINY.SINGLETON[sig]-->}
+where sig is the sha1 of X, and X' is X minus the singleton attribute.
 
 \code{takeSingletons} returns a list with the elements \code{ui} (the
-  processed tag objects with any duplicate singleton objects removed) and
-  \code{singletons} (the list of known singleton signatures).
+processed tag objects with any duplicate singleton objects removed) and
+\code{singletons} (the list of known singleton signatures).
 }
 \description{
-Functions for manipulating \code{\link{singleton}} objects in tag
+Functions for manipulating \code{\link[=singleton]{singleton()}} objects in tag
 hierarchies. Intended for framework authors.
 }

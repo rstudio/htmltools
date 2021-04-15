@@ -31,7 +31,7 @@ x\})}, except that if there are any existing dependencies,
 
 As of htmltools 0.3.4, HTML dependencies can be attached without using
 \code{attachDependencies}. Instead, they can be added inline, like a child
-object of a tag or \code{\link{tagList}}.
+object of a tag or \code{\link[=tagList]{tagList()}}.
 }
 \examples{
 # Create a JavaScript dependency

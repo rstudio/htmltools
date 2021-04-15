@@ -24,8 +24,8 @@ for the string \code{"<HTML>"} within the template.}
 Process an HTML template and return a tagList object. If the template is a
 complete HTML document, then the returned object will also have class
 \code{html_document}, and can be passed to the function
-\code{\link{renderDocument}} to get the final HTML text.
+\code{\link[=renderDocument]{renderDocument()}} to get the final HTML text.
 }
 \seealso{
-\code{\link{renderDocument}}
+\code{\link[=renderDocument]{renderDocument()}}
 }

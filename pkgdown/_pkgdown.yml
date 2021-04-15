@@ -1,0 +1,93 @@
+url: https://rstudio.github.io/htmltools/
+
+# development:
+#   mode: auto
+
+
+# template:
+#  # assets: pkgdown/assets
+#   params:
+#     docsearch:
+#       api_key: 'e8f0e2420e2e9aac7973efb2cc877b06'
+#       index_name: 'rplumber'
+
+# articles:
+# - title: Creating APIs in R with Plumber
+#   navbar: ~
+#   # desc: description here
+#   contents:
+#   - 'introduction'
+#   - 'quickstart'
+#   - 'routing-and-input'
+#   - 'rendering-output'
+#   - 'execution-model'
+#   - 'security'
+#   - 'hosting'
+#   - 'programmatic-usage'
+#   - 'annotations'
+#   - 'tips-and-tricks'
+#   - 'migration'
+
+
+reference:
+
+- title: Tags
+  contents:
+  - '`builder`'
+  - '`HTML`'
+  - '`tag`'
+  - '`plotTag`'
+  - '`include`'
+  - '`browsable`'
+  - '`as.tags`'
+  - '`withTags`'
+
+- title: Rendering tags
+  contents:
+  - '`print.html`'
+  - '`renderDependencies`'
+  - '`renderDocument`'
+  - '`renderTags`'
+  - '`save_html`'
+  - '`html_print`'
+
+- title: Singleton tag
+  contents:
+  - '`singleton`'
+  - '`singleton_tools`'
+
+- title: HTML templates
+  contents:
+  - '`htmlTemplate`'
+  - '`htmlPreserve`'
+
+- title: HTML dependencies
+  contents:
+  - '`htmlDependency`'
+  - '`htmlDependencies`'
+  - '`findDependencies`'
+  - '`subtractDependencies`'
+  - '`suppressDependencies`'
+  - '`copyDependencyToDir`'
+  - '`makeDependencyRelative`'
+  - '`resolveDependencies`'
+
+- title: Plot handling
+  contents:
+  - '`plotTag`'
+  - '`capturePlot`'
+  - '`defaultPngDevice`'
+
+- title: Utilities
+  contents:
+  - '`css`'
+  - '`parseCssColors`'
+  - '`htmlEscape`'
+  - '`urlEncodePath`'
+  - '`validateCssUnit`'
+  - '`knitr_methods`'
+
+- title: Advanced tag objects
+  contents:
+  - '`tagQuery`'
+  - '`tagFunction`'

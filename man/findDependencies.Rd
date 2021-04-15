@@ -12,7 +12,7 @@ findDependencies(tags, tagify = TRUE)
 \item{tagify}{Whether to tagify the input before searching for dependencies.}
 }
 \value{
-A list of \code{\link{htmlDependency}} objects.
+A list of \code{\link[=htmlDependency]{htmlDependency()}} objects.
 }
 \description{
 Walks a hierarchy of tags looking for attached dependencies.

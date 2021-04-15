@@ -16,7 +16,7 @@ sub-directory, the sub-directory must already exist.}
 
 \item{libdir}{Directory to copy dependencies to}
 
-\item{lang}{Value of the `<html>` `lang` attribute}
+\item{lang}{Value of the \verb{<html>} \code{lang} attribute}
 }
 \description{
 Save the specified HTML object to a file, copying all of it's

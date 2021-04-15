@@ -11,7 +11,7 @@ tagFunction(func)
 dependencies.}
 }
 \description{
-Create 'lazily' rendered HTML [tags] (and/or [htmlDependencies()]).
+Create 'lazily' rendered HTML \link{tags} (and/or \code{\link[=htmlDependencies]{htmlDependencies()}}).
 }
 \examples{
 

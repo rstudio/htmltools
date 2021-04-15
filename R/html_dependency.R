@@ -13,77 +13,77 @@
 #'   Details.
 #' @param meta Named list of meta tags to insert into document head
 #' @param script Script(s) to include within the document head (should be
-#'   specified relative to the \code{src} parameter).
+#'   specified relative to the `src` parameter).
 #' @param stylesheet Stylesheet(s) to include within the document (should be
-#'   specified relative to the \code{src} parameter).
+#'   specified relative to the `src` parameter).
 #' @param head Arbitrary lines of HTML to insert into the document head
 #' @param attachment Attachment(s) to include within the document head. See
 #'   Details.
-#' @param package An R package name to indicate where to find the \code{src}
-#'   directory when \code{src} is a relative path (see
-#'   \code{\link{resolveDependencies}}).
-#' @param all_files Whether all files under the \code{src} directory are
-#'   dependency files. If \code{FALSE}, only the files specified in
-#'   \code{script}, \code{stylesheet}, and \code{attachment} are treated as
+#' @param package An R package name to indicate where to find the `src`
+#'   directory when `src` is a relative path (see
+#'   [resolveDependencies()]).
+#' @param all_files Whether all files under the `src` directory are
+#'   dependency files. If `FALSE`, only the files specified in
+#'   `script`, `stylesheet`, and `attachment` are treated as
 #'   dependency files.
 #'
 #' @return An object that can be included in a list of dependencies passed to
-#'   \code{\link{attachDependencies}}.
+#'   [attachDependencies()].
 #'
 #' @details Each dependency can be located on the filesystem, at a relative or
 #'   absolute URL, or both. The location types are indicated using the names of
-#'   the \code{src} character vector: \code{file} for filesystem directory,
-#'   \code{href} for URL. For example, a dependency that was both on disk and at
-#'   a URL might use \code{src = c(file=filepath, href=url)}.
+#'   the `src` character vector: `file` for filesystem directory,
+#'   `href` for URL. For example, a dependency that was both on disk and at
+#'   a URL might use `src = c(file=filepath, href=url)`.
 #'
-#'   \code{script} can be given as one of the following:
+#'   `script` can be given as one of the following:
 #'   \itemize{
 #'   \item a character vector specifying various scripts to include relative to the
-#'     value of \code{src}.
-#'     Each is expanded into its own \code{<script>} tag
+#'     value of `src`.
+#'     Each is expanded into its own `<script>` tag
 #'   \item A named list with any of the following fields:
 #'   \itemize{
-#'     \item \code{src},
-#'     \item \code{integrity}, &
-#'     \item \code{crossorigin},
-#'     \item any other valid \code{<script>} attributes.
+#'     \item `src`,
+#'     \item `integrity`, &
+#'     \item `crossorigin`,
+#'     \item any other valid `<script>` attributes.
 #'     }
 #'     allowing the use of SRI to ensure the integrity of packages downloaded from
 #'     remote servers.
-#'     Eg: \code{script = list(src = "min.js", integrity = "hash")}
+#'     Eg: `script = list(src = "min.js", integrity = "hash")`
 #'   \item An unamed list, containing a combination of named list with the fields
 #'     mentioned previously, and strings.
 #'     Eg:
 #'     \itemize{
-#'     \item \code{script = list(list(src = "min.js"), "util.js", list(src = "log.js"))}
-#'     \item \code{script = "pkg.js"} is equivalent to
-#'     \item \code{script = list(src = "pkg.js")}.
+#'     \item `script = list(list(src = "min.js"), "util.js", list(src = "log.js"))`
+#'     \item `script = "pkg.js"` is equivalent to
+#'     \item `script = list(src = "pkg.js")`.
 #'     }
 #'   }
 #'
-#'   \code{attachment} can be used to make the indicated files available to the
-#'   JavaScript on the page via URL. For each element of \code{attachment}, an
-#'   element \code{<link id="DEPNAME-ATTACHINDEX-attachment" rel="attachment"
-#'   href="...">} is inserted, where \code{DEPNAME} is \code{name}. The value of
-#'   \code{ATTACHINDEX} depends on whether \code{attachment} is named or not; if
+#'   `attachment` can be used to make the indicated files available to the
+#'   JavaScript on the page via URL. For each element of `attachment`, an
+#'   element `<link id="DEPNAME-ATTACHINDEX-attachment" rel="attachment"
+#'   href="...">` is inserted, where `DEPNAME` is `name`. The value of
+#'   `ATTACHINDEX` depends on whether `attachment` is named or not; if
 #'   so, then it's the name of the element, and if not, it's the 1-based index
 #'   of the element. JavaScript can retrieve the URL using something like
-#'   \code{document.getElementById(depname + "-" + index + "-attachment").href}.
+#'   `document.getElementById(depname + "-" + index + "-attachment").href`.
 #'   Note that depending on the rendering context, the runtime value of the href
 #'   may be an absolute, relative, or data URI.
 #'
-#'   \code{htmlDependency} should not be called from the top-level of a package
+#'   `htmlDependency` should not be called from the top-level of a package
 #'   namespace with absolute paths (or with paths generated by
-#'   \code{system.file()}) and have the result stored in a variable. This is
-#'   because, when a binary package is built, R will run \code{htmlDependency}
+#'   `system.file()`) and have the result stored in a variable. This is
+#'   because, when a binary package is built, R will run `htmlDependency`
 #'   and store the path from the building machine's in the package. This path is
 #'   likely to differ from the correct path on a machine that downloads and
 #'   installs the binary package. If there are any absolute paths, instead of
-#'   calling \code{htmlDependency} at build-time, it should be called at
-#'   run-time. This can be done by wrapping the \code{htmlDependency} call in a
+#'   calling `htmlDependency` at build-time, it should be called at
+#'   run-time. This can be done by wrapping the `htmlDependency` call in a
 #'   function.
 #'
-#' @seealso Use \code{\link{attachDependencies}} to associate a list of
+#' @seealso Use [attachDependencies()] to associate a list of
 #'   dependencies with the HTML it belongs with.
 #'
 #' @export
@@ -144,14 +144,14 @@ validateScalarName <- function(x, name = deparse(substitute(x))) {
 #'
 #' Gets or sets the HTML dependencies associated with an object (such as a tag).
 #'
-#' \code{attachDependencies} provides an alternate syntax for setting
+#' `attachDependencies` provides an alternate syntax for setting
 #' dependencies. It is similar to \code{local(\{htmlDependencies(x) <- value;
 #' x\})}, except that if there are any existing dependencies,
-#' \code{attachDependencies} will add to them, instead of replacing them.
+#' `attachDependencies` will add to them, instead of replacing them.
 #'
 #' As of htmltools 0.3.4, HTML dependencies can be attached without using
-#' \code{attachDependencies}. Instead, they can be added inline, like a child
-#' object of a tag or \code{\link{tagList}}.
+#' `attachDependencies`. Instead, they can be added inline, like a child
+#' object of a tag or [tagList()].
 #'
 #' @param x An object which has (or should have) HTML dependencies.
 #' @param value An HTML dependency, or a list of HTML dependencies.
@@ -240,11 +240,11 @@ is_tag_function <- function(x) {
 #' HTML template.
 #'
 #' @param ... Names of the dependencies to suppress. For example,
-#'   \code{"jquery"} or \code{"bootstrap"}.
+#'   `"jquery"` or `"bootstrap"`.
 #'
-#' @seealso \code{\link{htmlTemplate}} for more information about using HTML
+#' @seealso [htmlTemplate()] for more information about using HTML
 #'   templates.
-#' @seealso \code{\link[htmltools]{htmlDependency}}
+#' @seealso [htmltools::htmlDependency()]
 #' @export
 suppressDependencies <- function(...) {
   lapply(dots_list(...), function(name) {
@@ -278,8 +278,8 @@ href_path <- function(dependency) {
 #' Encode a URL path
 #'
 #' Encode characters in a URL path. This is the same as
-#' \code{\link[utils]{URLencode}} with \code{reserved = TRUE} except that
-#' \code{/} is preserved.
+#' [utils::URLencode()] with `reserved = TRUE` except that
+#' `/` is preserved.
 #'
 #' @param x A character vector.
 #' @export
@@ -291,9 +291,9 @@ urlEncodePath <- function(x) {
 #' Copy an HTML dependency to a directory
 #'
 #' Copies an HTML dependency to a subdirectory of the given directory. The
-#' subdirectory name will be \emph{name}-\emph{version} (for example,
-#' "outputDir/jquery-1.11.0"). You may set \code{options(htmltools.dir.version =
-#' FALSE)} to suppress the version number in the subdirectory name.
+#' subdirectory name will be *name*-*version* (for example,
+#' "outputDir/jquery-1.11.0"). You may set `options(htmltools.dir.version =
+#' FALSE)` to suppress the version number in the subdirectory name.
 #'
 #' In order for disk-based dependencies to work with static HTML files, it's
 #' generally necessary to copy them to either the directory of the referencing
@@ -303,14 +303,14 @@ urlEncodePath <- function(x) {
 #' @param dependency A single HTML dependency object.
 #' @param outputDir The directory in which a subdirectory should be created for
 #'   this dependency.
-#' @param mustWork If \code{TRUE} and \code{dependency} does not point to a
+#' @param mustWork If `TRUE` and `dependency` does not point to a
 #'   directory on disk (but rather a URL location), an error is raised. If
-#'   \code{FALSE} then non-disk dependencies are returned without modification.
+#'   `FALSE` then non-disk dependencies are returned without modification.
 #'
-#' @return The dependency with its \code{src} value updated to the new
+#' @return The dependency with its `src` value updated to the new
 #'   location's absolute path.
 #'
-#' @seealso \code{\link{makeDependencyRelative}} can be used with the returned
+#' @seealso [makeDependencyRelative()] can be used with the returned
 #'   value to make the path relative to a specific directory.
 #'
 #' @export
@@ -408,19 +408,19 @@ relativeTo <- function(dir, file) {
 #' directories.
 #'
 #' @param dependency A single HTML dependency with an absolute path.
-#' @param basepath The path to the directory that \code{dependency} should be
+#' @param basepath The path to the directory that `dependency` should be
 #'   made relative to.
-#' @param mustWork If \code{TRUE} and \code{dependency} does not point to a
+#' @param mustWork If `TRUE` and `dependency` does not point to a
 #'   directory on disk (but rather a URL location), an error is raised. If
-#'   \code{FALSE} then non-disk dependencies are returned without modification.
+#'   `FALSE` then non-disk dependencies are returned without modification.
 #'
-#' @return The dependency with its \code{src} value updated to the new
+#' @return The dependency with its `src` value updated to the new
 #' location's relative path.
 #'
-#' If \code{baspath} did not appear to be a parent directory of the dependency's
-#' directory, an error is raised (regardless of the value of \code{mustWork}).
+#' If `baspath` did not appear to be a parent directory of the dependency's
+#' directory, an error is raised (regardless of the value of `mustWork`).
 #'
-#' @seealso \code{\link{copyDependencyToDir}}
+#' @seealso [copyDependencyToDir()]
 #'
 #' @export
 makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
@@ -444,15 +444,15 @@ makeDependencyRelative <- function(dependency, basepath, mustWork = TRUE) {
 #' Create the appropriate HTML markup for including dependencies in an HTML
 #' document.
 #'
-#' @param dependencies A list of \code{htmlDependency} objects.
-#' @param srcType The type of src paths to use; valid values are \code{file} or
-#'   \code{href}.
+#' @param dependencies A list of `htmlDependency` objects.
+#' @param srcType The type of src paths to use; valid values are `file` or
+#'   `href`.
 #' @param encodeFunc The function to use to encode the path part of a URL. The
 #'   default should generally be used.
 #' @param hrefFilter A function used to transform the final, encoded URLs of
 #'   script and stylesheet files. The default should generally be used.
 #'
-#' @return An \code{\link{HTML}} object suitable for inclusion in the head of an
+#' @return An [HTML()] object suitable for inclusion in the head of an
 #'   HTML document.
 #'
 #' @export

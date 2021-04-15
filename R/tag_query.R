@@ -390,7 +390,7 @@ as.character.htmltools.tag.query <- function(x, ...) {
 
 
 
-#' Tag Query - Perform jQuery-like alterations on tag objects
+#' Perform jQuery-like alterations on tags
 #'
 #' `r lifecycle::badge("experimental")`
 #'
@@ -497,7 +497,6 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #'   `root` object. At the time of initialization, the `root` is also considered
 #'   the single selected item. If any selections are made, the selected elements
 #'   will be updated.
-#' @md
 #' @export
 tagQuery <- function(tags) {
 
@@ -552,7 +551,6 @@ tagQuery <- function(tags) {
 #' @rdname tagQuery
 #' @aliases NULL
 #' @usage NULL
-#' @md
 tagQuery_ <- function(
   root,
   # Using a trailing `_` to avoid name collisions

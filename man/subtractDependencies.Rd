@@ -7,10 +7,10 @@
 subtractDependencies(dependencies, remove, warnOnConflict = TRUE)
 }
 \arguments{
-\item{dependencies}{A list of \code{\link{htmlDependency}} objects from which
+\item{dependencies}{A list of \code{\link[=htmlDependency]{htmlDependency()}} objects from which
 dependencies should be removed.}
 
-\item{remove}{A list of \code{\link{htmlDependency}} objects indicating which
+\item{remove}{A list of \code{\link[=htmlDependency]{htmlDependency()}} objects indicating which
 dependencies should be removed, or a character vector indicating dependency
 names.}
 
@@ -20,8 +20,8 @@ has a lower version number. Has no effect if \code{remove} is provided as a
 character vector.}
 }
 \value{
-A list of \code{\link{htmlDependency}} objects that don't intersect
-  with \code{remove}.
+A list of \code{\link[=htmlDependency]{htmlDependency()}} objects that don't intersect
+with \code{remove}.
 }
 \description{
 Remove a set of dependencies from another list of dependencies. The set of

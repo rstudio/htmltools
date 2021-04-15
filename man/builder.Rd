@@ -62,7 +62,7 @@ hr(..., .noWS = NULL)
 \item{...}{Attributes and children of the element. Named arguments become
 attributes, and positional arguments become children. Valid children are
 tags, single-character character vectors (which become text nodes), raw
-HTML (see \code{\link{HTML}}), and \code{html_dependency} objects. You can
+HTML (see \code{\link[=HTML]{HTML()}}), and \code{html_dependency} objects. You can
 also pass lists that contain tags, text nodes, or HTML. To use boolean
 attributes, use a named argument with a \code{NA} value. (see example)}
 
@@ -78,13 +78,13 @@ Simple functions for constructing HTML documents.
 \details{
 The \code{tags} environment contains convenience functions for all valid
 HTML5 tags. To generate tags that are not part of the HTML5 specification,
-you can use the \code{\link{tag}()} function.
+you can use the \code{\link[=tag]{tag()}} function.
 
 Dedicated functions are available for the most common HTML tags that do not
 conflict with common R functions.
 
 The result from these functions is a tag object, which can be converted using
-\code{\link{as.character}()}.
+\code{\link[=as.character]{as.character()}}.
 }
 \examples{
 doc <- tags$html(
@@ -121,7 +121,7 @@ cat(as.character(oneline))
 }
 \references{
 \itemize{
-   \item W3C html specification about boolean attributes
-   \url{https://www.w3.org/TR/html5/infrastructure.html#sec-boolean-attributes}
- }
+\item W3C html specification about boolean attributes
+\url{https://www.w3.org/TR/html5/infrastructure.html#sec-boolean-attributes}
+}
 }

@@ -22,16 +22,16 @@ restorePreserveChunks(strval, chunks)
 }
 \value{
 \code{htmlPreserve} returns a single-element character vector with
-  "magic" HTML comments surrounding the original text (unless the original
-  text was empty, in which case an empty string is returned).
+"magic" HTML comments surrounding the original text (unless the original
+text was empty, in which case an empty string is returned).
 
 \code{extractPreserveChunks} returns a list with two named elements:
-  \code{value} is the string with the regions replaced, and \code{chunks} is
-  a named character vector where the names are the IDs and the values are the
-  regions that were extracted.
+\code{value} is the string with the regions replaced, and \code{chunks} is
+a named character vector where the names are the IDs and the values are the
+regions that were extracted.
 
 \code{restorePreserveChunks} returns a character vector with the
-  chunk IDs replaced with their original values.
+chunk IDs replaced with their original values.
 }
 \description{
 Use "magic" HTML comments to protect regions of HTML from being modified by

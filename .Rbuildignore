@@ -7,3 +7,6 @@
 ^scripts
 ^\.github$
 ^revdep$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

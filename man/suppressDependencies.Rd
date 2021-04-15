@@ -16,8 +16,8 @@ dependency (like a JavaScript or CSS file) is declared in raw HTML, in an
 HTML template.
 }
 \seealso{
-\code{\link{htmlTemplate}} for more information about using HTML
-  templates.
+\code{\link[=htmlTemplate]{htmlTemplate()}} for more information about using HTML
+templates.
 
-\code{\link[htmltools]{htmlDependency}}
+\code{\link[=htmlDependency]{htmlDependency()}}
 }

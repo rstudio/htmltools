@@ -28,5 +28,5 @@ Change a dependency's absolute path to be relative to one of its parent
 directories.
 }
 \seealso{
-\code{\link{copyDependencyToDir}}
+\code{\link[=copyDependencyToDir]{copyDependencyToDir()}}
 }
