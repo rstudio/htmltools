@@ -292,7 +292,9 @@ tagFunction <- function(func) {
 #' @export
 tagAppendAttributes <- function(tag, ...) {
   throw_if_tag_function(tag)
-  tag$attribs <- c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
+  tag$attribs <- flattenTagAttribs(
+    c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
+  )
   tag
 }
 
@@ -309,19 +311,10 @@ tagHasAttribute <- function(tag, attr) {
 #' @export
 tagGetAttribute <- function(tag, attr) {
   throw_if_tag_function(tag)
-  # Find out which positions in the attributes list correspond to the given attr
-  attribs <- tag$attribs
-  attrIdx <- which(attr == names(attribs))
-
-  if (length(attrIdx) == 0) {
-    return (NULL)
-  }
-
-  # Convert all attribs to chars explicitly; prevents us from messing up factors
-  result <- lapply(attribs[attrIdx], as.character)
-  # Separate multiple attributes with the same name
-  result <- paste(result, collapse  = " ")
-  result
+  # Must flatten all tag attribs to handle legacy situations
+  #   where there are two entries for the same name
+  attribs <- flattenTagAttribs(tag$attribs)
+  attribs[[attr]]
 }
 
 #' @rdname tag
@@ -412,7 +405,9 @@ tag <- function(`_tag_name`, varArgs, .noWS=NULL) {
 
   # Named arguments become attribs, dropping NULL and length-0 values
   named_idx <- nzchar(varArgsNames)
-  attribs <- dropNullsOrEmpty(varArgs[named_idx])
+  attribs <- flattenTagAttribs(
+    dropNullsOrEmpty(varArgs[named_idx])
+  )
 
   # Unnamed arguments are flattened and added as children.
   # Use unname() to remove the names attribute from the list, which would
