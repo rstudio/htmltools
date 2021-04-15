@@ -893,3 +893,68 @@ test_that("extractPreserveChunks works for emoji strings", {
     c('chunk2', 'chunk1')
   )
 })
+
+
+
+test_that("html render method", {
+  # Have a place holder div and return a span instead
+  obj <- div("example", .render = function(x) {
+    x$name <- "span"
+    x
+  })
+  expect_equal(obj$name, "div")
+  expect_equal(tagify(obj)$name, "span")
+
+  # Add a class to the tag
+  spanExtra <- tagAddRenderFunction(obj, function(x) {
+    tagAppendAttributes(x, class = "extra")
+  })
+  expect_equal(spanExtra$name, "div")
+  expect_equal(spanExtra$attribs$class, NULL)
+  expect_equal(tagify(spanExtra)$name, "span")
+  expect_equal(tagify(spanExtra)$attribs$class, "extra")
+
+  # Replace the previous render method
+  # Should print a `div` with class `"extra"`
+  divExtra <- tagAddRenderFunction(obj, replace = TRUE, function(x) {
+    tagAppendAttributes(x, class = "extra")
+  })
+  expect_equal(divExtra$attribs$class, NULL)
+  expect_equal(tagify(divExtra)$name, "div")
+  expect_equal(tagify(divExtra)$attribs$class, "extra")
+
+  # Add more child tags
+  spanExtended <- tagAddRenderFunction(obj, function(x) {
+    tagAppendChildren(x, tags$strong("bold text"))
+  })
+  expect_equal(spanExtended$name, "div")
+  expect_equal(spanExtended$children, obj$children)
+  expect_equal(tagify(spanExtended)$name, "span")
+  expect_equal(tagify(spanExtended)$children, list("example", tags$strong("bold text")))
+
+  # Add a new html dependency
+  newDep <- tagAddRenderFunction(obj, function(x) {
+    fa <- htmlDependency(
+      "font-awesome", "4.5.0", c(href="shared/font-awesome"),
+      stylesheet = "css/font-awesome.min.css")
+    attachDependencies(x, fa, append = TRUE)
+  })
+  # Also add a jqueryui html dependency
+  htmlDependencies(newDep) <- htmlDependency(
+    "jqueryui", "1.11.4", c(href="shared/jqueryui"),
+    script = "jquery-ui.min.js")
+  expect_equal(newDep$name, "div")
+  expect_length(htmlDependencies(newDep), 1)
+  expect_equal(tagify(newDep)$name, "span")
+  expect_length(htmlDependencies(tagify(newDep)), 2)
+
+  # At render time, both dependencies will be found
+  renderTags(newDep)$dependencies
+  # Ignore the original tag and return something completely new.
+  newObj <- tagAddRenderFunction(obj, function(x) {
+    tags$p("Something else")
+  })
+  expect_equal(newObj$name, "div")
+  expect_equal(tagify(newObj), tags$p("Something else"))
+
+})

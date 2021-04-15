@@ -263,9 +263,12 @@ tagList <- function(...) {
 #'
 #' Create 'lazily' rendered HTML [tags] (and/or [htmlDependencies()]).
 #'
+#' When possible, use [`tagAddRenderFunction()`] to provide both a tag
+#' structure and utilize a render function.
+#'
 #' @param func a function with no arguments that returns HTML tags and/or
 #'   dependencies.
-#'
+#' @seealso [`tagAddRenderFunction()`]
 #' @export
 #' @examples
 #'
@@ -287,6 +290,94 @@ tagFunction <- function(func) {
   }
   structure(func, class = "shiny.tag.function")
 }
+
+#' Add a tag render function
+#'
+#' Adds a render method to a tag object. This allows for the tag structure to
+#' be physically present while still allowing for a function to enhance (or
+#' even completely replace) the original tag object.
+#'
+#' It is recommended to use a render function over a [`tagFunction()`] whenever
+#' possible. By using a render method, a the tag structure is not a black box
+#' and can be inspected and altered before print time.
+#'
+#' Using [`tagFunction()`] is recommended if a stand-in tag structure does not
+#' make sense.
+#'
+#' @seealso [`tagFunction`]
+#' @param tag A tag object. See [`tag()`]
+#' @param func Function that accepts a single tag object.
+#' @param replace If `TRUE`, it will overwrite any previous render functions
+#' @return A [`tag()`] object with a `.render` field containing `func`.
+#'   When the returned tag is _rendered_ (such as with [`as.tags()`]),
+#'   this function will be called.
+#' @examples
+#' # Have a place holder div and return a span instead
+#' obj <- div("example", .render = function(x) {
+#'   x$name <- "span"
+#'   x
+#' })
+#' obj$name # "div"
+#' print(obj) # Prints as a `span`
+#'
+#' # Add a class to the tag
+#' # Should print a `span` with class `"extra"`
+#' spanExtra <- tagAddRenderFunction(obj, function(x) {
+#'   tagAppendAttributes(x, class = "extra")
+#' })
+#' spanExtra
+#'
+#' # Replace the previous render method
+#' # Should print a `div` with class `"extra"`
+#' divExtra <- tagAddRenderFunction(obj, replace = TRUE, function(x) {
+#'   tagAppendAttributes(x, class = "extra")
+#' })
+#' divExtra
+#'
+#' # Add more child tags
+#' spanExtended <- tagAddRenderFunction(obj, function(x) {
+#'   tagAppendChildren(x, " ", tags$strong("bold text"))
+#' })
+#' spanExtended
+#'
+#' # Add a new html dependency
+#' newDep <- tagAddRenderFunction(obj, function(x) {
+#'   fa <- htmlDependency(
+#'     "font-awesome", "4.5.0", c(href="shared/font-awesome"),
+#'     stylesheet = "css/font-awesome.min.css")
+#'   attachDependencies(x, fa, append = TRUE)
+#' })
+#' # Also add a jqueryui html dependency
+#' htmlDependencies(newDep) <- htmlDependency(
+#'   "jqueryui", "1.11.4", c(href="shared/jqueryui"),
+#'   script = "jquery-ui.min.js")
+#' # At render time, both dependencies will be found
+#' renderTags(newDep)$dependencies
+#'
+#' # Ignore the original tag and return something completely new.
+#' newObj <- tagAddRenderFunction(obj, function(x) {
+#'   tags$p("Something else")
+#' })
+#' newObj
+tagAddRenderFunction <- function(tag, func, replace = FALSE) {
+  if (!is.function(func) || length(formals(func)) == 0) {
+    stop("`func` must be a function that accepts at least 1 argument")
+  }
+
+  prevFunc <- tag$.render
+
+  if (!is.function(prevFunc) || isTRUE(replace)) {
+    tag$.render <- func
+    return(tag)
+  }
+
+  tag$.render <- function(x) {
+    func(prevFunc(x))
+  }
+
+  tag
+}
+
 
 #' @rdname tag
 #' @export
@@ -383,6 +474,9 @@ throw_if_tag_function <- function(tag) {
 #'   normally be written around this tag. Valid options include `before`,
 #'   `after`, `outside`, `after-begin`, and `before-end`.
 #'   Any number of these options can be specified.
+#' @param .render A function that is called during render time. This function
+#'   should accept the tag element and may return anything that can be converted
+#'   into tags via [as.tags()]
 #' @return An HTML tag object that can be rendered as HTML using
 #'   [as.character()].
 #' @export
@@ -403,7 +497,18 @@ throw_if_tag_function <- function(tag) {
 #'   tag("strong", "Super strong", .noWS="outside")
 #' )
 #' cat(as.character(oneline))
-tag <- function(`_tag_name`, varArgs, .noWS=NULL) {
+#'
+#' # At print time, turn an h1 into an h2 tag
+#' h <- tags$h1("Example", .render = function(x) {
+#'   x$name <- "h2"
+#'   x
+#' })
+#' h
+#' oneline <- tag("span",
+#'   tag("strong", "Super strong", .noWS="outside")
+#' )
+#' cat(as.character(oneline))
+tag <- function(`_tag_name`, varArgs, .noWS = NULL, .render = NULL) {
   validateNoWS(.noWS)
   # Get arg names; if not a named list, use vector of empty strings
   varArgsNames <- names(varArgs)
@@ -423,10 +528,15 @@ tag <- function(`_tag_name`, varArgs, .noWS=NULL) {
       attribs = attribs,
       children = children)
 
-  # Conditionally include the .noWS element. We do this to avoid breaking the hashes
-  # of existing tags that weren't leveraging .noWS.
+  # Conditionally include the `.noWS` field.
+  # We do this to avoid breaking the hashes of existing tags that weren't leveraging .noWS.
   if (!is.null(.noWS)){
     st$.noWS <- .noWS
+  }
+  # Conditionally include the `.render` field.
+  # We do this to avoid breaking the hashes of existing tags that weren't leveraging .render.
+  if (!is.null(.render)){
+    st$.render <- .render
   }
 
   # Return tag data structure
@@ -439,8 +549,8 @@ isTagList <- function(x) {
 
 noWSOptions <- c("before", "after", "after-begin", "before-end", "outside", "inside")
 # Ensure that the provided `.noWS` string contains only valid options
-validateNoWS <- function(.noWS){
-  if (!all(.noWS %in% noWSOptions)){
+validateNoWS <- function(.noWS) {
+  if (!all(.noWS %in% noWSOptions)) {
     stop("Invalid .noWS option(s) '", paste(.noWS, collapse="', '") ,"' specified.")
   }
 }
@@ -921,10 +1031,26 @@ withTags <- function(code) {
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
   rewriteTags(x, function(uiObj) {
-    if (isTag(uiObj) || isTagList(uiObj) || is.character(uiObj))
+    if (isTag(uiObj)) {
+      renderFn <- uiObj$.render
+      if (is.function(renderFn)) {
+        # Set render method to `NULL` to avoid confusion
+        uiObj$.render <- NULL
+        return(
+          tagify(renderFn(uiObj))
+        )
+      } else {
+        return(uiObj)
+      }
+    }
+
+    if (isTagList(uiObj) || is.character(uiObj)) {
       return(uiObj)
-    else
-      return(tagify(as.tags(uiObj)))
+    }
+
+    return(
+      tagify(as.tags(uiObj))
+    )
   }, FALSE)
 }
 

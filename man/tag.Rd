@@ -25,7 +25,7 @@ tagAppendChildren(tag, ..., list = NULL)
 
 tagSetChildren(tag, ..., list = NULL)
 
-tag(`_tag_name`, varArgs, .noWS = NULL)
+tag(`_tag_name`, varArgs, .noWS = NULL, .render = NULL)
 }
 \arguments{
 \item{...}{Unnamed items that comprise this list of tags.}
@@ -51,6 +51,10 @@ contain tags, text nodes, and HTML.}
 normally be written around this tag. Valid options include \code{before},
 \code{after}, \code{outside}, \code{after-begin}, and \code{before-end}.
 Any number of these options can be specified.}
+
+\item{.render}{A function that is called during render time. This function
+should accept the tag element and may return anything that can be converted
+into tags via \code{\link[=as.tags]{as.tags()}}}
 }
 \value{
 An HTML tag object that can be rendered as HTML using
@@ -77,6 +81,17 @@ x <- list(tags$h1("Title"),
 tagList(x)
 
 # suppress the whitespace between tags
+oneline <- tag("span",
+  tag("strong", "Super strong", .noWS="outside")
+)
+cat(as.character(oneline))
+
+# At print time, turn an h1 into an h2 tag
+h <- tags$h1("Example", .render = function(x) {
+  x$name <- "h2"
+  x
+})
+h
 oneline <- tag("span",
   tag("strong", "Super strong", .noWS="outside")
 )
