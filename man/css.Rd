@@ -12,7 +12,7 @@ the argument is the property value. See Details for conversion rules.}
 
 \item{collapse_}{(Note that the parameter name has a trailing underscore
 character.) Character to use to collapse properties into a single string;
-likely \code{""} (the default) for style attributes, and either \code{"\n"}
+likely \code{""} (the default) for style attributes, and either \code{"\\n"}
 or \code{NULL} for style blocks.}
 }
 \description{

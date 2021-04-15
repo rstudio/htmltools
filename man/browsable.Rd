@@ -16,10 +16,10 @@ is.browsable(x)
 }
 \value{
 \code{browsable} returns \code{x} with an extra attribute to indicate
-  that the value is browsable.
+that the value is browsable.
 
 \code{is.browsable} returns \code{TRUE} if the value is browsable, or
-  \code{FALSE} if not.
+\code{FALSE} if not.
 }
 \description{
 By default, HTML objects display their HTML markup at the console when

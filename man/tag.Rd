@@ -44,7 +44,7 @@ tag(`_tag_name`, varArgs, .noWS = NULL)
 \item{varArgs}{List of attributes and children of the element. Named list
 items become attributes, and unnamed list items become children. Valid
 children are tags, single-character character vectors (which become text
-nodes), and raw HTML (see \code{\link{HTML}}). You can also pass lists that
+nodes), and raw HTML (see \code{\link[=HTML]{HTML()}}). You can also pass lists that
 contain tags, text nodes, and HTML.}
 
 \item{.noWS}{Character vector used to omit some of the whitespace that would
@@ -54,11 +54,11 @@ Any number of these options can be specified.}
 }
 \value{
 An HTML tag object that can be rendered as HTML using
-  \code{\link{as.character}()}.
+\code{\link[=as.character]{as.character()}}.
 }
 \description{
 \code{tag()} creates an HTML tag definition. Note that all of the valid HTML5
-tags are already defined in the \code{\link{tags}} environment so these
+tags are already defined in the \code{\link[=tags]{tags()}} environment so these
 functions should only be used to generate additional tags.
 \code{tagAppendChild()} and \code{tagList()} are for supporting package
 authors who wish to create their own sets of tags; see the contents of

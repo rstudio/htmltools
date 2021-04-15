@@ -7,15 +7,15 @@
 resolveDependencies(dependencies, resolvePackageDir = TRUE)
 }
 \arguments{
-\item{dependencies}{A list of \code{\link{htmlDependency}} objects.}
+\item{dependencies}{A list of \code{\link[=htmlDependency]{htmlDependency()}} objects.}
 
 \item{resolvePackageDir}{Whether to resolve the relative path to an absolute
-path via \code{\link{system.file}} when the \code{package} attribute is
+path via \code{\link[=system.file]{system.file()}} when the \code{package} attribute is
 present in a dependency object.}
 }
 \value{
-dependencies A list of \code{\link{htmlDependency}} objects with
-  redundancies removed.
+dependencies A list of \code{\link[=htmlDependency]{htmlDependency()}} objects with
+redundancies removed.
 }
 \description{
 Given a list of dependencies, removes any redundant dependencies (based on

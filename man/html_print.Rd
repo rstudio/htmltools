@@ -23,5 +23,5 @@ Invisibly returns the URL or path of the generated HTML page.
 }
 \description{
 Convenience method that provides an implementation of the
-\code{\link[base:print]{print}} method for HTML content.
+\code{\link[base:print]{base::print()}} method for HTML content.
 }

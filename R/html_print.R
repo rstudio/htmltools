@@ -1,15 +1,15 @@
 #' Make an HTML object browsable
 #'
 #' By default, HTML objects display their HTML markup at the console when
-#' printed. \code{browsable} can be used to make specific objects render as HTML
+#' printed. `browsable` can be used to make specific objects render as HTML
 #' by default when printed at the console.
 #'
 #' You can override the default browsability of an HTML object by explicitly
-#' passing \code{browse = TRUE} (or \code{FALSE}) to the \code{print} function.
+#' passing `browse = TRUE` (or `FALSE`) to the `print` function.
 #'
 #' @param x The object to make browsable or not.
 #' @param value Whether the object should be considered browsable.
-#' @return \code{browsable} returns \code{x} with an extra attribute to indicate
+#' @return `browsable` returns `x` with an extra attribute to indicate
 #'   that the value is browsable.
 #' @export
 browsable <- function(x, value = TRUE) {
@@ -17,8 +17,8 @@ browsable <- function(x, value = TRUE) {
   return(x)
 }
 
-#' @return \code{is.browsable} returns \code{TRUE} if the value is browsable, or
-#'   \code{FALSE} if not.
+#' @return `is.browsable` returns `TRUE` if the value is browsable, or
+#'   `FALSE` if not.
 #' @rdname browsable
 #' @export
 is.browsable <- function(x) {
@@ -28,12 +28,12 @@ is.browsable <- function(x) {
 #' Implementation of the print method for HTML
 #'
 #' Convenience method that provides an implementation of the
-#' \code{\link[base:print]{print}} method for HTML content.
+#' [base::print()] method for HTML content.
 #'
 #' @param html HTML content to print
 #' @param background Background color for web page
 #' @param viewer A function to be called with the URL or path to the generated
-#'   HTML page. Can be \code{NULL}, in which case no viewer will be invoked.
+#'   HTML page. Can be `NULL`, in which case no viewer will be invoked.
 #'
 #' @return Invisibly returns the URL or path of the generated HTML page.
 #'
@@ -60,7 +60,7 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
 #' Save an HTML object to a file
 #'
 #' Save the specified HTML object to a file, copying all of it's
-#' dependencies to the directory specified via \code{libdir}.
+#' dependencies to the directory specified via `libdir`.
 #'
 #' @param html HTML content to print
 #' @param background Background color for web page

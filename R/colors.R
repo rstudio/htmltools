@@ -27,7 +27,6 @@
 #'   "hsl(261, 51%, 51%)",
 #'   "cornflowerblue"
 #' ))
-#' @md
 #' @export
 parseCssColors <- function(str, mustWork = TRUE) {
   # Logic below assumes a character string with non-missing values

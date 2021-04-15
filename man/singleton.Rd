@@ -10,7 +10,7 @@ singleton(x, value = TRUE)
 is.singleton(x)
 }
 \arguments{
-\item{x}{A \code{\link{tag}}, text, \code{\link{HTML}}, or list.}
+\item{x}{A \code{\link[=tag]{tag()}}, text, \code{\link[=HTML]{HTML()}}, or list.}
 
 \item{value}{Whether the object should be a singleton.}
 }

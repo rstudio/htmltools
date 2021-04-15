@@ -36,11 +36,11 @@ large literal R string.
 }
 \note{
 \code{includeText} escapes its contents, but does no other processing.
-  This means that hard breaks and multiple spaces will be rendered as they
-  usually are in HTML: as a single space character. If you are looking for
-  preformatted text, wrap the call with \code{\link{pre}}, or consider using
-  \code{includeMarkdown} instead.
+This means that hard breaks and multiple spaces will be rendered as they
+usually are in HTML: as a single space character. If you are looking for
+preformatted text, wrap the call with \code{\link[=pre]{pre()}}, or consider using
+\code{includeMarkdown} instead.
 
 The \code{includeMarkdown} function requires the \code{markdown}
-  package.
+package.
 }

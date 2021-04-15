@@ -17,7 +17,6 @@
 #' @seealso [plotTag()] saves plots as a self-contained `<img>`
 #'   tag.
 #'
-#' @md
 #' @examples
 #'
 #' # Default settings
@@ -133,7 +132,6 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
 #'
 #' @seealso [capturePlot()] saves plots as an image file.
 #'
-#' @md
 #' @examples
 #'
 #' img <- plotTag({
@@ -191,7 +189,6 @@ plotTag <- function(expr, alt, device = defaultPngDevice(), width = 400, height 
 #'
 #' @return A graphics device function.
 #'
-#' @md
 #' @export
 defaultPngDevice <- function() {
   if (capabilities("aqua")) {

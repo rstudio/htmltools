@@ -72,11 +72,11 @@ depListToNamedDepList <- function(dependencies) {
 #' name equality). If multiple versions of a dependency are found, the copy with
 #' the latest version number is used.
 #'
-#' @param dependencies A list of \code{\link{htmlDependency}} objects.
+#' @param dependencies A list of [htmlDependency()] objects.
 #' @param resolvePackageDir Whether to resolve the relative path to an absolute
-#'   path via \code{\link{system.file}} when the \code{package} attribute is
+#'   path via [system.file()] when the `package` attribute is
 #'   present in a dependency object.
-#' @return dependencies A list of \code{\link{htmlDependency}} objects with
+#' @return dependencies A list of [htmlDependency()] objects with
 #'   redundancies removed.
 #'
 #' @export
@@ -119,18 +119,18 @@ resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
 #' dependency being removed is later than the version of the dependency object
 #' that is causing the removal.
 #'
-#' @param dependencies A list of \code{\link{htmlDependency}} objects from which
+#' @param dependencies A list of [htmlDependency()] objects from which
 #'   dependencies should be removed.
-#' @param remove A list of \code{\link{htmlDependency}} objects indicating which
+#' @param remove A list of [htmlDependency()] objects indicating which
 #'   dependencies should be removed, or a character vector indicating dependency
 #'   names.
-#' @param warnOnConflict If \code{TRUE}, a warning is emitted for each
-#'   dependency that is removed if the corresponding dependency in \code{remove}
-#'   has a lower version number. Has no effect if \code{remove} is provided as a
+#' @param warnOnConflict If `TRUE`, a warning is emitted for each
+#'   dependency that is removed if the corresponding dependency in `remove`
+#'   has a lower version number. Has no effect if `remove` is provided as a
 #'   character vector.
 #'
-#' @return A list of \code{\link{htmlDependency}} objects that don't intersect
-#'   with \code{remove}.
+#' @return A list of [htmlDependency()] objects that don't intersect
+#'   with `remove`.
 #'
 #' @export
 subtractDependencies <- function(dependencies, remove, warnOnConflict = TRUE) {
@@ -221,9 +221,9 @@ as.character.shiny.tag.list <- as.character.shiny.tag
 #' browser.
 #'
 #' @param x The value to print.
-#' @param browse If \code{TRUE}, the HTML will be rendered and displayed in a
+#' @param browse If `TRUE`, the HTML will be rendered and displayed in a
 #'   browser (or possibly another HTML viewer supplied by the environment via
-#'   the \code{viewer} option). If \code{FALSE} then the HTML object's markup
+#'   the `viewer` option). If `FALSE` then the HTML object's markup
 #'   will be rendered at the console.
 #' @param ... Additional arguments passed to print.
 #'
@@ -362,29 +362,29 @@ throw_if_tag_function <- function(tag) {
 
 #' HTML Tag Object
 #'
-#' \code{tag()} creates an HTML tag definition. Note that all of the valid HTML5
-#' tags are already defined in the \code{\link{tags}} environment so these
+#' `tag()` creates an HTML tag definition. Note that all of the valid HTML5
+#' tags are already defined in the [tags()] environment so these
 #' functions should only be used to generate additional tags.
-#' \code{tagAppendChild()} and \code{tagList()} are for supporting package
+#' `tagAppendChild()` and `tagList()` are for supporting package
 #' authors who wish to create their own sets of tags; see the contents of
 #' bootstrap.R for examples.
 #' @param _tag_name HTML tag name
 #' @param varArgs List of attributes and children of the element. Named list
 #'   items become attributes, and unnamed list items become children. Valid
 #'   children are tags, single-character character vectors (which become text
-#'   nodes), and raw HTML (see \code{\link{HTML}}). You can also pass lists that
+#'   nodes), and raw HTML (see [HTML()]). You can also pass lists that
 #'   contain tags, text nodes, and HTML.
 #' @param tag A tag to append child elements to.
 #' @param child A child element to append to a parent tag.
 #' @param ...  Unnamed items that comprise this list of tags.
 #' @param list An optional list of elements. Can be used with or instead of the
-#'   \code{...} items.
+#'   `...` items.
 #' @param .noWS Character vector used to omit some of the whitespace that would
-#'   normally be written around this tag. Valid options include \code{before},
-#'   \code{after}, \code{outside}, \code{after-begin}, and \code{before-end}.
+#'   normally be written around this tag. Valid options include `before`,
+#'   `after`, `outside`, `after-begin`, and `before-end`.
 #'   Any number of these options can be specified.
 #' @return An HTML tag object that can be rendered as HTML using
-#'   \code{\link{as.character}()}.
+#'   [as.character()].
 #' @export
 #' @examples
 #' tagList(tags$h1("Title"),
@@ -548,29 +548,29 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 #' Render tags into HTML
 #'
 #' Renders tags (and objects that can be converted into tags using
-#' \code{\link{as.tags}}) into HTML. (Generally intended to be called from web
+#' [as.tags()]) into HTML. (Generally intended to be called from web
 #' framework libraries, not directly by most users--see
-#' \code{\link{print.html}(browse=TRUE)} for higher level rendering.)
+#' `[print.html](browse=TRUE)` for higher level rendering.)
 #'
 #' @param x Tag object(s) to render
-#' @param singletons A list of \link{singleton} signatures to consider already
+#' @param singletons A list of [singleton] signatures to consider already
 #'   rendered; any matching singletons will be dropped instead of rendered.
 #'   (This is useful (only?) for incremental rendering.)
-#' @param indent Initial indent level, or \code{FALSE} if no indentation should
+#' @param indent Initial indent level, or `FALSE` if no indentation should
 #'   be used.
 #'
-#' @return \code{renderTags} returns a list with the following variables:
+#' @return `renderTags` returns a list with the following variables:
 #' \describe{
-#'   \item{\code{head}}{An \code{\link{HTML}} string that should be included in
-#'     \code{<head>}.
+#'   \item{`head`}{An [HTML()] string that should be included in
+#'     `<head>`.
 #'   }
-#'   \item{\code{singletons}}{Character vector of singleton signatures that are
+#'   \item{`singletons`}{Character vector of singleton signatures that are
 #'     known after rendering.
 #'   }
-#'   \item{\code{dependencies}}{A list of \link[=resolveDependencies]{resolved}
-#'     \code{\link{htmlDependency}} objects.
+#'   \item{`dependencies`}{A list of [resolved][resolveDependencies]
+#'     [htmlDependency()] objects.
 #'   }
-#'   \item{\code{html}}{An \code{\link{HTML}} string that represents the main
+#'   \item{`html`}{An [HTML()] string that represents the main
 #'     HTML that was rendered.
 #'   }
 #' }
@@ -593,10 +593,10 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
     html = bodyHtml))
 }
 
-#' @details \code{doRenderTags} is intended for very low-level use; it ignores
+#' @details `doRenderTags` is intended for very low-level use; it ignores
 #'   singleton, head, and dependency handling, and simply renders the given tag
 #'   objects as HTML.
-#' @return \code{doRenderTags} returns a simple \code{\link{HTML}} string.
+#' @return `doRenderTags` returns a simple [HTML()] string.
 #' @rdname renderTags
 #' @export
 doRenderTags <- function(x, indent = 0) {
@@ -632,16 +632,16 @@ rewriteTags <- function(ui, func, preorder) {
 
 #' Singleton manipulation functions
 #'
-#' Functions for manipulating \code{\link{singleton}} objects in tag
+#' Functions for manipulating [singleton()] objects in tag
 #' hierarchies. Intended for framework authors.
 #'
 #' @rdname singleton_tools
 #' @name singleton_tools
 NULL
 
-#' @param ui Tag object or lists of tag objects. See \link{builder} topic.
-#' @return \code{surroundSingletons} preprocesses a tag object by changing any
-#'   singleton X into <!--SHINY.SINGLETON[sig]-->X'<!--/SHINY.SINGLETON[sig]-->
+#' @param ui Tag object or lists of tag objects. See [builder] topic.
+#' @return `surroundSingletons` preprocesses a tag object by changing any
+#'   singleton X into `<!--SHINY.SINGLETON[sig]-->X'<!--/SHINY.SINGLETON[sig]-->`
 #'   where sig is the sha1 of X, and X' is X minus the singleton attribute.
 #' @rdname singleton_tools
 #' @export
@@ -671,12 +671,12 @@ surroundSingletons <- local({
 
 #' @param singletons Character vector of singleton signatures that have already
 #'   been encountered (i.e. returned from previous calls to
-#'   \code{takeSingletons}).
+#'   `takeSingletons`).
 #' @param desingleton Logical value indicating whether singletons that are
 #'   encountered should have the singleton attribute removed.
-#' @return \code{takeSingletons} returns a list with the elements \code{ui} (the
+#' @return `takeSingletons` returns a list with the elements `ui` (the
 #'   processed tag objects with any duplicate singleton objects removed) and
-#'   \code{singletons} (the list of known singleton signatures).
+#'   `singletons` (the list of known singleton signatures).
 #' @rdname singleton_tools
 #' @export
 takeSingletons <- function(ui, singletons=character(0), desingleton=TRUE) {
@@ -719,7 +719,7 @@ takeHeads <- function(ui) {
 #' @param tags A tag-like object to search for dependencies.
 #' @param tagify Whether to tagify the input before searching for dependencies.
 #'
-#' @return A list of \code{\link{htmlDependency}} objects.
+#' @return A list of [htmlDependency()] objects.
 #'
 #' @export
 findDependencies <- function(tags, tagify = TRUE) {
@@ -769,31 +769,31 @@ resolveFunctionalDependencies <- function(dependencies) {
 #'
 #' Simple functions for constructing HTML documents.
 #'
-#' The \code{tags} environment contains convenience functions for all valid
+#' The `tags` environment contains convenience functions for all valid
 #' HTML5 tags. To generate tags that are not part of the HTML5 specification,
-#' you can use the \code{\link{tag}()} function.
+#' you can use the [tag()] function.
 #'
 #' Dedicated functions are available for the most common HTML tags that do not
 #' conflict with common R functions.
 #'
 #' The result from these functions is a tag object, which can be converted using
-#' \code{\link{as.character}()}.
+#' [as.character()].
 #'
 #' @name builder
 #' @param ... Attributes and children of the element. Named arguments become
 #'   attributes, and positional arguments become children. Valid children are
 #'   tags, single-character character vectors (which become text nodes), raw
-#'   HTML (see \code{\link{HTML}}), and \code{html_dependency} objects. You can
+#'   HTML (see [HTML()]), and `html_dependency` objects. You can
 #'   also pass lists that contain tags, text nodes, or HTML. To use boolean
-#'   attributes, use a named argument with a \code{NA} value. (see example)
+#'   attributes, use a named argument with a `NA` value. (see example)
 #' @param .noWS A character vector used to omit some of the whitespace that
 #'   would normally be written around this tag. Valid options include
-#'   \code{before}, \code{after}, \code{outside}, \code{after-begin},
-#'   \code{before-end}, and \code{inside}. Any number of these options can be
+#'   `before`, `after`, `outside`, `after-begin`,
+#'   `before-end`, and `inside`. Any number of these options can be
 #'   specified.
 #' @references \itemize{
 #'    \item W3C html specification about boolean attributes
-#'    \url{https://www.w3.org/TR/html5/infrastructure.html#sec-boolean-attributes}
+#'    <https://www.w3.org/TR/html5/infrastructure.html#sec-boolean-attributes>
 #'  }
 #' @export tags
 #' @examples
@@ -856,16 +856,16 @@ rm(known_tags)
 
 #' Mark Characters as HTML
 #'
-#' Marks the given text as HTML, which means the \link{tag} functions will know
+#' Marks the given text as HTML, which means the [tag] functions will know
 #' not to perform HTML escaping on it.
 #'
 #' @param text The text value to mark with HTML
 #' @param ... Any additional values to be converted to character and
 #'   concatenated together
 #' @param .noWS Character vector used to omit some of the whitespace that would
-#'   normally be written around this HTML. Valid options include \code{before},
-#'   \code{after}, and \code{outside} (equivalent to \code{before} and
-#'   \code{end}).
+#'   normally be written around this HTML. Valid options include `before`,
+#'   `after`, and `outside` (equivalent to `before` and
+#'   `end`).
 #' @return The same value, but marked as HTML.
 #'
 #' @examples
@@ -882,18 +882,18 @@ HTML <- function(text, ..., .noWS = NULL) {
   htmlText
 }
 
-#' Evaluate an expression using \code{tags}
+#' Evaluate an expression using `tags`
 #'
 #' This function makes it simpler to write HTML-generating code. Instead of
-#' needing to specify \code{tags} each time a tag function is used, as in
-#' \code{tags$div()} and \code{tags$p()}, code inside \code{withTags} is
-#' evaluated with \code{tags} searched first, so you can simply use
-#' \code{div()} and \code{p()}.
+#' needing to specify `tags` each time a tag function is used, as in
+#' `tags$div()` and `tags$p()`, code inside `withTags` is
+#' evaluated with `tags` searched first, so you can simply use
+#' `div()` and `p()`.
 #'
 #' If your code uses an object which happens to have the same name as an
-#' HTML tag function, such as \code{source()} or \code{summary()}, it will call
+#' HTML tag function, such as `source()` or `summary()`, it will call
 #' the tag function. To call the intended (non-tags function), specify the
-#' namespace, as in \code{base::source()} or \code{base::summary()}.
+#' namespace, as in `base::source()` or `base::summary()`.
 #'
 #' @param code A set of tags.
 #'
@@ -1005,8 +1005,8 @@ flattenTagAttribs <- function(attribs) {
 #' Convert a value to tags
 #'
 #' An S3 method for converting arbitrary values to a value that can be used as
-#' the child of a tag or \code{tagList}. The default implementation simply calls
-#' \code{\link{as.character}}.
+#' the child of a tag or `tagList`. The default implementation simply calls
+#' [as.character()].
 #'
 #' @param x Object to be converted.
 #' @param ... Any additional parameters.
@@ -1075,7 +1075,7 @@ as.tags.html_dependency <- function(x, ...) {
 #' Text processing tools like markdown and pandoc are designed to turn
 #' human-friendly markup into common output formats like HTML. This works well
 #' for most prose, but components that generate their own HTML may break if
-#' their markup is interpreted as the input language. The \code{htmlPreserve}
+#' their markup is interpreted as the input language. The `htmlPreserve`
 #' function is used to mark regions of an input document as containing pure HTML
 #' that must not be modified. This is achieved by substituting each such region
 #' with a benign but unique string before processing, and undoing those
@@ -1083,7 +1083,7 @@ as.tags.html_dependency <- function(x, ...) {
 #'
 #' @param x A character vector of HTML to be preserved.
 #'
-#' @return \code{htmlPreserve} returns a single-element character vector with
+#' @return `htmlPreserve` returns a single-element character vector with
 #'   "magic" HTML comments surrounding the original text (unless the original
 #'   text was empty, in which case an empty string is returned).
 #'
@@ -1172,8 +1172,8 @@ withPrivateSeed <- local({
 # and any inner regions simply have their boundaries removed before the values
 # are stashed in $chunks.
 
-#' @return \code{extractPreserveChunks} returns a list with two named elements:
-#'   \code{value} is the string with the regions replaced, and \code{chunks} is
+#' @return `extractPreserveChunks` returns a list with two named elements:
+#'   `value` is the string with the regions replaced, and `chunks` is
 #'   a named character vector where the names are the IDs and the values are the
 #'   regions that were extracted.
 #' @rdname htmlPreserve
@@ -1263,9 +1263,9 @@ extractPreserveChunks <- function(strval) {
 }
 
 #' @param strval Input string from which to extract/restore chunks.
-#' @param chunks The \code{chunks} element of the return value of
-#'   \code{extractPreserveChunks}.
-#' @return \code{restorePreserveChunks} returns a character vector with the
+#' @param chunks The `chunks` element of the return value of
+#'   `extractPreserveChunks`.
+#' @return `restorePreserveChunks` returns a character vector with the
 #'   chunk IDs replaced with their original values.
 #' @rdname htmlPreserve
 #' @export
@@ -1410,11 +1410,11 @@ includeHTML <- function(path) {
   return(HTML(paste8(lines, collapse='\n')))
 }
 
-#' @note \code{includeText} escapes its contents, but does no other processing.
+#' @note `includeText` escapes its contents, but does no other processing.
 #'   This means that hard breaks and multiple spaces will be rendered as they
 #'   usually are in HTML: as a single space character. If you are looking for
-#'   preformatted text, wrap the call with \code{\link{pre}}, or consider using
-#'   \code{includeMarkdown} instead.
+#'   preformatted text, wrap the call with [pre()], or consider using
+#'   `includeMarkdown` instead.
 #'
 #' @rdname include
 #' @export
@@ -1423,7 +1423,7 @@ includeText <- function(path) {
   return(paste8(lines, collapse='\n'))
 }
 
-#' @note The \code{includeMarkdown} function requires the \code{markdown}
+#' @note The `includeMarkdown` function requires the `markdown`
 #'   package.
 #' @rdname include
 #' @export
@@ -1454,12 +1454,12 @@ includeScript <- function(path, ...) {
 
 #' Include content only once
 #'
-#' Use \code{singleton} to wrap contents (tag, text, HTML, or lists) that should
+#' Use `singleton` to wrap contents (tag, text, HTML, or lists) that should
 #' be included in the generated document only once, yet may appear in the
 #' document-generating code more than once. Only the first appearance of the
 #' content (in document order) will be used.
 #'
-#' @param x A \code{\link{tag}}, text, \code{\link{HTML}}, or list.
+#' @param x A [tag()], text, [HTML()], or list.
 #' @param value Whether the object should be a singleton.
 #'
 #' @export
@@ -1479,18 +1479,18 @@ is.singleton <- function(x) {
 #'
 #' Checks that the argument is valid for use as a CSS unit of length.
 #'
-#' \code{NULL} and \code{NA} are returned unchanged.
+#' `NULL` and `NA` are returned unchanged.
 #'
 #' Single element numeric vectors are returned as a character vector with the
-#' number plus a suffix of \code{"px"}.
+#' number plus a suffix of `"px"`.
 #'
-#' Single element character vectors must be \code{"auto"}, \code{"fit-content"}
-#' or \code{"inherit"}, a number, or a length calculated by the \code{"calc"}
-#' CSS function. If the number has a suffix, it must be valid: \code{px},
-#' \code{\%}, \code{ch}, \code{em}, \code{rem}, \code{pt}, \code{in}, \code{cm},
-#' \code{mm}, \code{ex}, \code{pc}, \code{vh}, \code{vw}, \code{vmin}, or
-#' \code{vmax}.
-#' If the number has no suffix, the suffix \code{"px"} is appended.
+#' Single element character vectors must be `"auto"`, `"fit-content"`
+#' or `"inherit"`, a number, or a length calculated by the `"calc"`
+#' CSS function. If the number has a suffix, it must be valid: `px`,
+#' `\%`, `ch`, `em`, `rem`, `pt`, `in`, `cm`,
+#' `mm`, `ex`, `pc`, `vh`, `vw`, `vmin`, or
+#' `vmax`.
+#' If the number has no suffix, the suffix `"px"` is appended.
 #'
 #'
 #' Any other value will cause an error to be thrown.
@@ -1533,27 +1533,27 @@ validateCssUnit <- function(x) {
 #' that goes into a style attribute, or the parts that go inside curly braces in
 #' a full stylesheet).
 #'
-#' CSS uses \code{'-'} (minus) as a separator character in property names, but
+#' CSS uses `'-'` (minus) as a separator character in property names, but
 #' this is an inconvenient character to use in an R function argument name.
-#' Instead, you can use \code{'.'} (period) and/or \code{'_'} (underscore) as
-#' separator characters. For example, \code{css(font.size = "12px")} yields
-#' \code{"font-size:12px;"}.
+#' Instead, you can use `'.'` (period) and/or `'_'` (underscore) as
+#' separator characters. For example, `css(font.size = "12px")` yields
+#' `"font-size:12px;"`.
 #'
-#' To mark a property as \code{!important}, add a \code{'!'} character to the end
-#' of the property name. (Since \code{'!'} is not normally a character that can be
+#' To mark a property as `!important`, add a `'!'` character to the end
+#' of the property name. (Since `'!'` is not normally a character that can be
 #' used in an identifier in R, you'll need to put the name in double quotes or
 #' backticks.)
 #'
 #' Argument values will be converted to strings using
-#' \code{paste(collapse = " ")}. Any property with a value of \code{NULL} or
-#' \code{""} (after paste) will be dropped.
+#' `paste(collapse = " ")`. Any property with a value of `NULL` or
+#' `""` (after paste) will be dropped.
 #'
 #' @param ... Named style properties, where the name is the property name and
 #'   the argument is the property value. See Details for conversion rules.
 #' @param collapse_ (Note that the parameter name has a trailing underscore
 #'   character.) Character to use to collapse properties into a single string;
-#'   likely \code{""} (the default) for style attributes, and either \code{"\n"}
-#'   or \code{NULL} for style blocks.
+#'   likely `""` (the default) for style attributes, and either `"\n"`
+#'   or `NULL` for style blocks.
 #'
 #' @examples
 #' padding <- 6

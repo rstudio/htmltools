@@ -18,13 +18,12 @@ directory on disk (but rather a URL location), an error is raised. If
 }
 \value{
 The dependency with its \code{src} value updated to the new
-  location's absolute path.
+location's absolute path.
 }
 \description{
 Copies an HTML dependency to a subdirectory of the given directory. The
 subdirectory name will be \emph{name}-\emph{version} (for example,
-"outputDir/jquery-1.11.0"). You may set \code{options(htmltools.dir.version =
-FALSE)} to suppress the version number in the subdirectory name.
+"outputDir/jquery-1.11.0"). You may set \code{options(htmltools.dir.version = FALSE)} to suppress the version number in the subdirectory name.
 }
 \details{
 In order for disk-based dependencies to work with static HTML files, it's
@@ -33,6 +32,6 @@ HTML file, or to a subdirectory of that directory. This function makes it
 easier to perform that copy.
 }
 \seealso{
-\code{\link{makeDependencyRelative}} can be used with the returned
-  value to make the path relative to a specific directory.
+\code{\link[=makeDependencyRelative]{makeDependencyRelative()}} can be used with the returned
+value to make the path relative to a specific directory.
 }
