@@ -953,11 +953,16 @@ names(known_tags) <- known_tags
 #' @keywords NULL
 #' @import rlang
 tags <- lapply(known_tags, function(tagname) {
-  function(..., .noWS=NULL) {
-    validateNoWS(.noWS)
-    contents <- dots_list(...)
-    tag(tagname, contents, .noWS=.noWS)
-  }
+  # Overwrite the body with the `tagname` value injected into the body
+  new_function(
+    args = exprs(... = , .noWS = NULL),
+    expr({
+      validateNoWS(.noWS)
+      contents <- dots_list(...)
+      tag(!!tagname, contents, .noWS=.noWS)
+    }),
+    env = asNamespace("htmltools")
+  )
 })
 
 # known_tags is no longer needed, so remove it.
