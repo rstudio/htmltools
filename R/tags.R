@@ -843,15 +843,16 @@ names(known_tags) <- known_tags
 #' @keywords NULL
 #' @import rlang
 tags <- lapply(known_tags, function(tagname) {
-  # Make the function signature
-  tagFunc <- function(..., .noWS = NULL, .render = NULL) {}
   # Overwrite the body with the `tagname` value injected into the body
-  rlang::fn_body(tagFunc) <- rlang::inject({rlang::expr({
-    validateNoWS(.noWS)
-    contents <- dots_list(...)
-    tag(!!tagname, contents, .noWS=.noWS, .render = .render)
-  })})
-  tagFunc
+  new_function(
+    args = exprs(... = , .noWS = NULL),
+    expr({
+      validateNoWS(.noWS)
+      contents <- dots_list(...)
+      tag(!!tagname, contents, .noWS=.noWS)
+    }),
+    env = asNamespace("htmltools")
+  )
 })
 
 # known_tags is no longer needed, so remove it.
