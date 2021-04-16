@@ -302,7 +302,7 @@ tagFunction <- function(func) {
 #' even completely replace) the original tag object.
 #'
 #' It is recommended to use a render function over a [`tagFunction()`] whenever
-#' possible. By using a render method, a the tag structure is not a black box
+#' possible. By using a render method, the tag structure is not a black box
 #' and can be inspected and altered before print time.
 #'
 #' Using [`tagFunction()`] is recommended if a stand-in tag structure does not
