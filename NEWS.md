@@ -2,7 +2,7 @@
 
 ## Breaking Changes
 
-* Tag attributes are now combined when the tag object is created, when appending new tag attributes, and when retrieving tag attributes. For example, before this change, it was possible to have attributes that looked like `list(class = "A", class = "B")`. Now, it will be stored as `list(class = "A B")`. (#212)
+* Closed #205: Tag attributes are now combined when the tag object is created, when appending new tag attributes, and when retrieving tag attributes. For example, before this change, it was possible to have attributes that looked like `list(class = "A", class = "B")`. Now, it will be stored as `list(class = "A B")`. (#212)
 
 ## New Features & Improvements
 
