@@ -14,7 +14,7 @@ dependencies.}
 Create 'lazily' rendered HTML \link{tags} (and/or \code{\link[=htmlDependencies]{htmlDependencies()}}).
 }
 \details{
-When possible, use \code{\link[=tagAddRenderFunction]{tagAddRenderFunction()}} to provide both a tag
+When possible, use \code{\link[=tagAddRender]{tagAddRender()}} to provide both a tag
 structure and utilize a render function.
 }
 \examples{
@@ -33,5 +33,5 @@ withr::with_options(list(useDep = FALSE), renderTags(myDiv))
 
 }
 \seealso{
-\code{\link[=tagAddRenderFunction]{tagAddRenderFunction()}}
+\code{\link[=tagAddRender]{tagAddRender()}}
 }

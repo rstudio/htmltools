@@ -175,6 +175,10 @@ dropNullsOrEmpty <- function(x) {
   x[!vapply(x, nullOrEmpty, FUN.VALUE=logical(1))]
 }
 
+isResolvedTag <- function(x) {
+  inherits(x, "shiny.tag") && !is.function(x$.render)
+}
+
 isTag <- function(x) {
   inherits(x, "shiny.tag")
 }
@@ -263,12 +267,12 @@ tagList <- function(...) {
 #'
 #' Create 'lazily' rendered HTML [tags] (and/or [htmlDependencies()]).
 #'
-#' When possible, use [`tagAddRenderFunction()`] to provide both a tag
+#' When possible, use [`tagAddRender()`] to provide both a tag
 #' structure and utilize a render function.
 #'
 #' @param func a function with no arguments that returns HTML tags and/or
 #'   dependencies.
-#' @seealso [`tagAddRenderFunction()`]
+#' @seealso [`tagAddRender()`]
 #' @export
 #' @examples
 #'
@@ -305,9 +309,10 @@ tagFunction <- function(func) {
 #' make sense.
 #'
 #' @seealso [`tagFunction`]
-#' @param tag A tag object. See [`tag()`]
-#' @param func Function that accepts a single tag object.
-#' @param replace If `TRUE`, it will overwrite any previous render functions
+#' @param tag A [`tag()`] object.
+#' @param func Function with at least one argument (the `tag`).
+#' @param add If `TRUE`, the previous render function is called before calling
+#'   this `func`. Otherwise, any previous render function is ignored.
 #' @return A [`tag()`] object with a `.render` field containing `func`.
 #'   When the returned tag is _rendered_ (such as with [`as.tags()`]),
 #'   this function will be called.
@@ -322,26 +327,26 @@ tagFunction <- function(func) {
 #'
 #' # Add a class to the tag
 #' # Should print a `span` with class `"extra"`
-#' spanExtra <- tagAddRenderFunction(obj, function(x) {
+#' spanExtra <- tagAddRender(obj, function(x) {
 #'   tagAppendAttributes(x, class = "extra")
 #' })
 #' spanExtra
 #'
 #' # Replace the previous render method
 #' # Should print a `div` with class `"extra"`
-#' divExtra <- tagAddRenderFunction(obj, replace = TRUE, function(x) {
+#' divExtra <- tagAddRender(obj, replace = TRUE, function(x) {
 #'   tagAppendAttributes(x, class = "extra")
 #' })
 #' divExtra
 #'
 #' # Add more child tags
-#' spanExtended <- tagAddRenderFunction(obj, function(x) {
+#' spanExtended <- tagAddRender(obj, function(x) {
 #'   tagAppendChildren(x, " ", tags$strong("bold text"))
 #' })
 #' spanExtended
 #'
 #' # Add a new html dependency
-#' newDep <- tagAddRenderFunction(obj, function(x) {
+#' newDep <- tagAddRender(obj, function(x) {
 #'   fa <- htmlDependency(
 #'     "font-awesome", "4.5.0", c(href="shared/font-awesome"),
 #'     stylesheet = "css/font-awesome.min.css")
@@ -355,24 +360,26 @@ tagFunction <- function(func) {
 #' renderTags(newDep)$dependencies
 #'
 #' # Ignore the original tag and return something completely new.
-#' newObj <- tagAddRenderFunction(obj, function(x) {
+#' newObj <- tagAddRender(obj, function(x) {
 #'   tags$p("Something else")
 #' })
 #' newObj
-tagAddRenderFunction <- function(tag, func, replace = FALSE) {
+tagAddRender <- function(tag, func, add = TRUE) {
   if (!is.function(func) || length(formals(func)) == 0) {
     stop("`func` must be a function that accepts at least 1 argument")
   }
 
   prevFunc <- tag$.render
 
-  if (!is.function(prevFunc) || isTRUE(replace)) {
+  if (!is.function(prevFunc) || !isTRUE(add)) {
     tag$.render <- func
     return(tag)
   }
 
   tag$.render <- function(x) {
-    func(prevFunc(x))
+    force(x)
+    y <- prevFunc(x)
+    func(y)
   }
 
   tag
@@ -955,11 +962,11 @@ names(known_tags) <- known_tags
 tags <- lapply(known_tags, function(tagname) {
   # Overwrite the body with the `tagname` value injected into the body
   new_function(
-    args = exprs(... = , .noWS = NULL),
+    args = exprs(... = , .noWS = NULL, .render = NULL),
     expr({
       validateNoWS(.noWS)
       contents <- dots_list(...)
-      tag(!!tagname, contents, .noWS=.noWS)
+      tag(!!tagname, contents, .noWS = .noWS, .render = .render)
     }),
     env = asNamespace("htmltools")
   )
@@ -1036,20 +1043,7 @@ withTags <- function(code) {
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
   rewriteTags(x, function(uiObj) {
-    if (isTag(uiObj)) {
-      renderFn <- uiObj$.render
-      if (is.function(renderFn)) {
-        # Set render method to `NULL` to avoid confusion
-        uiObj$.render <- NULL
-        return(
-          tagify(renderFn(uiObj))
-        )
-      } else {
-        return(uiObj)
-      }
-    }
-
-    if (isTagList(uiObj) || is.character(uiObj)) {
+    if (isResolvedTag(uiObj) || isTagList(uiObj) || is.character(uiObj)) {
       return(uiObj)
     }
 
@@ -1166,7 +1160,13 @@ as.tags.html <- function(x, ...) {
 
 #' @export
 as.tags.shiny.tag <- function(x, ...) {
-  x
+  fn <- x$.render
+  if (!is.function(fn)) {
+    return(x)
+  }
+  x$.render <- NULL
+  y <- fn(x)
+  as.tags(y)
 }
 
 #' @export

@@ -21,10 +21,11 @@ will be updated.
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
 \details{
-This function is VERY experimental. The result api will most likely change.
-\strong{Use at your own risk.}
+\code{tagQuery()} provides a \href{https://jquery.com/}{\code{jQuery}} inspired interface to
+modify and/or extract the contents of \link{tag} and \link{tagList} objects. In
+comparison to other
 
-\code{tagQuery()} is modeled after \href{https://jquery.com/}{\code{jQuery}}'s \href{https://api.jquery.com/category/manipulation/}{DOM maninipulation methods} and
+is modeled after \href{https://jquery.com/}{\code{jQuery}}'s \href{https://api.jquery.com/category/manipulation/}{DOM manipulation methods} and
 \href{https://api.jquery.com/category/traversing/tree-traversal/}{Tree Traversal}
 categories with some alterations. One of the main differences is that there
 is no centralized \code{window.document} object to use or reference. Instead, only
@@ -32,12 +33,18 @@ the original tags provided to \code{tagQuery(tags=)} are fully search-able. This
 difference requires a call to \verb{$find(cssSelector)} to make any meaningful
 alterations to the \code{tagQuery()} object.
 
-\code{tagQuery()} is built to perform complex alterations within a set of tags.
+\code{tagQuery()} makes it easy to extract and modify the children
 For example, it is difficult to find a set of tags and alter the parent tag
 when working with standard \code{\link{tag}} objects. With \code{tagQuery()}, it is possible
 to find all \verb{<span>} tags that match the css selector \verb{div .inner span}, then
 ask for the grandparent tag objects, then add a class to these grandparent
-tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r tagQuery(ex_tags)$find("div .inner">}}\preformatted{span")$parent()$parent()$addClass("custom-class")$asTags(selected = FALSE)
+tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r">}}\preformatted{tagQuery(div(div(class = "foo")))$
+  find(".foo")$
+  addClass("bar")$
+  asTags(selected = FALSE)
+#> <div>
+#>   <div class="foo bar"></div>
+#> </div>
 }\if{html}{\out{</div>}}
 
 This style of alteration is not easily achieved when using typical "pass by
