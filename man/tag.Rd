@@ -25,7 +25,7 @@ tagAppendChildren(tag, ..., list = NULL)
 
 tagSetChildren(tag, ..., list = NULL)
 
-tag(`_tag_name`, varArgs, .noWS = NULL, .render = NULL)
+tag(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL)
 }
 \arguments{
 \item{...}{Unnamed items that comprise this list of tags.}
@@ -52,7 +52,7 @@ normally be written around this tag. Valid options include \code{before},
 \code{after}, \code{outside}, \code{after-begin}, and \code{before-end}.
 Any number of these options can be specified.}
 
-\item{.render}{A function that is called during render time. This function
+\item{.renderHook}{A function that is called during render time. This function
 should accept the tag element and may return anything that can be converted
 into tags via \code{\link[=as.tags]{as.tags()}}}
 }
@@ -87,7 +87,7 @@ oneline <- tag("span",
 cat(as.character(oneline))
 
 # At print time, turn an h1 into an h2 tag
-h <- tags$h1("Example", .render = function(x) {
+h <- tags$h1("Example", .renderHook = function(x) {
   x$name <- "h2"
   x
 })

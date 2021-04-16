@@ -24,39 +24,39 @@
 \usage{
 tags
 
-p(..., .noWS = NULL)
+p(..., .noWS = NULL, .renderHook = NULL)
 
-h1(..., .noWS = NULL)
+h1(..., .noWS = NULL, .renderHook = NULL)
 
-h2(..., .noWS = NULL)
+h2(..., .noWS = NULL, .renderHook = NULL)
 
-h3(..., .noWS = NULL)
+h3(..., .noWS = NULL, .renderHook = NULL)
 
-h4(..., .noWS = NULL)
+h4(..., .noWS = NULL, .renderHook = NULL)
 
-h5(..., .noWS = NULL)
+h5(..., .noWS = NULL, .renderHook = NULL)
 
-h6(..., .noWS = NULL)
+h6(..., .noWS = NULL, .renderHook = NULL)
 
-a(..., .noWS = NULL)
+a(..., .noWS = NULL, .renderHook = NULL)
 
-br(..., .noWS = NULL)
+br(..., .noWS = NULL, .renderHook = NULL)
 
-div(..., .noWS = NULL)
+div(..., .noWS = NULL, .renderHook = NULL)
 
-span(..., .noWS = NULL)
+span(..., .noWS = NULL, .renderHook = NULL)
 
-pre(..., .noWS = NULL)
+pre(..., .noWS = NULL, .renderHook = NULL)
 
-code(..., .noWS = NULL)
+code(..., .noWS = NULL, .renderHook = NULL)
 
-img(..., .noWS = NULL)
+img(..., .noWS = NULL, .renderHook = NULL)
 
-strong(..., .noWS = NULL)
+strong(..., .noWS = NULL, .renderHook = NULL)
 
-em(..., .noWS = NULL)
+em(..., .noWS = NULL, .renderHook = NULL)
 
-hr(..., .noWS = NULL)
+hr(..., .noWS = NULL, .renderHook = NULL)
 }
 \arguments{
 \item{...}{Attributes and children of the element. Named arguments become
