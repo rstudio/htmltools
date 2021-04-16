@@ -912,6 +912,7 @@ resolveFunctionalDependencies <- function(dependencies) {
 #'   `before`, `after`, `outside`, `after-begin`,
 #'   `before-end`, and `inside`. Any number of these options can be
 #'   specified.
+#' @inheritParams tag
 #' @references \itemize{
 #'    \item W3C html specification about boolean attributes
 #'    <https://www.w3.org/TR/html5/infrastructure.html#sec-boolean-attributes>

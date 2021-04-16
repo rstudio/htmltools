@@ -71,6 +71,11 @@ would normally be written around this tag. Valid options include
 \code{before}, \code{after}, \code{outside}, \code{after-begin},
 \code{before-end}, and \code{inside}. Any number of these options can be
 specified.}
+
+\item{.renderHook}{A function to call when the \code{tag} is rendered. This
+function should have at least one argument (the \code{tag}) and return anything
+that can be converted into tags via \code{\link[=as.tags]{as.tags()}}. Multiple hooks may also be
+added to a particular \code{tag} via \code{\link[=tagRenderHook]{tagRenderHook()}}.}
 }
 \description{
 Simple functions for constructing HTML documents.
