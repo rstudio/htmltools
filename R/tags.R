@@ -295,27 +295,30 @@ tagFunction <- function(func) {
   structure(func, class = "shiny.tag.function")
 }
 
-#' Add a tag render function
+#' Modify a tag prior to rendering
 #'
-#' Adds a render method to a tag object. This allows for the tag structure to
-#' be physically present while still allowing for a function to enhance (or
-#' even completely replace) the original tag object.
+#' Adds a hook to call on a [tag()] object when it is is rendered as HTML (with,
+#' for example, [print()], [renderTags()], [as.tags()], etc).
 #'
-#' It is recommended to use a render function over a [`tagFunction()`] whenever
-#' possible. By using a render method, the tag structure is not a black box
-#' and can be inspected and altered before print time.
+#' The primary motivation for [tagRenderHook()] is to create tags that can
+#' change their attributes (e.g., change CSS classes) depending upon the context
+#' in which they're rendered (e.g., use one set of CSS classes in one a page
+#' layout, but a different set in another page layout). In this situation,
+#' [tagRenderHook()] is preferable to [tagFunction()] since the latter is more a
+#' "black box" in the sense that you don't know anything about the tag structure
+#' until it's rendered.
 #'
-#' Using [`tagFunction()`] is recommended if a stand-in tag structure does not
-#' make sense.
-#'
-#' @seealso [`tagFunction`]
 #' @param tag A [`tag()`] object.
-#' @param func Function with at least one argument (the `tag`).
+#' @param func A function to call when the `tag` is rendered. This function
+#'   should have at least one argument (the `tag`) and return anything that can
+#'   be converted into tags via [as.tags()].
 #' @param add If `TRUE`, the previous render function is called before calling
 #'   this `func`. Otherwise, any previous render function is ignored.
-#' @return A [`tag()`] object with a `.renderHook` field containing `func`.
-#'   When the returned tag is _rendered_ (such as with [`as.tags()`]),
-#'   this function will be called.
+#' @return A [tag()] object with a `.renderHook` field containing `func`. When
+#'   the return value is _rendered_ (such as with [`as.tags()`]), this function
+#'   will be called just prior to writing of HTML.
+#' @export
+#' @seealso [tagFunction()]
 #' @examples
 #' # Have a place holder div and return a span instead
 #' obj <- div("example", .renderHook = function(x) {
@@ -334,7 +337,7 @@ tagFunction <- function(func) {
 #'
 #' # Replace the previous render method
 #' # Should print a `div` with class `"extra"`
-#' divExtra <- tagRenderHook(obj, replace = TRUE, function(x) {
+#' divExtra <- tagRenderHook(obj, add = FALSE, function(x) {
 #'   tagAppendAttributes(x, class = "extra")
 #' })
 #' divExtra
@@ -481,9 +484,10 @@ throw_if_tag_function <- function(tag) {
 #'   normally be written around this tag. Valid options include `before`,
 #'   `after`, `outside`, `after-begin`, and `before-end`.
 #'   Any number of these options can be specified.
-#' @param .renderHook A function that is called during render time. This function
-#'   should accept the tag element and may return anything that can be converted
-#'   into tags via [as.tags()]
+#' @param .renderHook A function to call when the `tag` is rendered. This
+#'   function should have at least one argument (the `tag`) and return anything
+#'   that can be converted into tags via [as.tags()]. Multiple hooks may also be
+#'   added to a particular `tag` via [tagRenderHook()].
 #' @return An HTML tag object that can be rendered as HTML using
 #'   [as.character()].
 #' @export

@@ -2,35 +2,37 @@
 % Please edit documentation in R/tags.R
 \name{tagRenderHook}
 \alias{tagRenderHook}
-\title{Add a tag render function}
+\title{Modify a tag prior to rendering}
 \usage{
 tagRenderHook(tag, func, add = TRUE)
 }
 \arguments{
 \item{tag}{A \code{\link[=tag]{tag()}} object.}
 
-\item{func}{Function with at least one argument (the \code{tag}).}
+\item{func}{A function to call when the \code{tag} is rendered. This function
+should have at least one argument (the \code{tag}) and return anything that can
+be converted into tags via \code{\link[=as.tags]{as.tags()}}.}
 
 \item{add}{If \code{TRUE}, the previous render function is called before calling
 this \code{func}. Otherwise, any previous render function is ignored.}
 }
 \value{
-A \code{\link[=tag]{tag()}} object with a \code{.renderHook} field containing \code{func}.
-When the returned tag is \emph{rendered} (such as with \code{\link[=as.tags]{as.tags()}}),
-this function will be called.
+A \code{\link[=tag]{tag()}} object with a \code{.renderHook} field containing \code{func}. When
+the return value is \emph{rendered} (such as with \code{\link[=as.tags]{as.tags()}}), this function
+will be called just prior to writing of HTML.
 }
 \description{
-Adds a render method to a tag object. This allows for the tag structure to
-be physically present while still allowing for a function to enhance (or
-even completely replace) the original tag object.
+Adds a hook to call on a \code{\link[=tag]{tag()}} object when it is is rendered as HTML (with,
+for example, \code{\link[=print]{print()}}, \code{\link[=renderTags]{renderTags()}}, \code{\link[=as.tags]{as.tags()}}, etc).
 }
 \details{
-It is recommended to use a render function over a \code{\link[=tagFunction]{tagFunction()}} whenever
-possible. By using a render method, a the tag structure is not a black box
-and can be inspected and altered before print time.
-
-Using \code{\link[=tagFunction]{tagFunction()}} is recommended if a stand-in tag structure does not
-make sense.
+The primary motivation for \code{\link[=tagRenderHook]{tagRenderHook()}} is to create tags that can
+change their attributes (e.g., change CSS classes) depending upon the context
+in which they're rendered (e.g., use one set of CSS classes in one a page
+layout, but a different set in another page layout). In this situation,
+\code{\link[=tagRenderHook]{tagRenderHook()}} is preferable to \code{\link[=tagFunction]{tagFunction()}} since the latter is more a
+"black box" in the sense that you don't know anything about the tag structure
+until it's rendered.
 }
 \examples{
 # Have a place holder div and return a span instead
@@ -50,7 +52,7 @@ spanExtra
 
 # Replace the previous render method
 # Should print a `div` with class `"extra"`
-divExtra <- tagRenderHook(obj, replace = TRUE, function(x) {
+divExtra <- tagRenderHook(obj, add = FALSE, function(x) {
   tagAppendAttributes(x, class = "extra")
 })
 divExtra
@@ -82,5 +84,5 @@ newObj <- tagRenderHook(obj, function(x) {
 newObj
 }
 \seealso{
-\code{\link{tagFunction}}
+\code{\link[=tagFunction]{tagFunction()}}
 }
