@@ -1,5 +1,5 @@
 #' @importFrom fastmap fastmap faststack
-#' @importFrom rlang sexp_address
+#' @importFrom rlang obj_address
 NULL
 
 
@@ -98,9 +98,9 @@ NULL
 #   tags before running the expr.
 
 
-## rlang::sexp_address()
+## rlang::obj_address()
 # Use to get a unique key for stacks
-# Use `env$envKey` over `rlang::sexp_address()`; 10x speed improvement
+# Use `env$envKey` over `rlang::obj_address()`; 10x speed improvement
 
 # Use for `has()` functionality
 envirMap <- function() {
@@ -257,11 +257,11 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
       x <- safeListToEnv(xList, "htmltools.tag.env")
       # add parent env and key
       x$parent <- parent
-      x$envKey <- sexp_address(x)
+      x$envKey <- obj_address(x)
     }
     if (seenMap$has(x)) {
       stop(
-        "Duplicate tag environment found: ", sexp_address(x), "\n",
+        "Duplicate tag environment found: ", obj_address(x), "\n",
         "Call `lobstr::tree(x$root(), show_environments = TRUE)` to inspect the tag environments,\n",
         "where `x` is your tag query object."
       )
