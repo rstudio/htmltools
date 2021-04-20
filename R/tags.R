@@ -309,7 +309,7 @@ tagHasAttribute <- function(tag, attr) {
 #' @export
 tagGetAttribute <- function(tag, attr) {
   throw_if_tag_function(tag)
-
+  # Find out which positions in the attributes list correspond to the given attr
   attribs <- tag$attribs
   attrIdx <- which(attr == names(attribs))
 
