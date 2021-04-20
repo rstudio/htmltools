@@ -538,9 +538,9 @@ tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHooks = NULL) {
   if (!is.null(.noWS)) {
     st$.noWS <- .noWS
   }
-  # Conditionally include the `.renderHook` field.
-  # We do this to avoid breaking the hashes of existing tags that weren't leveraging .renderHook.
-  if (!is.null(.renderHook)) {
+  # Conditionally include the `.renderHooks` field.
+  # We do this to avoid breaking the hashes of existing tags that weren't leveraging .renderHooks.
+  if (!is.null(.renderHooks)) {
     if (!is.list(.renderHooks)) {
       .renderHooks <- list(.renderHooks)
     }
