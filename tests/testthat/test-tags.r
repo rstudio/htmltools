@@ -893,3 +893,16 @@ test_that("extractPreserveChunks works for emoji strings", {
     c('chunk2', 'chunk1')
   )
 })
+
+test_that("complicated class attributes are handled", {
+  x <- div(class = as.factor(letters)[1], class = "b c", class = c("d", "e f"))
+  expect_equal(
+    tagGetAttribute(x, "class"),
+    "a b c d e f"
+  )
+  expect_identical(
+    as.character(x),
+    "<div class=\"a b c d e f\"></div>"
+  )
+
+})
