@@ -990,27 +990,46 @@ flattenTagsRaw <- function(x) {
   }
 }
 
+
+combineKeys <- function(x) {
+  if (anyNA(x)) {
+    na_idx <- is.na(x)
+    if (all(na_idx)) {
+      return(NA)
+    }
+    x <- x[!na_idx]
+  }
+  unlist(x, recursive = FALSE, use.names = FALSE)
+}
+# Do not adjust single values
+# Only merge keys
 flattenTagAttribs <- function(attribs) {
 
-  # Convert all attribs to chars explicitly; prevents us from messing up factors
-  attribs <- lapply(attribs, as.character)
-  # concatenate attributes
-  # split() is very slow, so avoid it if possible
-  if (anyDuplicated(names(attribs))) {
-    attribs <- lapply(split(attribs, names(attribs)), function(x) {
-      na_idx <- is.na(x)
-      if (any(na_idx)) {
-        if (all(na_idx)) {
-          return(NA)
-        }
-        x <- x[!na_idx]
-      }
-      paste(x, collapse = " ")
-    })
+  attribs <- dropNullsOrEmpty(attribs)
+
+  attribNames <- names(attribs)
+
+  uniqueAttribNames <- unique(attribNames)
+  uniqueAttribNamesLen <- length(uniqueAttribNames)
+
+  if (uniqueAttribNamesLen != length(attribNames)) {
+    if (uniqueAttribNamesLen > 45) {
+      # unique key length is > 45
+      # `split()` performs better with larger sets
+      splitAttribs <- split(attribs, attribNames)
+      attribs <- lapply(splitAttribs, combineKeys)
+    } else {
+      # unique key length is <= 45
+      # subsetting performs better with smaller sets
+      attribs <- lapply(uniqueAttribNames, function(name) {
+        obj <- attribs[attribNames == name]
+        combineKeys(obj)
+      })
+      names(attribs) <- uniqueAttribNames
+    }
   }
 
   attribs
-
 }
 
 #' Convert a value to tags
