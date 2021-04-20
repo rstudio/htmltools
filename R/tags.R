@@ -176,7 +176,7 @@ dropNullsOrEmpty <- function(x) {
 }
 
 isResolvedTag <- function(x) {
-  inherits(x, "shiny.tag") && !is.function(x$.renderHooks)
+  inherits(x, "shiny.tag") && length(x$.renderHooks) == 0
 }
 
 isTag <- function(x) {
@@ -1162,12 +1162,11 @@ as.tags.html <- function(x, ...) {
 
 #' @export
 as.tags.shiny.tag <- function(x, ...) {
-  hooks <- x$.renderHooks %||% list()
-  if (length(hooks) == 0) {
+  if (isResolvedTag(x)) {
     return(x)
   }
 
-  hook <- hooks[[1]]
+  hook <- x$.renderHooks[[1]]
   # remove first hook
   x$.renderHooks[[1]] <- NULL
   # Recursively call as.tags on the updated object
