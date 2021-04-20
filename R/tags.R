@@ -176,7 +176,7 @@ dropNullsOrEmpty <- function(x) {
 }
 
 isResolvedTag <- function(x) {
-  inherits(x, "shiny.tag") && !is.function(x$.renderHook)
+  inherits(x, "shiny.tag") && !is.function(x$.renderHooks)
 }
 
 isTag <- function(x) {
@@ -267,12 +267,12 @@ tagList <- function(...) {
 #'
 #' Create 'lazily' rendered HTML [tags] (and/or [htmlDependencies()]).
 #'
-#' When possible, use [`tagRenderHook()`] to provide both a tag
+#' When possible, use [`tagAddRenderHook()`] to provide both a tag
 #' structure and utilize a render function.
 #'
 #' @param func a function with no arguments that returns HTML tags and/or
 #'   dependencies.
-#' @seealso [`tagRenderHook()`]
+#' @seealso [`tagAddRenderHook()`]
 #' @export
 #' @examples
 #'
@@ -300,11 +300,11 @@ tagFunction <- function(func) {
 #' Adds a hook to call on a [tag()] object when it is is rendered as HTML (with,
 #' for example, [print()], [renderTags()], [as.tags()], etc).
 #'
-#' The primary motivation for [tagRenderHook()] is to create tags that can
+#' The primary motivation for [tagAddRenderHook()] is to create tags that can
 #' change their attributes (e.g., change CSS classes) depending upon the context
 #' in which they're rendered (e.g., use one set of CSS classes in one a page
 #' layout, but a different set in another page layout). In this situation,
-#' [tagRenderHook()] is preferable to [tagFunction()] since the latter is more a
+#' [tagAddRenderHook()] is preferable to [tagFunction()] since the latter is more a
 #' "black box" in the sense that you don't know anything about the tag structure
 #' until it's rendered.
 #'
@@ -314,14 +314,14 @@ tagFunction <- function(func) {
 #'   be converted into tags via [as.tags()].
 #' @param add If `TRUE`, the previous render function is called before calling
 #'   this `func`. Otherwise, any previous render function is ignored.
-#' @return A [tag()] object with a `.renderHook` field containing `func`. When
+#' @return A [tag()] object with a `.renderHooks` field containing `func`. When
 #'   the return value is _rendered_ (such as with [`as.tags()`]), this function
 #'   will be called just prior to writing of HTML.
 #' @export
 #' @seealso [tagFunction()]
 #' @examples
 #' # Have a place holder div and return a span instead
-#' obj <- div("example", .renderHook = function(x) {
+#' obj <- div("example", .renderHooks = function(x) {
 #'   x$name <- "span"
 #'   x
 #' })
@@ -330,26 +330,26 @@ tagFunction <- function(func) {
 #'
 #' # Add a class to the tag
 #' # Should print a `span` with class `"extra"`
-#' spanExtra <- tagRenderHook(obj, function(x) {
+#' spanExtra <- tagAddRenderHook(obj, function(x) {
 #'   tagAppendAttributes(x, class = "extra")
 #' })
 #' spanExtra
 #'
 #' # Replace the previous render method
 #' # Should print a `div` with class `"extra"`
-#' divExtra <- tagRenderHook(obj, add = FALSE, function(x) {
+#' divExtra <- tagAddRenderHook(obj, replace = TRUE, function(x) {
 #'   tagAppendAttributes(x, class = "extra")
 #' })
 #' divExtra
 #'
 #' # Add more child tags
-#' spanExtended <- tagRenderHook(obj, function(x) {
+#' spanExtended <- tagAddRenderHook(obj, function(x) {
 #'   tagAppendChildren(x, " ", tags$strong("bold text"))
 #' })
 #' spanExtended
 #'
 #' # Add a new html dependency
-#' newDep <- tagRenderHook(obj, function(x) {
+#' newDep <- tagAddRenderHook(obj, function(x) {
 #'   fa <- htmlDependency(
 #'     "font-awesome", "4.5.0", c(href="shared/font-awesome"),
 #'     stylesheet = "css/font-awesome.min.css")
@@ -363,27 +363,21 @@ tagFunction <- function(func) {
 #' renderTags(newDep)$dependencies
 #'
 #' # Ignore the original tag and return something completely new.
-#' newObj <- tagRenderHook(obj, function(x) {
+#' newObj <- tagAddRenderHook(obj, function(x) {
 #'   tags$p("Something else")
 #' })
 #' newObj
-tagRenderHook <- function(tag, func, add = TRUE) {
+tagAddRenderHook <- function(tag, func, replace = FALSE) {
   if (!is.function(func) || length(formals(func)) == 0) {
     stop("`func` must be a function that accepts at least 1 argument")
   }
 
-  prevFunc <- tag$.renderHook
-
-  if (!is.function(prevFunc) || !isTRUE(add)) {
-    tag$.renderHook <- func
-    return(tag)
-  }
-
-  tag$.renderHook <- function(x) {
-    force(x)
-    y <- prevFunc(x)
-    func(y)
-  }
+  tag$.renderHooks <-
+    if (isTRUE(replace)) {
+      list(func)
+    } else {
+      append(tag$.renderHooks, list(func))
+    }
 
   tag
 }
@@ -484,10 +478,10 @@ throw_if_tag_function <- function(tag) {
 #'   normally be written around this tag. Valid options include `before`,
 #'   `after`, `outside`, `after-begin`, and `before-end`.
 #'   Any number of these options can be specified.
-#' @param .renderHook A function to call when the `tag` is rendered. This
+#' @param .renderHooks A function to call when the `tag` is rendered. This
 #'   function should have at least one argument (the `tag`) and return anything
 #'   that can be converted into tags via [as.tags()]. Multiple hooks may also be
-#'   added to a particular `tag` via [tagRenderHook()].
+#'   added to a particular `tag` via [tagAddRenderHook()].
 #' @return An HTML tag object that can be rendered as HTML using
 #'   [as.character()].
 #' @export
@@ -510,7 +504,7 @@ throw_if_tag_function <- function(tag) {
 #' cat(as.character(oneline))
 #'
 #' # At print time, turn an h1 into an h2 tag
-#' h <- tags$h1("Example", .renderHook = function(x) {
+#' h <- tags$h1("Example", .renderHooks = function(x) {
 #'   x$name <- "h2"
 #'   x
 #' })
@@ -519,7 +513,7 @@ throw_if_tag_function <- function(tag) {
 #'   tag("strong", "Super strong", .noWS="outside")
 #' )
 #' cat(as.character(oneline))
-tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL) {
+tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHooks = NULL) {
   validateNoWS(.noWS)
   # Get arg names; if not a named list, use vector of empty strings
   varArgsNames <- names(varArgs)
@@ -541,13 +535,16 @@ tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL) {
 
   # Conditionally include the `.noWS` field.
   # We do this to avoid breaking the hashes of existing tags that weren't leveraging .noWS.
-  if (!is.null(.noWS)){
+  if (!is.null(.noWS)) {
     st$.noWS <- .noWS
   }
   # Conditionally include the `.renderHook` field.
   # We do this to avoid breaking the hashes of existing tags that weren't leveraging .renderHook.
-  if (!is.null(.renderHook)){
-    st$.renderHook <- .renderHook
+  if (!is.null(.renderHook)) {
+    if (!is.list(.renderHooks)) {
+      .renderHooks <- list(.renderHooks)
+    }
+    st$.renderHooks <- .renderHooks
   }
 
   # Return tag data structure
@@ -967,11 +964,11 @@ names(known_tags) <- known_tags
 tags <- lapply(known_tags, function(tagname) {
   # Overwrite the body with the `tagname` value injected into the body
   new_function(
-    args = exprs(... = , .noWS = NULL, .renderHook = NULL),
+    args = exprs(... = , .noWS = NULL, .renderHooks = NULL),
     expr({
       validateNoWS(.noWS)
       contents <- dots_list(...)
-      tag(!!tagname, contents, .noWS = .noWS, .renderHook = .renderHook)
+      tag(!!tagname, contents, .noWS = .noWS, .renderHooks = .renderHooks)
     }),
     env = asNamespace("htmltools")
   )
@@ -1165,12 +1162,17 @@ as.tags.html <- function(x, ...) {
 
 #' @export
 as.tags.shiny.tag <- function(x, ...) {
-  fn <- x$.renderHook
-  if (!is.function(fn)) {
+  hooks <- x$.renderHooks %||% list()
+  if (length(hooks) == 0) {
     return(x)
   }
-  x$.renderHook <- NULL
-  y <- fn(x)
+
+  hook <- hooks[[1]]
+  # remove first hook
+  x$.renderHooks[[1]] <- NULL
+  # Recursively call as.tags on the updated object
+  # (Perform in two lines to avoid lazy arg evaluation issues)
+  y <- hook(x)
   as.tags(y)
 }
 

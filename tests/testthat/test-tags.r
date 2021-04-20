@@ -908,7 +908,7 @@ test_that("html render method", {
   expect_snapshot(as.character(obj))
 
   # Add a class to the tag
-  spanExtra <- tagRenderHook(obj, function(x) {
+  spanExtra <- tagAddRenderHook(obj, function(x) {
     tagAppendAttributes(x, class = "extra")
   })
   expect_equal(spanExtra$name, "div")
@@ -917,21 +917,21 @@ test_that("html render method", {
 
   # Replace the previous render method
   # Should print a `div` with class `"extra"`
-  divExtra <- tagRenderHook(obj, add = FALSE, function(x) {
+  divExtra <- tagAddRenderHook(obj, replace = TRUE, function(x) {
     tagAppendAttributes(x, class = "extra")
   })
   expect_equal(divExtra$attribs$class, NULL)
   expect_snapshot(as.character(divExtra))
 
   # Add more child tags
-  spanExtended <- tagRenderHook(obj, function(x) {
+  spanExtended <- tagAddRenderHook(obj, function(x) {
     tagAppendChildren(x, tags$strong("bold text"))
   })
   expect_equal(spanExtended$name, "div")
   expect_equal(spanExtended$children, obj$children)
   expect_snapshot(as.character(spanExtended))
 
-  tagFuncExt <- tagRenderHook(obj, function(x) {
+  tagFuncExt <- tagAddRenderHook(obj, function(x) {
     tagFunction(function() tagList(x, tags$p("test")) )
   })
   expect_equal(tagFuncExt$name, "div")
@@ -939,7 +939,7 @@ test_that("html render method", {
   expect_snapshot(as.character(tagFuncExt))
 
   # Add a new html dependency
-  newDep <- tagRenderHook(obj, function(x) {
+  newDep <- tagAddRenderHook(obj, function(x) {
     fa <- htmlDependency(
       "font-awesome", "4.5.0", c(href="shared/font-awesome"),
       stylesheet = "css/font-awesome.min.css")
@@ -954,7 +954,7 @@ test_that("html render method", {
   expect_snapshot(renderTags(newDep))
 
   # Ignore the original tag and return something completely new.
-  newObj <- tagRenderHook(obj, function(x) {
+  newObj <- tagAddRenderHook(obj, function(x) {
     tags$p("Something else")
   })
   expect_equal(newObj$name, "div")
