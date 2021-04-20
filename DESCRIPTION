@@ -19,7 +19,7 @@ Imports:
     digest,
     grDevices,
     base64enc,
-    rlang (> 0.4.10),
+    rlang (>= 0.4.10.9000),
     fastmap
 Suggests:
     markdown,
