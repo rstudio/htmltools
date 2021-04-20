@@ -1,0 +1,89 @@
+---
+title: "Using tagQuery() to query and modify HTML tags"
+output: html_document
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "100%",
+  fig.align = 'center'
+)
+```
+
+`tagQuery()` provides a [jQuery](https://jquery.com) inspired interface to query and/or modify HTML fragments in R. To start, pass either a `tag()` (e.g., `div()`) or `tagList()` object to `tagQuery()`:
+
+```{r}
+library(htmltools)
+tagQ <- tagQuery(
+  div(span(), a())
+)
+tagQ
+```
+
+Notice how `tagQuery()` tracks two essential pieces: the "root" (aka input) tag as well as the set of currently selected tags. This data structure allows us to [efficiently](#performance) [find](#query), [modify](#modify), and [extract](#extract) particular fragments of HTML.
+
+## Modify {#modify}
+
+### Mutation
+
+In contrast to other functions in `{htmltools}` designed to modify `tag()`s (e.g., `tagAppendAttributes()`, `tagAppendChild()`, etc), `tagQuery()`'s modifier methods (e.g., `$addClass()`) _modify their input_:
+
+```{r}
+tagQ$addClass("foo")
+tagQ
+```
+
+As we'll see in [Query](#query), the [mutable](https://developer.mozilla.org/en-US/docs/Glossary/Mutable) nature of `tagQuery()`'s modifier methods enables [efficient](#performance) modification of child tags without losing a reference to the root tag.
+
+### Attributes
+
+`tagQuery()` has numerous methods for modifying attributes
+
+```{r}
+tagQ$addAttrs("data-bar" = "foo")
+tagQ
+```
+
+### Children
+
+TODO: useful example(s)
+
+### Siblings
+
+TODO: useful example(s)
+
+## Query {#query}
+
+In order to modify children tags, we first must select them. To do so, provide `$find()` a valid [CSS selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors). Here we'll select all the `<a>` tags and add a class of `"bar"` to them:
+
+```{r}
+tagQ$find("a")$addClass("bar")
+tagQ
+```
+
+Note that the `$addClass()` [modifier method](#modify) has modified 
+
+In contrast to `tagQuery()` [modifier methods](#modify), querying methods (e.g., `$find()`, `$parent()`, `$children()`, etc), _don't_ modify `xq`. That means, if you want a selection to persist, you must 
+
+```{r}
+aq <- xq$find("a")
+aq
+```
+
+
+## Extract {#extract}
+
+Since `tagQuery()` objects represent both a root tag and a set of selected tags, you'll need to decide whether you want the root or selection via `$asTags()` when trying to use it inside other functions like `tag()`, `tagList()`, or `renderTags()`
+
+```{r}
+tags$body(
+  tagQ$asTags()
+)
+```
+
+
+## Performance {#performance}
+
+TODO: barret, fill this in!
