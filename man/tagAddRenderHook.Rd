@@ -9,12 +9,12 @@ tagAddRenderHook(tag, func, replace = FALSE)
 \arguments{
 \item{tag}{A \code{\link[=tag]{tag()}} object.}
 
-\item{func}{A function to call when the \code{tag} is rendered. This function
+\item{func}{A function (\emph{hook}) to call when the \code{tag} is rendered. This function
 should have at least one argument (the \code{tag}) and return anything that can
 be converted into tags via \code{\link[=as.tags]{as.tags()}}.}
 
-\item{add}{If \code{TRUE}, the previous render function is called before calling
-this \code{func}. Otherwise, any previous render function is ignored.}
+\item{replace}{If \code{TRUE}, the previous hooks will be removed. If \code{FALSE},
+\code{func} is appended to the previous hooks.}
 }
 \value{
 A \code{\link[=tag]{tag()}} object with a \code{.renderHooks} field containing \code{func}. When

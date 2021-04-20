@@ -309,11 +309,11 @@ tagFunction <- function(func) {
 #' until it's rendered.
 #'
 #' @param tag A [`tag()`] object.
-#' @param func A function to call when the `tag` is rendered. This function
+#' @param func A function (_hook_) to call when the `tag` is rendered. This function
 #'   should have at least one argument (the `tag`) and return anything that can
 #'   be converted into tags via [as.tags()].
-#' @param add If `TRUE`, the previous render function is called before calling
-#'   this `func`. Otherwise, any previous render function is ignored.
+#' @param replace If `TRUE`, the previous hooks will be removed. If `FALSE`,
+#'   `func` is appended to the previous hooks.
 #' @return A [tag()] object with a `.renderHooks` field containing `func`. When
 #'   the return value is _rendered_ (such as with [`as.tags()`]), this function
 #'   will be called just prior to writing of HTML.
