@@ -370,7 +370,7 @@ test_that("Adding attributes to tags", {
   expect_identical(
     tagAppendAttributes(
       tagAppendAttributes(t1, class = "c1 c2"), class = "c3")$attribs,
-    list(class = "c1 c2 c3")
+    list(class = "c1 c2", class = "c3")
   )
 
   # Adding empty attributes
@@ -395,7 +395,7 @@ test_that("Adding attributes to tags", {
   # Adding attributes on a tag with the same attribute
   expect_identical(
     tagAppendAttributes(t2, class = "c2")$attribs,
-    list(class = "c1 c2")
+    list(class = "c1", class = "c2")
   )
 })
 
@@ -891,21 +891,5 @@ test_that("extractPreserveChunks works for emoji strings", {
   expect_equivalent(
     out$chunks,
     c('chunk2', 'chunk1')
-  )
-})
-
-
-test_that("tag attributes are normalized on creation", {
-  d <- div(class = "a", "text1", class = "b c", "text2")
-  expect_equal(d$attribs$class, "a b c")
-
-  d2 <- tagAppendAttributes(d, class = "d")
-  expect_equal(d2$attribs$class, "a b c d")
-
-  d3 <- d
-  d3$attribs <- c(d3$attribs, list(class = "e"))
-  expect_equal(
-    tagGetAttribute(d3, "class"),
-    "a b c e"
   )
 })

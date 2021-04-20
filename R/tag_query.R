@@ -269,9 +269,6 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
     # Add the item to the seen map to help with cycle detection
     seenMap$add(x)
 
-    # Make sure all attribs are unique
-    x$attribs <- flattenTagAttribs(x$attribs)
-
     # Recurse through children
     if (length(x$children) != 0) {
       # Possible optimization... name the children tags to the formatted values.
@@ -1251,7 +1248,6 @@ tagQueryAttrsAdd <- function(els, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
     el <- tagAppendAttributes(el, ...)
-    el$attribs <- flattenTagAttribs(el$attribs)
   })
 }
 # Remove attribute values
@@ -1263,9 +1259,9 @@ tagQueryAttrsRemove <- function(els, attrs) {
   }
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
-    for (attrVal in attrs) {
-      el$attribs[[attrVal]] <- NULL
-    }
+    # Alter in place
+    # Remove locations that have a matching name
+    el$attribs[names(el$attribs) %in% attrs] <- NULL
   })
 }
 # Remove attribute values
@@ -1299,6 +1295,9 @@ getCssClass <- function(class) {
   splitCssClass(class)
 }
 splitCssClass <- function(class) {
+  if (!is.character(class)) {
+    stop("tagGetAttribute(x, \"class\") did not return a character value")
+  }
   if (length(class) > 1) {
     class <- paste0(class, collapse = " ")
   }
@@ -1317,7 +1316,7 @@ tagQueryClassHas <- function(els, class) {
   unlist(
     tagQueryLapply(els, function(el) {
       if (!isTagEnv(el)) return(FALSE)
-      classVal <- el$attribs$class
+      classVal <- tagGetAttribute(el, "class")
       if (is.null(classVal)) {
         return(FALSE)
       }

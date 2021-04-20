@@ -292,9 +292,7 @@ tagFunction <- function(func) {
 #' @export
 tagAppendAttributes <- function(tag, ...) {
   throw_if_tag_function(tag)
-  tag$attribs <- flattenTagAttribs(
-    c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
-  )
+  tag$attribs <- c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
   tag
 }
 
@@ -311,10 +309,25 @@ tagHasAttribute <- function(tag, attr) {
 #' @export
 tagGetAttribute <- function(tag, attr) {
   throw_if_tag_function(tag)
-  # Must flatten all tag attribs to handle legacy situations
-  #   where there are two entries for the same name
-  attribs <- flattenTagAttribs(tag$attribs)
-  attribs[[attr]]
+
+  attribs <- tag$attribs
+  attrIdx <- which(attr == names(attribs))
+
+  if (length(attrIdx) == 0) {
+    return (NULL)
+  }
+
+  result <- attribs[attrIdx]
+  if (all(vapply(result, is.atomic, logical(1)))) {
+    # Convert all attribs to chars explicitly; prevents us from messing up factors
+    # Separate multiple attributes with the same name
+    result <- paste(lapply(result, as.character), collapse = " ")
+  } else {
+    # When retrieving values that are not atomic, return a list of values
+    names(result) <- NULL
+  }
+
+  result
 }
 
 #' @rdname tag
@@ -405,9 +418,7 @@ tag <- function(`_tag_name`, varArgs, .noWS=NULL) {
 
   # Named arguments become attribs, dropping NULL and length-0 values
   named_idx <- nzchar(varArgsNames)
-  attribs <- flattenTagAttribs(
-    dropNullsOrEmpty(varArgs[named_idx])
-  )
+  attribs <- dropNullsOrEmpty(varArgs[named_idx])
 
   # Unnamed arguments are flattened and added as children.
   # Use unname() to remove the names attribute from the list, which would
@@ -483,14 +494,19 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   # write tag name
   textWriter$write(concat8("<", tag$name))
 
-  attribs <- flattenTagAttribs(tag$attribs)
+  # Convert all attribs to chars explicitly; prevents us from messing up factors
+  attribs <- flattenTagAttribs(lapply(tag$attribs, as.character))
 
   # write attributes
   for (attrib in names(attribs)) {
     attribValue <- attribs[[attrib]]
+    if (length(attribValue) > 1) {
+      attribValue <- concat8(attribValue, collapse = " ")
+    }
     if (!is.na(attribValue)) {
-      if (is.logical(attribValue))
+      if (is.logical(attribValue)) {
         attribValue <- tolower(attribValue)
+      }
       text <- htmlEscape(attribValue, attribute=TRUE)
       textWriter$write(concat8(" ", attrib,"=\"", text, "\""))
     }
