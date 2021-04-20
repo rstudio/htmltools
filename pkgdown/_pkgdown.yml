@@ -89,5 +89,6 @@ reference:
 
 - title: Advanced tag objects
   contents:
+  - '`tagAddRenderHook`'
   - '`tagQuery`'
   - '`tagFunction`'
