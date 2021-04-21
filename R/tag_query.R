@@ -1508,7 +1508,7 @@ cssSelectorToSelector <- function(cssSelector) {
       selectorList <- asSelectorList(cssSelector)
       if (length(selectorList) > 1) {
         stop(
-          "Can only match a single element selector. ",
+          "Can only match using a simple CSS selector. ",
           "Looking for descendant elements is not allowed."
         )
       }
