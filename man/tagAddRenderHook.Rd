@@ -17,9 +17,9 @@ be converted into tags via \code{\link[=as.tags]{as.tags()}}.}
 \code{func} is appended to the previous hooks.}
 }
 \value{
-A \code{\link[=tag]{tag()}} object with a \code{.renderHooks} field containing \code{func}. When
-the return value is \emph{rendered} (such as with \code{\link[=as.tags]{as.tags()}}), this function
-will be called just prior to writing of HTML.
+A \code{\link[=tag]{tag()}} object with a \code{.renderHooks} field containing a list of functions
+(e.g. \code{func}). When the return value is \emph{rendered} (such as with \code{\link[=as.tags]{as.tags()}}),
+these functions will be called just prior to writing the HTML.
 }
 \description{
 Adds a hook to call on a \code{\link[=tag]{tag()}} object when it is is rendered as HTML (with,

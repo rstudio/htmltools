@@ -314,9 +314,9 @@ tagFunction <- function(func) {
 #'   be converted into tags via [as.tags()].
 #' @param replace If `TRUE`, the previous hooks will be removed. If `FALSE`,
 #'   `func` is appended to the previous hooks.
-#' @return A [tag()] object with a `.renderHooks` field containing `func`. When
-#'   the return value is _rendered_ (such as with [`as.tags()`]), this function
-#'   will be called just prior to writing of HTML.
+#' @return A [tag()] object with a `.renderHooks` field containing a list of functions
+#'   (e.g. `func`). When the return value is _rendered_ (such as with [`as.tags()`]),
+#'   these functions will be called just prior to writing the HTML.
 #' @export
 #' @seealso [tagFunction()]
 #' @examples
@@ -478,7 +478,7 @@ throw_if_tag_function <- function(tag) {
 #'   normally be written around this tag. Valid options include `before`,
 #'   `after`, `outside`, `after-begin`, and `before-end`.
 #'   Any number of these options can be specified.
-#' @param .renderHooks A function to call when the `tag` is rendered. This
+#' @param .renderHooks A function (or list of functions) to call when the `tag` is rendered. This
 #'   function should have at least one argument (the `tag`) and return anything
 #'   that can be converted into tags via [as.tags()]. Multiple hooks may also be
 #'   added to a particular `tag` via [tagAddRenderHook()].
