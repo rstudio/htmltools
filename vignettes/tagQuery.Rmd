@@ -16,13 +16,81 @@ knitr::opts_chunk$set(
 
 ```{r}
 library(htmltools)
-tagQ <- tagQuery(
-  div(span(), a())
-)
-tagQ
+tagQuery(div(a()))
 ```
 
-Notice how `tagQuery()` tracks two essential pieces: the "root" (aka input) tag as well as the set of currently selected tags. This data structure allows us to [efficiently](#performance) [find](#query), [modify](#modify), and [extract](#extract) particular fragments of HTML.
+Notice how `tagQuery()` tracks two essential pieces: the _root_ (i.e., input) tag as well as a set of _selected_ tags (by default the root is selected). This data structure allows us to [efficiently](#performance) [find](#query), and [modify](#modify) particular fragments of the root HTML tag.
+
+Since `tagQuery()` isn't itself a `tag()` object, it can't be directly to `tag()` or tag rendering functions, but at any given time you can extract the `$root()` or `$selected()` tags.
+
+## Query {#query}
+
+`tagQuery()` has numerous methods to select (i.e., query) HTML tag(s). Every query method accepts a [CSS selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors) for targeting particular tags of interest. At the moment, `tagQuery()` only supports a combination of [type](https://www.w3.org/TR/CSS22/selector.html#type-selectors) (e.g, `div`), [class](https://www.w3.org/TR/CSS22/selector.html#class-html) (e.g., `.my-class`), [id](https://www.w3.org/TR/CSS22/selector.html#id-selectors) (e.g., `#myID`), and [universal](https://www.w3.org/TR/CSS22/selector.html#universal-selector) (`*`) selectors within a given [simple selector](https://www.w3.org/TR/CSS22/selector.html#selector-syntax).
+
+### Children
+
+To begin querying tags, start with either `$find()` or `$children()`. The former traverses _all_ descendants whereas the latter only considers _direct_ descendants.
+
+```{r}
+tagQ <- tagQuery(div(a(), div(a())))
+tagQ$find("a")$selected()
+tagQ$children("a")$selected()
+```
+
+And since `$find()` considers all descendants, it allows for [descendant selectors](https://www.w3.org/TR/CSS22/selector.html#descendant-selectors) (space) and direct [child selectors](https://www.w3.org/TR/CSS22/selector.html#child-selectors) (>).
+
+```{r}
+tagQ <- tagQuery(div(div(span(a()))))
+tagQ$find("div a")$selected()
+tagQ$find("div > a")$selected()
+```
+
+Since `tagQuery()` methods may be chained together, you could also implement `tagQ$find("div > a")` as:
+
+```{r}
+tagQ$find("div")$children("a")$selected()
+```
+
+### Siblings
+
+Although `tagQuery()` doesn't support [sibling selectors](https://www.w3schools.com/css/css_combinators.asp) (`+` and `~`), it does provide a `$sibling()` method, which provides essentially the same functionality:
+
+```{r}
+tagQ <- tagQuery(div(a(), span(), p()))
+# morally equivalent to `tagQ$find("a ~ span")`
+tagQ$find("a")$siblings("span")$selected()
+```
+
+### Parents
+
+In some cases, after querying descendants, it can be useful to traverse back up the tag tree to find particular ancestors of a selection. Similar to the difference in `$find()` and `$children()`, `$parents()` traverses _all_ ancestors whereas `$parent()` considers just _direct_ ancestors.
+
+```{r}
+tagQ <- tagQuery(
+  div(
+    div(a(class = "foo")),
+    span(a())
+  )
+)
+tagQ$find("a.foo")$parent()$selected()
+tagQ$find("a.foo")$parents()$selected()
+```
+
+<!-- TODO: worth mentioning closest()? -->
+
+### Filter
+
+The `$filter()` method can be used to subset selected tags using an R function or CSS selector. This provides a particularly useful workaround for the fact that `tagQuery()` doesn't currently support [attribute selectors](https://www.w3.org/TR/CSS22/selector.html#attribute-selectors).
+
+```{r}
+tagQ <- tagQuery(div(div(), div("data-foo" = "bar")))
+# moral equivalent to `tagQ$find("[data-foo]")`
+tagQ$
+  find("*")$
+  filter(function(x, i) tagHasAttribute(x, "data-foo"))$
+  selected()
+```
+
 
 ## Modify {#modify}
 
@@ -54,23 +122,6 @@ TODO: useful example(s)
 
 TODO: useful example(s)
 
-## Query {#query}
-
-In order to modify children tags, we first must select them. To do so, provide `$find()` a valid [CSS selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors). Here we'll select all the `<a>` tags and add a class of `"bar"` to them:
-
-```{r}
-tagQ$find("a")$addClass("bar")
-tagQ
-```
-
-Note that the `$addClass()` [modifier method](#modify) has modified 
-
-In contrast to `tagQuery()` [modifier methods](#modify), querying methods (e.g., `$find()`, `$parent()`, `$children()`, etc), _don't_ modify `xq`. That means, if you want a selection to persist, you must 
-
-```{r}
-aq <- xq$find("a")
-aq
-```
 
 
 ## Extract {#extract}
