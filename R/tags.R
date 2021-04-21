@@ -413,9 +413,7 @@ throw_if_tag_function <- function(tag) {
 tag <- function(`_tag_name`, varArgs, .noWS=NULL) {
   validateNoWS(.noWS)
   # Get arg names; if not a named list, use vector of empty strings
-  varArgsNames <- names(varArgs)
-  if (is.null(varArgsNames))
-    varArgsNames <- character(length=length(varArgs))
+  varArgsNames <- names2(varArgs)
 
   # Named arguments become attribs, dropping NULL and length-0 values
   named_idx <- nzchar(varArgsNames)
@@ -498,9 +496,9 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   attribs <- flattenTagAttribs(tag$attribs)
 
   # write attributes
-  for (attrib in names(attribs)) {
+  for (attrib in names2(attribs)) {
     # Can not display attrib without a key
-    if (identical(attrib, "")) {
+    if (attrib == "") {
       stop(
         "An attribute value did not have a name.\n",
         "Did you forget to name your attribute value?"
