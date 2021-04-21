@@ -502,6 +502,8 @@ tagQuery_ <- function(
     structure(
       class = "htmltools.tag.query",
       list(
+        #' @details
+        #'
         #' ## Query methods
         #'
         #' Find particular subsets of HTML using CSS selectors (or R functions).
@@ -580,6 +582,7 @@ tagQuery_ <- function(
             tagQueryFindReset(root)
           )
         },
+        ## end Query methods
 
 
         #' ## Modify attributes

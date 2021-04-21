@@ -5,109 +5,6 @@
 \title{Perform jQuery-like alterations on tags}
 \usage{
 tagQuery(tags)
-
-NULL
-## Query methods
-
-Find particular subsets of HTML using CSS selectors (or R functions).
-Methods that accept a `cssSelector` are currently only allowed to
-reference tag names (e.g, `div`), ids (e.g., `#myID`), and classes
-(e.g., `.my-class`). All query methods support combinations of tag
-named, ids, and classes (e.g., `div#myID.my-class`), but only
-`$find()` currently supports multiple CSS selectors (e.g. `div span`
-or `div > a.my-class`).
-
-* `$find(cssSelector)`: Get the descendants of each selected tag,
-filtered by a `cssSelector` (required).
-* `$children(cssSelector = NULL)`: Get the direct children of each
-selected tag, optionally filtered by a `cssSelector`.
-* `$parent(cssSelector = NULL)`: Get the parent of each selected tag,
-optionally filtered by a `cssSelector`.
-* `$parents(cssSelector = NULL)`: Get the ancestors of each selected tag,
-optionally filtered by a `cssSelector`.
-* `$closest(cssSelector)`: For each selected tag, get the
-closest ancestor tag (including itself) satisfying a `cssSelector`.
-* `siblings(cssSelector = NULL)`: Get the siblings of each selected
-tag, optionally filtered by a `cssSelector`.
-* `$filter(fn)`: Filter the selected tags to those for which
-`fn(tag, i)` returns `TRUE`. In addition to an R function with two
-arguments (the `tag` and the index `i`), `fn` may also be a valid CSS
-selector.
-* `$reset()`: A new `tagQuery()` object will be created with the
-selected items set to the top level tag objects.
-## Modify attributes
-
-* `$addClass(class)`: `[character()]`\cr Adds class(es) to each
-selected tag.
-* `$removeClass(class)`: `[character()]`\cr Removes class(es) to each
-selected tag.
-* `$toggleClass(class)`: `[character()]`\cr If a given `class` element
-is missing, add it; otherwise, remove it.
-* `$addAttrs(...)`: Add a set of attributes to each selected tag.
-* `$removeAttrs(attrs)`: `[character()]`\cr Remove a set of
-attributes from each selected tag.
-* `$emptyAttrs()`: Remove all attributes from each selected tag.
-## Logical assertions
-
-These methods return a logical vector with one element per selected
-tag.
-
-* `$hasClass(class)`: `[character()]`\cr Do selected tags have
-particular class(es)?
-* `$hasAttr(attr)`: `[character()]`\cr Do selected tags have
-particular attributes?
-## Modify children
-
-* `$append(...)`: For each selected tag, insert `...` **after** any
-existing children.
-* `$prepend(...)`: For each selected tag, insert `...` **before** any
-existing children.
-* `$empty()`: Remove any children of each selected tag. Use this
-method before calling `$append(...)` to replace the children of
-each selected tag, with other content.
-## Modify siblings
-
-* `$after(...)`: Add all `...` objects as siblings after each of the
-selected tags.
-* `$before(...)`: Add all `...` objects as siblings before each of
-the selected tags.
-* `$replaceWith(...)`: Replace all selected tags with `...` in the
-root tag and clear the selection.
-* `$remove(...)`: Remove all selected tags from the root tag and
-clear the current selection.
-## Generic methods
-
-* `$each(fn)`: Modify each selected tag with a function `fn`.
-`fn` should accept two arguments: a selected element and
-the selected element's position within the selected elements. This
-argument order mimics jQuery's `$().each()` as there is no
-concept of a `this` object inside the function execution. To stay
-consistent with other methods, the each of the selected tag
-environments will be given first, followed by the index position. Any
-alterations to the provided tag environments will persist in calling
-tag query object.
-## Tag Query methods
-
-* `$asTags(selected = TRUE)`: If `selected = TRUE`, then all
-previously found elements (and their descendants) will be
-converted to tags. If `selected = FALSE`, the top level tag
-elements (and their descendants) will be converted to
-standard tags. If there is more than one element being
-returned, a `tagList()` will be used to hold all of the
-objects.
-* `$root()`: Return all top level (root) tags environments. If there
-are more than one, it will be returned within a `tagList()`. If there
-is only one tag, it will be returned.
-* `$selected()`: Returns a list of selected tag environments.
-* `$get(position)`: Returns the selected tag element at the position
-`position`.
-* `$rebuild()`: Makes sure that all tags have been upgraded to tag
-environments. Objects wrapped in `HTML()` will not be inspected or
-altered. This method is internally called before each method executes
-and after any alterations where standard tag objects could be
-introduced into the tag structure.
-* `$print()`: Internal print method. Called by
-`print.htmltools.tag.query()`
 }
 \arguments{
 \item{tags}{A \code{\link[=tag]{tag()}}, \code{\link[=tagList]{tagList()}}, or \code{\link[=list]{list()}} of tags. If a \code{list()} or
@@ -125,4 +22,128 @@ such as \verb{$find()} may be used to update the selection).
 \details{
 \code{tagQuery()} provides a \href{https://jquery.com/}{\code{jQuery}} inspired interface for
 querying and/or modifying \code{\link[=tag]{tag()}} (and \code{\link[=tagList]{tagList()}}) objects.
+
+\subsection{Query methods}{
+
+Find particular subsets of HTML using CSS selectors (or R functions).
+Methods that accept a \code{cssSelector} are currently only allowed to
+reference tag names (e.g, \code{div}), ids (e.g., \verb{#myID}), and classes
+(e.g., \code{.my-class}). All query methods support combinations of tag
+named, ids, and classes (e.g., \code{div#myID.my-class}), but only
+\verb{$find()} currently supports multiple CSS selectors (e.g. \verb{div span}
+or \code{div > a.my-class}).
+\itemize{
+\item \verb{$find(cssSelector)}: Get the descendants of each selected tag,
+filtered by a \code{cssSelector} (required).
+\item \verb{$children(cssSelector = NULL)}: Get the direct children of each
+selected tag, optionally filtered by a \code{cssSelector}.
+\item \verb{$parent(cssSelector = NULL)}: Get the parent of each selected tag,
+optionally filtered by a \code{cssSelector}.
+\item \verb{$parents(cssSelector = NULL)}: Get the ancestors of each selected tag,
+optionally filtered by a \code{cssSelector}.
+\item \verb{$closest(cssSelector)}: For each selected tag, get the
+closest ancestor tag (including itself) satisfying a \code{cssSelector}.
+\item \code{siblings(cssSelector = NULL)}: Get the siblings of each selected
+tag, optionally filtered by a \code{cssSelector}.
+\item \verb{$filter(fn)}: Filter the selected tags to those for which
+\code{fn(tag, i)} returns \code{TRUE}. In addition to an R function with two
+arguments (the \code{tag} and the index \code{i}), \code{fn} may also be a valid CSS
+selector.
+\item \verb{$reset()}: A new \code{tagQuery()} object will be created with the
+selected items set to the top level tag objects.
+}
+}
+
+\subsection{Modify attributes}{
+\itemize{
+\item \verb{$addClass(class)}: \verb{[character()]}\cr Adds class(es) to each
+selected tag.
+\item \verb{$removeClass(class)}: \verb{[character()]}\cr Removes class(es) to each
+selected tag.
+\item \verb{$hasClass(class)}: Determine whether the selected elements have a
+given class. Returns a vector of logical values.
+\item \verb{$toggleClass(class)}: \verb{[character()]}\cr If a given \code{class} element
+is missing, add it; otherwise, remove it.
+\item \verb{$addAttrs(...)}: Add a set of attributes to each selected tag.
+\item \verb{$removeAttrs(attrs)}: \verb{[character()]}\cr Remove a set of
+attributes from each selected tag.
+\item \verb{$emptyAttrs()}: Remove all attributes from each selected tag.
+}
+}
+
+\subsection{Logical assertions}{
+
+These methods return a logical vector with one element per selected
+tag.
+\itemize{
+\item \verb{$hasClass(class)}: \verb{[character()]}\cr Do selected tags have
+particular class(es)?
+\item \verb{$hasAttr(attr)}: \verb{[character()]}\cr Do selected tags have
+particular attributes?
+}
+}
+
+\subsection{Modify children}{
+\itemize{
+\item \verb{$append(...)}: For each selected tag, insert \code{...} \strong{after} any
+existing children.
+\item \verb{$prepend(...)}: For each selected tag, insert \code{...} \strong{before} any
+existing children.
+\item \verb{$empty()}: Remove any children of each selected tag. Use this
+method before calling \verb{$append(...)} to replace the children of
+each selected tag, with other content.
+}
+}
+
+\subsection{Modify siblings}{
+\itemize{
+\item \verb{$after(...)}: Add all \code{...} objects as siblings after each of the
+selected tags.
+\item \verb{$before(...)}: Add all \code{...} objects as siblings before each of
+the selected tags.
+\item \verb{$replaceWith(...)}: Replace all selected tags with \code{...} in the
+root tag and clear the selection.
+\item \verb{$remove(...)}: Remove all selected tags from the root tag and
+clear the current selection.
+}
+}
+
+\subsection{Generic methods}{
+\itemize{
+\item \verb{$each(fn)}: Modify each selected tag with a function \code{fn}.
+\code{fn} should accept two arguments: a selected element and
+the selected element's position within the selected elements. This
+argument order mimics jQuery's \verb{$().each()} as there is no
+concept of a \code{this} object inside the function execution. To stay
+consistent with other methods, the each of the selected tag
+environments will be given first, followed by the index position. Any
+alterations to the provided tag environments will persist in calling
+tag query object.
+}
+}
+
+\subsection{Tag Query methods}{
+\itemize{
+\item \verb{$asTags(selected = TRUE)}: If \code{selected = TRUE}, then all
+previously found elements (and their descendants) will be
+converted to tags. If \code{selected = FALSE}, the top level tag
+elements (and their descendants) will be converted to
+standard tags. If there is more than one element being
+returned, a \code{tagList()} will be used to hold all of the
+objects.
+\item \verb{$root()}: Return all top level (root) tags environments. If there
+are more than one, it will be returned within a \code{tagList()}. If there
+is only one tag, it will be returned.
+\item \verb{$selected()}: Returns a list of selected tag environments.
+\item \verb{$get(position)}: Returns the selected tag element at the position
+\code{position}.
+\item \verb{$rebuild()}: Makes sure that all tags have been upgraded to tag
+environments. Objects wrapped in \code{HTML()} will not be inspected or
+altered. This method is internally called before each method executes
+and after any alterations where standard tag objects could be
+introduced into the tag structure.
+\item \verb{$print()}: Internal print method. Called by
+\code{print.htmltools.tag.query()}
+}
+}
 }
