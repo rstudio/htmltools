@@ -29,18 +29,24 @@ asSelector <- function(selector) {
   # make sure it's a trimmed string
   selector <- txt_trim(paste0(selector, collapse = " "))
 
-  # yell if there is a comma
   if (txt_detect(selector, ",", fixed = TRUE)) {
-    stop("Do not know how to handle comma separated selector values")
+    stop("CSS selectors that contain `,` aren't (yet) implemented.", call. = FALSE)
   }
-  # yell if there is a `[`
   if (txt_detect(selector, "[", fixed = TRUE)) {
-    stop("Do not know how to handle `[` in selector values")
+    stop("CSS selectors that contain `[` aren't (yet) implemented.", call. = FALSE)
   }
-
-  # yell if there is a `:`
+  if (txt_detect(selector, "~", fixed = TRUE)) {
+    stop("CSS selectors that contain `~` aren't (yet) implemented.", call. = FALSE)
+  }
+  if (txt_detect(selector, "+", fixed = TRUE)) {
+    stop("CSS selectors that contain `+` aren't (yet) implemented.", call. = FALSE)
+  }
   if (txt_detect(selector, ":", fixed = TRUE)) {
-    stop("Do not know how to handle special pseudo classes like `:first-child` or `:not()` in selector values")
+    stop(
+      "Pseudo CSS selectors (e.g., `:first-child`, `:not()`, etc)",
+      " aren't (yet) implemented.",
+      call. = FALSE
+    )
   }
 
   # if it contains multiple elements, recurse

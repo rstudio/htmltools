@@ -8,9 +8,13 @@
 
 * Added `tagQuery(tags)`. A tag query object implements many popular features of jQuery.  Similar to jQuery, tag query objects can find internal html using CSS selections. Given a selection (which defaults to the original `tags`), many alterations may be performed before converting the tag query object back to tag objects. (#208)
 
+* Added `tagAddRenderHook()` for delaying modification of a tag object until it is rendered. A list of render-time hooks may also be added via the new `.renderHook` argument added to all `tag()` functions. (#215)
+
 ## Bug Fixes
 
 * Closed #197: Fixed rendering of boolean attributes in <script> tags rendered via renderDependencies() (#197, thanks @atusy).
+
+* Closed #222: Unnamed attributes are no longer allowed to be appended via `tagAppendAttribs()`. When trying to print unnamed tag attribs, a better error message is provided. (#229)
 
 
 # htmltools 0.5.1.1

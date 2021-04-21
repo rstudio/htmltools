@@ -35,16 +35,16 @@ NULL
 ## Instead write them where they are needed since they are small.
 ## (Just like we don't wrap dplyr code)
 # tagAppendAttributesAt <- function(tag, cssSelector, ...) {
-#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$asTags(selected = FALSE)
+#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$root()
 # }
 # tagAddClassAt <- function(tag, cssSelector, class) {
-#   tagQuery(tag)$find(cssSelector)$addClass(class)$asTags(selected = FALSE)
+#   tagQuery(tag)$find(cssSelector)$addClass(class)$root()
 # }
 # tagMutateAt <- function(x, cssSelector, fn) {
-#   tagQuery(tag)$find(cssSelector)$each(fn)$asTags(selected = FALSE)
+#   tagQuery(tag)$find(cssSelector)$each(fn)$root()
 # }
 # tagFindAt <- function(x, css) {
-#   tagQuery(tag)$find(cssSelector)$asTags()
+#   tagQuery(tag)$find(cssSelector)$selected()
 # }
 
 
@@ -294,7 +294,7 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
 }
 
 # This method MUST undo everything done in `asTagEnv(x)`
-# Do not export to encourage direct use of `tagQuery()$asTags()`
+# Do not export to encourage direct use of `tagQuery()$selected()`
 # Only allow for tag environments to be passed in.
 tagEnvToTags <- function(x) {
   if (!isTagEnv(x)) {
@@ -373,15 +373,15 @@ print.htmltools.tag.query <- function(x, ...) {
 #' @export
 format.htmltools.tag.query <- function(x, ...) {
   stop(
-    "`format.htmltools.tag.query(x)` not allowed.\n",
-    "Please call `format()` the result of `$asTags()`"
+    "`tagQuery()` objects can not be written directly as HTML tags.\n",
+    "Call either `$root()` or `$selected()` to extract the tags of interest."
   )
 }
 #' @export
 as.character.htmltools.tag.query <- function(x, ...) {
   stop(
-    "`as.character.htmltools.tag.query(x)` not allowed.\n",
-    "Please call `as.character()` the result of `$asTags()`"
+    "`tagQuery()` objects can not be written directly as HTML tags.\n",
+    "Call either `$root()` or `$selected()` to extract the tags of interest."
   )
 }
 
@@ -411,7 +411,7 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' tag elements.  This could be accomplished using code similar to
 #'
 #' ```r tagQuery(ex_tags)$find("div .inner
-#' span")$parent()$parent()$addClass("custom-class")$asTags(selected = FALSE)
+#' span")$parent()$parent()$addClass("custom-class")$root()
 #' ```
 #'
 #' This style of alteration is not easily achieved when using typical "pass by
@@ -428,7 +428,7 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' environment using `$addClass()` and the result of the method call is ignored,
 #' the selected tag environments within the tag query object will still contain
 #' the class addition.  The added class will exist when the tag query tag
-#' environment are converted back to standard tags objects with `$asTags()`.
+#' environment are converted back to standard tags objects with `$selected()`.
 #'
 #' Tag environments also contain an extra field, `.$parent`. The `.$parent`
 #' value contains their parent tag environment. The top level tags supplied to
@@ -445,7 +445,7 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' A `tagQuery()` behaves simliar to an R6 object in that internal values are
 #' altered in place. (but a `tagQuery()` object is not implemented with `R6`).
 #' The `tagQuery()`'s methods will return itself as much as possible, unless the
-#' method is directly asking for information, e.g. `$selected()` or `$asTags()`.
+#' method is directly asking for information, e.g. `$root()` or `$selected()`.
 #'
 #' Internally, two important pieces of information are maintained: the root
 #' elements and the selected elements. The root tag environment will always
@@ -457,26 +457,26 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' unless declared otherwise.
 #'
 #' Tag query objects can be created from other tag query objects. Note, unless
-#' there is an intermediate call to `$asTags()`, the original and new tag query
+#' there is an intermediate call to `$selected()`, the original and new tag query
 #' objects will share the same tag environments. The new tag query object will
 #' have its selected elements reset. For example:
 #'
 #' ```r
 #' x <- tagQuery(div())
 #' y <- tagQuery(x)
-#' z <- tagQuery(x$asTags(selected = FALSE))
+#' z <- tagQuery(x$root())
 #'
 #' # Add an example class
 #' y$addClass("example")
 #'
 #' # Show `x` and `y` both have the new class
-#' x$asTags()
+#' x$selected()
 #' #> <div class="example"></div>
-#' y$asTags()
+#' y$selected()
 #' #> <div class="example"></div>
 #'
-#' # `z` is isolated from the changes in `x` and `y` due to the `$asTags()`
-#' z$asTags()
+#' # `z` is isolated from the changes in `x` and `y` due to the `$selected()`
+#' z$selected()
 #' #> <div></div>
 #' ```
 #'
@@ -484,12 +484,12 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #' @section Limitations:
 #'
 #'   `tagQuery()`s can **not** be used directly within typical `tag` locations.
-#'   An error should be thrown. Instead, please call `$asTags()` to retrieve the
+#'   An error should be thrown. Instead, please call `$selected()` to retrieve the
 #'   tag structures of the selected tag elements or root element respectively.
 #'
 #' @param tags Any standard tag object or `tagList()`. If a `list()` or
 #'   `tagList()` is provided, a `tagList()` will be returned when calling
-#'   `$asTags()`.
+#'   `$selected()`.
 #' @return A `tagQuery()` object. The `tag` supplied will be considered the
 #'   `root` object. At the time of initialization, the `root` is also considered
 #'   the single selected item. If any selections are made, the selected elements
@@ -720,14 +720,14 @@ tagQuery_ <- function(
         addClass = function(class) {
           rebuild_()
           tagQueryClassAdd(selected_, class)
-          self
+          invisible(self)
         },
         #' * `$removeClass(class)`: Removes a set of class values from all of
         #' the selected elements.
         removeClass = function(class) {
           rebuild_()
           tagQueryClassRemove(selected_, class)
-          self
+          invisible(self)
         },
         #' * `$hasClass(class)`: Determine whether the selected elements have a
         #' given class. Returns a vector of logical values.
@@ -740,7 +740,7 @@ tagQuery_ <- function(
         toggleClass = function(class) {
           rebuild_()
           tagQueryClassToggle(selected_, class)
-          self
+          invisible(self)
         },
 
         #' * `$addAttrs(...)`: Add named attributes to all selected children.
@@ -749,21 +749,21 @@ tagQuery_ <- function(
           rebuild_()
           tagQueryAttrsAdd(selected_, ...)
           # no need to rebuild_(); already flattened in add attr function
-          self
+          invisible(self)
         },
         #' * `$removeAttrs(attrs)`: Removes the provided attributes in each of
         #' the selected elements.
         removeAttrs = function(attrs) {
           rebuild_()
           tagQueryAttrsRemove(selected_, attrs)
-          self
+          invisible(self)
         },
         #' * `$emptyAttrs()`: Removes all attributes in each of the selected
         #' elements.
         emptyAttrs = function() {
           rebuild_()
           tagQueryAttrsEmpty(selected_)
-          self
+          invisible(self)
         },
         #' * `$hasAttr(attr)`: Returns a vector whose values are whether the
         #' selected element contains the non-`NULL` attribute.
@@ -781,7 +781,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQueryChildrenAppend(selected_, ...)
           rebuild_()
-          self
+          invisible(self)
         },
         #' * `$prepend(...)`: Add all `...` objects as children **before** any
         #' existing children to the selected elements. A variation of
@@ -790,7 +790,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQueryChildrenPrepend(selected_, ...)
           rebuild_()
-          self
+          invisible(self)
         },
         #' * `$empty()`: Remove all children in the selected elements. Use this
         #' method before calling `$append(...)` to replace all selected
@@ -799,7 +799,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQueryChildrenEmpty(selected_)
           # no need to rebuild_
-          self
+          invisible(self)
         },
         ## end Adjust Children
 
@@ -811,7 +811,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQuerySiblingAfter(selected_, ...)
           rebuild_()
-          self
+          invisible(self)
         },
         #' * `$before(...)`: Add all `...` objects as siblings before each of
         #' the selected elements.
@@ -819,7 +819,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQuerySiblingBefore(selected_, ...)
           rebuild_()
-          self
+          invisible(self)
         },
         #' * `$replaceWith(...)`: Replace all selected elements with `...`. This
         #' also sets the selected elements to an empty set. A new `tagQuery()`
@@ -857,44 +857,27 @@ tagQuery_ <- function(
           rebuild_()
           tagQueryEach(selected_, fn)
           rebuild_()
-          self
+          invisible(self)
         },
         ## end Generic Methods
 
         #' ## Tag Query methods
         #'
-        #' * `$asTags(selected = TRUE)`: If `selected = TRUE`, then all
-        #' previously found elements (and their descendants) will be
-        #' converted to tags. If `selected = FALSE`, the top level tag
-        #' elements (and their descendants) will be converted to
-        #' standard tags. If there is more than one element being
-        #' returned, a `tagList()` will be used to hold all of the
-        #' objects.
-        asTags = function(selected = TRUE) {
-          rebuild_()
-          if (isTRUE(selected)) {
-            tagQuerySelectedAsTags(selected_)
-          } else {
-            tagQueryRootAsTags(root)
-          }
-        },
-        #' * `$root()`: Return all top level (root) tags environments. If there
-        #' are more than one, it will be returned within a `tagList()`. If there
-        #' is only one tag, it will be returned.
+        #' * `$root()`: Converts the top level tag
+        #' elements (and their descendants) from tag environments to
+        #' standard [`tag`] objects. If there is more than one element being
+        #' returned, a [`tagList()`] will be used to hold all of the
+        #' tags.
         root = function() {
           rebuild_()
-          tagQueryGetRoot(root)
+          tagQueryRootAsTags(root)
         },
-        #' * `$selected()`: Returns a list of selected tag environments.
+        #' * `$selected()`: Converts the selected tag environments
+        #' to standard [`tag`] objects. The selected tags will be returned in a
+        #' [`tagList()`].
         selected = function() {
           rebuild_()
-          selected_
-        },
-        #' * `$get(position)`: Returns the selected tag element at the position
-        #' `position`.
-        get = function(position) {
-          rebuild_()
-          tagQueryGet(selected_, position)
+          tagQuerySelectedAsTags(selected_)
         },
         #' * `$rebuild()`: Makes sure that all tags have been upgraded to tag
         #' environments. Objects wrapped in `HTML()` will not be inspected or
@@ -903,7 +886,7 @@ tagQuery_ <- function(
         #' introduced into the tag structure.
         rebuild = function() {
           rebuild_()
-          self
+          invisible(self)
         },
         #' * `$print()`: Internal print method. Called by
         #' `print.htmltools.tag.query()`
@@ -1019,13 +1002,13 @@ tagQuerySelected <- function(selected) {
   }
 }
 
-# Return the `i`th position of the manually selected elements
-tagQueryGet <- function(selected, position) {
-  selected <- tagQuerySelected(selected)
-  validatePosition(position, selected)
+# # Return the `i`th position of the manually selected elements
+# tagQueryGet <- function(selected, position) {
+#   selected <- tagQuerySelected(selected)
+#   validatePosition(position, selected)
 
-  selected[[position]]
-}
+#   selected[[position]]
+# }
 
 # Return the top level tags as tags
 tagQueryRootAsTags <- function(root) {
@@ -1033,12 +1016,8 @@ tagQueryRootAsTags <- function(root) {
 }
 
 tagQuerySelectedAsTags <- function(selected) {
-  if (length(selected) == 1) {
-    tagEnvToTags(selected[[1]])
-  } else {
-    # return as tagList
-    do.call(tagList, lapply(selected, tagEnvToTags))
-  }
+  # return as tagList
+  do.call(tagList, lapply(selected, tagEnvToTags))
 }
 
 tagQueryPrint <- function(root, selected) {
@@ -1055,9 +1034,6 @@ tagQueryPrint <- function(root, selected) {
     } else {
       cat("\n")
       selectedTags <- tagQuerySelectedAsTags(selected)
-      if (!isTagList(selectedTags)) {
-        selectedTags <- tagList(selectedTags)
-      }
       # add separator
       walkI(selectedTags, function(selectedTag, i) {
         cat("[[", i, "]]\n", sep = "")
