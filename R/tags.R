@@ -496,6 +496,8 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   # write attributes
   for (attrib in names(attribs)) {
+    # Can not display attrib without a key
+    if (identical(attrib, "")) next
     attribValue <- attribs[[attrib]]
     if (!is.na(attribValue)) {
       if (is.logical(attribValue))

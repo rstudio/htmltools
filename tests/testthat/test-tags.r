@@ -400,12 +400,18 @@ test_that("Adding attributes to tags", {
 })
 
 test_that("Adding unnamed attributes creates a warning", {
-  expect_warning(
-    tagAppendAttributes(
-      tags$div(),
-      "value"
-    ),
-    "include an attribute name"
+  local_edition(3)
+
+  expect_snapshot(
+    expect_warning(
+      print(
+        tagAppendAttributes(
+          tags$div(),
+          "value"
+        )
+      ),
+      "include an attribute name"
+    )
   )
 })
 
