@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9002</span>
       </span>
     </div>
 
@@ -122,7 +122,8 @@
 <h2 class="hasAnchor">
 <a href="#new-features--improvements" class="anchor"></a>New Features &amp; Improvements</h2>
 <ul>
-<li>Added <code><a href="../reference/tagQuery.html">tagQuery(tags)</a></code>. A tag query object implements many popular features of jQuery. Similar to jQuery, tag query objects can find internal html using CSS selections. Given a selection (which defaults to the original <code>tags</code>), many alterations may be performed before converting the tag query object back to tag objects. (<a href='https://github.com/rstudio/htmltools/issues/208'>#208</a>)</li>
+<li><p>Added <code><a href="../reference/tagQuery.html">tagQuery(tags)</a></code>. A tag query object implements many popular features of jQuery. Similar to jQuery, tag query objects can find internal html using CSS selections. Given a selection (which defaults to the original <code>tags</code>), many alterations may be performed before converting the tag query object back to tag objects. (<a href='https://github.com/rstudio/htmltools/issues/208'>#208</a>)</p></li>
+<li><p>Added <code><a href="../reference/tagAddRenderHook.html">tagAddRenderHook()</a></code> for delaying modification of a tag object until it is rendered. A list of render-time hooks may also be added via the new <code>.renderHook</code> argument added to all <code><a href="../reference/tag.html">tag()</a></code> functions. (<a href='https://github.com/rstudio/htmltools/issues/215'>#215</a>)</p></li>
 </ul>
 </div>
 <div id="bug-fixes" class="section level2">

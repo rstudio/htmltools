@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9002</span>
       </span>
     </div>
 
@@ -122,39 +122,39 @@
 
     <pre class="usage"><span class='va'>tags</span>
 
-<span class='fu'>p</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>p</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>h1</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>h1</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>h2</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>h2</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>h3</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>h3</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>h4</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>h4</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>h5</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>h5</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>h6</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>h6</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>a</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>a</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>br</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>br</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>div</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>div</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>span</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>span</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>pre</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>pre</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>code</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>code</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>img</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>img</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>strong</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>strong</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>em</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>em</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>hr</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+<span class='fu'>hr</span><span class='op'>(</span><span class='va'>...</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span>, .renderHook <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -175,6 +175,13 @@ would normally be written around this tag. Valid options include
 <code>before</code>, <code>after</code>, <code>outside</code>, <code>after-begin</code>,
 <code>before-end</code>, and <code>inside</code>. Any number of these options can be
 specified.</p></td>
+    </tr>
+    <tr>
+      <th>.renderHook</th>
+      <td><p>A function (or list of functions) to call when the <code>tag</code> is rendered. This
+function should have at least one argument (the <code>tag</code>) and return anything
+that can be converted into tags via <code><a href='as.tags.html'>as.tags()</a></code>. Additional hooks may also be
+added to a particular <code>tag</code> via <code><a href='tagAddRenderHook.html'>tagAddRenderHook()</a></code>.</p></td>
     </tr>
     </table>
 
