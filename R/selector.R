@@ -44,7 +44,7 @@ asSelector <- function(selector) {
   if (txt_detect(selector, ":", fixed = TRUE)) {
     stop(
       "Pseudo CSS selectors (e.g., `:first-child`, `:not()`, etc)",
-      "aren't (yet) implemented.",
+      " aren't (yet) implemented.",
       call. = FALSE
     )
   }
