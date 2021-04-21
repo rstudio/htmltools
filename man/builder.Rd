@@ -24,39 +24,39 @@
 \usage{
 tags
 
-p(..., .noWS = NULL, .renderHooks = NULL)
+p(..., .noWS = NULL, .renderHook = NULL)
 
-h1(..., .noWS = NULL, .renderHooks = NULL)
+h1(..., .noWS = NULL, .renderHook = NULL)
 
-h2(..., .noWS = NULL, .renderHooks = NULL)
+h2(..., .noWS = NULL, .renderHook = NULL)
 
-h3(..., .noWS = NULL, .renderHooks = NULL)
+h3(..., .noWS = NULL, .renderHook = NULL)
 
-h4(..., .noWS = NULL, .renderHooks = NULL)
+h4(..., .noWS = NULL, .renderHook = NULL)
 
-h5(..., .noWS = NULL, .renderHooks = NULL)
+h5(..., .noWS = NULL, .renderHook = NULL)
 
-h6(..., .noWS = NULL, .renderHooks = NULL)
+h6(..., .noWS = NULL, .renderHook = NULL)
 
-a(..., .noWS = NULL, .renderHooks = NULL)
+a(..., .noWS = NULL, .renderHook = NULL)
 
-br(..., .noWS = NULL, .renderHooks = NULL)
+br(..., .noWS = NULL, .renderHook = NULL)
 
-div(..., .noWS = NULL, .renderHooks = NULL)
+div(..., .noWS = NULL, .renderHook = NULL)
 
-span(..., .noWS = NULL, .renderHooks = NULL)
+span(..., .noWS = NULL, .renderHook = NULL)
 
-pre(..., .noWS = NULL, .renderHooks = NULL)
+pre(..., .noWS = NULL, .renderHook = NULL)
 
-code(..., .noWS = NULL, .renderHooks = NULL)
+code(..., .noWS = NULL, .renderHook = NULL)
 
-img(..., .noWS = NULL, .renderHooks = NULL)
+img(..., .noWS = NULL, .renderHook = NULL)
 
-strong(..., .noWS = NULL, .renderHooks = NULL)
+strong(..., .noWS = NULL, .renderHook = NULL)
 
-em(..., .noWS = NULL, .renderHooks = NULL)
+em(..., .noWS = NULL, .renderHook = NULL)
 
-hr(..., .noWS = NULL, .renderHooks = NULL)
+hr(..., .noWS = NULL, .renderHook = NULL)
 }
 \arguments{
 \item{...}{Attributes and children of the element. Named arguments become
@@ -72,7 +72,7 @@ would normally be written around this tag. Valid options include
 \code{before-end}, and \code{inside}. Any number of these options can be
 specified.}
 
-\item{.renderHooks}{A function (or list of functions) to call when the \code{tag} is rendered. This
+\item{.renderHook}{A function (or list of functions) to call when the \code{tag} is rendered. This
 function should have at least one argument (the \code{tag}) and return anything
 that can be converted into tags via \code{\link[=as.tags]{as.tags()}}. Multiple hooks may also be
 added to a particular \code{tag} via \code{\link[=tagAddRenderHook]{tagAddRenderHook()}}.}

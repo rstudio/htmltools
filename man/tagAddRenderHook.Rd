@@ -36,7 +36,7 @@ until it's rendered.
 }
 \examples{
 # Have a place holder div and return a span instead
-obj <- div("example", .renderHooks = function(x) {
+obj <- div("example", .renderHook = function(x) {
   x$name <- "span"
   x
 })

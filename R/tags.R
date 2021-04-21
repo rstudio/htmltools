@@ -321,7 +321,7 @@ tagFunction <- function(func) {
 #' @seealso [tagFunction()]
 #' @examples
 #' # Have a place holder div and return a span instead
-#' obj <- div("example", .renderHooks = function(x) {
+#' obj <- div("example", .renderHook = function(x) {
 #'   x$name <- "span"
 #'   x
 #' })
@@ -478,7 +478,7 @@ throw_if_tag_function <- function(tag) {
 #'   normally be written around this tag. Valid options include `before`,
 #'   `after`, `outside`, `after-begin`, and `before-end`.
 #'   Any number of these options can be specified.
-#' @param .renderHooks A function (or list of functions) to call when the `tag` is rendered. This
+#' @param .renderHook A function (or list of functions) to call when the `tag` is rendered. This
 #'   function should have at least one argument (the `tag`) and return anything
 #'   that can be converted into tags via [as.tags()]. Multiple hooks may also be
 #'   added to a particular `tag` via [tagAddRenderHook()].
@@ -504,7 +504,7 @@ throw_if_tag_function <- function(tag) {
 #' cat(as.character(oneline))
 #'
 #' # At print time, turn an h1 into an h2 tag
-#' h <- tags$h1("Example", .renderHooks = function(x) {
+#' h <- tags$h1("Example", .renderHook = function(x) {
 #'   x$name <- "h2"
 #'   x
 #' })
@@ -513,7 +513,7 @@ throw_if_tag_function <- function(tag) {
 #'   tag("strong", "Super strong", .noWS="outside")
 #' )
 #' cat(as.character(oneline))
-tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHooks = NULL) {
+tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL) {
   validateNoWS(.noWS)
   # Get arg names; if not a named list, use vector of empty strings
   varArgsNames <- names(varArgs)
@@ -540,11 +540,11 @@ tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHooks = NULL) {
   }
   # Conditionally include the `.renderHooks` field.
   # We do this to avoid breaking the hashes of existing tags that weren't leveraging .renderHooks.
-  if (!is.null(.renderHooks)) {
-    if (!is.list(.renderHooks)) {
-      .renderHooks <- list(.renderHooks)
+  if (!is.null(.renderHook)) {
+    if (!is.list(.renderHook)) {
+      .renderHook <- list(.renderHook)
     }
-    st$.renderHooks <- .renderHooks
+    st$.renderHooks <- .renderHook
   }
 
   # Return tag data structure
@@ -964,11 +964,11 @@ names(known_tags) <- known_tags
 tags <- lapply(known_tags, function(tagname) {
   # Overwrite the body with the `tagname` value injected into the body
   new_function(
-    args = exprs(... = , .noWS = NULL, .renderHooks = NULL),
+    args = exprs(... = , .noWS = NULL, .renderHook = NULL),
     expr({
       validateNoWS(.noWS)
       contents <- dots_list(...)
-      tag(!!tagname, contents, .noWS = .noWS, .renderHooks = .renderHooks)
+      tag(!!tagname, contents, .noWS = .noWS, .renderHook = .renderHook)
     }),
     env = asNamespace("htmltools")
   )

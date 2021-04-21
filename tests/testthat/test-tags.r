@@ -900,10 +900,10 @@ test_that("html render method", {
   local_edition(3)
 
   # Have a place holder div and return a span instead
-  obj <- div("example", .renderHooks = list(function(x) {
+  obj <- div("example", .renderHook = function(x) {
     x$name <- "span"
     x
-  }))
+  })
   expect_equal(obj$name, "div")
   expect_snapshot(as.character(obj))
 
