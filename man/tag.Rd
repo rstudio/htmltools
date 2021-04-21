@@ -25,7 +25,7 @@ tagAppendChildren(tag, ..., list = NULL)
 
 tagSetChildren(tag, ..., list = NULL)
 
-tag(`_tag_name`, varArgs, .noWS = NULL)
+tag(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL)
 }
 \arguments{
 \item{...}{Unnamed items that comprise this list of tags.}
@@ -51,6 +51,11 @@ contain tags, text nodes, and HTML.}
 normally be written around this tag. Valid options include \code{before},
 \code{after}, \code{outside}, \code{after-begin}, and \code{before-end}.
 Any number of these options can be specified.}
+
+\item{.renderHook}{A function (or list of functions) to call when the \code{tag} is rendered. This
+function should have at least one argument (the \code{tag}) and return anything
+that can be converted into tags via \code{\link[=as.tags]{as.tags()}}. Additional hooks may also be
+added to a particular \code{tag} via \code{\link[=tagAddRenderHook]{tagAddRenderHook()}}.}
 }
 \value{
 An HTML tag object that can be rendered as HTML using
@@ -77,6 +82,17 @@ x <- list(tags$h1("Title"),
 tagList(x)
 
 # suppress the whitespace between tags
+oneline <- tag("span",
+  tag("strong", "Super strong", .noWS="outside")
+)
+cat(as.character(oneline))
+
+# At print time, turn an h1 into an h2 tag
+h <- tags$h1("Example", .renderHook = function(x) {
+  x$name <- "h2"
+  x
+})
+h
 oneline <- tag("span",
   tag("strong", "Super strong", .noWS="outside")
 )

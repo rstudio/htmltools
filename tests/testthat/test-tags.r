@@ -893,3 +893,70 @@ test_that("extractPreserveChunks works for emoji strings", {
     c('chunk2', 'chunk1')
   )
 })
+
+
+
+test_that("html render method", {
+  local_edition(3)
+
+  # Have a place holder div and return a span instead
+  obj <- div("example", .renderHook = function(x) {
+    x$name <- "span"
+    x
+  })
+  expect_equal(obj$name, "div")
+  expect_snapshot(as.character(obj))
+
+  # Add a class to the tag
+  spanExtra <- tagAddRenderHook(obj, function(x) {
+    tagAppendAttributes(x, class = "extra")
+  })
+  expect_equal(spanExtra$name, "div")
+  expect_equal(spanExtra$attribs$class, NULL)
+  expect_snapshot(as.character(spanExtra))
+
+  # Replace the previous render method
+  # Should print a `div` with class `"extra"`
+  divExtra <- tagAddRenderHook(obj, replace = TRUE, function(x) {
+    tagAppendAttributes(x, class = "extra")
+  })
+  expect_equal(divExtra$attribs$class, NULL)
+  expect_snapshot(as.character(divExtra))
+
+  # Add more child tags
+  spanExtended <- tagAddRenderHook(obj, function(x) {
+    tagAppendChildren(x, tags$strong("bold text"))
+  })
+  expect_equal(spanExtended$name, "div")
+  expect_equal(spanExtended$children, obj$children)
+  expect_snapshot(as.character(spanExtended))
+
+  tagFuncExt <- tagAddRenderHook(obj, function(x) {
+    tagFunction(function() tagList(x, tags$p("test")) )
+  })
+  expect_equal(tagFuncExt$name, "div")
+  expect_equal(tagFuncExt$children, obj$children)
+  expect_snapshot(as.character(tagFuncExt))
+
+  # Add a new html dependency
+  newDep <- tagAddRenderHook(obj, function(x) {
+    fa <- htmlDependency(
+      "font-awesome", "4.5.0", c(href="shared/font-awesome"),
+      stylesheet = "css/font-awesome.min.css")
+    attachDependencies(x, fa, append = TRUE)
+  })
+  # Also add a jqueryui html dependency
+  htmlDependencies(newDep) <- htmlDependency(
+    "jqueryui", "1.11.4", c(href="shared/jqueryui"),
+    script = "jquery-ui.min.js")
+  expect_equal(newDep$name, "div")
+  expect_length(htmlDependencies(newDep), 1)
+  expect_snapshot(renderTags(newDep))
+
+  # Ignore the original tag and return something completely new.
+  newObj <- tagAddRenderHook(obj, function(x) {
+    tags$p("Something else")
+  })
+  expect_equal(newObj$name, "div")
+  expect_snapshot(as.character(newObj))
+})
