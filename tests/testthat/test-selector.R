@@ -19,9 +19,9 @@ makeTags <- function(text1, text2) {
 }
 
 test_that("error checks", {
-  expect_error(asSelector("div, span"), "comma")
-  expect_error(asSelector("div[foo]"), "`[`", fixed = TRUE)
-  expect_error(asSelector("div:text"), "pseudo classes")
+  expect_error(asSelector("div, span"), "contain `,`")
+  expect_error(asSelector("div[foo]"), "contain `[`", fixed = TRUE)
+  expect_error(asSelector("div:text"), "Pseudo CSS selectors")
 })
 
 
