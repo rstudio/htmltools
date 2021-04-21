@@ -74,7 +74,7 @@ specified.}
 
 \item{.renderHook}{A function (or list of functions) to call when the \code{tag} is rendered. This
 function should have at least one argument (the \code{tag}) and return anything
-that can be converted into tags via \code{\link[=as.tags]{as.tags()}}. Multiple hooks may also be
+that can be converted into tags via \code{\link[=as.tags]{as.tags()}}. Additional hooks may also be
 added to a particular \code{tag} via \code{\link[=tagAddRenderHook]{tagAddRenderHook()}}.}
 }
 \description{
