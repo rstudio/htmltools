@@ -494,16 +494,19 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   textWriter$write(concat8("<", tag$name))
 
   attribs <- flattenTagAttribs(tag$attribs)
-
-  # write attributes
-  for (attrib in names2(attribs)) {
+  attribNames <- names2(attribs)
+  if (any(attribNames == "")) {
     # Can not display attrib without a key
     if (attrib == "") {
       stop(
-        "An attribute value did not have a name.\n",
-        "Did you forget to name your attribute value?"
+        "A tag's attribute value did not have a name.\n",
+        "Did you forget to name all of your attribute values?"
       )
     }
+  }
+
+  # write attributes
+  for (attrib in attribNames) {
     attribValue <- attribs[[attrib]]
     if (!is.na(attribValue)) {
       if (is.logical(attribValue))
