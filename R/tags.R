@@ -1045,13 +1045,10 @@ withTags <- function(code) {
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
   rewriteTags(x, function(uiObj) {
-    if (isResolvedTag(uiObj) || isTagList(uiObj) || is.character(uiObj)) {
+    if (isResolvedTag(uiObj) || isTagList(uiObj) || is.character(uiObj))
       return(uiObj)
-    }
-
-    return(
+    else
       tagify(as.tags(uiObj))
-    )
   }, FALSE)
 }
 
