@@ -152,7 +152,7 @@ test_that("tagQuery()$find()", {
   x <- x$find("span")
   expect_length(x$selected(), 2)
   expect_equal_tags(
-    x$asTags(),
+    x$selected(),
     tagList(span("a"), span("b"))
   )
 
@@ -178,22 +178,22 @@ test_that("tagQuery()$find()", {
 
   x <- x$find("a > p")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$asTags(), p("text2"))
+  expect_equal_tags(x$selected(), tagList(p("text2")))
   x <- x$reset()
 
   x <- x$find("a > > p")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$asTags(), p("text1"))
+  expect_equal_tags(x$selected(), tagList(p("text1")))
   x <- x$reset()
 
   x <- x$find("div > *")
   expect_length(x$selected(), 2)
-  expect_equal_tags(x$asTags(), tagList(a(span(p("text1"))), a(p("text2"))))
+  expect_equal_tags(x$selected(), tagList(a(span(p("text1"))), a(p("text2"))))
   x <- x$reset()
 
   x <- x$find("div>>p")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$asTags(), p("text2"))
+  expect_equal_tags(x$selected(), tagList(p("text2")))
 })
 
 test_that("tagQuery()$filter()", {
@@ -216,7 +216,7 @@ test_that("tagQuery()$filter()", {
   })
   expect_length(x$selected(), 1)
 
-  expect_equal_tags(x$asTags(), span(4))
+  expect_equal_tags(x$selected(), tagList(span(4)))
 })
 
 test_that("tagQuery()$children() & tagQuery()$parent()", {
@@ -238,7 +238,7 @@ test_that("tagQuery()$children() & tagQuery()$parent()", {
   x <- x$children()
   expect_length(x$selected(), 4)
   expect_equal_tags(
-    x$asTags(),
+    x$selected(),
     tagList(
       span(class = "A", "1"),
       span(class = "B", "2"),
@@ -256,10 +256,10 @@ test_that("tagQuery()$children() & tagQuery()$parent()", {
   x <- x$parent()
   expect_length(x$selected(), 1)
   secondDiv <- div(class = "b", span(class = "C", "3"), span(class = "D", "4"))
-  expect_equal_tags(x$asTags(), secondDiv)
+  expect_equal_tags(x$selected(), tagList(secondDiv))
   x <- x$reset()$find("span")$parents(".b")
   expect_length(x$selected(), 1)
-  expect_equal_tags(x$asTags(), secondDiv)
+  expect_equal_tags(x$selected(), tagList(secondDiv))
 })
 
 
@@ -297,7 +297,7 @@ test_that("tagQuery()$parents() && tagQuery()$closest()", {
   expect_length(x$selected(), 3)
 
   expect_equal_tags(
-    x$asTags(),
+    x$selected(),
     tagList(
       xTags$children[[1]]$children[[1]],
       xTags$children[[1]],
@@ -309,8 +309,8 @@ test_that("tagQuery()$parents() && tagQuery()$closest()", {
   expect_length(x$selected(), 1)
 
   expect_equal_tags(
-    x$asTags(),
-    xTags
+    x$selected(),
+    tagList(xTags)
   )
 })
 
@@ -356,7 +356,7 @@ test_that("tagQuery()$addClass()", {
   x <- x$find("div.inner")$addClass("test-class")
   expect_length(x$selected(), 1)
 
-  expect_equal(x$asTags()$attribs$class, "inner test-class")
+  expect_equal(x$selected()[[1]]$attribs$class, "inner test-class")
 
 })
 
@@ -434,7 +434,7 @@ test_that("tagQuery()$append()", {
   newa <- span("a")
   x$append(newa)
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     div(span("child"), newa)
   )
 
@@ -443,7 +443,7 @@ test_that("tagQuery()$append()", {
   x$append(new1, new2)
 
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     div(span("child"), newa, new1, new2)
   )
 })
@@ -455,7 +455,7 @@ test_that("tagQuery()$prepend()", {
   newa <- span("a")
   x$prepend(newa)
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     div(newa, span("child"))
   )
 
@@ -464,7 +464,7 @@ test_that("tagQuery()$prepend()", {
   x$prepend(new1, new2)
 
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     div(new1, new2, newa, span("child"))
   )
 })
@@ -485,7 +485,7 @@ test_that("tagQuery()$each()", {
   })
 
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     div(span("A"), h1("title"), span("B"))
   )
 })
@@ -497,46 +497,20 @@ test_that("tagQuery()$root() & tagQuery()$rebuild()", {
   xTags <- div(span("a"), h1("title"), span("b"))
   x <- tagQuery(xTags)
 
-  # pull out root el
-  root <- x$root()
-  # add a child to the root
-  root$children[[length(root$children) + 1]] <- div("test")
-  # rebuild the root within the graph (which is the root var in the line above)
-  x$rebuild()
+  x$each(function(root, i) {
+    # add a child to the root
+    root$children[[length(root$children) + 1]] <- div("test")
+  })
 
   # retrieve the root (and direct children) from graph
   rootChildren <- x$root()$children
   lastChild <- rootChildren[[length(rootChildren)]]
 
   # make sure the last child is a tag env (not a standard tag)
-  expect_true(isTagEnv(lastChild))
+  expect_false(isTagEnv(lastChild))
   # make sure it equals what was manually added
-  expect_equal_tags(tagEnvToTags(lastChild), div("test"))
+  expect_equal_tags(lastChild, div("test"))
 })
-
-
-
-test_that("tagQuery()$root() & tagQuery()$rebuild()", {
-
-  xTags <- div(span("a"), span("b"), span("c"), span("d"), span("e"))
-  x <- tagQuery(xTags)
-
-  x <- x$find("span")
-
-  expect_error(x$get("a"))
-  expect_error(x$get(numeric(0)))
-  expect_error(x$get(-1))
-  expect_error(x$get(8))
-  expect_error(x$get(2), NA)
-
-  expect_equal_tags(
-    tagEnvToTags(x$get(4)),
-    span("d")
-  )
-})
-
-
-
 
 
 test_that("tagQuery()$remove()", {
@@ -555,7 +529,7 @@ test_that("tagQuery()$remove()", {
   expect_length(x$selected(), 0)
 
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     div(span("a"), span("c"), span("e"))
   )
 
@@ -563,7 +537,7 @@ test_that("tagQuery()$remove()", {
   expect_length(x$selected(), 3)
   x <- x$remove()
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     div()
   )
 })
@@ -576,7 +550,7 @@ test_that("tagQuery()$after()", {
   newa <- span("a")
   x$after(newa)
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     tagList(xTags, newa)
   )
 
@@ -585,7 +559,7 @@ test_that("tagQuery()$after()", {
   x$after(new1, new2)
 
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     tagList(xTags, new1, new2, newa)
   )
 })
@@ -597,7 +571,7 @@ test_that("tagQuery()$before()", {
   newa <- span("a")
   x$before(newa)
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     tagList(newa, xTags)
   )
 
@@ -606,13 +580,13 @@ test_that("tagQuery()$before()", {
   x$before(new1, new2)
 
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     tagList(newa, new1, new2, xTags)
   )
 })
 
 
-test_that("tagQuery(x)$asTags(selected = FALSE)", {
+test_that("tagQuery(x)$root()", {
 
   xTags <- tagList(
     fakeJqueryDep,
@@ -624,7 +598,7 @@ test_that("tagQuery(x)$asTags(selected = FALSE)", {
   x <- tagQuery(xTags)
 
   expect_equal_tags(
-    x$asTags(selected = FALSE),
+    x$root(),
     xTags
   )
 })
@@ -635,21 +609,28 @@ test_that("tagQuery() objects inherit from each other objects", {
   xTags <- div(span("text"))
   x <- tagQuery(xTags)$find("span")
   y <- tagQuery(x)
-  z <- tagQuery(x$get(1))
-  w <- tagQuery(x$selected())
+  zEnv <- NULL
+  wEnvs <- NULL
+  x$each(function(el, i) {
+    zEnv <<- el
+    wEnvs <<- append(wEnvs, list(el))
+  })
+  z <- tagQuery(zEnv)
+  w <- tagQuery(wEnvs)
+
   y$addClass("extra")
 
   expected <- div(span(class="extra", "text"))
 
-  expect_equal_tags(x$asTags(), expected$children[[1]])
-  expect_equal_tags(y$asTags(), expected$children[[1]])
-  expect_equal_tags(z$asTags(), expected$children[[1]])
-  expect_equal_tags(w$asTags(), expected$children[[1]])
+  expect_equal_tags(x$selected(), tagList(expected$children[[1]]))
+  expect_equal_tags(y$selected(), tagList(expected$children[[1]]))
+  expect_equal_tags(z$selected(), tagList(expected$children[[1]]))
+  expect_equal_tags(w$selected(), tagList(expected$children[[1]]))
 
-  expect_equal_tags(x$asTags(selected = FALSE), expected)
-  expect_equal_tags(y$asTags(selected = FALSE), expected)
-  expect_equal_tags(z$asTags(selected = FALSE), expected)
-  expect_equal_tags(w$asTags(selected = FALSE), expected)
+  expect_equal_tags(x$root(), expected)
+  expect_equal_tags(y$root(), expected)
+  expect_equal_tags(z$root(), expected)
+  expect_equal_tags(w$root(), expected)
 })
 
 
@@ -659,17 +640,27 @@ test_that("tagQuery() objects can not inherit from mixed objects", {
   x <- tagQuery(xTags)$find("span")
   y <- tagQuery(xTags)$find("span")
 
+  xEnv <- NULL
+  x$each(function(el, i) {
+    xEnv <<- el
+  })
+
+  yEnv <- NULL
+  y$each(function(el, i) {
+    yEnv <<- el
+  })
+
   expect_error(
     tagQuery(tagList(
       div(),
-      x$get(1)
+      xEnv
     )),
     "not be a mix"
   )
   expect_error(
     tagQuery(tagList(
-      x$get(1),
-      y$get(1)
+      xEnv,
+      yEnv
     )),
     "share the same root"
   )
