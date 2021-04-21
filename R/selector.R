@@ -30,21 +30,22 @@ asSelector <- function(selector) {
   selector <- txt_trim(paste0(selector, collapse = " "))
 
   if (txt_detect(selector, ",", fixed = TRUE)) {
-    stop("Currently, `asSelector()` can not handle comma separated CSS selector values")
+    stop("CSS selectors that contain `,` aren't (yet) implemented.", call. = FALSE)
   }
   if (txt_detect(selector, "[", fixed = TRUE)) {
-    stop("Currently, `asSelector()` can not handle `[` in CSS selector values")
+    stop("CSS selectors that contain `[` aren't (yet) implemented.", call. = FALSE)
   }
   if (txt_detect(selector, "~", fixed = TRUE)) {
-    stop("Currently, `asSelector()` can not handle `~` in CSS selector values")
+    stop("CSS selectors that contain `~` aren't (yet) implemented.", call. = FALSE)
   }
   if (txt_detect(selector, "+", fixed = TRUE)) {
-    stop("Currently, `asSelector()` can not handle `+` in CSS selector values")
+    stop("CSS selectors that contain `+` aren't (yet) implemented.", call. = FALSE)
   }
   if (txt_detect(selector, ":", fixed = TRUE)) {
     stop(
-      "Currently, `asSelector()` can not handle special pseudo classes like",
-      " `:first-child` or `:not()` in CSS selector values"
+      "Pseudo CSS selectors (e.g., `:first-child`, `:not()`, etc)",
+      "aren't (yet) implemented.",
+      call. = FALSE
     )
   }
 
