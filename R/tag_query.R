@@ -1038,7 +1038,7 @@ tagQueryPrint <- function(root, selected) {
   if (length(selected) == 0) {
     cat(" (Empty)\n")
   } else {
-    if (length(selected) == 1 && isRootTag(selected[[1]])) {
+    if (identical(root$children, selected)) {
       cat(" (Root)\n")
     } else {
       cat("\n")
