@@ -35,16 +35,16 @@ NULL
 ## Instead write them where they are needed since they are small.
 ## (Just like we don't wrap dplyr code)
 # tagAppendAttributesAt <- function(tag, cssSelector, ...) {
-#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$asTags(selected = FALSE)
+#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$root()
 # }
 # tagAddClassAt <- function(tag, cssSelector, class) {
-#   tagQuery(tag)$find(cssSelector)$addClass(class)$asTags(selected = FALSE)
+#   tagQuery(tag)$find(cssSelector)$addClass(class)$root()
 # }
 # tagMutateAt <- function(x, cssSelector, fn) {
-#   tagQuery(tag)$find(cssSelector)$each(fn)$asTags(selected = FALSE)
+#   tagQuery(tag)$find(cssSelector)$each(fn)$root()
 # }
 # tagFindAt <- function(x, css) {
-#   tagQuery(tag)$find(cssSelector)$asTags()
+#   tagQuery(tag)$find(cssSelector)$selected()
 # }
 
 
@@ -297,7 +297,7 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
 }
 
 # This method MUST undo everything done in `asTagEnv(x)`
-# Do not export to encourage direct use of `tagQuery()$asTags()`
+# Do not export to encourage direct use of `tagQuery()$selected()`
 # Only allow for tag environments to be passed in.
 tagEnvToTags <- function(x) {
   if (!isTagEnv(x)) {
@@ -376,15 +376,15 @@ print.htmltools.tag.query <- function(x, ...) {
 #' @export
 format.htmltools.tag.query <- function(x, ...) {
   stop(
-    "`format.htmltools.tag.query(x)` not allowed.\n",
-    "Please call `format()` the result of `$asTags()`"
+    "`tagQuery()` objects can not be written directly as HTML tags.\n",
+    "Call either `$root()` or `$selected()` to extract the tags of interest."
   )
 }
 #' @export
 as.character.htmltools.tag.query <- function(x, ...) {
   stop(
-    "`as.character.htmltools.tag.query(x)` not allowed.\n",
-    "Please call `as.character()` the result of `$asTags()`"
+    "`tagQuery()` objects can not be written directly as HTML tags.\n",
+    "Call either `$root()` or `$selected()` to extract the tags of interest."
   )
 }
 
@@ -737,40 +737,20 @@ tagQuery_ <- function(
           invisible(self)
         },
 
-        #' ## Tag Query methods
+        #' ## Extract HTML tags
         #'
-        #' * `$asTags(selected = TRUE)`: If `selected = TRUE`, then all
-        #' previously found elements (and their descendants) will be
-        #' converted to tags. If `selected = FALSE`, the top level tag
-        #' elements (and their descendants) will be converted to
-        #' standard tags. If there is more than one element being
-        #' returned, a `tagList()` will be used to hold all of the
-        #' objects.
-        asTags = function(selected = FALSE) {
-          rebuild_()
-          if (isTRUE(selected)) {
-            tagQuerySelectedAsTags(selected_)
-          } else {
-            tagQueryRootAsTags(root)
-          }
-        },
-        #' * `$root()`: Return all top level (root) tags environments. If there
-        #' are more than one, it will be returned within a `tagList()`. If there
-        #' is only one tag, it will be returned.
+        #' * `$root()`: Return the (possibly modified) root `tags` as a
+        #'   [tagList()] object.
         root = function() {
           rebuild_()
-          tagQueryGetRoot(root)
+          tagQueryRootAsTags(root)
         },
-        #' * `$selected()`: Returns a list of selected tag environments.
+        #' * `$selected()`: Converts the selected tag environments
+        #' to standard [`tag`] objects. The selected tags will be returned in a
+        #' [`tagList()`].
         selected = function() {
           rebuild_()
-          selected_
-        },
-        #' * `$get(position)`: Returns the selected tag element at the position
-        #' `position`.
-        get = function(position) {
-          rebuild_()
-          tagQueryGet(selected_, position)
+          tagQuerySelectedAsTags(selected_)
         },
         #' * `$rebuild()`: Makes sure that all tags have been upgraded to tag
         #' environments. Objects wrapped in `HTML()` will not be inspected or
@@ -895,13 +875,13 @@ tagQuerySelected <- function(selected) {
   }
 }
 
-# Return the `i`th position of the manually selected elements
-tagQueryGet <- function(selected, position) {
-  selected <- tagQuerySelected(selected)
-  validatePosition(position, selected)
+# # Return the `i`th position of the manually selected elements
+# tagQueryGet <- function(selected, position) {
+#   selected <- tagQuerySelected(selected)
+#   validatePosition(position, selected)
 
-  selected[[position]]
-}
+#   selected[[position]]
+# }
 
 # Return the top level tags as tags
 tagQueryRootAsTags <- function(root) {
@@ -909,12 +889,8 @@ tagQueryRootAsTags <- function(root) {
 }
 
 tagQuerySelectedAsTags <- function(selected) {
-  if (length(selected) == 1) {
-    tagEnvToTags(selected[[1]])
-  } else {
-    # return as tagList
-    do.call(tagList, lapply(selected, tagEnvToTags))
-  }
+  # return as tagList
+  do.call(tagList, lapply(selected, tagEnvToTags))
 }
 
 tagQueryPrint <- function(root, selected) {
@@ -931,9 +907,6 @@ tagQueryPrint <- function(root, selected) {
     } else {
       cat("\n")
       selectedTags <- tagQuerySelectedAsTags(selected)
-      if (!isTagList(selectedTags)) {
-        selectedTags <- tagList(selectedTags)
-      }
       # add separator
       walkI(selectedTags, function(selectedTag, i) {
         cat("[[", i, "]]\n", sep = "")

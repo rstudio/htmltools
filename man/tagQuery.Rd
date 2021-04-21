@@ -122,21 +122,13 @@ tag query object.
 }
 }
 
-\subsection{Tag Query methods}{
+\subsection{Extract HTML tags}{
 \itemize{
-\item \verb{$asTags(selected = TRUE)}: If \code{selected = TRUE}, then all
-previously found elements (and their descendants) will be
-converted to tags. If \code{selected = FALSE}, the top level tag
-elements (and their descendants) will be converted to
-standard tags. If there is more than one element being
-returned, a \code{tagList()} will be used to hold all of the
-objects.
-\item \verb{$root()}: Return all top level (root) tags environments. If there
-are more than one, it will be returned within a \code{tagList()}. If there
-is only one tag, it will be returned.
-\item \verb{$selected()}: Returns a list of selected tag environments.
-\item \verb{$get(position)}: Returns the selected tag element at the position
-\code{position}.
+\item \verb{$root()}: Return the (possibly modified) root \code{tags} as a
+\code{\link[=tagList]{tagList()}} object.
+\item \verb{$selected()}: Converts the selected tag environments
+to standard \code{\link{tag}} objects. The selected tags will be returned in a
+\code{\link[=tagList]{tagList()}}.
 \item \verb{$rebuild()}: Makes sure that all tags have been upgraded to tag
 environments. Objects wrapped in \code{HTML()} will not be inspected or
 altered. This method is internally called before each method executes
