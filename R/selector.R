@@ -29,24 +29,18 @@ asSelector <- function(selector) {
   # make sure it's a trimmed string
   selector <- txt_trim(paste0(selector, collapse = " "))
 
-  # yell if there is a comma
   if (txt_detect(selector, ",", fixed = TRUE)) {
     stop("Currently, `asSelector()` can not handle comma separated CSS selector values")
   }
-  # yell if there is a `[`
   if (txt_detect(selector, "[", fixed = TRUE)) {
     stop("Currently, `asSelector()` can not handle `[` in CSS selector values")
   }
-  # yell if there is a `[`
   if (txt_detect(selector, "~", fixed = TRUE)) {
     stop("Currently, `asSelector()` can not handle `~` in CSS selector values")
   }
-  # yell if there is a `[`
   if (txt_detect(selector, "+", fixed = TRUE)) {
     stop("Currently, `asSelector()` can not handle `+` in CSS selector values")
   }
-
-  # yell if there is a `:`
   if (txt_detect(selector, ":", fixed = TRUE)) {
     stop(
       "Currently, `asSelector()` can not handle special pseudo classes like",
