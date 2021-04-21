@@ -292,7 +292,11 @@ tagFunction <- function(func) {
 #' @export
 tagAppendAttributes <- function(tag, ...) {
   throw_if_tag_function(tag)
-  tag$attribs <- c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
+  newAttribs <- dropNullsOrEmpty(dots_list(...))
+  if (any(names2(newAttribs) == "")) {
+    warning("At least one of the new attribute values did not have a name. Did you forget to include an attribute name?")
+  }
+  tag$attribs <- c(tag$attribs, newAttribs)
   tag
 }
 
