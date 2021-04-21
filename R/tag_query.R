@@ -723,14 +723,14 @@ tagQuery_ <- function(
         addClass = function(class) {
           rebuild_()
           tagQueryClassAdd(selected_, class)
-          self
+          invisible(self)
         },
         #' * `$removeClass(class)`: Removes a set of class values from all of
         #' the selected elements.
         removeClass = function(class) {
           rebuild_()
           tagQueryClassRemove(selected_, class)
-          self
+          invisible(self)
         },
         #' * `$hasClass(class)`: Determine whether the selected elements have a
         #' given class. Returns a vector of logical values.
@@ -743,7 +743,7 @@ tagQuery_ <- function(
         toggleClass = function(class) {
           rebuild_()
           tagQueryClassToggle(selected_, class)
-          self
+          invisible(self)
         },
 
         #' * `$addAttrs(...)`: Add named attributes to all selected children.
@@ -752,21 +752,21 @@ tagQuery_ <- function(
           rebuild_()
           tagQueryAttrsAdd(selected_, ...)
           # no need to rebuild_(); already flattened in add attr function
-          self
+          invisible(self)
         },
         #' * `$removeAttrs(attrs)`: Removes the provided attributes in each of
         #' the selected elements.
         removeAttrs = function(attrs) {
           rebuild_()
           tagQueryAttrsRemove(selected_, attrs)
-          self
+          invisible(self)
         },
         #' * `$emptyAttrs()`: Removes all attributes in each of the selected
         #' elements.
         emptyAttrs = function() {
           rebuild_()
           tagQueryAttrsEmpty(selected_)
-          self
+          invisible(self)
         },
         #' * `$hasAttr(attr)`: Returns a vector whose values are whether the
         #' selected element contains the non-`NULL` attribute.
@@ -784,7 +784,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQueryChildrenAppend(selected_, ...)
           rebuild_()
-          self
+          invisible(self)
         },
         #' * `$prepend(...)`: Add all `...` objects as children **before** any
         #' existing children to the selected elements. A variation of
@@ -793,7 +793,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQueryChildrenPrepend(selected_, ...)
           rebuild_()
-          self
+          invisible(self)
         },
         #' * `$empty()`: Remove all children in the selected elements. Use this
         #' method before calling `$append(...)` to replace all selected
@@ -802,7 +802,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQueryChildrenEmpty(selected_)
           # no need to rebuild_
-          self
+          invisible(self)
         },
         ## end Adjust Children
 
@@ -814,7 +814,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQuerySiblingAfter(selected_, ...)
           rebuild_()
-          self
+          invisible(self)
         },
         #' * `$before(...)`: Add all `...` objects as siblings before each of
         #' the selected elements.
@@ -822,7 +822,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQuerySiblingBefore(selected_, ...)
           rebuild_()
-          self
+          invisible(self)
         },
         #' * `$replaceWith(...)`: Replace all selected elements with `...`. This
         #' also sets the selected elements to an empty set. A new `tagQuery()`
@@ -860,7 +860,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQueryEach(selected_, fn)
           rebuild_()
-          self
+          invisible(self)
         },
         ## end Generic Methods
 
@@ -906,7 +906,7 @@ tagQuery_ <- function(
         #' introduced into the tag structure.
         rebuild = function() {
           rebuild_()
-          self
+          invisible(self)
         },
         #' * `$print()`: Internal print method. Called by
         #' `print.htmltools.tag.query()`
