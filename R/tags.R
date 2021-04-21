@@ -294,7 +294,10 @@ tagAppendAttributes <- function(tag, ...) {
   throw_if_tag_function(tag)
   newAttribs <- dropNullsOrEmpty(dots_list(...))
   if (any(names2(newAttribs) == "")) {
-    warning("At least one of the new attribute values did not have a name. Did you forget to include an attribute name?")
+    stop(
+      "At least one of the new attribute values did not have a name.\n",
+      "Did you forget to include an attribute name?"
+    )
   }
   tag$attribs <- c(tag$attribs, newAttribs)
   tag
@@ -497,7 +500,12 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   # write attributes
   for (attrib in names(attribs)) {
     # Can not display attrib without a key
-    if (identical(attrib, "")) next
+    if (identical(attrib, "")) {
+      stop(
+        "An attribute value did not have a name.\n",
+        "Did you forget to name your attribute value?"
+      )
+    }
     attribValue <- attribs[[attrib]]
     if (!is.na(attribValue)) {
       if (is.logical(attribValue))
