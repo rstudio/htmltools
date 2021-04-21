@@ -598,6 +598,12 @@ tagQuery_ <- function(
           tagQueryClassRemove(selected_, class)
           invisible(self)
         },
+        #' * `$hasClass(class)`: Determine whether the selected elements have a
+        #' given class. Returns a vector of logical values.
+        hasClass = function(class) {
+          rebuild_()
+          tagQueryClassHas(selected_, class)
+        },
         #' * `$toggleClass(class)`: `[character()]`\cr If a given `class` element
         #' is missing, add it; otherwise, remove it.
         toggleClass = function(class) {
