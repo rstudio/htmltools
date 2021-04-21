@@ -293,7 +293,7 @@ tagFunction <- function(func) {
 tagAppendAttributes <- function(tag, ...) {
   throw_if_tag_function(tag)
   newAttribs <- dropNullsOrEmpty(dots_list(...))
-  if (any(names2(newAttribs) == "")) {
+  if (any(!nzchar(names2(newAttribs)))) {
     stop(
       "At least one of the new attribute values did not have a name.\n",
       "Did you forget to include an attribute name?"
