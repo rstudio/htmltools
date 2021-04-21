@@ -480,7 +480,7 @@ throw_if_tag_function <- function(tag) {
 #'   Any number of these options can be specified.
 #' @param .renderHook A function (or list of functions) to call when the `tag` is rendered. This
 #'   function should have at least one argument (the `tag`) and return anything
-#'   that can be converted into tags via [as.tags()]. Multiple hooks may also be
+#'   that can be converted into tags via [as.tags()]. Additional hooks may also be
 #'   added to a particular `tag` via [tagAddRenderHook()].
 #' @return An HTML tag object that can be rendered as HTML using
 #'   [as.character()].
