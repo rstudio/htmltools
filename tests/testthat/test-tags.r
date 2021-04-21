@@ -412,7 +412,7 @@ test_that("Adding unnamed attributes creates a warning", {
   x$attribs[[1]] <- "value"
   expect_error(
     print(x),
-    "name your attribute value"
+    "name all of your attribute values"
   )
 })
 

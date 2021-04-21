@@ -495,14 +495,12 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   attribs <- flattenTagAttribs(tag$attribs)
   attribNames <- names2(attribs)
-  if (any(attribNames == "")) {
+  if (any(!nzchar(attribNames))) {
     # Can not display attrib without a key
-    if (attrib == "") {
-      stop(
-        "A tag's attribute value did not have a name.\n",
-        "Did you forget to name all of your attribute values?"
-      )
-    }
+    stop(
+      "A tag's attribute value did not have a name.\n",
+      "Did you forget to name all of your attribute values?"
+    )
   }
 
   # write attributes
