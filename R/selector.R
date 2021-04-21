@@ -31,16 +31,27 @@ asSelector <- function(selector) {
 
   # yell if there is a comma
   if (txt_detect(selector, ",", fixed = TRUE)) {
-    stop("Do not know how to handle comma separated selector values")
+    stop("Currently, `asSelector()` can not handle comma separated CSS selector values")
   }
   # yell if there is a `[`
   if (txt_detect(selector, "[", fixed = TRUE)) {
-    stop("Do not know how to handle `[` in selector values")
+    stop("Currently, `asSelector()` can not handle `[` in CSS selector values")
+  }
+  # yell if there is a `[`
+  if (txt_detect(selector, "~", fixed = TRUE)) {
+    stop("Currently, `asSelector()` can not handle `~` in CSS selector values")
+  }
+  # yell if there is a `[`
+  if (txt_detect(selector, "+", fixed = TRUE)) {
+    stop("Currently, `asSelector()` can not handle `+` in CSS selector values")
   }
 
   # yell if there is a `:`
   if (txt_detect(selector, ":", fixed = TRUE)) {
-    stop("Do not know how to handle special pseudo classes like `:first-child` or `:not()` in selector values")
+    stop(
+      "Currently, `asSelector()` can not handle special pseudo classes like",
+      " `:first-child` or `:not()` in CSS selector values"
+    )
   }
 
   # if it contains multiple elements, recurse
