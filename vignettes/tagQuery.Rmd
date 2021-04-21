@@ -19,9 +19,9 @@ library(htmltools)
 tagQuery(div(a()))
 ```
 
-Notice how `tagQuery()` tracks two essential pieces: the _root_ (i.e., input) tag as well as a set of _selected_ tags (by default the root is selected). This data structure allows us to [efficiently](#performance) [find](#query), and [modify](#modify) particular fragments of the root HTML tag.
+Notice how `tagQuery()` tracks two essential pieces: the _root_ (i.e., input) tag as well as a set of _selected_ tags (by default the root is selected). This data structure allows us to [efficiently](#performance) [query](#query) and [modify](#modify) particular fragments of the root HTML tag.
 
-Since `tagQuery()` isn't itself a `tag()` object, it can't be directly to `tag()` or tag rendering functions, but at any given time you can extract the `$root()` or `$selected()` tags.
+Since `tagQuery()` isn't itself a `tag()` object, it can't be passed directly to `tag()` or tag rendering functions, but at any given time you can extract the `$root()` or `$selected()` tags.
 
 ## Query {#query}
 
@@ -32,9 +32,9 @@ Since `tagQuery()` isn't itself a `tag()` object, it can't be directly to `tag()
 To begin querying tags, start with either `$find()` or `$children()`. The former traverses _all_ descendants whereas the latter only considers _direct_ descendants.
 
 ```{r}
-tagQ <- tagQuery(div(a(), div(a())))
-tagQ$find("a")$selected()
-tagQ$children("a")$selected()
+tagQ <- tagQuery(div(span("foo"), div(span("bar"))))
+tagQ$find("span")$selected()
+tagQ$children("span")$selected()
 ```
 
 And since `$find()` considers all descendants, it allows for [descendant selectors](https://www.w3.org/TR/CSS22/selector.html#descendant-selectors) (space) and direct [child selectors](https://www.w3.org/TR/CSS22/selector.html#child-selectors) (>).
@@ -43,17 +43,18 @@ And since `$find()` considers all descendants, it allows for [descendant selecto
 tagQ <- tagQuery(div(div(span(a()))))
 tagQ$find("div a")$selected()
 tagQ$find("div > a")$selected()
+tagQ$find("div > span > a")$selected()
 ```
 
-Since `tagQuery()` methods may be chained together, you could also implement `tagQ$find("div > a")` as:
+Since `tagQuery()` methods may be chained together, you could also implement  `tagQ$find("div > span > a")` as:
 
 ```{r}
-tagQ$find("div")$children("a")$selected()
+tagQ$find("div")$children("span")$children("a")$selected()
 ```
 
 ### Siblings
 
-Although `tagQuery()` doesn't support [sibling selectors](https://www.w3schools.com/css/css_combinators.asp) (`+` and `~`), it does provide a `$sibling()` method, which provides essentially the same functionality:
+Although `tagQuery()` doesn't (currently) support [sibling selectors](https://www.w3schools.com/css/css_combinators.asp) (`+` and `~`), it does provide a `$sibling()` method, which provides essentially the same functionality:
 
 ```{r}
 tagQ <- tagQuery(div(a(), span(), p()))
@@ -63,7 +64,7 @@ tagQ$find("a")$siblings("span")$selected()
 
 ### Parents
 
-In some cases, after querying descendants, it can be useful to traverse back up the tag tree to find particular ancestors of a selection. Similar to the difference in `$find()` and `$children()`, `$parents()` traverses _all_ ancestors whereas `$parent()` considers just _direct_ ancestors.
+In some cases, after finding children, it can be useful to traverse back up the tag tree to find particular ancestors of a selection. Similar to the difference in `$find()` and `$children()`, `$parents()` traverses _all_ ancestors whereas `$parent()` considers just _direct_ ancestors.
 
 ```{r}
 tagQ <- tagQuery(
@@ -80,7 +81,7 @@ tagQ$find("a.foo")$parents()$selected()
 
 ### Filter
 
-The `$filter()` method can be used to subset selected tags using an R function or CSS selector. This provides a particularly useful workaround for the fact that `tagQuery()` doesn't currently support [attribute selectors](https://www.w3.org/TR/CSS22/selector.html#attribute-selectors).
+The `$filter()` method can be used to subset selected tags using an R function or CSS selector. When combined with the universal selector (`*`), `$filter()` is particularly useful as a workaround for the fact that `tagQuery()` doesn't fully support the entire CSS selector specification. For example, here's a workaround for `tagQuery()`'s currenty lack of support for [attribute selectors](https://www.w3.org/TR/CSS22/selector.html#attribute-selectors):
 
 ```{r}
 tagQ <- tagQuery(div(div(), div("data-foo" = "bar")))
