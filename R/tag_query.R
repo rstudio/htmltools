@@ -376,15 +376,15 @@ print.htmltools.tag.query <- function(x, ...) {
 #' @export
 format.htmltools.tag.query <- function(x, ...) {
   stop(
-    "`format.htmltools.tag.query(x)` not allowed.\n",
-    "Please call `format()` the result of `$selected()`"
+    "`tagQuery()` objects can not be written directly as HTML tags.\n",
+    "Call either `$root()` or `$selected()` to extract the tags of interest."
   )
 }
 #' @export
 as.character.htmltools.tag.query <- function(x, ...) {
   stop(
-    "`as.character.htmltools.tag.query(x)` not allowed.\n",
-    "Please call `as.character()` the result of `$selected()`"
+    "`tagQuery()` objects can not be written directly as HTML tags.\n",
+    "Call either `$root()` or `$selected()` to extract the tags of interest."
   )
 }
 
