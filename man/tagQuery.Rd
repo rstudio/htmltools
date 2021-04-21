@@ -7,9 +7,7 @@
 tagQuery(tags)
 }
 \arguments{
-\item{tags}{Any standard tag object or \code{tagList()}. If a \code{list()} or
-\code{tagList()} is provided, a \code{tagList()} will be returned when calling
-\verb{$selected()}.}
+\item{tags}{Any standard tag object or \code{tagList()}.}
 }
 \value{
 A \code{tagQuery()} object. The \code{tag} supplied will be considered the
@@ -247,11 +245,10 @@ tag query object.
 
 \subsection{Tag Query methods}{
 \itemize{
-\item \verb{$root()}: Converts the top level tag
+\item \verb{$root()}: Converts the top level (root) tag
 elements (and their descendants) from tag environments to
-standard \code{\link{tag}} objects. If there is more than one element being
-returned, a \code{\link[=tagList]{tagList()}} will be used to hold all of the
-tags.
+standard \code{\link{tag}} objects. All root tags will be returned in a
+\code{\link[=tagList]{tagList()}}.
 \item \verb{$selected()}: Converts the selected tag environments
 to standard \code{\link{tag}} objects. The selected tags will be returned in a
 \code{\link[=tagList]{tagList()}}.

@@ -339,6 +339,21 @@ assertNotTagEnvLike <- function(x, fnName) {
 }
 
 
+# Shim in a class so that the print method of tagList() is not used
+# Yet knit print methods will work as if they are tagList objects.
+visibleTagList <- function(...) {
+  y <- tagList(...)
+  oldClass(y) <- c("htmltools.tag.list.visible", oldClass(y))
+  y
+}
+
+#' @export
+print.htmltools.tag.list.visible <- function(x, ...) {
+  class(x) <- setdiff(class(x), c("htmltools.tag.list.visible", "shiny.tag.list"))
+  print(x)
+}
+
+
 shinyTagEnvStr <- "<!-- htmltools.tag.env -->"
 
 #' @export
@@ -490,9 +505,7 @@ as.character.htmltools.tag.query <- function(x, ...) {
 #'   An error should be thrown. Instead, please call `$selected()` to retrieve the
 #'   tag structures of the selected tag elements or root element respectively.
 #'
-#' @param tags Any standard tag object or `tagList()`. If a `list()` or
-#'   `tagList()` is provided, a `tagList()` will be returned when calling
-#'   `$selected()`.
+#' @param tags Any standard tag object or `tagList()`.
 #' @return A `tagQuery()` object. The `tag` supplied will be considered the
 #'   `root` object. At the time of initialization, the `root` is also considered
 #'   the single selected item. If any selections are made, the selected elements
@@ -866,11 +879,10 @@ tagQuery_ <- function(
 
         #' ## Tag Query methods
         #'
-        #' * `$root()`: Converts the top level tag
+        #' * `$root()`: Converts the top level (root) tag
         #' elements (and their descendants) from tag environments to
-        #' standard [`tag`] objects. If there is more than one element being
-        #' returned, a [`tagList()`] will be used to hold all of the
-        #' tags.
+        #' standard [`tag`] objects. All root tags will be returned in a
+        #' [`tagList()`].
         root = function() {
           rebuild_()
           tagQueryRootAsTags(root)
@@ -985,16 +997,10 @@ wrapWithRootTag <- function(x) {
 # Return a tag env, tagList(tag envs), or NULL
 tagQueryGetRoot <- function(root) {
   children <- root$children
-  len <- length(children)
-  if (len == 1) {
-    children[[1]]
-  } else if (len > 1) {
-    do.call(tagList, children)
-  } else {
-    # no children?
-    NULL
-  }
+  do.call(visibleTagList, children)
 }
+
+
 
 # Return a list of the manually selected elements
 tagQuerySelected <- function(selected) {
@@ -1020,7 +1026,7 @@ tagQueryRootAsTags <- function(root) {
 
 tagQuerySelectedAsTags <- function(selected) {
   # return as tagList
-  do.call(tagList, lapply(selected, tagEnvToTags))
+  do.call(visibleTagList, lapply(selected, tagEnvToTags))
 }
 
 tagQueryPrint <- function(root, selected) {
