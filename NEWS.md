@@ -8,7 +8,7 @@
 
 * Closed #197: Fixed rendering of boolean attributes in <script> tags rendered via renderDependencies() (#197, thanks @atusy).
 
-* Unnamed attributes are no longer allowed to be appended via `tagAppendAttribs()`. When trying to print unnamed tag attribs, a better error message is provided. (#229)
+* Closed #222; Unnamed attributes are no longer allowed to be appended via `tagAppendAttribs()`. When trying to print unnamed tag attribs, a better error message is provided. (#229)
 
 
 # htmltools 0.5.1.1
