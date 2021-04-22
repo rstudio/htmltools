@@ -732,18 +732,18 @@ tagQuery_ <- function(
           tagQueryClassRemove(selected_, class)
           invisible(self)
         },
+        #' * `$hasClass(class)`: Determine whether the selected elements have a
+        #' given class. Returns a vector of logical values.
+        hasClass = function(class) {
+          rebuild_()
+          tagQueryClassHas(selected_, class)
+        },
         #' * `$toggleClass(class)`: If the a class value is missing, add it. If
         #' a  class value already exists, remove it.
         toggleClass = function(class) {
           rebuild_()
           tagQueryClassToggle(selected_, class)
           invisible(self)
-        },
-        #' * `$hasClass(class)`: Determine whether the selected elements have a
-        #' given class. Returns a vector of logical values.
-        hasClass = function(class) {
-          rebuild_()
-          tagQueryClassHas(selected_, class)
         },
 
         #' * `$addAttrs(...)`: Add named attributes to all selected children.

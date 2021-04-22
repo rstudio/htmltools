@@ -186,10 +186,10 @@ selected items set to the top level tag objects.
 elements.
 \item \verb{$removeClass(class)}: Removes a set of class values from all of
 the selected elements.
-\item \verb{$toggleClass(class)}: If the a class value is missing, add it. If
-a  class value already exists, remove it.
 \item \verb{$hasClass(class)}: Determine whether the selected elements have a
 given class. Returns a vector of logical values.
+\item \verb{$toggleClass(class)}: If the a class value is missing, add it. If
+a  class value already exists, remove it.
 \item \verb{$addAttrs(...)}: Add named attributes to all selected children.
 Similar to \code{\link[=tagAppendAttributes]{tagAppendAttributes()}}.
 \item \verb{$removeAttrs(attrs)}: Removes the provided attributes in each of
