@@ -1237,7 +1237,7 @@ tagQueryAttrsRemove <- function(els, attrs) {
     if (!isTagEnv(el)) return()
     # Alter in place
     # Remove locations that have a matching name
-    el$attribs[names(el$attribs) %in% attrs] <- NULL
+    el$attribs[names2(el$attribs) %in% attrs] <- NULL
   })
 }
 # Remove attribute values
