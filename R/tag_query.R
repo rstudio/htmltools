@@ -558,10 +558,7 @@ tagQuery_ <- function(
     asTagEnv(root)
   }
 
-  newTagQuery <- function(selected, rebuild = FALSE) {
-    if (rebuild) {
-      rebuild_()
-    }
+  newTagQuery <- function(selected) {
     tagQuery_(root, selected)
   }
 
@@ -619,8 +616,6 @@ tagQuery_ <- function(
         #' with the matching set of tag environments. A new `tagQuery()` object
         #' will be created with the selected items set to the found elements.
         find = function(cssSelector) {
-          rebuild_()
-
           newTagQuery(
             tagQueryFindAll(selected_, cssSelector)
           )
@@ -632,7 +627,6 @@ tagQuery_ <- function(
         #' object will be created with the selected items set to the children
         #' elements.
         children = function(cssSelector = NULL) {
-          rebuild_()
           newTagQuery(
             tagQueryFindChildren(selected_, cssSelector)
           )
@@ -644,7 +638,6 @@ tagQuery_ <- function(
         #' object will be created with the selected items set to the parent
         #' elements.
         parent = function(cssSelector = NULL) {
-          rebuild_()
           newTagQuery(
             tagQueryFindParent(selected_, cssSelector)
           )
@@ -656,7 +649,6 @@ tagQuery_ <- function(
         #' object will be created with the selected items set to the ancestor
         #' elements.
         parents = function(cssSelector = NULL) {
-          rebuild_()
           newTagQuery(
             tagQueryFindParents(selected_, cssSelector)
           )
@@ -667,7 +659,6 @@ tagQuery_ <- function(
         #' equivalent to calling `$selected()`. A new `tagQuery()` object will be
         #' created with the selected items set to the closest matching elements.
         closest = function(cssSelector = NULL) {
-          rebuild_()
           newTagQuery(
             tagQueryFindClosest(selected_, cssSelector)
           )
@@ -678,7 +669,6 @@ tagQuery_ <- function(
         #' new `tagQuery()` object will be created with the selected items set
         #' to the sibling elements.
         siblings = function(cssSelector = NULL) {
-          rebuild_()
           newTagQuery(
             tagQueryFindSiblings(selected_, cssSelector)
           )
@@ -688,18 +678,17 @@ tagQuery_ <- function(
         #' selector, then the selected elements will be filtered if they match
         #' the single-element CSS selector. A new `tagQuery()` object will be
         #' created with the selected items set to the filtered selected
-        #' elements.
+        #' elements. Remember, any alterations to the provided tag environments will persist
+        #' in calling tag query object. If you need to make local changes, consider
+        #' using `tagQuery(el)$selected()` to use standard tag objects.
         filter = function(fn) {
+          newSelected <- tagQueryFindFilter(selected_, fn)
           rebuild_()
-          newTagQuery(
-            tagQueryFindFilter(selected_, fn),
-            rebuild = TRUE
-          )
+          newTagQuery(newSelected)
         },
         #' * `$reset()`: A new `tagQuery()` object will be created with the
         #' selected items set to the top level tag objects.
         reset = function() {
-          rebuild_()
           newTagQuery(
             tagQueryFindReset(root)
           )
@@ -712,27 +701,23 @@ tagQuery_ <- function(
         #' * `$addClass(class)`: Apps class(es) to each of the the selected
         #' elements.
         addClass = function(class) {
-          rebuild_()
           tagQueryClassAdd(selected_, class)
           invisible(self)
         },
         #' * `$removeClass(class)`: Removes a set of class values from all of
         #' the selected elements.
         removeClass = function(class) {
-          rebuild_()
           tagQueryClassRemove(selected_, class)
           invisible(self)
         },
         #' * `$hasClass(class)`: Determine whether the selected elements have a
         #' given class. Returns a vector of logical values.
         hasClass = function(class) {
-          rebuild_()
           tagQueryClassHas(selected_, class)
         },
         #' * `$toggleClass(class)`: If the a class value is missing, add it. If
         #' a  class value already exists, remove it.
         toggleClass = function(class) {
-          rebuild_()
           tagQueryClassToggle(selected_, class)
           invisible(self)
         },
@@ -740,29 +725,24 @@ tagQuery_ <- function(
         #' * `$addAttrs(...)`: Add named attributes to all selected children.
         #' Similar to [`tagAppendAttributes()`].
         addAttrs = function(...) {
-          rebuild_()
           tagQueryAttrsAdd(selected_, ...)
-          # no need to rebuild_(); already flattened in add attr function
           invisible(self)
         },
         #' * `$removeAttrs(attrs)`: Removes the provided attributes in each of
         #' the selected elements.
         removeAttrs = function(attrs) {
-          rebuild_()
           tagQueryAttrsRemove(selected_, attrs)
           invisible(self)
         },
         #' * `$emptyAttrs()`: Removes all attributes in each of the selected
         #' elements.
         emptyAttrs = function() {
-          rebuild_()
           tagQueryAttrsEmpty(selected_)
           invisible(self)
         },
         #' * `$hasAttr(attr)`: Returns a vector whose values are whether the
         #' selected element contains the non-`NULL` attribute.
         hasAttr = function(attr) {
-          rebuild_()
           tagQueryAttrHas(selected_, attr)
         },
 
@@ -772,27 +752,21 @@ tagQuery_ <- function(
         #' existing children to the selected elements. Similar to
         #' [`tagAppendChildren()`]
         append = function(...) {
-          rebuild_()
           tagQueryChildrenAppend(selected_, ...)
-          rebuild_()
           invisible(self)
         },
         #' * `$prepend(...)`: Add all `...` objects as children **before** any
         #' existing children to the selected elements. A variation of
         #' [`tagAppendChildren()`]
         prepend = function(...) {
-          rebuild_()
           tagQueryChildrenPrepend(selected_, ...)
-          rebuild_()
           invisible(self)
         },
         #' * `$empty()`: Remove all children in the selected elements. Use this
         #' method before calling `$append(...)` to replace all selected
         #' elements' children.
         empty = function() {
-          rebuild_()
           tagQueryChildrenEmpty(selected_)
-          # no need to rebuild_
           invisible(self)
         },
         ## end Adjust Children
@@ -802,36 +776,30 @@ tagQuery_ <- function(
         #' * `$after(...)`: Add all `...` objects as siblings after each of the
         #' selected elements.
         after = function(...) {
-          rebuild_()
           tagQuerySiblingAfter(selected_, ...)
-          # rebuild_() # rebuild done within method
           invisible(self)
         },
         #' * `$before(...)`: Add all `...` objects as siblings before each of
         #' the selected elements.
         before = function(...) {
-          rebuild_()
           tagQuerySiblingBefore(selected_, ...)
-          # rebuild_() # rebuild done within method
           invisible(self)
         },
         #' * `$replaceWith(...)`: Replace all selected elements with `...`. This
         #' also sets the selected elements to an empty set. A new `tagQuery()`
         #' object will be created with an empty set of selected elements.
         replaceWith = function(...) {
-          rebuild_()
           tagQuerySiblingReplaceWith(selected_, ...)
-          newTagQuery(list(), rebuild = FALSE) # rebuild done within method
+          newTagQuery(list())
         },
         #' * `$remove(...)`: Remove all selected elements from the `tagQuery()`
         #' object. The selected elements is set to an empty set. A new
         #' `tagQuery()` object will be created with an empty set of selected
         #' elements.
         remove = function() {
-          rebuild_()
           tagQuerySiblingRemove(selected_)
           # Remove items from selected info
-          newTagQuery(list(), rebuild = FALSE) # no rebuild necessary
+          newTagQuery(list())
         },
         ## end Adjust Siblings
 
@@ -844,12 +812,13 @@ tagQuery_ <- function(
         #' argument order is different than jQuery's `$().each()` as there is no
         #' concept of a `this` object inside the function execution. To stay
         #' consistent with other methods, the each of the selected tag
-        #' environments will be given first, followed by the index position. Any
-        #' alterations to the provided tag environments will persist in calling
-        #' tag query object.
+        #' environments will be given first, followed by the index position.
+        #' Remember, any alterations to the provided tag environments will persist
+        #' in calling tag query object. If you need to make local changes, consider
+        #' using `tagQuery(el)$selected()` to use standard tag objects.
         each = function(fn) {
-          rebuild_()
           tagQueryEach(selected_, fn)
+          # MUST rebuild full tree as anything could have been done to the tag envs
           rebuild_()
           invisible(self)
         },
@@ -863,14 +832,12 @@ tagQuery_ <- function(
         #' returned, a [`tagList()`] will be used to hold all of the
         #' tags.
         root = function() {
-          rebuild_()
           tagQueryRootAsTags(root)
         },
         #' * `$selected()`: Converts the selected tag environments
         #' to standard [`tag`] objects. The selected tags will be returned in a
         #' [`tagList()`].
         selected = function() {
-          rebuild_()
           tagQuerySelectedAsTags(selected_)
         },
         #' * `$rebuild()`: Makes sure that all tags have been upgraded to tag
@@ -879,13 +846,11 @@ tagQuery_ <- function(
         #' and after any alterations where standard tag objects could be
         #' introduced into the tag structure.
         rebuild = function() {
-          rebuild_()
           invisible(self)
         },
         #' * `$print()`: Internal print method. Called by
         #' `print.htmltools.tag.query()`
         print = function() {
-          rebuild_()
           # Allows `$print()` to know if there is a root el
           tagQueryPrint(root, selected_)
           invisible(self)
@@ -1111,7 +1076,8 @@ selectedWalkGen <- function(func) {
         if (isTag(el) && !isTagEnv(el)) {
           str(el)
           stop(
-            "Object in position `", i, "` is a regular `tag()` and not a tag environment"
+            "Object in position `", i, "` is a regular `tag()` and not a tag environment.",
+            "\nDid you forget to call `$rebuild()`?"
           )
         }
       }
@@ -1148,6 +1114,9 @@ tagQueryMatchChildRev <- function(els, func) {
       childKey <- child$envKey
       if (elKey == childKey) {
         func(elParent, el, childPos)
+        # Make sure to rebuild the parent tag into tag envs
+        # Their internal structures will have changed
+        asTagEnv(elParent)
       }
     })
   })
@@ -1165,16 +1134,12 @@ tagQuerySiblingRemove <- function(els) {
 tagQuerySiblingAfter <- function(els, ...) {
   tagQueryMatchChildRev(els, function(elParent, el, childPos) {
     tagInsertChildren(elParent, after = childPos, ...)
-    # Make sure to rebuild the parent tag into tag envs
-    asTagEnv(elParent)
   })
 }
 # Add siblings before each el
 tagQuerySiblingBefore <- function(els, ...) {
   tagQueryMatchChildRev(els, function(elParent, el, childPos) {
     tagInsertChildren(elParent, after = childPos - 1, ...)
-    # Make sure to rebuild the parent tag into tag envs
-    asTagEnv(elParent)
   })
 }
 # Replace all `el` objects with `...`
@@ -1185,27 +1150,29 @@ tagQuerySiblingReplaceWith <- function(els, ...) {
     elParent$children[[childPos]] <- NULL
     # Replace with ... content where the child was
     tagInsertChildren(elParent, after = childPos - 1, ...)
-    # Make sure to rebuild the parent tag into tag envs
-    asTagEnv(elParent)
   })
 }
 
 
-tagQuerySetChildren <- function(els, ...) {
+tagQueryChildrenSet <- function(els, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
     tagSetChildren(el, ...)
+    # Make sure to rebuild the el and its children
+    asTagEnv(el)
   })
 }
 tagQueryChildrenEmpty <- function(els) {
   # do not include any arguments.
   # `dots_list()` returns an empty named list()
-  tagQuerySetChildren(els)
+  tagQueryChildrenSet(els)
 }
 tagQueryChildrenAppend <- function(els, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
     tagInsertChildren(el, after = length(el$children), ...)
+    # Make sure to rebuild the el and its children
+    asTagEnv(el)
   })
 }
 tagQueryChildrenPrepend <- function(els, ...) {
@@ -1215,6 +1182,8 @@ tagQueryChildrenInsert <- function(els, after, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
     tagInsertChildren(el, after = after, ...)
+    # Make sure to rebuild the el and its children
+    asTagEnv(el)
   })
 }
 
