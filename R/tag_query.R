@@ -521,7 +521,7 @@ tagQuery <- function(tags) {
   # Make a new tag query object from the root element of `tags`
   # * Set the selected to `list(tags)`
   if (isTagEnv(tags)) {
-    return(tagQuery_(findRootTag(tags), list(tags)))
+    return(tagQuery_(findPseudoRootTag(tags), list(tags)))
   }
 
   # If `tags` is a list of tagEnvs...
@@ -540,7 +540,7 @@ tagQuery <- function(tags) {
       }
       rootStack <- envirStackUnique()
       walk(tags, function(el) {
-        rootStack$push(findRootTag(el))
+        rootStack$push(findPseudoRootTag(el))
       })
       roots <- rootStack$uniqueList()
       if (length(roots) != 1) {
@@ -554,7 +554,7 @@ tagQuery <- function(tags) {
 
   # Convert standard tags to tag envs
   tags <- asTagEnv(
-    wrapWithRootTag(tags)
+    wrapWithPseudoRootTag(tags)
   )
   # Select the top level tags
   selected <- tagQueryFindReset(tags)
@@ -565,26 +565,26 @@ tagQuery <- function(tags) {
 #' @aliases NULL
 #' @usage NULL
 tagQuery_ <- function(
-  root,
+  pseudoRoot,
   # Using a trailing `_` to avoid name collisions
   selected_
 ) {
-  if (!isRootTag(root)) {
-    stop("`tagQuery_(root=)` must be a root tag environment")
+  if (!isPseudoRootTag(pseudoRoot)) {
+    stop("`tagQuery_(pseudoRoot=)` must be a pseudoRoot tag environment")
   }
 
   # Use `var_` names to avoid namespace collision
   # Make sure all elements are tag envs
   rebuild_ <- function() {
-    # safe to do as `root` will never be turned into a standard list
-    asTagEnv(root)
+    # safe to do as `pseudoRoot` will never be turned into a standard list
+    asTagEnv(pseudoRoot)
   }
 
   newTagQuery <- function(selected, rebuild = FALSE) {
     if (rebuild) {
       rebuild_()
     }
-    tagQuery_(root, selected)
+    tagQuery_(pseudoRoot, selected)
   }
 
   setSelected <- function(selected) {
@@ -599,7 +599,7 @@ tagQuery_ <- function(
           " that was not a tag environment"
         )
       }
-      !isRootTag(el)
+      !isPseudoRootTag(el)
     })
     selected
   }
@@ -723,7 +723,7 @@ tagQuery_ <- function(
         reset = function() {
           rebuild_()
           newTagQuery(
-            tagQueryFindReset(root)
+            tagQueryFindReset(pseudoRoot)
           )
         },
         ## end Find
@@ -885,7 +885,7 @@ tagQuery_ <- function(
         #' [`tagList()`].
         root = function() {
           rebuild_()
-          tagQueryRootAsTags(root)
+          tagQueryTopLevelTags(pseudoRoot)
         },
         #' * `$selected()`: Converts the selected tag environments
         #' to standard [`tag`] objects. The selected tags will be returned in a
@@ -908,7 +908,7 @@ tagQuery_ <- function(
         print = function() {
           rebuild_()
           # Allows `$print()` to know if there is a root el
-          tagQueryPrint(root, selected_)
+          tagQueryPrint(pseudoRoot, selected_)
           invisible(self)
         }
       )
@@ -950,12 +950,12 @@ validateFnCanIterate <- function(fn) {
   }
 }
 
-isRootTag <- function(x) {
+isPseudoRootTag <- function(x) {
   name <- x$name
-  isTag(x) && !is.null(name) && isTRUE(name == "tagQuery")
+  isTag(x) && !is.null(name) && isTRUE(name == "TagQueryPseudoRoot")
 }
 
-findRootTag <- function(el) {
+findPseudoRootTag <- function(el) {
   while (!is.null(el$parent)) {
     el <- el$parent
   }
@@ -965,46 +965,37 @@ findRootTag <- function(el) {
 # Wrap the top level tags in the tagQuery() in a `tagQuery` tag object.
 # This allows for appending and prepending elements to the top level tags.
 # (Don't fight the structures... embrace them!)
-wrapWithRootTag <- function(x) {
+wrapWithPseudoRootTag <- function(x) {
   if (isTagQuery(x)) {
     x <- x$root()
   }
   x <- flattenTagsRaw(x %||% list())
 
-  root <- tag("tagQuery", list())
+  pseudoRoot <- tag("TagQueryPseudoRoot", list())
 
   if (!is.null(x)) {
-    root <- tagSetChildren(root, x)
+    pseudoRoot <- tagSetChildren(pseudoRoot, x)
   }
-  root$children <- flattenTagsRaw(root$children)
+  pseudoRoot$children <- flattenTagsRaw(pseudoRoot$children)
   isTagOrTagEnv <- vapply(
-    root$children,
+    pseudoRoot$children,
     function(child) {
       isTag(child) || isTagEnv(child)
     },
     logical(1)
   )
   if (
-    (!is.list(root$children)) ||
+    (!is.list(pseudoRoot$children)) ||
     (sum(isTagOrTagEnv) == 0)
   ) {
     stop("The initial set of tags must have at least 1 standard tag object. Ex: `div()`")
   }
-  root
+  pseudoRoot
 }
-
-
-# Return a tag env, tagList(tag envs), or NULL
-tagQueryGetRoot <- function(root) {
-  children <- root$children
-  do.call(visibleTagList, children)
-}
-
-
 
 # Return a list of the manually selected elements
 tagQuerySelected <- function(selected) {
-  if (length(selected) == 1 && isRootTag(selected[[1]])) {
+  if (length(selected) == 1 && isPseudoRootTag(selected[[1]])) {
     list()
   } else {
     selected
@@ -1020,8 +1011,8 @@ tagQuerySelected <- function(selected) {
 # }
 
 # Return the top level tags as tags
-tagQueryRootAsTags <- function(root) {
-  tagQueryGetRoot(tagEnvToTags(root))
+tagQueryTopLevelTags <- function(pseudoRoot) {
+  do.call(tagList, tagEnvToTags(pseudoRoot)$children)
 }
 
 tagQuerySelectedAsTags <- function(selected) {
@@ -1029,16 +1020,16 @@ tagQuerySelectedAsTags <- function(selected) {
   do.call(visibleTagList, lapply(selected, tagEnvToTags))
 }
 
-tagQueryPrint <- function(root, selected) {
+tagQueryPrint <- function(pseudoRoot, selected) {
   cat("Root:\n")
-  print(tagQueryRootAsTags(root))
+  print(tagQueryTopLevelTags(pseudoRoot))
 
   cat("\nSelected:")
 
   if (length(selected) == 0) {
     cat(" (Empty)\n")
   } else {
-    if (identical(root$children, selected)) {
+    if (identical(pseudoRoot$children, selected)) {
       cat(" (Root)\n")
     } else {
       cat("\n")
@@ -1367,11 +1358,11 @@ tagQueryClassToggle <- function(els, class) {
 
 # Return a list of `root`.
 # This may change if root ends up becoming a list of elements
-tagQueryFindReset <- function(root) {
-  if (!isTagEnv(root)) {
-    stop("`root` must be a tag environment")
+tagQueryFindReset <- function(pseudoRoot) {
+  if (!isTagEnv(pseudoRoot)) {
+    stop("`pseudoRoot` must be a tag environment")
   }
-  Filter(root$children, f = isTagEnv)
+  Filter(pseudoRoot$children, f = isTagEnv)
 }
 # Return a list of the unique set of parent elements
 tagQueryFindParent <- function(els, cssSelector = NULL) {
