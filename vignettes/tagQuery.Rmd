@@ -19,7 +19,7 @@ library(htmltools)
 tagQuery(div(a()))
 ```
 
-Notice how `tagQuery()` tracks two essential pieces: the _root_ (i.e., input) tag as well as _selected_ tags (by default the root is selected). This data structure allows us to [efficiently](#performance) [query](#query) and [modify](#modify) particular fragments of the root HTML tag.
+Notice how `tagQuery()` tracks two essential pieces: the _root_ (i.e., input) tag as well as _selected_ tags (by default the root is selected). This data structure allows us to [efficiently](#performance) [query](#query), [modify](#modify), and [replace](#replace) particular fragments of the root HTML tag.
 
 Since `tagQuery()` isn't itself a `tag()` object, it can't be passed directly to `tag()` or tag rendering functions, but at any given time you can extract the `$root()` or `$selected()` tags.
 
@@ -133,20 +133,52 @@ tagQ$find("span")$hasAttr("data-bar")
 
 ### Children {#modify-child}
 
+Use `$prepend()` to insert content before the children of each selected tag and `$append()` to insert content after:
+
 ```{r}
-tagQ <- tagQuery(div(a()))
-tagQ$prepend(span())
-tagQ$append(p())
+tagQ <- tagQuery(div(p(a())))
+tagQ$find("p")$prepend(span())$append(tags$table())
 tagQ$root()
 ```
 
+If you'd like to replace all the children, then you can first call `$empty()` before `$append()`. If you like to just remove particular child elements, then you should call `$children()` + the `$remove()` sibling method.
+
 ### Siblings {#modify-sibling}
+
+Use `$before()` to insert content before each selected tag and `$after()` to insert content after:
+
+```{r}
+tagQ <- tagQuery(div(p(a())))
+tagQ$find("a")$before(span())$after(tags$table())
+tagQ$root()
+```
+
+## Replace {#replace}
+
+As with `tagQuery()`'s modifier methods, its replace methods also modify their input. They also empty selected tags, so you may want to `$resetSelection()` if you want to make more queries or modifications after-the-fact. 
+
+Use `$replaceWith()` to replace selected tags with some other content.
 
 ```{r}
 tagQ <- tagQuery(div(a()))
-tagQ$before(span())
-tagQ$after(p())
-tagQ$root()
+tagQ$find("a")$replaceWith(p())
+tagQ
+```
+
+Use `$remove()` to replace selected tags with nothing:
+
+```{r}
+tagQ <- tagQuery(div(a()))
+tagQ$find("a")$remove()
+tagQ
+```
+
+And use `$empty()` to replace the _children_ of the selected tags with nothing:
+
+```{r}
+tagQ <- tagQuery(div(span(a())))
+tagQ$find("span")$empty()
+tagQ
 ```
 
 

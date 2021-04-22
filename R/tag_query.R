@@ -577,7 +577,7 @@ tagQuery_ <- function(
             tagQueryFindClosest(selected_, cssSelector)
           )
         },
-        #' ### Filter
+        #' ### Custom filter
         #'
         #' * `$filter(fn)`: Filter the selected tags to those for which `fn(x,
         #' i)` returns `TRUE`. In addition to an R function with two arguments
@@ -592,7 +592,8 @@ tagQuery_ <- function(
         },
         #' ### Reset
         #'
-        #' * `$resetSelection()`: Reset selected tags to the `$root()` tag.
+        #' * `$resetSelection()`: Reset selected tags to the `$root()` tag. Useful
+        #' in combination with `$replaceWith()` since it empties the selection.
         resetSelection = function() {
           rebuild_()
           newTagQuery(
@@ -675,15 +676,6 @@ tagQuery_ <- function(
           rebuild_()
           invisible(self)
         },
-        #' * `$empty()`: Remove any children of each selected tag. Use this
-        #' method before calling `$append(...)` to replace the children of
-        #' each selected tag, with other content.
-        empty = function() {
-          rebuild_()
-          tagQueryChildrenEmpty(selected_)
-          # no need to rebuild_
-          invisible(self)
-        },
         #' ### Siblings
         #'
         #' * `$after(...)`: Add all `...` objects as siblings after each of the
@@ -702,7 +694,23 @@ tagQuery_ <- function(
           rebuild_()
           invisible(self)
         },
-        #' * `$replaceWith(...)`: Replace all selected tags with `...` in the
+        #' ### Custom
+        #'
+        #' * `$each(fn)`: Modify each selected tag with a function `fn`. `fn`
+        #' should accept two arguments: the first is the selected tag and second
+        #' is the selected tags position index. Since the selected tag is a
+        #' reference, any modifications to it will also modify the `tagQuery()`
+        #' object.
+        each = function(fn) {
+          rebuild_()
+          tagQueryEach(selected_, fn)
+          rebuild_()
+          invisible(self)
+        },
+
+        #' ## Replace methods
+        #'
+        #' #' * `$replaceWith(...)`: Replace all selected tags with `...` in the
         #' root tag and clear the selection.
         replaceWith = function(...) {
           rebuild_()
@@ -717,18 +725,13 @@ tagQuery_ <- function(
           # Remove items from selected info
           newTagQuery(list(), rebuild = TRUE)
         },
-
-        #' ### Custom
-        #'
-        #' * `$each(fn)`: Modify each selected tag with a function `fn`. `fn`
-        #' should accept two arguments: the first is the selected tag and second
-        #' is the selected tags position index. Since the selected tag is a
-        #' reference, any modifications to it will also modify the `tagQuery()`
-        #' object.
-        each = function(fn) {
+        #' * `$empty()`: Remove any children of each selected tag. Use this
+        #' method before calling `$append(...)` to replace the children of
+        #' each selected tag, with other content.
+        empty = function() {
           rebuild_()
-          tagQueryEach(selected_, fn)
-          rebuild_()
+          tagQueryChildrenEmpty(selected_)
+          # no need to rebuild_
           invisible(self)
         },
 
