@@ -177,7 +177,7 @@ created with the selected items set to the filtered selected
 elements. Remember, any alterations to the provided tag environments will persist
 in calling tag query object. If you need to make local changes, consider
 using \code{tagQuery(el)$selected()} to use standard tag objects.
-\item \verb{$reset()}: A new \code{tagQuery()} object will be created with the
+\item \verb{$resetSelected()}: A new \code{tagQuery()} object will be created with the
 selected items set to the top level tag objects.
 }
 }

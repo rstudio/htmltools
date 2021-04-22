@@ -535,8 +535,8 @@ tagQuery <- function(tags) {
     wrapWithRootTag(tags)
   )
   # Select the top level tags
-  selected <- tagQueryFindReset(tags)
   tagQuery_(tags, selected)
+  selected <- tagQueryFindResetSelected(root)
 }
 
 #' @rdname tagQuery
@@ -686,11 +686,11 @@ tagQuery_ <- function(
           rebuild_()
           newTagQuery(newSelected)
         },
-        #' * `$reset()`: A new `tagQuery()` object will be created with the
+        #' * `$resetSelected()`: A new `tagQuery()` object will be created with the
         #' selected items set to the top level tag objects.
-        reset = function() {
+        resetSelected = function() {
           newTagQuery(
-            tagQueryFindReset(root)
+            tagQueryFindResetSelected(root)
           )
         },
         ## end Find
@@ -1311,9 +1311,8 @@ tagQueryClassToggle <- function(els, class) {
 }
 
 
-# Return a list of `root`.
-# This may change if root ends up becoming a list of elements
-tagQueryFindReset <- function(root) {
+# Return a list of `root$children`.
+tagQueryFindResetSelected <- function(root) {
   if (!isTagEnv(root)) {
     stop("`root` must be a tag environment")
   }
