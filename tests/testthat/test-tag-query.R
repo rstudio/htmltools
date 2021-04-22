@@ -668,6 +668,31 @@ test_that("tagQuery() objects can not inherit from mixed objects", {
 
 
 
+test_that("rebuilding tag envs after inserting children is done", {
+  xTags <- div(div(), div())
+
+  expect_equal_tags(
+    tagQuery(xTags)$find("div")$before(span())$root(),
+    visibleTagList(
+      div(span(), div(), span(), div())
+    )
+  )
+
+  expect_equal_tags(
+    tagQuery(xTags)$find("div")$replaceWith(span())$root(),
+    visibleTagList(
+      div(span(), span())
+    )
+  )
+
+  expect_equal_tags(
+    tagQuery(xTags)$find("div")$after(span())$root(),
+    visibleTagList(
+      div(div(), span(), div(), span())
+    )
+  )
+})
+
 
 
 

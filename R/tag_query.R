@@ -813,7 +813,7 @@ tagQuery_ <- function(
         after = function(...) {
           rebuild_()
           tagQuerySiblingAfter(selected_, ...)
-          rebuild_()
+          # rebuild_() # rebuild done within method
           invisible(self)
         },
         #' * `$before(...)`: Add all `...` objects as siblings before each of
@@ -821,7 +821,7 @@ tagQuery_ <- function(
         before = function(...) {
           rebuild_()
           tagQuerySiblingBefore(selected_, ...)
-          rebuild_()
+          # rebuild_() # rebuild done within method
           invisible(self)
         },
         #' * `$replaceWith(...)`: Replace all selected elements with `...`. This
@@ -830,7 +830,7 @@ tagQuery_ <- function(
         replaceWith = function(...) {
           rebuild_()
           tagQuerySiblingReplaceWith(selected_, ...)
-          newTagQuery(list(), rebuild = TRUE)
+          newTagQuery(list(), rebuild = FALSE) # rebuild done within method
         },
         #' * `$remove(...)`: Remove all selected elements from the `tagQuery()`
         #' object. The selected elements is set to an empty set. A new
@@ -840,7 +840,7 @@ tagQuery_ <- function(
           rebuild_()
           tagQuerySiblingRemove(selected_)
           # Remove items from selected info
-          newTagQuery(list(), rebuild = TRUE)
+          newTagQuery(list(), rebuild = FALSE) # no rebuild necessary
         },
         ## end Adjust Siblings
 
@@ -1174,12 +1174,16 @@ tagQuerySiblingRemove <- function(els) {
 tagQuerySiblingAfter <- function(els, ...) {
   tagQueryMatchChildRev(els, function(elParent, el, childPos) {
     tagInsertChildren(elParent, after = childPos, ...)
+    # Make sure to rebuild the parent tag into tag envs
+    asTagEnv(elParent)
   })
 }
 # Add siblings before each el
 tagQuerySiblingBefore <- function(els, ...) {
   tagQueryMatchChildRev(els, function(elParent, el, childPos) {
     tagInsertChildren(elParent, after = childPos - 1, ...)
+    # Make sure to rebuild the parent tag into tag envs
+    asTagEnv(elParent)
   })
 }
 # Replace all `el` objects with `...`
@@ -1190,6 +1194,8 @@ tagQuerySiblingReplaceWith <- function(els, ...) {
     elParent$children[[childPos]] <- NULL
     # Replace with ... content where the child was
     tagInsertChildren(elParent, after = childPos - 1, ...)
+    # Make sure to rebuild the parent tag into tag envs
+    asTagEnv(elParent)
   })
 }
 
