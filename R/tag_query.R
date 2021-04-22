@@ -505,7 +505,7 @@ tagQuery <- function(tags) {
   # If `tags` is a list of tagEnvs...
   # * Make sure they share the same root element and
   # * Set the selected elements to `tags`
-  if (!isTagEnv(tags) && (is.list(tags) || isTagList(tags))) {
+  if (!isTag(tags) && (is.list(tags) || isTagList(tags))) {
     tagsIsTagEnv <- vapply(tags, isTagEnv, logical(1))
     if (any(tagsIsTagEnv)) {
       if (any(!tagsIsTagEnv)) {
