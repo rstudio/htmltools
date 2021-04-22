@@ -1,5 +1,5 @@
 ---
-title: "Stack benchmarks"
+title: "flattenTagAttribs benchmarks"
 author: "Barret Schloerke"
 date: "4/16/2021"
 output: html_document
