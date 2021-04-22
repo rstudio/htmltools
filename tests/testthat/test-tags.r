@@ -399,6 +399,25 @@ test_that("Adding attributes to tags", {
   )
 })
 
+test_that("Adding unnamed attributes creates a warning", {
+  expect_error(
+    tagAppendAttributes(
+      tags$div(),
+      "value"
+    ),
+    "include an attribute name"
+  )
+
+  x <- div()
+  x$attribs[[1]] <- "value"
+  expect_error(
+    print(x),
+    "name all of your attribute values"
+  )
+})
+
+
+
 test_that("Testing for attributes on tags", {
   t1 <- tags$div("foo", class = "c1", class = "c2", id = "foo")
 

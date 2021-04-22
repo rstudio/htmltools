@@ -1152,6 +1152,11 @@ joinCssClass <- function(classes) {
 }
 # return list of logical values telling if the classes exists
 tagQueryClassHas <- function(els, class) {
+  # Quit early if class == NULL | character(0)
+  if (length(class) == 0) {
+    return(rep(FALSE, length(els)))
+  }
+
   classes <- getCssClass(class)
   unlist(
     tagQueryLapply(els, function(el) {
@@ -1168,6 +1173,9 @@ tagQueryClassHas <- function(els, class) {
 }
 # add classes that don't already exist
 tagQueryClassAdd <- function(els, class) {
+  # Quit early if class == NULL | character(0)
+  if (length(class) == 0) return()
+
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
@@ -1179,6 +1187,9 @@ tagQueryClassAdd <- function(els, class) {
 }
 # remove classes that exist
 tagQueryClassRemove <- function(els, class) {
+  # Quit early if class == NULL | character(0)
+  if (length(class) == 0) return()
+
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
@@ -1191,6 +1202,9 @@ tagQueryClassRemove <- function(els, class) {
 }
 # toggle class existence depending on if they already exist or not
 tagQueryClassToggle <- function(els, class) {
+  # Quit early if class == NULL | character(0)
+  if (length(class) == 0) return()
+
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
