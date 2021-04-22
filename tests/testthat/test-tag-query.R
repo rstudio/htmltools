@@ -129,6 +129,24 @@ test_that("tagQuery() root values", {
   expect_error(tagQuery("a"), "initial set")
   expect_error(tagQuery(fakeJqueryDep), "initial set")
   expect_error(tagQuery(fakeTagFunction), "initial set")
+
+  x <- tagQuery(div(span(), a()))$find("span")
+  # expect_equal_tags(x$selected(), visibleTagList(span()))
+  # expect_equal_tags(x$selected(), visibleTagList(div(span(), a())))
+
+  # supply a tag query object
+  expect_equal_tags(tagQuery(x)$selected(), x$selected())
+  expect_equal_tags(tagQuery(x)$root(), x$root())
+
+  # supply a list of tag envs
+  tagEnvs <- list()
+  x$each(function(el, i) { tagEnvs[[length(tagEnvs) + 1]] <<- el})
+  expect_equal_tags(tagQuery(tagEnvs)$selected(), x$selected())
+  expect_equal_tags(tagQuery(tagEnvs)$root(), x$root())
+
+  # supply a single tag env
+  expect_equal_tags(tagQuery(tagEnvs[[1]])$selected(), x$selected())
+  expect_equal_tags(tagQuery(tagEnvs[[1]])$root(), x$root())
 })
 
 test_that("tagQuery() structure", {

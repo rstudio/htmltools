@@ -506,10 +506,15 @@ tagQuery <- function(tags) {
   # * Make sure they share the same root element and
   # * Set the selected elements to `tags`
   if (!isTag(tags) && (is.list(tags) || isTagList(tags))) {
+    # If it is a list, flatten them for easier/consisten inspection
+    tags <- flattenTagsRaw(tags)
     tagsIsTagEnv <- vapply(tags, isTagEnv, logical(1))
+
+    # If one of the elements is a tag env, verify that all tagEnvs share the same root.
     if (any(tagsIsTagEnv)) {
       if (any(!tagsIsTagEnv)) {
         notTagEnvPos <- which(!tagsIsTagEnv)
+        # It is not known how a middle of the tree tagEnv should be combined with a standard tag
         stop(
           "`tagQuery(tags=)` can not be a mix of tag environments and standard tag objects.\n",
           "Items at positions `c(", paste0(notTagEnvPos, collapse = ", "), ")` ",
@@ -531,12 +536,18 @@ tagQuery <- function(tags) {
   }
 
   # Convert standard tags to tag envs
-  tags <- asTagEnv(
+  root <- asTagEnv(
     wrapWithRootTag(tags)
   )
   # Select the top level tags
-  tagQuery_(tags, selected)
   selected <- tagQueryFindResetSelected(root)
+  if (length(selected) == 0) {
+    stop(
+      "The initial set of tags supplied to `tagQuery()` must have at least 1 standard tag object.",
+      " Ex: `div()`"
+    )
+  }
+  tagQuery_(root, selected)
 }
 
 #' @rdname tagQuery
@@ -557,7 +568,6 @@ tagQuery_ <- function(
     # safe to do as `root` will never be turned into a standard list
     asTagEnv(root)
   }
-
   newTagQuery <- function(selected) {
     tagQuery_(root, selected)
   }
@@ -910,31 +920,10 @@ findRootTag <- function(el) {
 # This allows for appending and prepending elements to the top level tags.
 # (Don't fight the structures... embrace them!)
 wrapWithRootTag <- function(x) {
-  if (isTagQuery(x)) {
-    x <- x$root()
-  }
-  x <- flattenTagsRaw(x %||% list())
-
-  root <- tag("tagQuery", list())
-
-  if (!is.null(x)) {
-    root <- tagSetChildren(root, x)
-  }
-  root$children <- flattenTagsRaw(root$children)
-  isTagOrTagEnv <- vapply(
-    root$children,
-    function(child) {
-      isTag(child) || isTagEnv(child)
-    },
-    logical(1)
+  tagSetChildren(
+    tag("tagQuery", list()),
+    x
   )
-  if (
-    (!is.list(root$children)) ||
-    (sum(isTagOrTagEnv) == 0)
-  ) {
-    stop("The initial set of tags must have at least 1 standard tag object. Ex: `div()`")
-  }
-  root
 }
 
 
