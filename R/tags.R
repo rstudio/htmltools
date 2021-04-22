@@ -387,7 +387,14 @@ tagAddRenderHook <- function(tag, func, replace = FALSE) {
 #' @export
 tagAppendAttributes <- function(tag, ...) {
   throw_if_tag_function(tag)
-  tag$attribs <- c(tag$attribs, dropNullsOrEmpty(dots_list(...)))
+  newAttribs <- dropNullsOrEmpty(dots_list(...))
+  if (any(!nzchar(names2(newAttribs)))) {
+    stop(
+      "At least one of the new attribute values did not have a name.\n",
+      "Did you forget to include an attribute name?"
+    )
+  }
+  tag$attribs <- c(tag$attribs, newAttribs)
   tag
 }
 
@@ -516,9 +523,7 @@ throw_if_tag_function <- function(tag) {
 tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL) {
   validateNoWS(.noWS)
   # Get arg names; if not a named list, use vector of empty strings
-  varArgsNames <- names(varArgs)
-  if (is.null(varArgsNames))
-    varArgsNames <- character(length=length(varArgs))
+  varArgsNames <- names2(varArgs)
 
   # Named arguments become attribs, dropping NULL and length-0 values
   named_idx <- nzchar(varArgsNames)
@@ -607,9 +612,17 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   textWriter$write(concat8("<", tag$name))
 
   attribs <- flattenTagAttribs(tag$attribs)
+  attribNames <- names2(attribs)
+  if (any(!nzchar(attribNames))) {
+    # Can not display attrib without a key
+    stop(
+      "A tag's attribute value did not have a name.\n",
+      "Did you forget to name all of your attribute values?"
+    )
+  }
 
   # write attributes
-  for (attrib in names(attribs)) {
+  for (attrib in attribNames) {
     attribValue <- attribs[[attrib]]
     if (!is.na(attribValue)) {
       if (is.logical(attribValue))
