@@ -330,10 +330,10 @@ isTagQuery <- function(x) {
 }
 assertNotTagEnvLike <- function(x, fnName) {
   if (isTagEnv(x)) {
-    stop("Tag environment objects (i.e., `tagQuery()`'s tag structure) are not allowed to be used as if they are regular `tag()` objects. Did you forget to call `tagQuery(x)$asTags(selected = TRUE)`?", call. = FALSE)
+    stop("Tag environment objects (i.e., `tagQuery()`'s tag structure) are not allowed to be used as if they are regular `tag()` objects. Did you forget to call `$root()` or `$selected()`?", call. = FALSE)
   }
   if (isTagQuery(x)) {
-    stop("`tagQuery()` objects are not allowed to be used as if they are regular `tag()` objects. Did you forget to call `$asTags()`?", call. = FALSE)
+    stop("`tagQuery()` objects are not allowed to be used as if they are regular `tag()` objects. Did you forget to call `$root()` or `$selected()`?", call. = FALSE)
   }
   invisible()
 }
@@ -343,8 +343,7 @@ shinyTagEnvStr <- "<!-- htmltools.tag.env -->"
 
 #' @export
 as.tags.htmltools.tag.env <- function(x, ...) {
-  stop("Method not allowed", call. = TRUE)
-  # as.tags(tagEnvToTags(x), ...)
+  as.tags(tagEnvToTags(x), ...)
 }
 #' @export
 print.htmltools.tag.env <- function(x, ...) {
@@ -367,7 +366,7 @@ str.htmltools.tag.env <- function(object, ...) {
 
 #' @export
 as.tags.htmltools.tag.query <- function(x, ...) {
-  stop("Method not allowed", call. = TRUE)
+  tagQueryAsTagErr()
 }
 #' @export
 print.htmltools.tag.query <- function(x, ...) {
@@ -375,34 +374,33 @@ print.htmltools.tag.query <- function(x, ...) {
 }
 #' @export
 format.htmltools.tag.query <- function(x, ...) {
-  stop(
-    "`tagQuery()` objects can not be written directly as HTML tags.\n",
-    "Call either `$root()` or `$selected()` to extract the tags of interest."
-  )
+  tagQueryAsTagErr()
 }
 #' @export
 as.character.htmltools.tag.query <- function(x, ...) {
+  tagQueryAsTagErr()
+}
+
+
+tagQueryAsTagErr <- function() {
   stop(
-    "`tagQuery()` objects can not be written directly as HTML tags.\n",
-    "Call either `$root()` or `$selected()` to extract the tags of interest."
+    "`tagQuery()` objects can not be written directly as HTML tags.",
+    "Call either `$root()` or `$selected()` to extract the tags of interest.",
+    call. = FALSE
   )
 }
 
 
-
-#' Perform jQuery-like alterations on tags
+#' Query and modify HTML tags
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("experimental")`\cr\cr `tagQuery()` provides a
+#' [`jQuery`](https://jquery.com/) inspired interface for querying and modifying
+#' [tag()] (and [tagList()]) objects.
 #'
-#' `tagQuery()` provides a [`jQuery`](https://jquery.com/) inspired interface for
-#' querying and/or modifying [tag()] (and [tagList()]) objects.
-#'
-#' @param tags A [tag()], [tagList()], or [list()] of tags. If a `list()` or
-#'   `tagList()` is provided, a `tagList()` will be returned when calling
-#'   `$asTags()`.
-#' @return A list of methods for working with the "root" `tags` as well as
-#'   "selected" subset of `tags` (by default, `tags` is selected, but methods
-#'   such as `$find()` may be used to update the selection).
+#' @param tags A [tag()], [tagList()], or [list()] of tags.
+#' @return A class with methods that are described below. This class can't be
+#'   used directly inside other [tag()] or a [renderTags()] context, but
+#'   underlying HTML tags may be extracted via `$root()` or `$selected()`.
 #' @export
 tagQuery <- function(tags) {
 
@@ -504,18 +502,26 @@ tagQuery_ <- function(
       list(
         #' @details
         #'
+        #' # Vignette
+        #'
+        #' To get started with using `tagQuery()`, [see
+        #' here](https://rstudio.github.io/htmltools/articles/tagQuery.html) or
+        #' `browseVignettes(package = "htmltools")`.
+        #'
+        #' # Methods
+        #'
+        #' Unless otherwise stated, `tagQuery()` methods accept a character
+        #' vector as input.
+        #'
         #' ## Query methods
         #'
-        #' Find particular subsets of HTML using CSS selectors (or R functions).
-        #' Methods that accept a `cssSelector` are currently only allowed to
-        #' reference tag names (e.g, `div`), ids (e.g., `#myID`), and classes
-        #' (e.g., `.my-class`). All query methods support combinations of tag
-        #' named, ids, and classes (e.g., `div#myID.my-class`), but only
-        #' `$find()` currently supports multiple CSS selectors (e.g. `div span`
-        #' or `div > a.my-class`).
+        #' Query methods identify particular subsets of the root tag using CSS
+        #' selectors (or R functions).
         #'
-        #' * `$find(cssSelector)`: Get the descendants of each selected tag,
-        #' filtered by a `cssSelector` (required).
+        #' ### Children
+        #'
+        #' * `$find(cssSelector)`: Get the descendants of
+        #' each selected tag, filtered by a `cssSelector`.
         find = function(cssSelector) {
           rebuild_()
 
@@ -523,50 +529,60 @@ tagQuery_ <- function(
             tagQueryFindAll(selected_, cssSelector)
           )
         },
-        #' * `$children(cssSelector = NULL)`: Get the direct children of each
-        #' selected tag, optionally filtered by a `cssSelector`.
+        #' * `$children(cssSelector = NULL)`: Get the direct
+        #' children of each selected tag, optionally filtered by a
+        #' `cssSelector`.
         children = function(cssSelector = NULL) {
           rebuild_()
           newTagQuery(
             tagQueryFindChildren(selected_, cssSelector)
           )
         },
-        #' * `$parent(cssSelector = NULL)`: Get the parent of each selected tag,
-        #' optionally filtered by a `cssSelector`.
-        parent = function(cssSelector = NULL) {
-          rebuild_()
-          newTagQuery(
-            tagQueryFindParent(selected_, cssSelector)
-          )
-        },
-        #' * `$parents(cssSelector = NULL)`: Get the ancestors of each selected tag,
-        #' optionally filtered by a `cssSelector`.
-        parents = function(cssSelector = NULL) {
-          rebuild_()
-          newTagQuery(
-            tagQueryFindParents(selected_, cssSelector)
-          )
-        },
-        #' * `$closest(cssSelector)`: For each selected tag, get the
-        #' closest ancestor tag (including itself) satisfying a `cssSelector`.
-        closest = function(cssSelector) {
-          rebuild_()
-          newTagQuery(
-            tagQueryFindClosest(selected_, cssSelector)
-          )
-        },
-        #' * `siblings(cssSelector = NULL)`: Get the siblings of each selected
-        #' tag, optionally filtered by a `cssSelector`.
+        #' ### Siblings
+        #'
+        #' * `siblings(cssSelector = NULL)`: Get the
+        #' siblings of each selected tag, optionally filtered by a
+        #' `cssSelector`.
         siblings = function(cssSelector = NULL) {
           rebuild_()
           newTagQuery(
             tagQueryFindSiblings(selected_, cssSelector)
           )
         },
-        #' * `$filter(fn)`: Filter the selected tags to those for which
-        #' `fn(tag, i)` returns `TRUE`. In addition to an R function with two
-        #' arguments (the `tag` and the index `i`), `fn` may also be a valid CSS
-        #' selector.
+        #' ### Parents
+        #'
+        #' * `$parent(cssSelector = NULL)`: Get the parent
+        #' of each selected tag, optionally filtered by a `cssSelector`.
+        parent = function(cssSelector = NULL) {
+          rebuild_()
+          newTagQuery(
+            tagQueryFindParent(selected_, cssSelector)
+          )
+        },
+        #' * `$parents(cssSelector = NULL)`: Get the
+        #' ancestors of each selected tag, optionally filtered by a
+        #' `cssSelector`.
+        parents = function(cssSelector = NULL) {
+          rebuild_()
+          newTagQuery(
+            tagQueryFindParents(selected_, cssSelector)
+          )
+        },
+        #' * `$closest(cssSelector)`: For each selected tag,
+        #' get the closest ancestor tag (including itself) satisfying a
+        #' `cssSelector`.
+        closest = function(cssSelector) {
+          rebuild_()
+          newTagQuery(
+            tagQueryFindClosest(selected_, cssSelector)
+          )
+        },
+        #' ### Filter
+        #'
+        #' * `$filter(fn)`: Filter the selected tags to those for which `fn(x,
+        #' i)` returns `TRUE`. In addition to an R function with two arguments
+        #' (the selected tag `x` and the index `i`), `fn` may also be a valid
+        #' CSS selector.
         filter = function(fn) {
           rebuild_()
           newTagQuery(
@@ -574,45 +590,52 @@ tagQuery_ <- function(
             rebuild = TRUE
           )
         },
-        #' * `$reset()`: A new `tagQuery()` object will be created with the
-        #' selected items set to the top level tag objects.
-        reset = function() {
+        #' ### Reset
+        #'
+        #' * `$resetSelection()`: Reset selected tags to the `$root()` tag.
+        resetSelection = function() {
           rebuild_()
           newTagQuery(
             tagQueryFindReset(root)
           )
         },
-        ## end Query methods
 
-
-        #' ## Modify attributes
+        #' ## Modify methods
         #'
-        #' * `$addClass(class)`: `[character()]`\cr Adds class(es) to each
-        #' selected tag.
+        #' Unlike query methods, modify methods modify the `tagQuery()` object.
+        #'
+        #' ### Attributes
+        #'
+        #' * `$addClass(class)`: Adds class(es) to each selected tag.
         addClass = function(class) {
           rebuild_()
           tagQueryClassAdd(selected_, class)
           invisible(self)
         },
-        #' * `$removeClass(class)`: `[character()]`\cr Removes class(es) to each
-        #' selected tag.
+        #' * `$removeClass(class)`: Removes class(es) to each selected tag.
         removeClass = function(class) {
           rebuild_()
           tagQueryClassRemove(selected_, class)
           invisible(self)
         },
-        #' * `$hasClass(class)`: Determine whether the selected elements have a
-        #' given class. Returns a vector of logical values.
-        hasClass = function(class) {
-          rebuild_()
-          tagQueryClassHas(selected_, class)
-        },
-        #' * `$toggleClass(class)`: `[character()]`\cr If a given `class` element
-        #' is missing, add it; otherwise, remove it.
+        #' * `$toggleClass(class)`: If a given `class` element is missing, add
+        #' it; otherwise, remove it.
         toggleClass = function(class) {
           rebuild_()
           tagQueryClassToggle(selected_, class)
           invisible(self)
+        },
+        #' * `$hasClass(class)`: Does each selected tag have particular
+        #' class(es)?
+        hasClass = function(class) {
+          rebuild_()
+          tagQueryClassHas(selected_, class)
+        },
+        #' * `$hasAttr(attr)`: Does each selected tag have particular
+        #' attributes?
+        hasAttr = function(attr) {
+          rebuild_()
+          tagQueryAttrHas(selected_, attr)
         },
         #' * `$addAttrs(...)`: Add a set of attributes to each selected tag.
         addAttrs = function(...) {
@@ -621,8 +644,8 @@ tagQuery_ <- function(
           # no need to rebuild_(); already flattened in add attr function
           invisible(self)
         },
-        #' * `$removeAttrs(attrs)`: `[character()]`\cr Remove a set of
-        #' attributes from each selected tag.
+        #' * `$removeAttrs(attrs)`: Remove a set of attributes from each
+        #' selected tag.
         removeAttrs = function(attrs) {
           rebuild_()
           tagQueryAttrsRemove(selected_, attrs)
@@ -634,28 +657,7 @@ tagQuery_ <- function(
           tagQueryAttrsEmpty(selected_)
           invisible(self)
         },
-
-
-        #' ## Logical assertions
-        #'
-        #' These methods return a logical vector with one element per selected
-        #' tag.
-        #'
-        #' * `$hasClass(class)`: `[character()]`\cr Do selected tags have
-        #' particular class(es)?
-        hasClass = function(class) {
-          rebuild_()
-          tagQueryClassHas(selected_, class)
-        },
-        #' * `$hasAttr(attr)`: `[character()]`\cr Do selected tags have
-        #' particular attributes?
-        hasAttr = function(attr) {
-          rebuild_()
-          tagQueryAttrHas(selected_, attr)
-        },
-
-
-        #' ## Modify children
+        #' ### Children
         #'
         #' * `$append(...)`: For each selected tag, insert `...` **after** any
         #' existing children.
@@ -682,9 +684,7 @@ tagQuery_ <- function(
           # no need to rebuild_
           invisible(self)
         },
-
-
-        #' ## Modify siblings
+        #' ### Siblings
         #'
         #' * `$after(...)`: Add all `...` objects as siblings after each of the
         #' selected tags.
@@ -718,18 +718,13 @@ tagQuery_ <- function(
           newTagQuery(list(), rebuild = TRUE)
         },
 
-
-        #' ## Generic methods
+        #' ### Custom
         #'
-        #' * `$each(fn)`: Modify each selected tag with a function `fn`.
-        #' `fn` should accept two arguments: a selected element and
-        #' the selected element's position within the selected elements. This
-        #' argument order mimics jQuery's `$().each()` as there is no
-        #' concept of a `this` object inside the function execution. To stay
-        #' consistent with other methods, the each of the selected tag
-        #' environments will be given first, followed by the index position. Any
-        #' alterations to the provided tag environments will persist in calling
-        #' tag query object.
+        #' * `$each(fn)`: Modify each selected tag with a function `fn`. `fn`
+        #' should accept two arguments: the first is the selected tag and second
+        #' is the selected tags position index. Since the selected tag is a
+        #' reference, any modifications to it will also modify the `tagQuery()`
+        #' object.
         each = function(fn) {
           rebuild_()
           tagQueryEach(selected_, fn)
@@ -752,23 +747,21 @@ tagQuery_ <- function(
           rebuild_()
           tagQuerySelectedAsTags(selected_)
         },
-        #' * `$rebuild()`: Makes sure that all tags have been upgraded to tag
-        #' environments. Objects wrapped in `HTML()` will not be inspected or
-        #' altered. This method is internally called before each method executes
-        #' and after any alterations where standard tag objects could be
-        #' introduced into the tag structure.
         rebuild = function() {
           rebuild_()
           invisible(self)
         },
-        #' * `$print()`: Internal print method. Called by
-        #' `print.htmltools.tag.query()`
         print = function() {
           rebuild_()
           # Allows `$print()` to know if there is a root el
           tagQueryPrint(root, selected_)
           invisible(self)
         }
+        #' @examples
+        #'
+        #' tagQ <- tagQuery(div(a()))
+        #' tagQ$find("a")$addClass("foo")
+        #' tagQ
       )
     )
   self

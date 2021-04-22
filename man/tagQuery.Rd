@@ -2,88 +2,103 @@
 % Please edit documentation in R/tag_query.R
 \name{tagQuery}
 \alias{tagQuery}
-\title{Perform jQuery-like alterations on tags}
+\title{Query and modify HTML tags}
 \usage{
 tagQuery(tags)
 }
 \arguments{
-\item{tags}{A \code{\link[=tag]{tag()}}, \code{\link[=tagList]{tagList()}}, or \code{\link[=list]{list()}} of tags. If a \code{list()} or
-\code{tagList()} is provided, a \code{tagList()} will be returned when calling
-\verb{$asTags()}.}
+\item{tags}{A \code{\link[=tag]{tag()}}, \code{\link[=tagList]{tagList()}}, or \code{\link[=list]{list()}} of tags.}
 }
 \value{
-A list of methods for working with the "root" \code{tags} as well as
-"selected" subset of \code{tags} (by default, \code{tags} is selected, but methods
-such as \verb{$find()} may be used to update the selection).
+A class with methods that are described below. This class can't be
+used directly inside other \code{\link[=tag]{tag()}} or a \code{\link[=renderTags]{renderTags()}} context, but
+underlying HTML tags may be extracted via \verb{$root()} or \verb{$selected()}.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}\cr\cr \code{tagQuery()} provides a
+\href{https://jquery.com/}{\code{jQuery}} inspired interface for querying and modifying
+\code{\link[=tag]{tag()}} (and \code{\link[=tagList]{tagList()}}) objects.
 }
-\details{
-\code{tagQuery()} provides a \href{https://jquery.com/}{\code{jQuery}} inspired interface for
-querying and/or modifying \code{\link[=tag]{tag()}} (and \code{\link[=tagList]{tagList()}}) objects.
+\section{Vignette}{
+To get started with using \code{tagQuery()}, \href{https://rstudio.github.io/htmltools/articles/tagQuery.html}{see here} or
+\code{browseVignettes(package = "htmltools")}.
+}
 
+\section{Methods}{
+Unless otherwise stated, \code{tagQuery()} methods accept a character
+vector as input.
 \subsection{Query methods}{
 
-Find particular subsets of HTML using CSS selectors (or R functions).
-Methods that accept a \code{cssSelector} are currently only allowed to
-reference tag names (e.g, \code{div}), ids (e.g., \verb{#myID}), and classes
-(e.g., \code{.my-class}). All query methods support combinations of tag
-named, ids, and classes (e.g., \code{div#myID.my-class}), but only
-\verb{$find()} currently supports multiple CSS selectors (e.g. \verb{div span}
-or \code{div > a.my-class}).
+Query methods identify particular subsets of the root tag using CSS
+selectors (or R functions).
+\subsection{Children}{
 \itemize{
-\item \verb{$find(cssSelector)}: Get the descendants of each selected tag,
-filtered by a \code{cssSelector} (required).
-\item \verb{$children(cssSelector = NULL)}: Get the direct children of each
-selected tag, optionally filtered by a \code{cssSelector}.
-\item \verb{$parent(cssSelector = NULL)}: Get the parent of each selected tag,
-optionally filtered by a \code{cssSelector}.
-\item \verb{$parents(cssSelector = NULL)}: Get the ancestors of each selected tag,
-optionally filtered by a \code{cssSelector}.
-\item \verb{$closest(cssSelector)}: For each selected tag, get the
-closest ancestor tag (including itself) satisfying a \code{cssSelector}.
-\item \code{siblings(cssSelector = NULL)}: Get the siblings of each selected
-tag, optionally filtered by a \code{cssSelector}.
-\item \verb{$filter(fn)}: Filter the selected tags to those for which
-\code{fn(tag, i)} returns \code{TRUE}. In addition to an R function with two
-arguments (the \code{tag} and the index \code{i}), \code{fn} may also be a valid CSS
-selector.
-\item \verb{$reset()}: A new \code{tagQuery()} object will be created with the
-selected items set to the top level tag objects.
+\item \verb{$find(cssSelector)}: Get the descendants of
+each selected tag, filtered by a \code{cssSelector}.
+\item \verb{$children(cssSelector = NULL)}: Get the direct
+children of each selected tag, optionally filtered by a
+\code{cssSelector}.
 }
 }
 
-\subsection{Modify attributes}{
+\subsection{Siblings}{
 \itemize{
-\item \verb{$addClass(class)}: \verb{[character()]}\cr Adds class(es) to each
-selected tag.
-\item \verb{$removeClass(class)}: \verb{[character()]}\cr Removes class(es) to each
-selected tag.
-\item \verb{$hasClass(class)}: Determine whether the selected elements have a
-given class. Returns a vector of logical values.
-\item \verb{$toggleClass(class)}: \verb{[character()]}\cr If a given \code{class} element
-is missing, add it; otherwise, remove it.
+\item \code{siblings(cssSelector = NULL)}: Get the
+siblings of each selected tag, optionally filtered by a
+\code{cssSelector}.
+}
+}
+
+\subsection{Parents}{
+\itemize{
+\item \verb{$parent(cssSelector = NULL)}: Get the parent
+of each selected tag, optionally filtered by a \code{cssSelector}.
+\item \verb{$parents(cssSelector = NULL)}: Get the
+ancestors of each selected tag, optionally filtered by a
+\code{cssSelector}.
+\item \verb{$closest(cssSelector)}: For each selected tag,
+get the closest ancestor tag (including itself) satisfying a
+\code{cssSelector}.
+}
+}
+
+\subsection{Filter}{
+\itemize{
+\item \verb{$filter(fn)}: Filter the selected tags to those for which \code{fn(x, i)} returns \code{TRUE}. In addition to an R function with two arguments
+(the selected tag \code{x} and the index \code{i}), \code{fn} may also be a valid
+CSS selector.
+}
+}
+
+\subsection{Reset}{
+\itemize{
+\item \verb{$resetSelection()}: Reset selected tags to the \verb{$root()} tag.
+}
+}
+
+}
+
+\subsection{Modify methods}{
+
+Unlike query methods, modify methods modify the \code{tagQuery()} object.
+\subsection{Attributes}{
+\itemize{
+\item \verb{$addClass(class)}: Adds class(es) to each selected tag.
+\item \verb{$removeClass(class)}: Removes class(es) to each selected tag.
+\item \verb{$toggleClass(class)}: If a given \code{class} element is missing, add
+it; otherwise, remove it.
+\item \verb{$hasClass(class)}: Does each selected tag have particular
+class(es)?
+\item \verb{$hasAttr(attr)}: Does each selected tag have particular
+attributes?
 \item \verb{$addAttrs(...)}: Add a set of attributes to each selected tag.
-\item \verb{$removeAttrs(attrs)}: \verb{[character()]}\cr Remove a set of
-attributes from each selected tag.
+\item \verb{$removeAttrs(attrs)}: Remove a set of attributes from each
+selected tag.
 \item \verb{$emptyAttrs()}: Remove all attributes from each selected tag.
 }
 }
 
-\subsection{Logical assertions}{
-
-These methods return a logical vector with one element per selected
-tag.
-\itemize{
-\item \verb{$hasClass(class)}: \verb{[character()]}\cr Do selected tags have
-particular class(es)?
-\item \verb{$hasAttr(attr)}: \verb{[character()]}\cr Do selected tags have
-particular attributes?
-}
-}
-
-\subsection{Modify children}{
+\subsection{Children}{
 \itemize{
 \item \verb{$append(...)}: For each selected tag, insert \code{...} \strong{after} any
 existing children.
@@ -95,7 +110,7 @@ each selected tag, with other content.
 }
 }
 
-\subsection{Modify siblings}{
+\subsection{Siblings}{
 \itemize{
 \item \verb{$after(...)}: Add all \code{...} objects as siblings after each of the
 selected tags.
@@ -108,18 +123,16 @@ clear the current selection.
 }
 }
 
-\subsection{Generic methods}{
+\subsection{Custom}{
 \itemize{
-\item \verb{$each(fn)}: Modify each selected tag with a function \code{fn}.
-\code{fn} should accept two arguments: a selected element and
-the selected element's position within the selected elements. This
-argument order mimics jQuery's \verb{$().each()} as there is no
-concept of a \code{this} object inside the function execution. To stay
-consistent with other methods, the each of the selected tag
-environments will be given first, followed by the index position. Any
-alterations to the provided tag environments will persist in calling
-tag query object.
+\item \verb{$each(fn)}: Modify each selected tag with a function \code{fn}. \code{fn}
+should accept two arguments: the first is the selected tag and second
+is the selected tags position index. Since the selected tag is a
+reference, any modifications to it will also modify the \code{tagQuery()}
+object.
 }
+}
+
 }
 
 \subsection{Extract HTML tags}{
@@ -129,13 +142,13 @@ tag query object.
 \item \verb{$selected()}: Converts the selected tag environments
 to standard \code{\link{tag}} objects. The selected tags will be returned in a
 \code{\link[=tagList]{tagList()}}.
-\item \verb{$rebuild()}: Makes sure that all tags have been upgraded to tag
-environments. Objects wrapped in \code{HTML()} will not be inspected or
-altered. This method is internally called before each method executes
-and after any alterations where standard tag objects could be
-introduced into the tag structure.
-\item \verb{$print()}: Internal print method. Called by
-\code{print.htmltools.tag.query()}
 }
 }
+}
+
+\examples{
+
+tagQ <- tagQuery(div(a()))
+tagQ$find("a")$addClass("foo")
+tagQ
 }
