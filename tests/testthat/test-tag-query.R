@@ -92,30 +92,31 @@ test_that("asTagEnv upgrades objects", {
 
 })
 
-test_that("asTagEnv finds cycles", {
-  x <- div(class = "test_class", span(class = "inner"))
-  xTagEnv <- asTagEnv(x)
-  expect_error(asTagEnv(xTagEnv), NA)
+## Cycles are not tested for anymore. Keeping in case they are brought back
+# test_that("asTagEnv finds cycles", {
+#   x <- div(class = "test_class", span(class = "inner"))
+#   xTagEnv <- asTagEnv(x)
+#   expect_error(asTagEnv(xTagEnv), NA)
 
-  testSpanEnv <- xTagEnv$children[[1]]
-  xTagEnv$children[[2]] <- testSpanEnv
-  xTagEnv$children[[3]] <- testSpanEnv
+#   testSpanEnv <- xTagEnv$children[[1]]
+#   xTagEnv$children[[2]] <- testSpanEnv
+#   xTagEnv$children[[3]] <- testSpanEnv
 
-  expect_error(asTagEnv(xTagEnv), "Duplicate tag environment found")
-  expect_equal_tags(
-    tagEnvToTags(xTagEnv),
-    div(
-      class = "test_class",
-      span(class = "inner"),
-      span(class = "inner"),
-      span(class = "inner")
-    )
-  )
+#   expect_error(asTagEnv(xTagEnv), "Duplicate tag environment found")
+#   expect_equal_tags(
+#     tagEnvToTags(xTagEnv),
+#     div(
+#       class = "test_class",
+#       span(class = "inner"),
+#       span(class = "inner"),
+#       span(class = "inner")
+#     )
+#   )
 
-  # make a cycle
-  testSpanEnv$children[[1]] <- xTagEnv
-  expect_error(asTagEnv(xTagEnv), "Duplicate tag environment")
-})
+#   # make a cycle
+#   testSpanEnv$children[[1]] <- xTagEnv
+#   expect_error(asTagEnv(xTagEnv), "Duplicate tag environment")
+# })
 
 
 

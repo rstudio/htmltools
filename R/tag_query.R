@@ -247,7 +247,10 @@ asTagEnv <- function(x) {
   }
   asTagEnv_(x, parent = x$parent)
 }
-asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
+# Checking for cycles is not performed as it is slow. With tagQuery methods not really
+# opening the door for cycles to occur, it would be the user doing dangerous things.
+# At this point, they should understand when a stack overflow occurs.
+asTagEnv_ <- function(x, parent = NULL) {
   isTagVal <- isTag(x)
   isTagEnvVal <- isTagEnv(x)
 
@@ -259,15 +262,6 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
       x$parent <- parent
       x$envKey <- obj_address(x)
     }
-    if (seenMap$has(x)) {
-      stop(
-        "Duplicate tag environment found: ", obj_address(x), "\n",
-        "Call `lobstr::tree(x$root(), show_environments = TRUE)` to inspect the tag environments,\n",
-        "where `x` is your tag query object."
-      )
-    }
-    # Add the item to the seen map to help with cycle detection
-    seenMap$add(x)
 
     # Make sure all attribs are unique
     x$attribs <- flattenTagAttribs(x$attribs)
@@ -286,12 +280,9 @@ asTagEnv_ <- function(x, parent = NULL, seenMap = envirMap()) {
         flattenTagsRaw(x$children),
         # recurse through each child
         asTagEnv_,
-        parent = x,
-        seenMap = seenMap
+        parent = x
       )
     }
-    ## No need to remove as found cycles are not explained.
-    # seenMap$remove(x)
   }
   x
 }
