@@ -92,30 +92,31 @@ test_that("asTagEnv upgrades objects", {
 
 })
 
-test_that("asTagEnv finds cycles", {
-  x <- div(class = "test_class", span(class = "inner"))
-  xTagEnv <- asTagEnv(x)
-  expect_error(asTagEnv(xTagEnv), NA)
+## Cycles are not tested for anymore. Keeping in case they are brought back
+# test_that("asTagEnv finds cycles", {
+#   x <- div(class = "test_class", span(class = "inner"))
+#   xTagEnv <- asTagEnv(x)
+#   expect_error(asTagEnv(xTagEnv), NA)
 
-  testSpanEnv <- xTagEnv$children[[1]]
-  xTagEnv$children[[2]] <- testSpanEnv
-  xTagEnv$children[[3]] <- testSpanEnv
+#   testSpanEnv <- xTagEnv$children[[1]]
+#   xTagEnv$children[[2]] <- testSpanEnv
+#   xTagEnv$children[[3]] <- testSpanEnv
 
-  expect_error(asTagEnv(xTagEnv), "Duplicate tag environment found")
-  expect_equal_tags(
-    tagEnvToTags(xTagEnv),
-    div(
-      class = "test_class",
-      span(class = "inner"),
-      span(class = "inner"),
-      span(class = "inner")
-    )
-  )
+#   expect_error(asTagEnv(xTagEnv), "Duplicate tag environment found")
+#   expect_equal_tags(
+#     tagEnvToTags(xTagEnv),
+#     div(
+#       class = "test_class",
+#       span(class = "inner"),
+#       span(class = "inner"),
+#       span(class = "inner")
+#     )
+#   )
 
-  # make a cycle
-  testSpanEnv$children[[1]] <- xTagEnv
-  expect_error(asTagEnv(xTagEnv), "Duplicate tag environment")
-})
+#   # make a cycle
+#   testSpanEnv$children[[1]] <- xTagEnv
+#   expect_error(asTagEnv(xTagEnv), "Duplicate tag environment")
+# })
 
 
 
@@ -128,6 +129,24 @@ test_that("tagQuery() root values", {
   expect_error(tagQuery("a"), "initial set")
   expect_error(tagQuery(fakeJqueryDep), "initial set")
   expect_error(tagQuery(fakeTagFunction), "initial set")
+
+  x <- tagQuery(div(span(), a()))$find("span")
+  # expect_equal_tags(x$selected(), visibleTagList(span()))
+  # expect_equal_tags(x$selected(), visibleTagList(div(span(), a())))
+
+  # supply a tag query object
+  expect_equal_tags(tagQuery(x)$selected(), x$selected())
+  expect_equal_tags(tagQuery(x)$root(), x$root())
+
+  # supply a list of tag envs
+  tagEnvs <- list()
+  x$each(function(el, i) { tagEnvs[[length(tagEnvs) + 1]] <<- el})
+  expect_equal_tags(tagQuery(tagEnvs)$selected(), x$selected())
+  expect_equal_tags(tagQuery(tagEnvs)$root(), x$root())
+
+  # supply a single tag env
+  expect_equal_tags(tagQuery(tagEnvs[[1]])$selected(), x$selected())
+  expect_equal_tags(tagQuery(tagEnvs[[1]])$root(), x$root())
 })
 
 test_that("tagQuery() structure", {
@@ -174,22 +193,22 @@ test_that("tagQuery()$find()", {
   )
   x <- x$find("a")
   expect_length(x$selected(), 2)
-  x <- x$reset()
+  x <- x$resetSelected()
 
   x <- x$find("a > p")
   expect_length(x$selected(), 1)
   expect_equal_tags(x$selected(), tagList(p("text2")))
-  x <- x$reset()
+  x <- x$resetSelected()
 
   x <- x$find("a > > p")
   expect_length(x$selected(), 1)
   expect_equal_tags(x$selected(), tagList(p("text1")))
-  x <- x$reset()
+  x <- x$resetSelected()
 
   x <- x$find("div > *")
   expect_length(x$selected(), 2)
   expect_equal_tags(x$selected(), tagList(a(span(p("text1"))), a(p("text2"))))
-  x <- x$reset()
+  x <- x$resetSelected()
 
   x <- x$find("div>>p")
   expect_length(x$selected(), 1)
@@ -257,7 +276,7 @@ test_that("tagQuery()$children() & tagQuery()$parent()", {
   expect_length(x$selected(), 1)
   secondDiv <- div(class = "b", span(class = "C", "3"), span(class = "D", "4"))
   expect_equal_tags(x$selected(), tagList(secondDiv))
-  x <- x$reset()$find("span")$parents(".b")
+  x <- x$resetSelected()$find("span")$parents(".b")
   expect_length(x$selected(), 1)
   expect_equal_tags(x$selected(), tagList(secondDiv))
 })
@@ -305,7 +324,7 @@ test_that("tagQuery()$parents() && tagQuery()$closest()", {
     )
   )
 
-  x <- x$reset()$find("span")$parents(".outer")
+  x <- x$resetSelected()$find("span")$parents(".outer")
   expect_length(x$selected(), 1)
 
   expect_equal_tags(
@@ -396,7 +415,7 @@ test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
   expect_equal(x$hasClass("C"), FALSE)
   expect_equal(x$hasClass("A C"), FALSE)
 
-  x <- x$reset()$find("span")
+  x <- x$resetSelected()$find("span")
   expect_equal(x$hasClass("even"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
   expect_equal(x$hasClass("odd"), c(TRUE, FALSE, TRUE, FALSE, TRUE))
   x$toggleClass("even odd")
@@ -547,7 +566,7 @@ test_that("tagQuery()$remove()", {
     tagList(div(span("a"), span("c"), span("e")))
   )
 
-  x <- x$reset()$find("span")
+  x <- x$resetSelected()$find("span")
   expect_length(x$selected(), 3)
   x <- x$remove()
   expect_equal_tags(
@@ -682,8 +701,30 @@ test_that("tagQuery() objects can not inherit from mixed objects", {
 
 
 
+test_that("rebuilding tag envs after inserting children is done", {
+  xTags <- div(div(), div())
 
+  expect_equal_tags(
+    tagQuery(xTags)$find("div")$before(span())$root(),
+    # visibleTagList(
+      div(span(), div(), span(), div())
+    # )
+  )
 
+  expect_equal_tags(
+    tagQuery(xTags)$find("div")$replaceWith(span())$root(),
+    # visibleTagList(
+      div(span(), span())
+    # )
+  )
+
+  expect_equal_tags(
+    tagQuery(xTags)$find("div")$after(span())$root(),
+    # visibleTagList(
+      div(div(), span(), div(), span())
+    # )
+  )
+})
 
 
 
