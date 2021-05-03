@@ -939,7 +939,7 @@ findPseudoRootTag <- function(el) {
 # (Don't fight the structures... embrace them!)
 wrapWithPseudoRootTag <- function(x) {
   tagSetChildren(
-    tag("tagQuery", list()),
+    tag("TagQueryPseudoRoot", list()),
     x
   )
 }
