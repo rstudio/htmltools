@@ -286,8 +286,10 @@ selected elements given <code>fn(el, i)</code> returns <code>TRUE</code>. If <co
 selector, then the selected elements will be filtered if they match
 the single-element CSS selector. A new <code>tagQuery()</code> object will be
 created with the selected items set to the filtered selected
-elements.</p></li>
-<li><p><code>$reset()</code>: A new <code>tagQuery()</code> object will be created with the
+elements. Remember, any alterations to the provided tag environments will persist
+in calling tag query object. If you need to make local changes, consider
+using <code>tagQuery(el)$selected()</code> to use standard tag objects.</p></li>
+<li><p><code>$resetSelected()</code>: A new <code>tagQuery()</code> object will be created with the
 selected items set to the top level tag objects.</p></li>
 </ul>
 
@@ -355,9 +357,10 @@ the selected element's position within the selected elements. This
 argument order is different than jQuery's <code>$().each()</code> as there is no
 concept of a <code>this</code> object inside the function execution. To stay
 consistent with other methods, the each of the selected tag
-environments will be given first, followed by the index position. Any
-alterations to the provided tag environments will persist in calling
-tag query object.</p></li>
+environments will be given first, followed by the index position.
+Remember, any alterations to the provided tag environments will persist
+in calling tag query object. If you need to make local changes, consider
+using <code>tagQuery(el)$selected()</code> to use standard tag objects.</p></li>
 </ul>
 
 
