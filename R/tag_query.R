@@ -712,13 +712,13 @@ tagQuery_ <- function(
         #' elements.
         addClass = function(class) {
           tagQueryClassAdd(selected_, class)
-          invisible(self)
+          self
         },
         #' * `$removeClass(class)`: Removes a set of class values from all of
         #' the selected elements.
         removeClass = function(class) {
           tagQueryClassRemove(selected_, class)
-          invisible(self)
+          self
         },
         #' * `$hasClass(class)`: Determine whether the selected elements have a
         #' given class. Returns a vector of logical values.
@@ -729,26 +729,27 @@ tagQuery_ <- function(
         #' a  class value already exists, remove it.
         toggleClass = function(class) {
           tagQueryClassToggle(selected_, class)
-          invisible(self)
+          self
         },
 
         #' * `$addAttrs(...)`: Add named attributes to all selected children.
         #' Similar to [`tagAppendAttributes()`].
         addAttrs = function(...) {
           tagQueryAttrsAdd(selected_, ...)
-          invisible(self)
+          # no need to rebuild_(); already flattened in add attr function
+          self
         },
         #' * `$removeAttrs(attrs)`: Removes the provided attributes in each of
         #' the selected elements.
         removeAttrs = function(attrs) {
           tagQueryAttrsRemove(selected_, attrs)
-          invisible(self)
+          self
         },
         #' * `$emptyAttrs()`: Removes all attributes in each of the selected
         #' elements.
         emptyAttrs = function() {
           tagQueryAttrsEmpty(selected_)
-          invisible(self)
+          self
         },
         #' * `$hasAttr(attr)`: Returns a vector whose values are whether the
         #' selected element contains the non-`NULL` attribute.
@@ -763,21 +764,24 @@ tagQuery_ <- function(
         #' [`tagAppendChildren()`]
         append = function(...) {
           tagQueryChildrenAppend(selected_, ...)
-          invisible(self)
+          rebuild_()
+          self
         },
         #' * `$prepend(...)`: Add all `...` objects as children **before** any
         #' existing children to the selected elements. A variation of
         #' [`tagAppendChildren()`]
         prepend = function(...) {
           tagQueryChildrenPrepend(selected_, ...)
-          invisible(self)
+          rebuild_()
+          self
         },
         #' * `$empty()`: Remove all children in the selected elements. Use this
         #' method before calling `$append(...)` to replace all selected
         #' elements' children.
         empty = function() {
           tagQueryChildrenEmpty(selected_)
-          invisible(self)
+          # no need to rebuild_
+          self
         },
         ## end Adjust Children
 
@@ -787,13 +791,14 @@ tagQuery_ <- function(
         #' selected elements.
         after = function(...) {
           tagQuerySiblingAfter(selected_, ...)
-          invisible(self)
+          rebuild_()
+          self
         },
         #' * `$before(...)`: Add all `...` objects as siblings before each of
         #' the selected elements.
         before = function(...) {
           tagQuerySiblingBefore(selected_, ...)
-          invisible(self)
+          self
         },
         #' * `$replaceWith(...)`: Replace all selected elements with `...`. This
         #' also sets the selected elements to an empty set. A new `tagQuery()`
@@ -830,7 +835,7 @@ tagQuery_ <- function(
           tagQueryEach(selected_, fn)
           # MUST rebuild full tree as anything could have been done to the tag envs
           rebuild_()
-          invisible(self)
+          self
         },
         ## end Generic Methods
 
@@ -856,7 +861,8 @@ tagQuery_ <- function(
         #' and after any alterations where standard tag objects could be
         #' introduced into the tag structure.
         rebuild = function() {
-          invisible(self)
+          rebuild_()
+          self
         },
         #' * `$print()`: Internal print method. Called by
         #' `print.htmltools.tag.query()`
@@ -1244,6 +1250,11 @@ joinCssClass <- function(classes) {
 }
 # return list of logical values telling if the classes exists
 tagQueryClassHas <- function(els, class) {
+  # Quit early if class == NULL | character(0)
+  if (length(class) == 0) {
+    return(rep(FALSE, length(els)))
+  }
+
   classes <- getCssClass(class)
   unlist(
     tagQueryLapply(els, function(el) {
@@ -1260,6 +1271,9 @@ tagQueryClassHas <- function(els, class) {
 }
 # add classes that don't already exist
 tagQueryClassAdd <- function(els, class) {
+  # Quit early if class == NULL | character(0)
+  if (length(class) == 0) return()
+
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
@@ -1271,6 +1285,9 @@ tagQueryClassAdd <- function(els, class) {
 }
 # remove classes that exist
 tagQueryClassRemove <- function(els, class) {
+  # Quit early if class == NULL | character(0)
+  if (length(class) == 0) return()
+
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
@@ -1283,6 +1300,9 @@ tagQueryClassRemove <- function(els, class) {
 }
 # toggle class existence depending on if they already exist or not
 tagQueryClassToggle <- function(els, class) {
+  # Quit early if class == NULL | character(0)
+  if (length(class) == 0) return()
+
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()

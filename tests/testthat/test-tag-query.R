@@ -377,6 +377,20 @@ test_that("tagQuery()$addClass()", {
 
   expect_equal(x$selected()[[1]]$attribs$class, "inner test-class")
 
+  expect_silent({
+    x$addClass(NULL)
+    x$removeClass(NULL)
+    x$toggleClass(NULL)
+    expect_equal(x$hasClass(NULL), c(FALSE))
+  })
+
+  expect_silent({
+    x$addClass(character(0))
+    x$removeClass(character(0))
+    x$toggleClass(character(0))
+    expect_equal(x$hasClass(character(0)), c(FALSE))
+  })
+
 })
 
 test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
@@ -711,7 +725,6 @@ test_that("rebuilding tag envs after inserting children is done", {
     # )
   )
 })
-
 
 
 
