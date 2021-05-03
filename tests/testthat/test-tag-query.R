@@ -472,7 +472,7 @@ test_that("tagQuery()$append()", {
   x$append(newa)
   expect_equal_tags(
     x$root(),
-    tagList(div(span("child"), newa))
+    div(span("child"), newa)
   )
 
   new1 <- div("new1")
@@ -481,7 +481,7 @@ test_that("tagQuery()$append()", {
 
   expect_equal_tags(
     x$root(),
-    tagList(div(span("child"), newa, new1, new2))
+    div(span("child"), newa, new1, new2)
   )
 })
 
@@ -493,7 +493,7 @@ test_that("tagQuery()$prepend()", {
   x$prepend(newa)
   expect_equal_tags(
     x$root(),
-    tagList(div(newa, span("child")))
+    div(newa, span("child"))
   )
 
   new1 <- div("new1")
@@ -502,7 +502,7 @@ test_that("tagQuery()$prepend()", {
 
   expect_equal_tags(
     x$root(),
-    tagList(div(new1, new2, newa, span("child")))
+    div(new1, new2, newa, span("child"))
   )
 })
 
@@ -523,7 +523,7 @@ test_that("tagQuery()$each()", {
 
   expect_equal_tags(
     x$root(),
-    tagList(div(span("A"), h1("title"), span("B")))
+    div(span("A"), h1("title"), span("B"))
   )
 })
 
@@ -540,7 +540,7 @@ test_that("tagQuery()$root() & tagQuery()$rebuild()", {
   })
 
   # retrieve the root (and direct children) from graph
-  rootChildren <- x$root()[[1]]$children
+  rootChildren <- x$root()$children
   lastChild <- rootChildren[[length(rootChildren)]]
 
   # make sure the last child is a tag env (not a standard tag)
@@ -567,7 +567,7 @@ test_that("tagQuery()$remove()", {
 
   expect_equal_tags(
     x$root(),
-    tagList(div(span("a"), span("c"), span("e")))
+    div(span("a"), span("c"), span("e"))
   )
 
   x <- x$resetSelected()$find("span")
@@ -575,7 +575,7 @@ test_that("tagQuery()$remove()", {
   x <- x$remove()
   expect_equal_tags(
     x$root(),
-    tagList(div())
+    div()
   )
 })
 
@@ -664,10 +664,10 @@ test_that("tagQuery() objects inherit from each other objects", {
   expect_equal_tags(z$selected(), tagListPrintAsList(!!!expected$children))
   expect_equal_tags(w$selected(), tagListPrintAsList(!!!expected$children))
 
-  expect_equal_tags(x$root(), tagList(expected))
-  expect_equal_tags(y$root(), tagList(expected))
-  expect_equal_tags(z$root(), tagList(expected))
-  expect_equal_tags(w$root(), tagList(expected))
+  expect_equal_tags(x$root(), expected)
+  expect_equal_tags(y$root(), expected)
+  expect_equal_tags(z$root(), expected)
+  expect_equal_tags(w$root(), expected)
 })
 
 
@@ -710,17 +710,17 @@ test_that("rebuilding tag envs after inserting children is done", {
 
   expect_equal_tags(
     tagQuery(xTags)$find("div")$before(span())$root(),
-    tagList(div(span(), div(), span(), div()))
+    div(span(), div(), span(), div())
   )
 
   expect_equal_tags(
     tagQuery(xTags)$find("div")$replaceWith(span())$root(),
-    tagList(div(span(), span()))
+    div(span(), span())
   )
 
   expect_equal_tags(
     tagQuery(xTags)$find("div")$after(span())$root(),
-    tagList(div(div(), span(), div(), span()))
+    div(div(), span(), div(), span())
   )
 })
 

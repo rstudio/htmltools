@@ -961,9 +961,17 @@ tagQuerySelected <- function(selected) {
 #   selected[[position]]
 # }
 
-# Return the top level tags as tags
+# Return the top level tags as a tagList or a single tag
 tagQueryTopLevelTags <- function(pseudoRoot) {
-  tagList(!!!tagEnvToTags(pseudoRoot)$children)
+  children <- tagEnvToTags(pseudoRoot)$children
+  len <- length(children)
+  if (len == 1) {
+    # single top level tag
+    children[[1]]
+  } else {
+    # 0 or >1 top leve tags
+    tagList(!!!children)
+  }
 }
 
 tagListPrintAsList <- function(...) {
