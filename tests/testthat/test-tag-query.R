@@ -76,7 +76,7 @@ test_that("asTagEnv upgrades objects", {
   x <- div(class = "test_class", span(class = "inner"))
   xTagEnv <- asTagEnv(x)
 
-  expect_s3_class(xTagEnv, "htmltools.tag.env")
+  expect_s3_class(xTagEnv, "shiny.tag.env")
   expect_s3_class(xTagEnv, "shiny.tag")
 
   expect_null(xTagEnv$parent)
@@ -86,7 +86,7 @@ test_that("asTagEnv upgrades objects", {
 
   expect_equal(length(xTagEnv$children), length(x$children))
   lapply(xTagEnv$children, function(child) {
-    expect_s3_class(child, "htmltools.tag.env")
+    expect_s3_class(child, "shiny.tag.env")
     expect_equal(child$parent$envKey, xTagEnv$envKey)
   })
 
@@ -152,7 +152,7 @@ test_that("tagQuery() root values", {
 test_that("tagQuery() structure", {
   x <- tagQuery(div())
 
-  expect_s3_class(x, "htmltools.tag.query")
+  expect_s3_class(x, "shiny.tag.query")
   lapply(x, function(xI) { expect_true(is.function(xI)) })
 })
 

@@ -257,7 +257,7 @@ asTagEnv_ <- function(x, parent = NULL) {
   if (isTagVal || isTagEnvVal) {
     if (!isTagEnvVal) {
       xList <- x
-      x <- safeListToEnv(xList, "htmltools.tag.env")
+      x <- safeListToEnv(xList, "shiny.tag.env")
       # add parent env and key
       x$parent <- parent
       x$envKey <- obj_address(x)
@@ -302,7 +302,7 @@ tagEnvToTags_ <- function(x) {
   if (isTagEnv(x)) {
     xEl <- x
     # convert to list first to avoid altering the original env obj
-    x <- safeEnvToList(xEl, c("htmltools.tag.env"))
+    x <- safeEnvToList(xEl, c("shiny.tag.env"))
     # undo parent env and key
     x$parent <- NULL
     x$envKey <- NULL
@@ -314,17 +314,17 @@ tagEnvToTags_ <- function(x) {
 
 
 isTagEnv <- function(x) {
-  inherits(x, "htmltools.tag.env")
+  inherits(x, "shiny.tag.env")
 }
 isTagQuery <- function(x) {
-  inherits(x, "htmltools.tag.query")
+  inherits(x, "shiny.tag.query")
 }
 assertNotTagEnvLike <- function(x, fnName) {
   if (isTagEnv(x)) {
-    stop("Tag environment objects (which inherit `htmltools.tag.env`) are not allowed to be processed in `", fnName, "()`")
+    stop("Tag environment objects (which inherit `shiny.tag.env`) are not allowed to be processed in `", fnName, "()`")
   }
   if (isTagQuery(x)) {
-    stop("`tagQuery()` structures (which inherit `htmltools.tag.query`) are not allowed to be processed in `", fnName, "()`")
+    stop("`tagQuery()` structures (which inherit `shiny.tag.query`) are not allowed to be processed in `", fnName, "()`")
   }
   invisible()
 }
@@ -334,60 +334,60 @@ assertNotTagEnvLike <- function(x, fnName) {
 # Yet knit print methods will work as if they are tagList objects.
 visibleTagList <- function(...) {
   y <- tagList(...)
-  oldClass(y) <- c("htmltools.tag.list.visible", oldClass(y))
+  oldClass(y) <- c("shiny.tag.list.visible", oldClass(y))
   y
 }
 
 #' @export
-print.htmltools.tag.list.visible <- function(x, ...) {
-  class(x) <- setdiff(class(x), c("htmltools.tag.list.visible", "shiny.tag.list"))
+print.shiny.tag.list.visible <- function(x, ...) {
+  class(x) <- setdiff(class(x), c("shiny.tag.list.visible", "shiny.tag.list"))
   print(x)
 }
 
 
-shinyTagEnvStr <- "<!-- htmltools.tag.env -->"
+shinyTagEnvStr <- "<!-- shiny.tag.env -->"
 
 #' @export
-as.tags.htmltools.tag.env <- function(x, ...) {
+as.tags.shiny.tag.env <- function(x, ...) {
   stop("Method not allowed", call. = TRUE)
   # as.tags(tagEnvToTags(x), ...)
 }
 #' @export
-print.htmltools.tag.env <- function(x, ...) {
+print.shiny.tag.env <- function(x, ...) {
   cat(shinyTagEnvStr, "\n")
   print(tagEnvToTags(x), ...)
 }
 #' @export
-format.htmltools.tag.env <- function(x, ...) {
+format.shiny.tag.env <- function(x, ...) {
   format(tagEnvToTags(x), ...)
 }
 #' @export
-as.character.htmltools.tag.env <- function(x, ...) {
+as.character.shiny.tag.env <- function(x, ...) {
   as.character(tagEnvToTags(x), ...)
 }
 #' @export
-str.htmltools.tag.env <- function(object, ...) {
+str.shiny.tag.env <- function(object, ...) {
   cat(shinyTagEnvStr, "\n")
   str(tagEnvToTags(object), ...)
 }
 
 #' @export
-as.tags.htmltools.tag.query <- function(x, ...) {
+as.tags.shiny.tag.query <- function(x, ...) {
   stop("Method not allowed", call. = TRUE)
 }
 #' @export
-print.htmltools.tag.query <- function(x, ...) {
+print.shiny.tag.query <- function(x, ...) {
   x$print()
 }
 #' @export
-format.htmltools.tag.query <- function(x, ...) {
+format.shiny.tag.query <- function(x, ...) {
   stop(
     "`tagQuery()` objects can not be written directly as HTML tags.\n",
     "Call either `$root()` or `$selected()` to extract the tags of interest."
   )
 }
 #' @export
-as.character.htmltools.tag.query <- function(x, ...) {
+as.character.shiny.tag.query <- function(x, ...) {
   stop(
     "`tagQuery()` objects can not be written directly as HTML tags.\n",
     "Call either `$root()` or `$selected()` to extract the tags of interest."
@@ -605,7 +605,7 @@ tagQuery_ <- function(
 
   self <-
     structure(
-      class = "htmltools.tag.query",
+      class = "shiny.tag.query",
       list(
         #' @details
         #' # CSS Selector
@@ -877,7 +877,7 @@ tagQuery_ <- function(
           self
         },
         #' * `$print()`: Internal print method. Called by
-        #' `print.htmltools.tag.query()`
+        #' `print.shiny.tag.query()`
         print = function() {
           # Allows `$print()` to know if there is a root el
           tagQueryPrint(pseudoRoot, selected_)

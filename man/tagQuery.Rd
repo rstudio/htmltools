@@ -261,7 +261,7 @@ altered. This method is internally called before each method executes
 and after any alterations where standard tag objects could be
 introduced into the tag structure.
 \item \verb{$print()}: Internal print method. Called by
-\code{print.htmltools.tag.query()}
+\code{print.shiny.tag.query()}
 }
 }
 }
