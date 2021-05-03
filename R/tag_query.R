@@ -35,16 +35,16 @@ NULL
 ## Instead write them where they are needed since they are small.
 ## (Just like we don't wrap dplyr code)
 # tagAppendAttributesAt <- function(tag, cssSelector, ...) {
-#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$root()
+#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$allTags()
 # }
 # tagAddClassAt <- function(tag, cssSelector, class) {
-#   tagQuery(tag)$find(cssSelector)$addClass(class)$root()
+#   tagQuery(tag)$find(cssSelector)$addClass(class)$allTags()
 # }
 # tagMutateAt <- function(x, cssSelector, fn) {
-#   tagQuery(tag)$find(cssSelector)$each(fn)$root()
+#   tagQuery(tag)$find(cssSelector)$each(fn)$allTags()
 # }
 # tagFindAt <- function(x, css) {
-#   tagQuery(tag)$find(cssSelector)$selected()
+#   tagQuery(tag)$find(cssSelector)$selectedTags()
 # }
 
 
@@ -288,7 +288,7 @@ asTagEnv_ <- function(x, parent = NULL) {
 }
 
 # This method MUST undo everything done in `asTagEnv(x)`
-# Do not export to encourage direct use of `tagQuery()$selected()`
+# Do not export to encourage direct use of `tagQuery()$selectedTags()`
 # Only allow for tag environments to be passed in.
 tagEnvToTags <- function(x) {
   if (!isTagEnv(x)) {
@@ -368,14 +368,14 @@ print.shiny.tag.query <- function(x, ...) {
 format.shiny.tag.query <- function(x, ...) {
   stop(
     "`tagQuery()` objects can not be written directly as HTML tags.\n",
-    "Call either `$root()` or `$selected()` to extract the tags of interest."
+    "Call either `$allTags()` or `$selectedTags()` to extract the tags of interest."
   )
 }
 #' @export
 as.character.shiny.tag.query <- function(x, ...) {
   stop(
     "`tagQuery()` objects can not be written directly as HTML tags.\n",
-    "Call either `$root()` or `$selected()` to extract the tags of interest."
+    "Call either `$allTags()` or `$selectedTags()` to extract the tags of interest."
   )
 }
 
@@ -405,7 +405,7 @@ as.character.shiny.tag.query <- function(x, ...) {
 #' tag elements.  This could be accomplished using code similar to
 #'
 #' ```r tagQuery(ex_tags)$find("div .inner
-#' span")$parent()$parent()$addClass("custom-class")$root()
+#' span")$parent()$parent()$addClass("custom-class")$allTags()
 #' ```
 #'
 #' This style of alteration is not easily achieved when using typical "pass by
@@ -422,7 +422,7 @@ as.character.shiny.tag.query <- function(x, ...) {
 #' environment using `$addClass()` and the result of the method call is ignored,
 #' the selected tag environments within the tag query object will still contain
 #' the class addition.  The added class will exist when the tag query tag
-#' environment are converted back to standard tags objects with `$selected()`.
+#' environment are converted back to standard tags objects with `$selectedTags()`.
 #'
 #' Tag environments also contain an extra field, `.$parent`. The `.$parent`
 #' value contains their parent tag environment. The top level tags supplied to
@@ -439,7 +439,7 @@ as.character.shiny.tag.query <- function(x, ...) {
 #' A `tagQuery()` behaves simliar to an R6 object in that internal values are
 #' altered in place. (but a `tagQuery()` object is not implemented with `R6`).
 #' The `tagQuery()`'s methods will return itself as much as possible, unless the
-#' method is directly asking for information, e.g. `$root()` or `$selected()`.
+#' method is directly asking for information, e.g. `$allTags()` or `$selectedTags()`.
 #'
 #' Internally, two important pieces of information are maintained: the root
 #' elements and the selected elements. The root tag environment will always
@@ -451,26 +451,26 @@ as.character.shiny.tag.query <- function(x, ...) {
 #' unless declared otherwise.
 #'
 #' Tag query objects can be created from other tag query objects. Note, unless
-#' there is an intermediate call to `$selected()`, the original and new tag query
+#' there is an intermediate call to `$selectedTags()`, the original and new tag query
 #' objects will share the same tag environments. The new tag query object will
 #' have its selected elements reset. For example:
 #'
 #' ```r
 #' x <- tagQuery(div())
 #' y <- tagQuery(x)
-#' z <- tagQuery(x$root())
+#' z <- tagQuery(x$allTags())
 #'
 #' # Add an example class
 #' y$addClass("example")
 #'
 #' # Show `x` and `y` both have the new class
-#' x$selected()
+#' x$selectedTags()
 #' #> <div class="example"></div>
-#' y$selected()
+#' y$selectedTags()
 #' #> <div class="example"></div>
 #'
-#' # `z` is isolated from the changes in `x` and `y` due to the `$selected()`
-#' z$selected()
+#' # `z` is isolated from the changes in `x` and `y` due to the `$selectedTags()`
+#' z$selectedTags()
 #' #> <div></div>
 #' ```
 #'
@@ -478,7 +478,7 @@ as.character.shiny.tag.query <- function(x, ...) {
 #' @section Limitations:
 #'
 #'   `tagQuery()`s can **not** be used directly within typical `tag` locations.
-#'   An error should be thrown. Instead, please call `$selected()` to retrieve the
+#'   An error should be thrown. Instead, please call `$selectedTags()` to retrieve the
 #'   tag structures of the selected tag elements or root element respectively.
 #'
 #' @param tags Any standard tag object or `tagList()`.
@@ -664,7 +664,7 @@ tagQuery_ <- function(
         #' * `$closest(cssSelector = NULL)`: For each selected element, get the
         #' closest ancestor element (including itself) that matches the
         #' single-element CSS selector. If `cssSelector = NULL`, it is
-        #' equivalent to calling `$selected()`. A new `tagQuery()` object will be
+        #' equivalent to calling `$selectedTags()`. A new `tagQuery()` object will be
         #' created with the selected items set to the closest matching elements.
         closest = function(cssSelector = NULL) {
           newTagQuery(
@@ -688,7 +688,7 @@ tagQuery_ <- function(
         #' created with the selected items set to the filtered selected
         #' elements. Remember, any alterations to the provided tag environments will persist
         #' in calling tag query object. If you need to make local changes, consider
-        #' using `tagQuery(el)$selected()` to use standard tag objects.
+        #' using `tagQuery(el)$selectedTags()` to use standard tag objects.
         filter = function(fn) {
           newSelected <- tagQueryFindFilter(selected_, fn)
           rebuild_()
@@ -828,7 +828,7 @@ tagQuery_ <- function(
         #' environments will be given first, followed by the index position.
         #' Remember, any alterations to the provided tag environments will persist
         #' in calling tag query object. If you need to make local changes, consider
-        #' using `tagQuery(el)$selected()` to use standard tag objects.
+        #' using `tagQuery(el)$selectedTags()` to use standard tag objects.
         each = function(fn) {
           tagQueryEach(selected_, fn)
           # MUST rebuild full tree as anything could have been done to the tag envs
@@ -839,17 +839,17 @@ tagQuery_ <- function(
 
         #' ## Tag Query methods
         #'
-        #' * `$root()`: Converts the top level (root) tag
+        #' * `$allTags()`: Converts the top level (root) tag
         #' elements (and their descendants) from tag environments to
         #' standard [`tag`] objects. All root tags will be returned in a
         #' [`tagList()`].
-        root = function() {
+        allTags = function() {
           tagQueryTopLevelTags(pseudoRoot)
         },
-        #' * `$selected()`: Converts the selected tag environments
+        #' * `$selectedTags()`: Converts the selected tag environments
         #' to standard [`tag`] objects. The selected tags will be returned in a
         #' [`tagList()`].
-        selected = function() {
+        selectedTags = function() {
           tagQuerySelectedAsTags(selected_)
         },
         #' * `$rebuild()`: Makes sure that all tags have been upgraded to tag

@@ -35,7 +35,7 @@ For example, it is difficult to find a set of tags and alter the parent tag
 when working with standard \code{\link{tag}} objects. With \code{tagQuery()}, it is possible
 to find all \verb{<span>} tags that match the css selector \verb{div .inner span}, then
 ask for the grandparent tag objects, then add a class to these grandparent
-tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r tagQuery(ex_tags)$find("div .inner">}}\preformatted{span")$parent()$parent()$addClass("custom-class")$root()
+tag elements.  This could be accomplished using code similar to\if{html}{\out{<div class="r tagQuery(ex_tags)$find("div .inner">}}\preformatted{span")$parent()$parent()$addClass("custom-class")$allTags()
 }\if{html}{\out{</div>}}
 
 This style of alteration is not easily achieved when using typical "pass by
@@ -51,7 +51,7 @@ reference). Meaning that if a css class is added to each selected tag
 environment using \verb{$addClass()} and the result of the method call is ignored,
 the selected tag environments within the tag query object will still contain
 the class addition.  The added class will exist when the tag query tag
-environment are converted back to standard tags objects with \verb{$selected()}.
+environment are converted back to standard tags objects with \verb{$selectedTags()}.
 
 Tag environments also contain an extra field, \code{.$parent}. The \code{.$parent}
 value contains their parent tag environment. The top level tags supplied to
@@ -69,7 +69,7 @@ parent to child relationship and up to 1 parent per child.
 A \code{tagQuery()} behaves simliar to an R6 object in that internal values are
 altered in place. (but a \code{tagQuery()} object is not implemented with \code{R6}).
 The \code{tagQuery()}'s methods will return itself as much as possible, unless the
-method is directly asking for information, e.g. \verb{$root()} or \verb{$selected()}.
+method is directly asking for information, e.g. \verb{$allTags()} or \verb{$selectedTags()}.
 
 Internally, two important pieces of information are maintained: the root
 elements and the selected elements. The root tag environment will always
@@ -81,23 +81,23 @@ environment. All \code{tagQuery()} methods will act on the selected elements
 unless declared otherwise.
 
 Tag query objects can be created from other tag query objects. Note, unless
-there is an intermediate call to \verb{$selected()}, the original and new tag query
+there is an intermediate call to \verb{$selectedTags()}, the original and new tag query
 objects will share the same tag environments. The new tag query object will
 have its selected elements reset. For example:\if{html}{\out{<div class="r">}}\preformatted{x <- tagQuery(div())
 y <- tagQuery(x)
-z <- tagQuery(x$root())
+z <- tagQuery(x$allTags())
 
 # Add an example class
 y$addClass("example")
 
 # Show `x` and `y` both have the new class
-x$selected()
+x$selectedTags()
 #> <div class="example"></div>
-y$selected()
+y$selectedTags()
 #> <div class="example"></div>
 
-# `z` is isolated from the changes in `x` and `y` due to the `$selected()`
-z$selected()
+# `z` is isolated from the changes in `x` and `y` due to the `$selectedTags()`
+z$selectedTags()
 #> <div></div>
 }\if{html}{\out{</div>}}
 }
@@ -107,7 +107,7 @@ z$selected()
 
 
 \code{tagQuery()}s can \strong{not} be used directly within typical \code{tag} locations.
-An error should be thrown. Instead, please call \verb{$selected()} to retrieve the
+An error should be thrown. Instead, please call \verb{$selectedTags()} to retrieve the
 tag structures of the selected tag elements or root element respectively.
 }
 
@@ -160,7 +160,7 @@ elements.
 \item \verb{$closest(cssSelector = NULL)}: For each selected element, get the
 closest ancestor element (including itself) that matches the
 single-element CSS selector. If \code{cssSelector = NULL}, it is
-equivalent to calling \verb{$selected()}. A new \code{tagQuery()} object will be
+equivalent to calling \verb{$selectedTags()}. A new \code{tagQuery()} object will be
 created with the selected items set to the closest matching elements.
 \item \code{siblings(cssSelector = NULL)}: Get the siblings of each element in
 the set of matched elements. If a CSS selector is provided, only the
@@ -174,7 +174,7 @@ the single-element CSS selector. A new \code{tagQuery()} object will be
 created with the selected items set to the filtered selected
 elements. Remember, any alterations to the provided tag environments will persist
 in calling tag query object. If you need to make local changes, consider
-using \code{tagQuery(el)$selected()} to use standard tag objects.
+using \code{tagQuery(el)$selectedTags()} to use standard tag objects.
 \item \verb{$resetSelected()}: A new \code{tagQuery()} object will be created with the
 selected items set to the top level tag objects.
 }
@@ -242,17 +242,17 @@ consistent with other methods, the each of the selected tag
 environments will be given first, followed by the index position.
 Remember, any alterations to the provided tag environments will persist
 in calling tag query object. If you need to make local changes, consider
-using \code{tagQuery(el)$selected()} to use standard tag objects.
+using \code{tagQuery(el)$selectedTags()} to use standard tag objects.
 }
 }
 
 \subsection{Tag Query methods}{
 \itemize{
-\item \verb{$root()}: Converts the top level (root) tag
+\item \verb{$allTags()}: Converts the top level (root) tag
 elements (and their descendants) from tag environments to
 standard \code{\link{tag}} objects. All root tags will be returned in a
 \code{\link[=tagList]{tagList()}}.
-\item \verb{$selected()}: Converts the selected tag environments
+\item \verb{$selectedTags()}: Converts the selected tag environments
 to standard \code{\link{tag}} objects. The selected tags will be returned in a
 \code{\link[=tagList]{tagList()}}.
 \item \verb{$rebuild()}: Makes sure that all tags have been upgraded to tag
