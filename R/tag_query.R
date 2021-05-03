@@ -330,21 +330,6 @@ assertNotTagEnvLike <- function(x, fnName) {
 }
 
 
-# Shim in a class so that the print method of tagList() is not used
-# Yet knit print methods will work as if they are tagList objects.
-visibleTagList <- function(...) {
-  y <- tagList(...)
-  oldClass(y) <- c("shiny.tag.list.visible", oldClass(y))
-  y
-}
-
-#' @export
-print.shiny.tag.list.visible <- function(x, ...) {
-  class(x) <- setdiff(class(x), c("shiny.tag.list.visible", "shiny.tag.list"))
-  print(x)
-}
-
-
 shinyTagEnvStr <- "<!-- shiny.tag.env -->"
 
 #' @export
@@ -981,9 +966,14 @@ tagQueryTopLevelTags <- function(pseudoRoot) {
   tagList(!!!tagEnvToTags(pseudoRoot)$children)
 }
 
+tagListPrintAsList <- function(...) {
+  x <- tagList(...)
+  attr(x, "print.as.list") <- TRUE
+  x
+}
 tagQuerySelectedAsTags <- function(selected) {
-  # return as tagList
-  do.call(visibleTagList, lapply(selected, tagEnvToTags))
+  # return as a `tagList()` with a special attr that will cause it to print like a list
+  tagListPrintAsList(!!!lapply(selected, tagEnvToTags))
 }
 
 tagQueryPrint <- function(pseudoRoot, selected) {

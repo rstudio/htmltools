@@ -211,7 +211,15 @@ as.character.html <- function(x, ...) {
 }
 
 #' @export
-print.shiny.tag.list <- print.shiny.tag
+print.shiny.tag.list <- function(x, ...) {
+  if (isTRUE(attr(x, "print.as.list", exact = TRUE))) {
+    attr(x, "print.as.list") <- NULL
+    class(x) <- setdiff(class(x), "shiny.tag.list")
+    return(print(x))
+  }
+
+  print.shiny.tag(x, ...)
+}
 
 #' @export
 format.shiny.tag.list <- format.shiny.tag
