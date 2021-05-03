@@ -952,7 +952,7 @@ tagQueryGetRoot <- function(root) {
   if (len == 1) {
     children[[1]]
   } else if (len > 1) {
-    do.call(tagList, children)
+    tagList(!!!children)
   } else {
     # no children?
     NULL
@@ -978,7 +978,7 @@ tagQuerySelected <- function(selected) {
 
 # Return the top level tags as tags
 tagQueryTopLevelTags <- function(pseudoRoot) {
-  do.call(tagList, tagEnvToTags(pseudoRoot)$children)
+  tagList(!!!tagEnvToTags(pseudoRoot)$children)
 }
 
 tagQuerySelectedAsTags <- function(selected) {

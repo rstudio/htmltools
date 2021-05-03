@@ -1159,7 +1159,7 @@ as.tags.default <- function(x, ...) {
   # will get here. (tagLists will already have been handled by
   # as.tags.shiny.tag.list)
   if (is.list(x)) {
-    do.call(tagList, unclass(x))
+    tagList(!!!unclass(x))
   } else {
     tagList(as.character(x))
   }
@@ -1199,7 +1199,7 @@ as.tags.shiny.tag.function <- function(x, ...) {
 as.tags.list <- function(x, ...) {
   # Only non-classed lists will hit this method
   # (classed lists will reach the default method)
-  do.call(tagList, x)
+  tagList(!!!x)
 }
 
 #' @export
