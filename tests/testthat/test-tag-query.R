@@ -725,6 +725,22 @@ test_that("rebuilding tag envs after inserting children is done", {
 })
 
 
+test_that("tagQuery() print method displays custom output for selected tags", {
+  local_edition(3)
+
+  expect_snapshot_output(print(
+    tagQuery(div(span()))
+  ))
+
+  expect_snapshot_output(print(
+    tagQuery(div(span()))$find("span")
+  ))
+
+  expect_snapshot_output(print(
+    tagQuery(div(span()))$find("empty")
+  ))
+
+})
 
 
 
