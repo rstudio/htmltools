@@ -4,11 +4,21 @@ output: html_document
 ---
 
 ```{r, include=FALSE}
-knitr::opts_chunk$set(
+library(knitr)
+opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   out.width = "100%",
   fig.align = 'center'
+)
+# Show R console output instead of embedding the HTML
+registerS3method(
+  "knit_print", "shiny.tag", 
+  function(x, ...) print.shiny.tag(x, browse = FALSE)
+)
+registerS3method(
+  "knit_print", "shiny.tag.list", 
+  function(x, ...) print.shiny.tag.list(x, browse = FALSE)
 )
 ```
 
