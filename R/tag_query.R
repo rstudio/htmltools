@@ -500,6 +500,10 @@ tagQuery <- function(tags) {
     # Rebuild pseudo root tag
     pseudoRoot <- asTagEnv(
       findPseudoRootTag(tags)
+    )
+    return(
+      tagQuery_(pseudoRoot, list(tags))
+    )
   }
 
   # If `tags` is a list of tagEnvs...
@@ -521,13 +525,16 @@ tagQuery <- function(tags) {
           "are not tag environments."
         )
       }
-      rootStack <- envirStackUnique()
+      pseudoRootStack <- envirStackUnique()
       walk(tags, function(el) {
-        rootStack$push(findPseudoRootTag(el))
+        pseudoRootStack$push(findPseudoRootTag(el))
       })
-      if (length(roots) != 1) {
+      pseudoRoots <- pseudoRootStack$uniqueList()
+      if (length(pseudoRoots) != 1) {
         stop("All tag environments supplied to `tagQuery()` must share the same root element.")
       }
+      # Rebuild pseudo root tag
+      pseudoRoot <- asTagEnv(pseudoRoots[[1]])
       return(
         tagQuery_(pseudoRoot, tags)
       )
