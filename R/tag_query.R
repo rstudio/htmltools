@@ -365,11 +365,11 @@ print.shiny.tag.query <- function(x, ...) {
   x$print()
 }
 #' @export
-format.htmltools.tag.query <- function(x, ...) {
+format.shiny.tag.query <- function(x, ...) {
   tagQueryAsTagErr()
 }
 #' @export
-as.character.htmltools.tag.query <- function(x, ...) {
+as.character.shiny.tag.query <- function(x, ...) {
   tagQueryAsTagErr()
 }
 
