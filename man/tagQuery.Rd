@@ -56,9 +56,9 @@ of each selected tag, optionally filtered by a \code{cssSelector}.
 \item \verb{$parents(cssSelector = NULL)}: Get the
 ancestors of each selected tag, optionally filtered by a
 \code{cssSelector}.
-\item \verb{$closest(cssSelector)}: For each selected tag,
-get the closest ancestor tag (including itself) satisfying a
-\code{cssSelector}.
+\item \verb{$closest(cssSelector)}: For each selected tag, get the closest
+ancestor tag (including itself) satisfying a \code{cssSelector}. If
+\code{cssSelector = NULL}, it is equivalent to calling \verb{$selected()}.
 }
 }
 
@@ -72,7 +72,7 @@ CSS selector.
 
 \subsection{Reset}{
 \itemize{
-\item \verb{$resetSelection()}: Reset selected tags to the \verb{$root()} tag. Useful
+\item \verb{$resetSelected()}: Reset selected tags to the \verb{$root()} tag. Useful
 in combination with \verb{$replaceWith()} since it empties the selection.
 }
 }
@@ -86,8 +86,8 @@ Unlike query methods, modify methods modify the \code{tagQuery()} object.
 \itemize{
 \item \verb{$addClass(class)}: Adds class(es) to each selected tag.
 \item \verb{$removeClass(class)}: Removes class(es) to each selected tag.
-\item \verb{$toggleClass(class)}: If a given \code{class} element is missing, add
-it; otherwise, remove it.
+\item \verb{$toggleClass(class)}: If the a class value is missing, add it. If
+a  class value already exists, remove it.
 \item \verb{$hasClass(class)}: Does each selected tag have particular
 class(es)?
 \item \verb{$hasAttr(attr)}: Does each selected tag have particular
