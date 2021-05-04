@@ -497,7 +497,9 @@ tagQuery <- function(tags) {
   # Make a new tag query object from the root element of `tags`
   # * Set the selected to `list(tags)`
   if (isTagEnv(tags)) {
-    return(tagQuery_(findPseudoRootTag(tags), list(tags)))
+    # Rebuild pseudo root tag
+    pseudoRoot <- asTagEnv(
+      findPseudoRootTag(tags)
   }
 
   # If `tags` is a list of tagEnvs...
@@ -523,12 +525,11 @@ tagQuery <- function(tags) {
       walk(tags, function(el) {
         rootStack$push(findPseudoRootTag(el))
       })
-      roots <- rootStack$uniqueList()
       if (length(roots) != 1) {
         stop("All tag environments supplied to `tagQuery()` must share the same root element.")
       }
       return(
-        tagQuery_(roots[[1]], tags)
+        tagQuery_(pseudoRoot, tags)
       )
     }
   }
