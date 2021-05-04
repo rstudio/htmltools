@@ -34,6 +34,7 @@ jobs:
         run: |
           install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
           saveRDS(pak::pkg_deps_tree("local::.", dependencies = TRUE), ".github/r-depends.rds")
+          pak::pkg_install("rstudio/quillt")
       - name: Cache R packages
         uses: actions/cache@v2
         with:

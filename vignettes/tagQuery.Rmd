@@ -94,12 +94,12 @@ tagQ$
 
 ### Reset
 
-To reset the set of selected tags to the root tag, use `$reset()`:
+To reset the set of selected tags to the root tag, use `$resetSelected()`:
 
 ```{r}
 tagQ <- tagQuery(div(a()))$find("a")
 tagQ$selected()
-tagQ$reset()$selected()
+tagQ$resetSelected()$selected()
 ```
 
 

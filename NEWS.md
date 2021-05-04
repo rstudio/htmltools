@@ -2,9 +2,9 @@
 
 ## New Features & Improvements
 
-* `{htmltools}` now has it's own `{pkgdown}` site hosted at <https://rstudio.github.io/htmltools/>.
+* `{htmltools}` now has its own `{pkgdown}` site hosted at <https://rstudio.github.io/htmltools/>.
 
-* The new `tagQuery()` function provides a [jQuery](https://jquery.com/) inspired interface to query and/or modify HTML `tag()` (e.g., `div()`) or `tagList()` objects. To learn more, see the [{pkgdown} article](). (#208)
+* The new `tagQuery()` function provides a [jQuery](https://jquery.com/) inspired interface to query and/or modify HTML `tag()` (e.g., `div()`) or `tagList()` objects. To learn more, see the [{pkgdown} article](https://rstudio.github.io/htmltools/articles/tagQuery.html). (#208)
 
 * Added `tagAddRenderHook()` for delaying modification of a tag object until it is rendered. A list of render-time hooks may also be added via the new `.renderHook` argument added to all `tag()` functions. (#215)
 

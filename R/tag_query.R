@@ -334,7 +334,8 @@ shinyTagEnvStr <- "<!-- htmltools.tag.env -->"
 
 #' @export
 as.tags.htmltools.tag.env <- function(x, ...) {
-  as.tags(tagEnvToTags(x), ...)
+  stop("Method not allowed", call. = TRUE)
+  # as.tags(tagEnvToTags(x), ...)
 }
 #' @export
 print.htmltools.tag.env <- function(x, ...) {
