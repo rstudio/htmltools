@@ -735,6 +735,8 @@ tagQuery_ <- function(
         #' tagQ <- tagQuery(div(a()))
         #' tagQ$find("a")$addClass("foo")
         #' tagQ
+        #'
+        #' # To learn more, visit https://rstudio.github.io/htmltools/articles/tagQuery.html
       )
     )
   self
