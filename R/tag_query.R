@@ -734,7 +734,6 @@ tagQuery_ <- function(
         #' Similar to [`tagAppendAttributes()`].
         addAttrs = function(...) {
           tagQueryAttrsAdd(selected_, ...)
-          # no need to rebuild_(); already flattened in add attr function
           self
         },
         #' * `$removeAttrs(attrs)`: Removes the provided attributes in each of
@@ -762,7 +761,6 @@ tagQuery_ <- function(
         #' [`tagAppendChildren()`]
         append = function(...) {
           tagQueryChildrenAppend(selected_, ...)
-          rebuild_()
           self
         },
         #' * `$prepend(...)`: Add all `...` objects as children **before** any
@@ -770,7 +768,6 @@ tagQuery_ <- function(
         #' [`tagAppendChildren()`]
         prepend = function(...) {
           tagQueryChildrenPrepend(selected_, ...)
-          rebuild_()
           self
         },
         #' * `$empty()`: Remove all children in the selected elements. Use this
@@ -778,7 +775,6 @@ tagQuery_ <- function(
         #' elements' children.
         empty = function() {
           tagQueryChildrenEmpty(selected_)
-          # no need to rebuild_
           self
         },
         ## end Adjust Children
@@ -789,7 +785,6 @@ tagQuery_ <- function(
         #' selected elements.
         after = function(...) {
           tagQuerySiblingAfter(selected_, ...)
-          rebuild_()
           self
         },
         #' * `$before(...)`: Add all `...` objects as siblings before each of
@@ -1168,7 +1163,7 @@ tagQueryChildrenSet <- function(els, ...) {
   })
 }
 tagQueryChildrenEmpty <- function(els) {
-  # do not include any arguments.
+  # Do not include any arguments.
   # `dots_list()` returns an empty named list()
   tagQueryChildrenSet(els)
 }
