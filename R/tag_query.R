@@ -847,15 +847,6 @@ tagQuery_ <- function(
         selectedTags = function() {
           tagQuerySelectedAsTags(selected_)
         },
-        #' * `$rebuild()`: Makes sure that all tags have been upgraded to tag
-        #' environments. Objects wrapped in `HTML()` will not be inspected or
-        #' altered. This method is internally called before each method executes
-        #' and after any alterations where standard tag objects could be
-        #' introduced into the tag structure.
-        rebuild = function() {
-          rebuild_()
-          self
-        },
         #' * `$print()`: Internal print method. Called by
         #' `print.shiny.tag.query()`
         print = function() {
