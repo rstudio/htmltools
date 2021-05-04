@@ -503,9 +503,8 @@ tagQuery_ <- function(
         #'
         #' # Vignette
         #'
-        #' To get started with using `tagQuery()`, [see
-        #' here](https://rstudio.github.io/htmltools/articles/tagQuery.html) or
-        #' `browseVignettes(package = "htmltools")`.
+        #' To get started with using `tagQuery()`, visit
+        #' <https://rstudio.github.io/htmltools/articles/tagQuery.html>.
         #'
         #' # Methods
         #'
@@ -540,7 +539,6 @@ tagQuery_ <- function(
         #' siblings of each selected tag, optionally filtered by a
         #' `cssSelector`.
         siblings = function(cssSelector = NULL) {
-          rebuild_()
           newTagQuery(
             tagQueryFindSiblings(selected_, cssSelector)
           )
@@ -704,8 +702,7 @@ tagQuery_ <- function(
         #' each selected tag, with other content.
         empty = function() {
           tagQueryChildrenEmpty(selected_)
-          # MUST rebuild full tree as anything could have been done to the tag envs
-          rebuild_()
+          # no need to rebuild_
           self
         },
 

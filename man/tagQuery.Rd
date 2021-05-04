@@ -20,8 +20,8 @@ underlying HTML tags may be extracted via \verb{$root()} or \verb{$selected()}.
 \code{\link[=tag]{tag()}} (and \code{\link[=tagList]{tagList()}}) objects.
 }
 \section{Vignette}{
-To get started with using \code{tagQuery()}, \href{https://rstudio.github.io/htmltools/articles/tagQuery.html}{see here} or
-\code{browseVignettes(package = "htmltools")}.
+To get started with using \code{tagQuery()}, visit
+\url{https://rstudio.github.io/htmltools/articles/tagQuery.html}.
 }
 
 \section{Methods}{
@@ -158,4 +158,6 @@ to standard \code{\link{tag}} objects. The selected tags will be returned in a
 tagQ <- tagQuery(div(a()))
 tagQ$find("a")$addClass("foo")
 tagQ
+
+# To learn more, visit https://rstudio.github.io/htmltools/articles/tagQuery.html
 }
