@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9003</span>
       </span>
     </div>
 
@@ -127,9 +127,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>tags</th>
-      <td><p>Any standard tag object or <code><a href='tag.html'>tagList()</a></code>. If a <code><a href='https://rdrr.io/r/base/list.html'>list()</a></code> or
-<code><a href='tag.html'>tagList()</a></code> is provided, a <code><a href='tag.html'>tagList()</a></code> will be returned when calling
-<code>$selected()</code>.</p></td>
+      <td><p>Any standard tag object or <code><a href='tag.html'>tagList()</a></code>.</p></td>
     </tr>
     </table>
 
@@ -155,7 +153,7 @@ For example, it is difficult to find a set of tags and alter the parent tag
 when working with standard <code><a href='tag.html'>tag</a></code> objects. With <code>tagQuery()</code>, it is possible
 to find all <code>&lt;span&gt;</code> tags that match the css selector <code>div .inner span</code>, then
 ask for the grandparent tag objects, then add a class to these grandparent
-tag elements.  This could be accomplished using code similar to<div class="r tagQuery(ex_tags)$find("div .inner"></p><pre>span")$parent()$parent()$addClass("custom-class")$root()
+tag elements.  This could be accomplished using code similar to<div class="r tagQuery(ex_tags)$find("div .inner"></p><pre>span")$parent()$parent()$addClass("custom-class")$allTags()
 </pre><p></div></p>
 <p>This style of alteration is not easily achieved when using typical "pass by
 value" R objects or standard tag objects.</p>
@@ -172,7 +170,7 @@ reference). Meaning that if a css class is added to each selected tag
 environment using <code>$addClass()</code> and the result of the method call is ignored,
 the selected tag environments within the tag query object will still contain
 the class addition.  The added class will exist when the tag query tag
-environment are converted back to standard tags objects with <code>$selected()</code>.</p>
+environment are converted back to standard tags objects with <code>$selectedTags()</code>.</p>
 <p>Tag environments also contain an extra field, <code>.$parent</code>. The <code>.$parent</code>
 value contains their parent tag environment. The top level tags supplied to
 <code>tagQuery()</code> will also have a shared parent element. (The shared parent
@@ -188,7 +186,7 @@ parent to child relationship and up to 1 parent per child.</p>
 <p>A <code>tagQuery()</code> behaves simliar to an R6 object in that internal values are
 altered in place. (but a <code>tagQuery()</code> object is not implemented with <code>R6</code>).
 The <code>tagQuery()</code>'s methods will return itself as much as possible, unless the
-method is directly asking for information, e.g. <code>$root()</code> or <code>$selected()</code>.</p>
+method is directly asking for information, e.g. <code>$allTags()</code> or <code>$selectedTags()</code>.</p>
 <p>Internally, two important pieces of information are maintained: the root
 elements and the selected elements. The root tag environment will always
 point (after upgrading to a tag environment) to the original tag object
@@ -198,23 +196,23 @@ selected elements are initialized to a list containing the <code>root</code> tag
 environment. All <code>tagQuery()</code> methods will act on the selected elements
 unless declared otherwise.</p>
 <p>Tag query objects can be created from other tag query objects. Note, unless
-there is an intermediate call to <code>$selected()</code>, the original and new tag query
+there is an intermediate call to <code>$selectedTags()</code>, the original and new tag query
 objects will share the same tag environments. The new tag query object will
 have its selected elements reset. For example:<div class="r"></p><pre><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'>tagQuery</span><span class='op'>(</span><span class='fu'><a href='builder.html'>div</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'>tagQuery</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
-<span class='va'>z</span> <span class='op'>&lt;-</span> <span class='fu'>tagQuery</span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='fu'>root</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>z</span> <span class='op'>&lt;-</span> <span class='fu'>tagQuery</span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='fu'>allTags</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># Add an example class</span>
 <span class='va'>y</span><span class='op'>$</span><span class='fu'>addClass</span><span class='op'>(</span><span class='st'>"example"</span><span class='op'>)</span>
 
 <span class='co'># Show `x` and `y` both have the new class</span>
-<span class='va'>x</span><span class='op'>$</span><span class='fu'>selected</span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>x</span><span class='op'>$</span><span class='fu'>selectedTags</span><span class='op'>(</span><span class='op'>)</span>
 <span class='co'>#&gt; &lt;div class="example"&gt;&lt;/div&gt;</span>
-<span class='va'>y</span><span class='op'>$</span><span class='fu'>selected</span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>y</span><span class='op'>$</span><span class='fu'>selectedTags</span><span class='op'>(</span><span class='op'>)</span>
 <span class='co'>#&gt; &lt;div class="example"&gt;&lt;/div&gt;</span>
 
-<span class='co'># `z` is isolated from the changes in `x` and `y` due to the `$selected()`</span>
-<span class='va'>z</span><span class='op'>$</span><span class='fu'>selected</span><span class='op'>(</span><span class='op'>)</span>
+<span class='co'># `z` is isolated from the changes in `x` and `y` due to the `$selectedTags()`</span>
+<span class='va'>z</span><span class='op'>$</span><span class='fu'>selectedTags</span><span class='op'>(</span><span class='op'>)</span>
 <span class='co'>#&gt; &lt;div&gt;&lt;/div&gt;</span>
 </pre><p></div></p>
 
@@ -224,7 +222,7 @@ have its selected elements reset. For example:<div class="r"></p><pre><span clas
 
 
 <p><code>tagQuery()</code>s can <strong>not</strong> be used directly within typical <code>tag</code> locations.
-An error should be thrown. Instead, please call <code>$selected()</code> to retrieve the
+An error should be thrown. Instead, please call <code>$selectedTags()</code> to retrieve the
 tag structures of the selected tag elements or root element respectively.</p>
     <h2 class="hasAnchor" id="css-selector"><a class="anchor" href="#css-selector"></a>CSS Selector</h2>
 
@@ -274,7 +272,7 @@ elements.</p></li>
 <li><p><code>$closest(cssSelector = NULL)</code>: For each selected element, get the
 closest ancestor element (including itself) that matches the
 single-element CSS selector. If <code>cssSelector = NULL</code>, it is
-equivalent to calling <code>$selected()</code>. A new <code>tagQuery()</code> object will be
+equivalent to calling <code>$selectedTags()</code>. A new <code>tagQuery()</code> object will be
 created with the selected items set to the closest matching elements.</p></li>
 <li><p><code>siblings(cssSelector = NULL)</code>: Get the siblings of each element in
 the set of matched elements. If a CSS selector is provided, only the
@@ -288,7 +286,7 @@ the single-element CSS selector. A new <code>tagQuery()</code> object will be
 created with the selected items set to the filtered selected
 elements. Remember, any alterations to the provided tag environments will persist
 in calling tag query object. If you need to make local changes, consider
-using <code>tagQuery(el)$selected()</code> to use standard tag objects.</p></li>
+using <code>tagQuery(el)$selectedTags()</code> to use standard tag objects.</p></li>
 <li><p><code>$resetSelected()</code>: A new <code>tagQuery()</code> object will be created with the
 selected items set to the top level tag objects.</p></li>
 </ul>
@@ -360,19 +358,18 @@ consistent with other methods, the each of the selected tag
 environments will be given first, followed by the index position.
 Remember, any alterations to the provided tag environments will persist
 in calling tag query object. If you need to make local changes, consider
-using <code>tagQuery(el)$selected()</code> to use standard tag objects.</p></li>
+using <code>tagQuery(el)$selectedTags()</code> to use standard tag objects.</p></li>
 </ul>
 
 
 <h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Tag Query methods</h3>
 
 <ul>
-<li><p><code>$root()</code>: Converts the top level tag
+<li><p><code>$allTags()</code>: Converts the top level (root) tag
 elements (and their descendants) from tag environments to
-standard <code><a href='tag.html'>tag</a></code> objects. If there is more than one element being
-returned, a <code><a href='tag.html'>tagList()</a></code> will be used to hold all of the
-tags.</p></li>
-<li><p><code>$selected()</code>: Converts the selected tag environments
+standard <code><a href='tag.html'>tag</a></code> objects. All root tags will be returned in a
+<code><a href='tag.html'>tagList()</a></code>.</p></li>
+<li><p><code>$selectedTags()</code>: Converts the selected tag environments
 to standard <code><a href='tag.html'>tag</a></code> objects. The selected tags will be returned in a
 <code><a href='tag.html'>tagList()</a></code>.</p></li>
 <li><p><code>$rebuild()</code>: Makes sure that all tags have been upgraded to tag
@@ -381,7 +378,7 @@ altered. This method is internally called before each method executes
 and after any alterations where standard tag objects could be
 introduced into the tag structure.</p></li>
 <li><p><code>$print()</code>: Internal print method. Called by
-<code>print.htmltools.tag.query()</code></p></li>
+<code>print.shiny.tag.query()</code></p></li>
 </ul>
 
 
