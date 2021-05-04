@@ -30,9 +30,9 @@ library(htmltools)
 tagQuery(div(a()))
 ```
 
-Notice how `tagQuery()` tracks two essential pieces: the _root_ (i.e., input) tag as well as _selected_ tags (by default the root is selected). This data structure allows us to [efficiently](#performance) [query](#query), [modify](#modify), and [replace](#replace) particular fragments of the root HTML tag.
+Notice how `tagQuery()` tracks two essential pieces: the input tag(s) as well as _selected_ tags (by default the input tag(s) are selected). This data structure allows us to [efficiently](#performance) [query](#query), [modify](#modify), and [replace](#replace) particular fragments of the root HTML tag.
 
-Since `tagQuery()` isn't itself a `tag()` object, it can't be passed directly to `tag()` or tag rendering functions, but at any given time you can extract the `$root()` or `$selected()` tags.
+Since `tagQuery()` isn't itself a `tag()` object, it can't be passed directly to `tag()` or tag rendering functions, but at any given time you can extract `$allTags()` or the `$selectedTags()`.
 
 ## Query {#query}
 
@@ -48,8 +48,8 @@ To begin querying tags, start with either `$find()` or `$children()`. The former
 
 ```{r}
 tagQ <- tagQuery(html)
-tagQ$find("span")$selected()
-tagQ$children("span")$selected()
+tagQ$find("span")$selectedTags()
+tagQ$children("span")$selectedTags()
 ```
 
 And since `$find()` considers all descendants, it allows for [descendant selectors](https://www.w3.org/TR/CSS22/selector.html#descendant-selectors) (space) and direct [child selectors](https://www.w3.org/TR/CSS22/selector.html#child-selectors) (>).
@@ -60,15 +60,15 @@ And since `$find()` considers all descendants, it allows for [descendant selecto
 
 ```{r}
 tagQ <- tagQuery(html)
-tagQ$find("div a")$selected()
-tagQ$find("div > a")$selected()
-tagQ$find("div > span > a")$selected()
+tagQ$find("div a")$selectedTags()
+tagQ$find("div > a")$selectedTags()
+tagQ$find("div > span > a")$selectedTags()
 ```
 
 Since `tagQuery()` methods may be chained together, you could also implement  `tagQ$find("div > span > a")` as:
 
 ```{r}
-tagQ$find("div")$children("span")$children("a")$selected()
+tagQ$find("div")$children("span")$children("a")$selectedTags()
 ```
 
 ### Siblings
@@ -82,7 +82,7 @@ Although `tagQuery()` doesn't (currently) support [sibling selectors](https://ww
 ```{r}
 tagQ <- tagQuery(html)
 # The moral equivalent to `tagQ$find("a ~ span")`
-tagQ$find("a")$siblings("span")$selected()
+tagQ$find("a")$siblings("span")$selectedTags()
 ```
 
 ### Parents
@@ -95,8 +95,8 @@ In some cases, after finding children, it can be useful to traverse back up the 
 
 ```{r}
 tagQ <- tagQuery(html)
-tagQ$find("a.foo")$parent()$selected()
-tagQ$find("a.foo")$parents()$selected()
+tagQ$find("a.foo")$parent()$selectedTags()
+tagQ$find("a.foo")$parents()$selectedTags()
 ```
 
 <!-- TODO: worth mentioning closest()? -->
@@ -115,7 +115,7 @@ tagQ <- tagQuery(html)
 tagQ$
   find("*")$
   filter(function(x, i) tagHasAttribute(x, "data-foo"))$
-  selected()
+  selectedTags()
 ```
 
 ### Reset
@@ -128,8 +128,8 @@ To reset the set of selected tags to the root tag, use `$resetSelected()`:
 
 ```{r}
 tagQ <- tagQuery(html)$find("a")
-tagQ$selected()
-tagQ$resetSelected()$selected()
+tagQ$selectedTags()
+tagQ$resetSelected()$selectedTags()
 ```
 
 
@@ -146,7 +146,7 @@ tagQ <- tagQuery(html)
 tagQ$
   find("a")$
   addClass("foo")$
-  root()
+  allTags()
 ```
 
 The [mutable](https://en.wikipedia.org/wiki/Immutable_object) behavior of modifier methods not only allows us to modify child tags without losing a reference to the root tag, but it also makes modifications more  [performant](#performance) than they'd otherwise be.
@@ -164,7 +164,7 @@ tagQ <- tagQuery(html)
 tagQ$
   find("span")$
   addAttrs("data-bar" = "foo")$
-  root()
+  allTags()
 ```
 
 Also, to check whether each selected tag has a certain attribute, use `$hasAttr()` (or `$hasClass()`)
@@ -187,7 +187,7 @@ tagQ$
   find("p")$
   prepend(span())$
   append(tags$table())$
-  root()
+  allTags()
 ```
 
 If you'd like to replace all the children, then you can first call `$empty()` before `$append()`. If you like to just remove particular child elements, then you should call `$children()` + the `$remove()` sibling method.
@@ -206,7 +206,7 @@ tagQ$
   find("a")$
   before(span())$
   after(tags$table())$
-  root()
+  allTags()
 ```
 
 ## Replace {#replace}
@@ -224,14 +224,14 @@ tagQ <- tagQuery(html)
 tagQ$
   find("a")$
   replaceWith(p())$
-  root()
+  allTags()
 ```
 
 Use `$remove()` to replace selected tags with nothing:
 
 ```{r}
 tagQ <- tagQuery(html)
-tagQ$find("a")$remove()$root()
+tagQ$find("a")$remove()$allTags()
 ```
 
 And use `$empty()` to replace the _children_ of the selected tags with nothing:
@@ -242,7 +242,7 @@ And use `$empty()` to replace the _children_ of the selected tags with nothing:
 
 ```{r}
 tagQ <- tagQuery(html)
-tagQ$find("span")$empty()$root()
+tagQ$find("span")$empty()$allTags()
 ```
 
 

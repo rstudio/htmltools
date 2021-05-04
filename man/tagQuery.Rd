@@ -12,7 +12,8 @@ tagQuery(tags)
 \value{
 A class with methods that are described below. This class can't be
 used directly inside other \code{\link[=tag]{tag()}} or a \code{\link[=renderTags]{renderTags()}} context, but
-underlying HTML tags may be extracted via \verb{$root()} or \verb{$selected()}.
+underlying HTML tags may be extracted via \verb{$allTags()} or
+\verb{$selectedTags()}.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}\cr\cr \code{tagQuery()} provides a
@@ -56,9 +57,9 @@ of each selected tag, optionally filtered by a \code{cssSelector}.
 \item \verb{$parents(cssSelector = NULL)}: Get the
 ancestors of each selected tag, optionally filtered by a
 \code{cssSelector}.
-\item \verb{$closest(cssSelector)}: For each selected tag, get the closest
+\item \verb{$closest(cssSelector = NULL)}: For each selected tag, get the closest
 ancestor tag (including itself) satisfying a \code{cssSelector}. If
-\code{cssSelector = NULL}, it is equivalent to calling \verb{$selected()}.
+\code{cssSelector = NULL}, it is equivalent to calling \verb{$selectedTags()}.
 }
 }
 
@@ -144,11 +145,9 @@ each selected tag, with other content.
 
 \subsection{Extract HTML tags}{
 \itemize{
-\item \verb{$root()}: Return the (possibly modified) root \code{tags} as a
-\code{\link[=tagList]{tagList()}} object.
-\item \verb{$selected()}: Converts the selected tag environments
-to standard \code{\link{tag}} objects. The selected tags will be returned in a
-\code{\link[=tagList]{tagList()}}.
+\item \verb{$allTags()}: Return the (possibly modified) root \code{tags}.
+\item \verb{$selectedTags()}: Return a \code{\link[=tagList]{tagList()}} of the currently selected
+tags.
 }
 }
 }

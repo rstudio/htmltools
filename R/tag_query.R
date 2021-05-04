@@ -35,16 +35,16 @@ NULL
 ## Instead write them where they are needed since they are small.
 ## (Just like we don't wrap dplyr code)
 # tagAppendAttributesAt <- function(tag, cssSelector, ...) {
-#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$root()
+#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$allTags()
 # }
 # tagAddClassAt <- function(tag, cssSelector, class) {
-#   tagQuery(tag)$find(cssSelector)$addClass(class)$root()
+#   tagQuery(tag)$find(cssSelector)$addClass(class)$allTags()
 # }
 # tagMutateAt <- function(x, cssSelector, fn) {
-#   tagQuery(tag)$find(cssSelector)$each(fn)$root()
+#   tagQuery(tag)$find(cssSelector)$each(fn)$allTags()
 # }
 # tagFindAt <- function(x, css) {
-#   tagQuery(tag)$find(cssSelector)$selected()
+#   tagQuery(tag)$find(cssSelector)$selectedTags()
 # }
 
 
@@ -257,7 +257,7 @@ asTagEnv_ <- function(x, parent = NULL) {
   if (isTagVal || isTagEnvVal) {
     if (!isTagEnvVal) {
       xList <- x
-      x <- safeListToEnv(xList, "htmltools.tag.env")
+      x <- safeListToEnv(xList, "shiny.tag.env")
       # add parent env and key
       x$parent <- parent
       x$envKey <- obj_address(x)
@@ -288,7 +288,7 @@ asTagEnv_ <- function(x, parent = NULL) {
 }
 
 # This method MUST undo everything done in `asTagEnv(x)`
-# Do not export to encourage direct use of `tagQuery()$selected()`
+# Do not export to encourage direct use of `tagQuery()$selectedTags()`
 # Only allow for tag environments to be passed in.
 tagEnvToTags <- function(x) {
   if (!isTagEnv(x)) {
@@ -302,7 +302,7 @@ tagEnvToTags_ <- function(x) {
   if (isTagEnv(x)) {
     xEl <- x
     # convert to list first to avoid altering the original env obj
-    x <- safeEnvToList(xEl, c("htmltools.tag.env"))
+    x <- safeEnvToList(xEl, c("shiny.tag.env"))
     # undo parent env and key
     x$parent <- NULL
     x$envKey <- NULL
@@ -314,10 +314,10 @@ tagEnvToTags_ <- function(x) {
 
 
 isTagEnv <- function(x) {
-  inherits(x, "htmltools.tag.env")
+  inherits(x, "shiny.tag.env")
 }
 isTagQuery <- function(x) {
-  inherits(x, "htmltools.tag.query")
+  inherits(x, "shiny.tag.query")
 }
 assertNotTagEnvLike <- function(x, fnName) {
   if (isTagEnv(x)) {
@@ -330,38 +330,38 @@ assertNotTagEnvLike <- function(x, fnName) {
 }
 
 
-shinyTagEnvStr <- "<!-- htmltools.tag.env -->"
+shinyTagEnvStr <- "<!-- shiny.tag.env -->"
 
 #' @export
-as.tags.htmltools.tag.env <- function(x, ...) {
+as.tags.shiny.tag.env <- function(x, ...) {
   stop("Method not allowed", call. = TRUE)
   # as.tags(tagEnvToTags(x), ...)
 }
 #' @export
-print.htmltools.tag.env <- function(x, ...) {
+print.shiny.tag.env <- function(x, ...) {
   cat(shinyTagEnvStr, "\n")
   print(tagEnvToTags(x), ...)
 }
 #' @export
-format.htmltools.tag.env <- function(x, ...) {
+format.shiny.tag.env <- function(x, ...) {
   format(tagEnvToTags(x), ...)
 }
 #' @export
-as.character.htmltools.tag.env <- function(x, ...) {
+as.character.shiny.tag.env <- function(x, ...) {
   as.character(tagEnvToTags(x), ...)
 }
 #' @export
-str.htmltools.tag.env <- function(object, ...) {
+str.shiny.tag.env <- function(object, ...) {
   cat(shinyTagEnvStr, "\n")
   str(tagEnvToTags(object), ...)
 }
 
 #' @export
-as.tags.htmltools.tag.query <- function(x, ...) {
+as.tags.shiny.tag.query <- function(x, ...) {
   tagQueryAsTagErr()
 }
 #' @export
-print.htmltools.tag.query <- function(x, ...) {
+print.shiny.tag.query <- function(x, ...) {
   x$print()
 }
 #' @export
@@ -373,11 +373,10 @@ as.character.htmltools.tag.query <- function(x, ...) {
   tagQueryAsTagErr()
 }
 
-
 tagQueryAsTagErr <- function() {
   stop(
     "`tagQuery()` objects can not be written directly as HTML tags.",
-    "Call either `$root()` or `$selected()` to extract the tags of interest.",
+    "Call either `$allTags()` or `$selectedTags()` to extract the tags of interest.",
     call. = FALSE
   )
 }
@@ -392,7 +391,8 @@ tagQueryAsTagErr <- function() {
 #' @param tags A [tag()], [tagList()], or [list()] of tags.
 #' @return A class with methods that are described below. This class can't be
 #'   used directly inside other [tag()] or a [renderTags()] context, but
-#'   underlying HTML tags may be extracted via `$root()` or `$selected()`.
+#'   underlying HTML tags may be extracted via `$allTags()` or
+#'   `$selectedTags()`.
 #' @export
 tagQuery <- function(tags) {
 
@@ -404,7 +404,7 @@ tagQuery <- function(tags) {
   # Make a new tag query object from the root element of `tags`
   # * Set the selected to `list(tags)`
   if (isTagEnv(tags)) {
-    return(tagQuery_(findRootTag(tags), list(tags)))
+    return(tagQuery_(findPseudoRootTag(tags), list(tags)))
   }
 
   # If `tags` is a list of tagEnvs...
@@ -428,7 +428,7 @@ tagQuery <- function(tags) {
       }
       rootStack <- envirStackUnique()
       walk(tags, function(el) {
-        rootStack$push(findRootTag(el))
+        rootStack$push(findPseudoRootTag(el))
       })
       roots <- rootStack$uniqueList()
       if (length(roots) != 1) {
@@ -442,7 +442,7 @@ tagQuery <- function(tags) {
 
   # Convert standard tags to tag envs
   root <- asTagEnv(
-    wrapWithRootTag(tags)
+    wrapWithPseudoRootTag(tags)
   )
   # Select the top level tags
   selected <- tagQueryFindResetSelected(root)
@@ -459,22 +459,22 @@ tagQuery <- function(tags) {
 #' @aliases NULL
 #' @usage NULL
 tagQuery_ <- function(
-  root,
+  pseudoRoot,
   # Using a trailing `_` to avoid name collisions
   selected_
 ) {
-  if (!isRootTag(root)) {
-    stop("`tagQuery_(root=)` must be a root tag environment")
+  if (!isPseudoRootTag(pseudoRoot)) {
+    stop("`tagQuery_(pseudoRoot=)` must be a pseudoRoot tag environment")
   }
 
   # Use `var_` names to avoid namespace collision
   # Make sure all elements are tag envs
   rebuild_ <- function() {
-    # safe to do as `root` will never be turned into a standard list
-    asTagEnv(root)
+    # safe to do as `pseudoRoot` will never be turned into a standard list
+    asTagEnv(pseudoRoot)
   }
   newTagQuery <- function(selected) {
-    tagQuery_(root, selected)
+    tagQuery_(pseudoRoot, selected)
   }
 
   setSelected <- function(selected) {
@@ -489,7 +489,7 @@ tagQuery_ <- function(
           " that was not a tag environment"
         )
       }
-      !isRootTag(el)
+      !isPseudoRootTag(el)
     })
     selected
   }
@@ -497,7 +497,7 @@ tagQuery_ <- function(
 
   self <-
     structure(
-      class = "htmltools.tag.query",
+      class = "shiny.tag.query",
       list(
         #' @details
         #'
@@ -560,9 +560,9 @@ tagQuery_ <- function(
             tagQueryFindParents(selected_, cssSelector)
           )
         },
-        #' * `$closest(cssSelector)`: For each selected tag, get the closest
+        #' * `$closest(cssSelector = NULL)`: For each selected tag, get the closest
         #' ancestor tag (including itself) satisfying a `cssSelector`. If
-        #' `cssSelector = NULL`, it is equivalent to calling `$selected()`.
+        #' `cssSelector = NULL`, it is equivalent to calling `$selectedTags()`.
         closest = function(cssSelector = NULL) {
           newTagQuery(
             tagQueryFindClosest(selected_, cssSelector)
@@ -585,7 +585,7 @@ tagQuery_ <- function(
         #' in combination with `$replaceWith()` since it empties the selection.
         resetSelected = function() {
           newTagQuery(
-            tagQueryFindResetSelected(root)
+            tagQueryFindResetSelected(pseudoRoot)
           )
         },
 
@@ -708,15 +708,13 @@ tagQuery_ <- function(
 
         #' ## Extract HTML tags
         #'
-        #' * `$root()`: Return the (possibly modified) root `tags` as a
-        #'   [tagList()] object.
-        root = function() {
-          tagQueryRootAsTags(root)
+        #' * `$allTags()`: Return the (possibly modified) root `tags`.
+        allTags = function() {
+          tagQueryTopLevelTags(pseudoRoot)
         },
-        #' * `$selected()`: Converts the selected tag environments
-        #' to standard [`tag`] objects. The selected tags will be returned in a
-        #' [`tagList()`].
-        selected = function() {
+        #' * `$selectedTags()`: Return a [tagList()] of the currently selected
+        #' tags.
+        selectedTags = function() {
           tagQuerySelectedAsTags(selected_)
         },
         rebuild = function() {
@@ -725,7 +723,7 @@ tagQuery_ <- function(
         },
         print = function() {
           # Allows `$print()` to know if there is a root el
-          tagQueryPrint(root, selected_)
+          tagQueryPrint(pseudoRoot, selected_)
           invisible(self)
         }
         #' @examples
@@ -774,12 +772,12 @@ validateFnCanIterate <- function(fn) {
   }
 }
 
-isRootTag <- function(x) {
+isPseudoRootTag <- function(x) {
   name <- x$name
-  isTag(x) && !is.null(name) && isTRUE(name == "tagQuery")
+  isTag(x) && !is.null(name) && isTRUE(name == "TagQueryPseudoRoot")
 }
 
-findRootTag <- function(el) {
+findPseudoRootTag <- function(el) {
   while (!is.null(el$parent)) {
     el <- el$parent
   }
@@ -789,9 +787,9 @@ findRootTag <- function(el) {
 # Wrap the top level tags in the tagQuery() in a `tagQuery` tag object.
 # This allows for appending and prepending elements to the top level tags.
 # (Don't fight the structures... embrace them!)
-wrapWithRootTag <- function(x) {
+wrapWithPseudoRootTag <- function(x) {
   tagSetChildren(
-    tag("tagQuery", list()),
+    tag("TagQueryPseudoRoot", list()),
     x
   )
 }
@@ -804,7 +802,7 @@ tagQueryGetRoot <- function(root) {
   if (len == 1) {
     children[[1]]
   } else if (len > 1) {
-    do.call(tagList, children)
+    tagList(!!!children)
   } else {
     # no children?
     NULL
@@ -813,7 +811,7 @@ tagQueryGetRoot <- function(root) {
 
 # Return a list of the manually selected elements
 tagQuerySelected <- function(selected) {
-  if (length(selected) == 1 && isRootTag(selected[[1]])) {
+  if (length(selected) == 1 && isPseudoRootTag(selected[[1]])) {
     list()
   } else {
     selected
@@ -828,26 +826,39 @@ tagQuerySelected <- function(selected) {
 #   selected[[position]]
 # }
 
-# Return the top level tags as tags
-tagQueryRootAsTags <- function(root) {
-  tagQueryGetRoot(tagEnvToTags(root))
+# Return the top level tags as a tagList or a single tag
+tagQueryTopLevelTags <- function(pseudoRoot) {
+  children <- tagEnvToTags(pseudoRoot)$children
+  len <- length(children)
+  if (len == 1) {
+    # single top level tag
+    children[[1]]
+  } else {
+    # 0 or >1 top leve tags
+    tagList(!!!children)
+  }
 }
 
+tagListPrintAsList <- function(...) {
+  x <- tagList(...)
+  attr(x, "print.as.list") <- TRUE
+  x
+}
 tagQuerySelectedAsTags <- function(selected) {
-  # return as tagList
-  do.call(tagList, lapply(selected, tagEnvToTags))
+  # return as a `tagList()` with a special attr that will cause it to print like a list
+  tagListPrintAsList(!!!lapply(selected, tagEnvToTags))
 }
 
-tagQueryPrint <- function(root, selected) {
+tagQueryPrint <- function(pseudoRoot, selected) {
   cat("Root:\n")
-  print(tagQueryRootAsTags(root))
+  print(tagQueryTopLevelTags(pseudoRoot))
 
   cat("\nSelected:")
 
   if (length(selected) == 0) {
     cat(" (Empty)\n")
   } else {
-    if (length(selected) == 1 && isRootTag(selected[[1]])) {
+    if (identical(pseudoRoot$children, selected)) {
       cat(" (Root)\n")
     } else {
       cat("\n")
@@ -1185,11 +1196,12 @@ tagQueryClassToggle <- function(els, class) {
 
 
 # Return a list of `root$children`.
-tagQueryFindResetSelected <- function(root) {
-  if (!isTagEnv(root)) {
-    stop("`root` must be a tag environment")
+# This may change if root ends up becoming a list of elements
+tagQueryFindResetSelected <- function(pseudoRoot) {
+  if (!isTagEnv(pseudoRoot)) {
+    stop("`pseudoRoot` must be a tag environment")
   }
-  Filter(root$children, f = isTagEnv)
+  Filter(pseudoRoot$children, f = isTagEnv)
 }
 # Return a list of the unique set of parent elements
 tagQueryFindParent <- function(els, cssSelector = NULL) {
@@ -1340,7 +1352,7 @@ cssSelectorToSelector <- function(cssSelector) {
       selectorList <- asSelectorList(cssSelector)
       if (length(selectorList) > 1) {
         stop(
-          "Can only match a single element selector. ",
+          "Can only match using a simple CSS selector. ",
           "Looking for descendant elements is not allowed."
         )
       }
