@@ -62,7 +62,7 @@ get the closest ancestor tag (including itself) satisfying a
 }
 }
 
-\subsection{Filter}{
+\subsection{Custom filter}{
 \itemize{
 \item \verb{$filter(fn)}: Filter the selected tags to those for which \code{fn(x, i)} returns \code{TRUE}. In addition to an R function with two arguments
 (the selected tag \code{x} and the index \code{i}), \code{fn} may also be a valid
@@ -72,7 +72,8 @@ CSS selector.
 
 \subsection{Reset}{
 \itemize{
-\item \verb{$resetSelection()}: Reset selected tags to the \verb{$root()} tag.
+\item \verb{$resetSelection()}: Reset selected tags to the \verb{$root()} tag. Useful
+in combination with \verb{$replaceWith()} since it empties the selection.
 }
 }
 
@@ -104,9 +105,6 @@ selected tag.
 existing children.
 \item \verb{$prepend(...)}: For each selected tag, insert \code{...} \strong{before} any
 existing children.
-\item \verb{$empty()}: Remove any children of each selected tag. Use this
-method before calling \verb{$append(...)} to replace the children of
-each selected tag, with other content.
 }
 }
 
@@ -116,10 +114,6 @@ each selected tag, with other content.
 selected tags.
 \item \verb{$before(...)}: Add all \code{...} objects as siblings before each of
 the selected tags.
-\item \verb{$replaceWith(...)}: Replace all selected tags with \code{...} in the
-root tag and clear the selection.
-\item \verb{$remove(...)}: Remove all selected tags from the root tag and
-clear the current selection.
 }
 }
 
@@ -133,6 +127,19 @@ object.
 }
 }
 
+}
+
+\subsection{Replace methods}{
+
+#' * \verb{$replaceWith(...)}: Replace all selected tags with \code{...} in the
+root tag and clear the selection.
+\itemize{
+\item \verb{$remove(...)}: Remove all selected tags from the root tag and
+clear the current selection.
+\item \verb{$empty()}: Remove any children of each selected tag. Use this
+method before calling \verb{$append(...)} to replace the children of
+each selected tag, with other content.
+}
 }
 
 \subsection{Extract HTML tags}{
