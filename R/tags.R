@@ -440,14 +440,14 @@ tagGetAttribute <- function(tag, attr) {
   if (all(vapply(result, is.atomic, logical(1)))) {
     # Convert all attribs to chars explicitly; prevents us from messing up factors
     # Separate multiple attributes with the same name
-    vals <- lapply(result, function(val) {
+    vals <- vapply(result, function(val) {
       val <- as.character(val)
       # Combine vector values if they exist
       if (length(val) > 1) {
         val <- paste0(val, collapse = " ")
       }
       val
-    })
+    }, character(1))
     result <- paste0(vals, collapse = " ")
   } else {
     # When retrieving values that are not atomic, return a list of values
