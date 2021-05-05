@@ -145,21 +145,9 @@ each selected tag, with other content.
 
 \subsection{Extract HTML tags}{
 \itemize{
-<<<<<<< HEAD
 \item \verb{$allTags()}: Return the (possibly modified) root \code{tags}.
 \item \verb{$selectedTags()}: Return a \code{\link[=tagList]{tagList()}} of the currently selected
 tags.
-=======
-\item \verb{$allTags()}: Converts the top level (root) tag
-elements (and their descendants) from tag environments to
-standard \code{\link{tag}} objects. All root tags will be returned in a
-\code{\link[=tagList]{tagList()}}.
-\item \verb{$selectedTags()}: Converts the selected tag environments
-to standard \code{\link{tag}} objects. The selected tags will be returned in a
-\code{\link[=tagList]{tagList()}}.
-\item \verb{$print()}: Internal print method. Called by
-\code{print.shiny.tag.query()}
->>>>>>> master
 }
 }
 }
