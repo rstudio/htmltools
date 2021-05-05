@@ -43,7 +43,7 @@ NULL
 # tagMutateAt <- function(x, cssSelector, fn) {
 #   tagQuery(tag)$find(cssSelector)$each(fn)$allTags()
 # }
-# tagFindAt <- function(x, css) {
+# tagFindAt <- function(x, cssSelector) {
 #   tagQuery(tag)$find(cssSelector)$selectedTags()
 # }
 
@@ -362,7 +362,31 @@ as.tags.shiny.tag.query <- function(x, ...) {
 }
 #' @export
 print.shiny.tag.query <- function(x, ...) {
-  x$print()
+  tagQ <- x
+  cat("`$allTags()`:\n")
+  allTags <- tagQ$allTags()
+  print(allTags)
+
+  selectedTags <- tagQ$selectedTags()
+
+  cat("\n`$selectedTags()`:")
+
+  if (length(selectedTags) == 0) {
+    cat(" (Empty selection)\n")
+  } else {
+    # Convert allTags to same style of object as selected tags
+    if (!isTagList(allTags)) allTags <- tagList(allTags)
+    allTags <- tagListPrintAsList(!!!allTags)
+
+    if (identical(allTags, selectedTags)) {
+      cat(" `$allTags()`\n")
+    } else {
+      cat("\n")
+      print(selectedTags)
+    }
+  }
+
+  invisible(x)
 }
 #' @export
 format.shiny.tag.query <- function(x, ...) {
@@ -854,13 +878,6 @@ tagQuery_ <- function(
         #' [`tagList()`].
         selectedTags = function() {
           tagQuerySelectedAsTags(selected_)
-        },
-        #' * `$print()`: Internal print method. Called by
-        #' `print.shiny.tag.query()`
-        print = function() {
-          # Allows `$print()` to know if there is a root el
-          tagQueryPrint(pseudoRoot, selected_)
-          invisible(self)
         }
       )
     )
@@ -976,30 +993,6 @@ tagListPrintAsList <- function(...) {
 tagQuerySelectedAsTags <- function(selected) {
   # return as a `tagList()` with a special attr that will cause it to print like a list
   tagListPrintAsList(!!!lapply(selected, tagEnvToTags))
-}
-
-tagQueryPrint <- function(pseudoRoot, selected) {
-  cat("Root:\n")
-  print(tagQueryTopLevelTags(pseudoRoot))
-
-  cat("\nSelected:")
-
-  if (length(selected) == 0) {
-    cat(" (Empty)\n")
-  } else {
-    if (identical(pseudoRoot$children, selected)) {
-      cat(" (Root)\n")
-    } else {
-      cat("\n")
-      selectedTags <- tagQuerySelectedAsTags(selected)
-      # add separator
-      walkI(selectedTags, function(selectedTag, i) {
-        cat("[[", i, "]]\n", sep = "")
-        print(selectedTag)
-      })
-    }
-  }
-
 }
 
 

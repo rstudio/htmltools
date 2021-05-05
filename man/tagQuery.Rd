@@ -255,8 +255,6 @@ standard \code{\link{tag}} objects. All root tags will be returned in a
 \item \verb{$selectedTags()}: Converts the selected tag environments
 to standard \code{\link{tag}} objects. The selected tags will be returned in a
 \code{\link[=tagList]{tagList()}}.
-\item \verb{$print()}: Internal print method. Called by
-\code{print.shiny.tag.query()}
 }
 }
 }
