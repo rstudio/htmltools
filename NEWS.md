@@ -12,6 +12,8 @@
 
 ## Bug Fixes
 
+* When retrieving a tag attribute using `tagGetAttribute(tag, attr)`, `NA` values will be removed before combing remaining attribute values. If all attribute values are `NA`, then a single `NA` value will be returned. (#212)
+
 * Closed #197: Fixed rendering of boolean attributes in <script> tags rendered via renderDependencies() (#197, thanks @atusy).
 
 * Closed #222: Unnamed attributes are no longer allowed to be appended via `tagAppendAttribs()`. When trying to print unnamed tag attribs, a better error message is provided. (#229)

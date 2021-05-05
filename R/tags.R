@@ -428,6 +428,15 @@ tagGetAttribute <- function(tag, attr) {
   }
 
   result <- attribs[attrIdx]
+  # Remove NA values or return a single NA value
+  if (anyNA(result)) {
+    na_idx <- is.na(result)
+    if (all(na_idx)) {
+      return(NA)
+    }
+    result <- result[!na_idx]
+  }
+
   if (all(vapply(result, is.atomic, logical(1)))) {
     # Convert all attribs to chars explicitly; prevents us from messing up factors
     # Separate multiple attributes with the same name

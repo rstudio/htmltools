@@ -545,6 +545,32 @@ test_that("NA attributes are rendered correctly", {
   )
 })
 
+test_that("NA attributes are retrieved correctly", {
+  expect_foo_attr <- function(y, ...) {
+    testTag <- tags$div("text", ...)
+    expect_identical(
+      tagGetAttribute(testTag, "foo"),
+      y
+    )
+  }
+  expect_foo_attr(NA, foo = NA)
+  expect_foo_attr(NA, class = "a", foo = NA)
+  expect_foo_attr(NA, class = "a", foo = NA, class = "b")
+
+  # Multiple NA's are coalesced
+  expect_foo_attr(NA, class = "a", foo = NA, class = "b", foo = NA)
+
+  # A non-NA value supersedes NA
+  expect_foo_attr("b", class = "a", foo = NA, foo = "b")
+  expect_foo_attr("b c", class = "a", foo = "b", foo = NA, foo = "c")
+  expect_foo_attr("b c", class = "a", foo = "b", foo = NA, foo = NA, foo = "c")
+
+  # Non atomic value cause a list to be returned.
+  expect_foo_attr(list(list("b")), class = "a", foo = NA, foo = list("b"))
+  expect_foo_attr(list(list("b"), list("c")), class = "a", foo = list("b"), foo = NA, foo = list("c"))
+  expect_foo_attr(list("b", list("c")), class = "a", foo = "b", foo = NA, foo = NA, foo = list("c"))
+})
+
 test_that("Tag list tree is rendered in DOM tree order", {
   # Tree order is preorder, depth-first traversal
   # https://dom.spec.whatwg.org/#concept-tree
