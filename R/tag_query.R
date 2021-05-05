@@ -404,7 +404,13 @@ tagQuery <- function(tags) {
   # Make a new tag query object from the root element of `tags`
   # * Set the selected to `list(tags)`
   if (isTagEnv(tags)) {
-    return(tagQuery_(findPseudoRootTag(tags), list(tags)))
+    # Rebuild pseudo root tag
+    pseudoRoot <- asTagEnv(
+      findPseudoRootTag(tags)
+    )
+    return(
+      tagQuery_(pseudoRoot, list(tags))
+    )
   }
 
   # If `tags` is a list of tagEnvs...
@@ -426,16 +432,18 @@ tagQuery <- function(tags) {
           "are not tag environments."
         )
       }
-      rootStack <- envirStackUnique()
+      pseudoRootStack <- envirStackUnique()
       walk(tags, function(el) {
-        rootStack$push(findPseudoRootTag(el))
+        pseudoRootStack$push(findPseudoRootTag(el))
       })
-      roots <- rootStack$uniqueList()
-      if (length(roots) != 1) {
+      pseudoRoots <- pseudoRootStack$uniqueList()
+      if (length(pseudoRoots) != 1) {
         stop("All tag environments supplied to `tagQuery()` must share the same root element.")
       }
+      # Rebuild pseudo root tag
+      pseudoRoot <- asTagEnv(pseudoRoots[[1]])
       return(
-        tagQuery_(roots[[1]], tags)
+        tagQuery_(pseudoRoot, tags)
       )
     }
   }
@@ -624,7 +632,6 @@ tagQuery_ <- function(
         #' * `$addAttrs(...)`: Add a set of attributes to each selected tag.
         addAttrs = function(...) {
           tagQueryAttrsAdd(selected_, ...)
-          # no need to rebuild_(); already flattened in add attr function
           self
         },
         #' * `$removeAttrs(attrs)`: Remove a set of attributes from each
@@ -644,14 +651,12 @@ tagQuery_ <- function(
         #' existing children.
         append = function(...) {
           tagQueryChildrenAppend(selected_, ...)
-          rebuild_()
           self
         },
         #' * `$prepend(...)`: For each selected tag, insert `...` **before** any
         #' existing children.
         prepend = function(...) {
           tagQueryChildrenPrepend(selected_, ...)
-          rebuild_()
           self
         },
         #' ### Siblings
@@ -660,7 +665,6 @@ tagQuery_ <- function(
         #' selected tags.
         after = function(...) {
           tagQuerySiblingAfter(selected_, ...)
-          rebuild_()
           self
         },
         #' * `$before(...)`: Add all `...` objects as siblings before each of
@@ -702,7 +706,6 @@ tagQuery_ <- function(
         #' each selected tag, with other content.
         empty = function() {
           tagQueryChildrenEmpty(selected_)
-          # no need to rebuild_
           self
         },
 
@@ -716,10 +719,6 @@ tagQuery_ <- function(
         #' tags.
         selectedTags = function() {
           tagQuerySelectedAsTags(selected_)
-        },
-        rebuild = function() {
-          rebuild_()
-          self
         },
         print = function() {
           # Allows `$print()` to know if there is a root el
@@ -1033,7 +1032,7 @@ tagQueryChildrenSet <- function(els, ...) {
   })
 }
 tagQueryChildrenEmpty <- function(els) {
-  # do not include any arguments.
+  # Do not include any arguments.
   # `dots_list()` returns an empty named list()
   tagQueryChildrenSet(els)
 }
