@@ -255,11 +255,6 @@ standard \code{\link{tag}} objects. All root tags will be returned in a
 \item \verb{$selectedTags()}: Converts the selected tag environments
 to standard \code{\link{tag}} objects. The selected tags will be returned in a
 \code{\link[=tagList]{tagList()}}.
-\item \verb{$rebuild()}: Makes sure that all tags have been upgraded to tag
-environments. Objects wrapped in \code{HTML()} will not be inspected or
-altered. This method is internally called before each method executes
-and after any alterations where standard tag objects could be
-introduced into the tag structure.
 }
 }
 }
