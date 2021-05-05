@@ -1,29 +1,30 @@
 # tagQuery() print method displays custom output for selected tags
 
-    Root:
+    `$allTags()`:
     <div>
       <span></span>
     </div>
     
-    Selected: (Root)
+    `$selectedTags()`: `$allTags()`
 
 ---
 
-    Root:
+    `$allTags()`:
     <div>
       <span></span>
     </div>
     
-    Selected:
+    `$selectedTags()`:
     [[1]]
     <span></span>
+    
 
 ---
 
-    Root:
+    `$allTags()`:
     <div>
       <span></span>
     </div>
     
-    Selected: (Empty)
+    `$selectedTags()`: (Empty selection)
 
