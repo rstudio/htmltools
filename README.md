@@ -10,7 +10,7 @@ Downloads](https://cranlogs.r-pkg.org/badges/grand-total/htmltools)](https://www
 experimental](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 <!-- badges: end -->
 
-# htmltools
+# htmltools <a href='https://rstudio.github.io/htmltools'><img src='man/figures/logo.png' align="right" height="138" /></a>
 
 Tools for creating, manipulating, and writing HTML from R.
 
