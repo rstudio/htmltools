@@ -1,7 +1,7 @@
 url: https://rstudio.github.io/htmltools/
 
-development:
-  mode: release
+# development:
+#   mode: auto
 
 toc:
   depth: 2
