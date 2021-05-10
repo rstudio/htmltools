@@ -303,6 +303,27 @@ tagEnvToTags_ <- function(x) {
     # undo parent env and key
     x$parent <- NULL
     x$envKey <- NULL
+    xNames <- names(x)
+
+    # Reorder the names to match a typical tag() structure that has `name` first
+    # Avoid calling `setdiff()` if possible (it is slow).
+    newNames <- c(
+      if (hasName <- which(xNames == "name") > 0) "name",
+      if (hasAttrib <- which(xNames == "attribs") > 0) "attribs",
+      if (hasChildren <- which(xNames == "children") > 0) "children",
+      if (
+        (!hasName) ||
+        (!hasAttrib) ||
+        (!hasChildren) ||
+        length(xNames) > 3
+      ) {
+        setdiff(xNames, c("name", "attribs", "children"))
+      }
+    )
+    # reorder values
+    x[] <- x[newNames]
+    # reorder names
+    names(x) <- newNames
     # recurse through children
     x$children <- lapply(x$children, tagEnvToTags_)
   }
