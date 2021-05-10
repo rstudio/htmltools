@@ -263,9 +263,6 @@ asTagEnv_ <- function(x, parent = NULL) {
       x$envKey <- obj_address(x)
     }
 
-    # Make sure all attribs are unique
-    x$attribs <- flattenTagAttribs(x$attribs)
-
     # Recurse through children
     if (length(x$children) != 0) {
       # Possible optimization... name the children tags to the formatted values.
