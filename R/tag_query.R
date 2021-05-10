@@ -320,11 +320,12 @@ tagEnvToTags_ <- function(x) {
         setdiff(xNames, c("name", "attribs", "children"))
       }
     )
-    # reorder values
+    # Reorder values
     x[] <- x[newNames]
-    # reorder names
+    # Reorder names
     names(x) <- newNames
-    # recurse through children
+
+    # Recurse through children
     x$children <- lapply(x$children, tagEnvToTags_)
   }
   x
