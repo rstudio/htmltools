@@ -9,21 +9,24 @@
 \alias{tagAppendChild}
 \alias{tagAppendChildren}
 \alias{tagSetChildren}
+\alias{tagInsertChildren}
 \title{HTML Tag Object}
 \usage{
 tagList(...)
 
-tagAppendAttributes(tag, ...)
+tagAppendAttributes(tag, ..., .cssSelector = NULL)
 
 tagHasAttribute(tag, attr)
 
 tagGetAttribute(tag, attr)
 
-tagAppendChild(tag, child)
+tagAppendChild(tag, child, .cssSelector = NULL)
 
-tagAppendChildren(tag, ..., list = NULL)
+tagAppendChildren(tag, ..., .cssSelector = NULL, list = NULL)
 
-tagSetChildren(tag, ..., list = NULL)
+tagSetChildren(tag, ..., .cssSelector = NULL, list = NULL)
+
+tagInsertChildren(tag, after, ..., .cssSelector = NULL, list = NULL)
 
 tag(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL)
 }
@@ -32,12 +35,16 @@ tag(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL)
 
 \item{tag}{A tag to append child elements to.}
 
+\item{.cssSelector}{A character string containing a \href{https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors}{CSS selector} for targeting particular (inner) tags of interest. At the moment, only a combination of \href{https://www.w3.org/TR/CSS22/selector.html#type-selectors}{type} (e.g, \code{div}), \href{https://www.w3.org/TR/CSS22/selector.html#class-html}{class} (e.g., \code{.my-class}), \href{https://www.w3.org/TR/CSS22/selector.html#id-selectors}{id} (e.g., \verb{#myID}), and \href{https://www.w3.org/TR/CSS22/selector.html#universal-selector}{universal} (\code{*}) selectors within a given \href{https://www.w3.org/TR/CSS22/selector.html#selector-syntax}{simple selector} is supported.}
+
 \item{attr}{The name of an attribute.}
 
 \item{child}{A child element to append to a parent tag.}
 
 \item{list}{An optional list of elements. Can be used with or instead of the
 \code{...} items.}
+
+\item{after}{an integer value (i.e., subscript) referring to the child position to append after.}
 
 \item{_tag_name}{HTML tag name}
 

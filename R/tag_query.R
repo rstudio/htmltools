@@ -709,7 +709,7 @@ tagQuery_ <- function(
 
         #' ## Replace methods
         #'
-        #' #' * `$replaceWith(...)`: Replace all selected tags with `...` in the
+        #' * `$replaceWith(...)`: Replace all selected tags with `...` in the
         #' root tag and clear the selection.
         replaceWith = function(...) {
           tagQuerySiblingReplaceWith(selected_, ...)

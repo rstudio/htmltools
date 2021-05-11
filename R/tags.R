@@ -393,8 +393,14 @@ tagAddRenderHook <- function(tag, func, replace = FALSE) {
 
 #' @rdname tag
 #' @export
-tagAppendAttributes <- function(tag, ...) {
+tagAppendAttributes <- function(tag, ..., .cssSelector = NULL) {
   throw_if_tag_function(tag)
+  if (!is.null(.cssSelector)) {
+    return(
+      tagQuery(tag)$find(.cssSelector)$addAttrs(...)$allTags()
+    )
+  }
+
   newAttribs <- dropNullsOrEmpty(dots_list(...))
   if (any(!nzchar(names2(newAttribs)))) {
     stop(
@@ -435,33 +441,84 @@ tagGetAttribute <- function(tag, attr) {
 }
 
 #' @rdname tag
+#' @param .cssSelector A character string containing a [CSS selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors) for targeting particular (inner) tags of interest. At the moment, only a combination of [type](https://www.w3.org/TR/CSS22/selector.html#type-selectors) (e.g, `div`), [class](https://www.w3.org/TR/CSS22/selector.html#class-html) (e.g., `.my-class`), [id](https://www.w3.org/TR/CSS22/selector.html#id-selectors) (e.g., `#myID`), and [universal](https://www.w3.org/TR/CSS22/selector.html#universal-selector) (`*`) selectors within a given [simple selector](https://www.w3.org/TR/CSS22/selector.html#selector-syntax) is supported.
 #' @export
-tagAppendChild <- function(tag, child) {
+tagAppendChild <- function(tag, child, .cssSelector = NULL) {
   throw_if_tag_function(tag)
+
+  if (!is.null(.cssSelector)) {
+    return(
+      tagAppendChildren(tag, child, .cssSelector = .cssSelector)
+    )
+  }
+
   tag$children[[length(tag$children)+1]] <- child
   tag
 }
 
+
+
 #' @rdname tag
 #' @export
-tagAppendChildren <- function(tag, ..., list = NULL) {
+tagAppendChildren <- function(tag, ..., .cssSelector = NULL, list = NULL) {
   throw_if_tag_function(tag)
-  tag$children <- unname(c(tag$children, c(dots_list(...), list)))
+
+  children <- unname(c(dots_list(...), list))
+
+  if (!is.null(.cssSelector)) {
+    return(
+      tagQuery(tag)$
+        find(.cssSelector)$
+        append(!!!children)$
+        allTags()
+    )
+  }
+
+  tag$children <- unname(c(tag$children, children))
   tag
 }
 
 #' @rdname tag
 #' @export
-tagSetChildren <- function(tag, ..., list = NULL) {
+tagSetChildren <- function(tag, ..., .cssSelector = NULL, list = NULL) {
   throw_if_tag_function(tag)
-  tag$children <- unname(c(dots_list(...), list))
+
+  children <- unname(c(dots_list(...), list))
+
+  if (!is.null(.cssSelector)) {
+    return(
+      tagQuery(tag)$
+        find(.cssSelector)$
+        empty()$
+        append(!!!children)$
+        allTags()
+    )
+  }
+
+  tag$children <- children
   tag
 }
 
-# (Please make an issue if you'd like this method to be exported)
-tagInsertChildren <- function(tag, after, ..., list = NULL) {
+#' @rdname tag
+#' @param after an integer value (i.e., subscript) referring to the child position to append after.
+#' @export
+tagInsertChildren <- function(tag, after, ..., .cssSelector = NULL, list = NULL) {
   throw_if_tag_function(tag)
-  tag$children <- unname(append(tag$children, c(dots_list(...), list), after))
+
+  children <- unname(c(dots_list(...), list))
+
+  if (!is.null(.cssSelector)) {
+    return(
+      tagQuery(tag)$
+        find(.cssSelector)$
+        each(function(x, i) {
+          tagInsertChildren(x, after = after, !!!children)
+        })$
+        allTags()
+    )
+  }
+
+  tag$children <- unname(append(tag$children, children, after))
   tag
 }
 

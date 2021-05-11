@@ -23,7 +23,9 @@ registerS3method(
 )
 ```
 
-`tagQuery()` provides a [jQuery](https://jquery.com) inspired interface to query and modify HTML fragments in R. To start, pass either a `tag()` (e.g., `div()`) or `tagList()` object to `tagQuery()`:
+`tagQuery()` provides a [jQuery](https://jquery.com) inspired interface to query and modify HTML fragments in R. Learning how to use `tagQuery()` directly gives you a very fast and flexible way to extract and modify HTML tags. Some other `{htmltools}` functions like `tagAppendAttributes()` actually use `tagQuery()` when `.cssSelector` is supplied, but only offer a subset of the functionality the `tagQuery()` API provides, and can be significantly slower when multiple modifications are needed (for details, see [performance](#performance)).
+
+To create a `tagQuery()` object, pass it either a `tag()` (e.g., `div()`) or `tagList()`:
 
 ```{r}
 library(htmltools)
@@ -99,8 +101,6 @@ tagQ$find("a.foo")$parent()$selectedTags()
 tagQ$find("a.foo")$parents()$selectedTags()
 ```
 
-<!-- TODO: worth mentioning closest()? -->
-
 ### Filter
 
 The `$filter()` method can be used to subset selected tags using an R function or CSS selector. When combined with the universal selector (`*`), `$filter()` is particularly useful as a workaround for the fact that `tagQuery()` doesn't fully support the entire CSS selector specification. For example, here's a workaround for `tagQuery()`'s current lack of support for [attribute selectors](https://www.w3.org/TR/CSS22/selector.html#attribute-selectors):
@@ -149,7 +149,7 @@ tagQ$
   allTags()
 ```
 
-The [mutable](https://en.wikipedia.org/wiki/Immutable_object) behavior of modifier methods not only allows us to modify child tags without losing a reference to the root tag, but it also makes modifications more [performant](#mutate-in-place) than they'd otherwise be.
+The [mutable](https://en.wikipedia.org/wiki/Immutable_object) behavior of modifier methods not only allows us to modify child tags without losing a reference to the root tag, but it also makes modifications more [performant](#performance) than they'd otherwise be.
 
 ### Attributes {#modify-attrs}
 
@@ -161,6 +161,7 @@ Use `$addAttrs()` to add and `$removeAttrs()` to remove any HTML attribute from 
 
 ```{r}
 tagQ <- tagQuery(html)
+# Equivalent to tagAppendAttributes(html, .cssSelector = "span", "data-bar" = "foo")
 tagQ$
   find("span")$
   addAttrs("data-bar" = "foo")$
@@ -183,6 +184,7 @@ Use `$prepend()` to insert content before the children of each selected tag and 
 
 ```{r}
 tagQ <- tagQuery(html)
+# Equivalent to html %>% tagInsertChildren(.cssSelector = "p", after = 0, span()) %>% tagAppendChildren(.cssSelector = "p", tags$table())
 tagQ$
   find("p")$
   prepend(span())$
@@ -248,126 +250,23 @@ tagQ$find("span")$empty()$allTags()
 
 ## Performance {#performance}
 
+One main reason why `tagQuery()` is fast is that it converts the underlying `tag()` list structure into a environment (i.e., [reference object](https://en.wikipedia.org/wiki/Reference_(computer_science))). As a result, `tagQuery()` is able to keep a reference to selected tags and modify them without having to re-find tags for each modification. This is why, even if you can achieve multiple modifications via multiple calls to `tagAppendAttributes()`, `tagInsertChildren()`, etc., you should consider using `tagQuery()` directly instead.
 
-`tagQuery()` is very fast, given the dynamic usage.  Let's look at performance to add a set the main button class for a `shiny` action button:
-
-```{r}
-# Show the original tags
-shiny::actionButton("myID", "myLabel")
-# Benchmark operations
-microbenchmark::microbenchmark(
-  create_button =
-    shiny::actionButton("myID", "myLabel"),
-  and_call_tagQuery =
-    tagQuery(shiny::actionButton("myID", "myLabel"))$
-      allTags(),
-  and_add_class =
-    tagQuery(shiny::actionButton("myID", "myLabel"))$
-      addClass("btn-primary")$
-      allTags(),
-  and_remove_class =
-    tagQuery(shiny::actionButton("myID", "myLabel"))$
-      addClass("btn-primary")$
-      removeClass("btn-default")$
-      allTags()
-)
-# Final output
-tagQuery(shiny::actionButton("myID", "myLabel"))$
-  addClass("btn-primary")$
-  removeClass("btn-default")$
-  allTags()
-```
-
-While there is some overhead to turn a standard `tag` object into a `tagQuery()` object, all operations finish within 1 millisecond.
-
-While adding the `btn-primary` class could be accomplished using `tagAddAttributes(myButton, class="btn-primary")`, removing a class is currently not possible without reaching into the attributes of the button object.
-
-Let's look at a more complicated example: `shiny::dateRangeInput()`. For this example, we are going to update the `title` attribute for each date input say `"Start Date"` or `"End Date"`.
+For a basic example, since `tagQuery()` can prepend and append in one shot, it's twice as fast as using  `tagInsertChildren()`
+ then `tagAppendChildren()` (with the same `.cssSelector`). Internally, the latter approach calls `tagQuery(html)$find()` twice, which is why it's 2 times slower.
 
 ```{r}
-# Show the original tags
-startDate <- "2001-01-01"; endDate <- "2010-12-31"
-(dateRange <- shiny::dateRangeInput(
-  "daterange", "Date range:",
-  start = startDate, end = endDate
-))
-# Benchmark operations
-microbenchmark::microbenchmark(
-  call_tagQuery =
-    tagQuery(dateRange)$allTags(),
-  and_find_input =
-    tagQuery(dateRange)$find("input")$allTags(),
-  and_remove_title =
-    tagQuery(dateRange)$find("input")$removeAttrs("title")$allTags(),
-  and_call_each =
-    tagQuery(dateRange)$
-      find("input")$
-      removeAttrs("title")$
-      each(function(el, i){
-        newTitle <- c("Start Date", "End Date")[i]
-        tagAppendAttributes(el, title = newTitle)
-      })$
-      allTags()
-)
-# Final output
-dateRangeQ <- tagQuery(dateRange)$
-  find("input")$
-  removeAttrs("title")$
-  each(function(el, i) {
-    newTitle <- c("Start Date", "End Date")[i]
-        tagAppendAttributes(el, title = newTitle)
-  })$
-  allTags()
-dateRangeQ
-
-# waldo::compare(dateRange, dateRangeQ)
-#> `old$children[[2]]$children[[1]]$attribs$title`: "Date format: yyyy-mm-dd"
-#> `new$children[[2]]$children[[1]]$attribs$title`: "Start Date"
-#> `old$children[[2]]$children[[3]]$attribs$title`: "Date format: yyyy-mm-dd"
-#> `new$children[[2]]$children[[3]]$attribs$title`: "End Date"
-```
-
-
-Updating the `title`s for each of the `<inputs>` could be done manually. However, this is brittle to developer changes and is difficult to debug.  Taking a quick glance at the code below. We can tell the `title` attributes are being updated, but there is no hint as to which tags are being operated on.  This would only become more difficult to determine the larger the tag objects grow.
-
-```{r}
-microbenchmark::microbenchmark(
-  unclear_and_brittle = {
-    # Unclear and very brittle operations
-    dateRange$children[[2]]$children[[1]]$attribs$title <- "Start Date"
-    dateRange$children[[2]]$children[[3]]$attribs$title <- "End Date"
-    dateRange
-  }
+html <- div(p(a()))
+bench::mark(
+  tagQuery = tagQuery(html)$
+    find("p")$
+    prepend(span())$
+    append(tags$table())$
+    allTags(),
+  tagAppend = html %>% 
+    tagInsertChildren(.cssSelector = "p", after = 0, span()) %>%
+    tagAppendChildren(.cssSelector = "p", tags$table()),
+  check = FALSE,
+  time_unit = "us"
 )
 ```
-
-If you would like to do more complicated alterations to the selected tag, you can send `el` to `tagQuery()` and immediately gain access to all selected element methods. While `tagAppendAttributes()` was sufficient above, `tagQuery(el)$addAttrs(title = newTitle)` could also be used at a slight speed cost (~500 μs).
-
-```{r}
-microbenchmark::microbenchmark(
-  "$addAttrs()" = {
-    tagQuery(dateRange)$
-      find("input")$
-      removeAttrs("title")$
-      each(function(el, i) {
-        newTitle <- c("Start Date", "End Date")[i]
-        tagQuery(el)$addAttrs(title = newTitle)
-      })$
-      allTags()
-  }
-)
-```
-
-
-At worst, using `tagQuery()` in this example increases the execution time by roughly 3-4 times, from 1.5 milliseconds to 5.5 milliseconds.
-
-### Mutate in-place {#mutate-in-place}
-
-The final output of the `dateRangeInput` example above uses multiple steps. Let's break down cost and benefits of each one.
-
-1. `tagQuery(dateRange)`: ~500 μs. Convert all tag objects into `tagQuery()` objects. The cost advantage is to be able to keep track of all tag objects and be able to alter the `tagQuery()` object in place. This method also unifies the `children` tag structure by flattening all children into a single level. This makes traversing **much** faster.
-2. `$find("input")`: ~500μs. Finds **all** matching tags that match the css selector `"input"`. This method updates the selected items to the two `<input>` tags.
-3. `$removeAttrs("title")`: ~50μs. Removes the `"title"` attribute from both of the selected `<input>` tags. Since the selected items have already been flagged, this method is fairly quick! This method maintains the selected tags and passes on the `tagQuery()` structure.
-4. `$each(fn)`: ~250μs. Given a selected tag, the function calls `tagQuery()` on the selected tag to leverage `tagQuery()`s methods to remove and add attributes on the selected tags. Since a "modify in place" selected tag is provided directly to `tagQuery()`, it is fast to create.  However, extra care is taken by `tagQuery()` after calling `$each()` to make sure the internal `tagQuery()` structure is still intact. This is due to `$each()` being able to reach into and alter all parent and children tags of the selected tags. This extra bit of housekeeping has a necessary, but small overhead.
-
-If `htmltools` was to not leverage "modify in place" data structures, `htmltools` would have to constantly search every time a selected element was to be modified.  Using the same example as above, finding the `<input>` tags will still require ~500 μs to prep the tag objects. It would also require ~500 μs to find each of the selected tags. Once the selected items are found, removing the attributes would be fast.  But the real speed improvement is utilized when handing off to another selected element method. If the selected element information could not be handed off, `htmltools` would need to prep (~500 μs) and find (~500 μs) the selected tags again to be able to have composable functions. This approach would require a full `1000 μs` in addition to any exection done by the `fn` supplied to `$each`, whereas `$each()` currently finished within ~250 μs. Using a standard tag approach would also make finding `$parent()` tags very slow as all of the selected tags would need to be found before returning any ancestor tags.

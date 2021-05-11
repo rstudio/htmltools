@@ -131,10 +131,9 @@ object.
 }
 
 \subsection{Replace methods}{
-
-#' * \verb{$replaceWith(...)}: Replace all selected tags with \code{...} in the
-root tag and clear the selection.
 \itemize{
+\item \verb{$replaceWith(...)}: Replace all selected tags with \code{...} in the
+root tag and clear the selection.
 \item \verb{$remove(...)}: Remove all selected tags from the root tag and
 clear the current selection.
 \item \verb{$empty()}: Remove any children of each selected tag. Use this
