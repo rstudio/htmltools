@@ -305,21 +305,23 @@ tagEnvToTags_ <- function(x) {
     x$envKey <- NULL
     xNames <- names(x)
 
-    # Reorder the names to match a typical tag() structure that has `name` first
+    # Reorder the names to match a typical tag() structure that has `name`, `attribs`, and `children` first
     # Avoid calling `setdiff()` if possible (it is slow).
+    if (!is.character(x[["name"]])) {
+      stop("A tag environment has lost its `$name`. Did you remove it?")
+    }
+    if (is.null(x[["attribs"]])) x$attribs <- setNames(list(), character(0))
+    if (is.null(x[["children"]])) x$children <- list()
+
     newNames <- c(
-      if (hasName <- which(xNames == "name") > 0) "name",
-      if (hasAttrib <- which(xNames == "attribs") > 0) "attribs",
-      if (hasChildren <- which(xNames == "children") > 0) "children",
+      "name", "attribs", "children",
       if (
-        (!hasName) ||
-        (!hasAttrib) ||
-        (!hasChildren) ||
         length(xNames) > 3
       ) {
         setdiff(xNames, c("name", "attribs", "children"))
       }
     )
+    # Need to preserve attributes. Must move values in two steps.
     # Reorder values
     x[] <- x[newNames]
     # Reorder names

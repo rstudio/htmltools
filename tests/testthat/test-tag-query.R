@@ -701,6 +701,45 @@ test_that("tagQuery() print method displays custom output for selected tags", {
 })
 
 
+test_that("tagQuery() allows for tags with extra top level items and will preserve them", {
+  html <- div(span())
+  html$test <- "extra"
+  html <- c(list(first = TRUE), html)
+  class(html) <- "shiny.tag"
+
+  expect_error(
+    tagQuery(html)$each(function(el, i) {
+      el$name <- NULL
+    })$allTags(),
+    "lost its `$name`", fixed = TRUE
+  )
+
+  for (missing_key in c("__not_a_match__", "attribs", "children")) {
+    htmlQ <- tagQuery(html)
+    if (missing_key %in% names(html)) {
+      htmlQ$each(function(el, i) {
+        el[[missing_key]] <- NULL
+      })
+    }
+    htmlPostQ <- htmlQ$allTags()
+    html_out <- html
+    if (missing_key == "attribs") html_out$attribs <- dots_list()
+    if (missing_key == "children") html_out$children <- list()
+    # expect first three names to be standard tag names
+    expect_equal(names(htmlPostQ)[1:3], names(div()))
+
+    # expect all other names to be included somewhere
+    # browser()
+    expect_setequal(names(htmlPostQ), names(html_out))
+
+    # If done in the same order, it should be equal
+    back_to_orig <- htmlPostQ[names(html_out)]; class(back_to_orig) <- "shiny.tag"
+    expect_equal(back_to_orig, html_out)
+  }
+
+
+
+})
 
 
 
