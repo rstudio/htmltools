@@ -65,7 +65,7 @@ test_that("asTagEnv upgrades objects", {
 #   xTagEnv$children[[3]] <- testSpanEnv
 
 #   expect_error(asTagEnv(xTagEnv), "Duplicate tag environment found")
-#   expect_equal(
+#   expect_equal_tags(
 #     tagEnvToTags(xTagEnv),
 #     div(
 #       class = "test_class",
@@ -266,13 +266,13 @@ test_that("tagQuery()$parents() && tagQuery()$closest()", {
   xc <- x$find("span")$closest()
   expect_length(xc$selectedTags(), 5)
   xc$each(function(el, i) {
-    expect_equal_tags(el$name, "span")
+    expect_equal(el$name, "span")
   })
 
   xp <- x$find("span")$parents("div")
   expect_length(xp$selectedTags(), 2)
-  expect_equal_tags(xp$hasClass("outer"), c(FALSE, TRUE))
-  expect_equal_tags(xp$hasClass("inner"), c(TRUE, FALSE))
+  expect_equal(xp$hasClass("outer"), c(FALSE, TRUE))
+  expect_equal(xp$hasClass("inner"), c(TRUE, FALSE))
 
   x <- x$find("span")$parents()
   expect_length(x$selectedTags(), 3)
@@ -337,7 +337,7 @@ test_that("tagQuery()$addClass()", {
   x <- x$find("div.inner")$addClass("test-class")
   expect_length(x$selectedTags(), 1)
 
-  expect_equal_tags(x$selectedTags()[[1]]$attribs$class, "inner test-class")
+  expect_equal(x$selectedTags()[[1]]$attribs$class, "inner test-class")
 
   expect_silent({
     x$addClass(NULL)
