@@ -303,7 +303,6 @@ tagEnvToTags_ <- function(x) {
     # undo parent env and key
     x$parent <- NULL
     x$envKey <- NULL
-    xNames <- names(x)
 
     # Reorder the names to match a typical tag() structure that has `name`, `attribs`, and `children` first
     # Avoid calling `setdiff()` if possible (it is slow).
@@ -313,6 +312,7 @@ tagEnvToTags_ <- function(x) {
     if (is.null(x[["attribs"]])) x$attribs <- setNames(list(), character(0))
     if (is.null(x[["children"]])) x$children <- list()
 
+    xNames <- names(x)
     newNames <- c(
       "name", "attribs", "children",
       if (
