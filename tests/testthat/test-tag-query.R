@@ -729,16 +729,13 @@ test_that("tagQuery() allows for tags with extra top level items and will preser
     expect_equal(names(htmlPostQ)[1:3], names(div()))
 
     # expect all other names to be included somewhere
-    # browser()
     expect_setequal(names(htmlPostQ), names(html_out))
 
     # If done in the same order, it should be equal
-    back_to_orig <- htmlPostQ[names(html_out)]; class(back_to_orig) <- "shiny.tag"
+    back_to_orig <- htmlPostQ[names(html_out)]
+    class(back_to_orig) <- "shiny.tag"
     expect_equal(back_to_orig, html_out)
   }
-
-
-
 })
 
 
