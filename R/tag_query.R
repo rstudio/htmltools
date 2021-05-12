@@ -315,17 +315,17 @@ tagEnvToTags_ <- function(x) {
     xNames <- names(x)
     newNames <- c(
       "name", "attribs", "children",
-      if (
-        length(xNames) > 3
-      ) {
+      if (length(xNames) > 3) {
         setdiff(xNames, c("name", "attribs", "children"))
       }
     )
-    # Need to preserve attributes. Must move values in two steps.
-    # Reorder values
-    x[] <- x[newNames]
-    # Reorder names
-    names(x) <- newNames
+    if (!identical(xNames, newNames)) {
+      # Need to preserve attributes. Must move values in two steps.
+      # Reorder values
+      x[] <- x[newNames]
+      # Reorder names
+      names(x) <- newNames
+    }
 
     # Recurse through children
     x$children <- lapply(x$children, tagEnvToTags_)
