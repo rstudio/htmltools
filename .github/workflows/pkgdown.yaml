@@ -50,13 +50,13 @@ jobs:
         run: |
           pak::local_system_requirements(execute = TRUE)
           pak::pkg_system_requirements("pkgdown", execute = TRUE)
-          pak::pkg_system_requirements("microbenchmark", execute = TRUE)
+          pak::pkg_system_requirements("bench", execute = TRUE)
 
       - name: Install dependencies
         shell: Rscript {0}
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
-          pak::pkg_install(c("pkgdown", "microbenchmark"), upgrade = TRUE)
+          pak::pkg_install(c("pkgdown", "bench"), upgrade = TRUE)
 
       - name: Install package
         run: R CMD INSTALL .
