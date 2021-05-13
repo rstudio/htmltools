@@ -1285,6 +1285,10 @@ tagQueryClassHas <- function(els, class) {
     use.names = FALSE
   )
 }
+removeClassVals <- function(classes, classesToRemove) {
+  # removes the call to `unique()` with `setdiff`
+  classes[match(classes, classesToRemove, 0L) == 0L]
+}
 # add classes that don't already exist
 tagQueryClassAdd <- function(els, class) {
   # Quit early if class == NULL | character(0)
@@ -1295,7 +1299,7 @@ tagQueryClassAdd <- function(els, class) {
     if (!isTagEnv(el)) return()
     classVal <- el$attribs$class %||% ""
     elClasses <- splitCssClass(classVal)
-    newClasses <- c(elClasses, setdiff(classes, elClasses))
+    newClasses <- c(elClasses, removeClassVals(classes, elClasses))
     el$attribs$class <- joinCssClass(newClasses)
   })
 }
@@ -1310,7 +1314,7 @@ tagQueryClassRemove <- function(els, class) {
     classVal <- el$attribs$class
     if (is.null(classVal)) return()
     elClasses <- splitCssClass(classVal)
-    newClasses <- setdiff(elClasses, classes)
+    newClasses <- removeClassVals(elClasses, classes)
     el$attribs$class <- joinCssClass(newClasses)
   })
 }
@@ -1326,7 +1330,7 @@ tagQueryClassToggle <- function(els, class) {
     elClasses <- splitCssClass(classVal)
     hasClass <- (classes %in% elClasses)
     if (any(hasClass)) {
-      elClasses <- setdiff(elClasses, classes)
+      elClasses <- removeClassVals(elClasses, classes)
     }
     if (any(!hasClass)) {
       elClasses <- c(elClasses, classes[!hasClass])
