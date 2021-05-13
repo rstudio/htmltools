@@ -48,13 +48,18 @@ reference:
 - title: Create HTML tags
   contents:
   - '`builder`'
+  - '`tagList`'
   - '`HTML`'
   - '`tag`'
   - '`plotTag`'
   - '`include`'
   - '`browsable`'
-  - '`as.tags`'
   - '`withTags`'
+
+- title: Modify tags
+  contents:
+  - '`tagAppendChild`'
+  - '`tagAppendAttributes`'
 
 - title: Render tags
   contents:
@@ -103,6 +108,7 @@ reference:
 
 - title: Advanced tag objects
   contents:
-  - '`tagAddRenderHook`'
   - '`tagQuery`'
+  - '`tagAddRenderHook`'
   - '`tagFunction`'
+  - '`as.tags`'
