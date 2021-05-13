@@ -99,11 +99,11 @@ Unlike query methods, modify methods modify the \code{tagQuery()} object.
 a class(es) value already exists, remove it.
 \item \verb{$hasClass(class)}: Does each selected tag have particular
 class?
-\item \verb{$hasAttr(attr)}: Does each selected tag have a particular
-attribute?
 \item \verb{$addAttr(...)}: Add a set of attributes to each selected tag.
 \item \verb{$removeAttr(attrs)}: Remove a set of attributes from each
 selected tag.
+\item \verb{$hasAttr(attr)}: Does each selected tag have a particular
+attribute?
 }
 }
 

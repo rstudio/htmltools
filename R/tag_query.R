@@ -673,11 +673,6 @@ tagQuery_ <- function(
         hasClass = function(class) {
           tagQueryClassHas(selected_, class)
         },
-        #' * `$hasAttr(attr)`: Does each selected tag have a particular
-        #' attribute?
-        hasAttr = function(attr) {
-          tagQueryAttrHas(selected_, attr)
-        },
         #' * `$addAttr(...)`: Add a set of attributes to each selected tag.
         addAttr = function(...) {
           tagQueryAttrAdd(selected_, ...)
@@ -688,6 +683,11 @@ tagQuery_ <- function(
         removeAttr = function(attrs) {
           tagQueryAttrRemove(selected_, attrs)
           self
+        },
+        #' * `$hasAttr(attr)`: Does each selected tag have a particular
+        #' attribute?
+        hasAttr = function(attr) {
+          tagQueryAttrHas(selected_, attr)
         },
         #' ### Children
         #'
