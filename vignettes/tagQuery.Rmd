@@ -256,6 +256,7 @@ For a basic example, since `tagQuery()` can prepend and append in one shot, it's
  then `tagAppendChildren()` (with the same `.cssSelector`). Internally, the latter approach calls `tagQuery(html)$find()` twice, which is why it's 2 times slower.
 
 ```{r}
+library(magrittr)
 html <- div(p(a()))
 bench::mark(
   tagQuery = tagQuery(html)$
