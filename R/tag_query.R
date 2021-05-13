@@ -177,31 +177,29 @@ envirStackUnique <- function() {
 
 
 
+copyAttributes <- function(from, to) {
+  attrVals <- attributes(from)
+  attrNames <- names(attrVals)
+  for (i in seq_along(attrNames)) {
+    attrName <- attrNames[i]
+    switch(
+      attrName,
+      class = , comment =, dim =, dimnames =, names =, row.names =, tsp = NULL,
+      {
+        # Copy over the attribute
+        attr(to, attrName) <- attrVals[[i]]
+      }
+    )
+  }
 
-
-# Retrieve all attributes that can be manually set
-# ?attr
-# Note that some attributes (namely ‘class’, ‘comment’, ‘dim’,
-# ‘dimnames’, ‘names’, ‘row.names’ and ‘tsp’) are treated specially
-# and have restrictions on the values which can be set.
-safeAttrValues <- function(x) {
-  badElAttrs <- c("class", "comment", "dim", "dimnames", "names", "row.names", "tsp")
-  attrVals <- attributes(x)
-  attrVals[badElAttrs] <- NULL
-  attrVals
+  to
 }
 
 # Convert a list to an environment and keep class and attribute information
 safeListToEnv <- function(x, classToAdd = NULL) {
   xList <- x
-
   ret <- list2env(xList, new.env(parent = emptyenv()))
-
-  attrVals <- safeAttrValues(xList)
-  walk2(names(attrVals), attrVals, function(attrName, attrValue) {
-    attr(ret, attrName) <<- attrValue
-  })
-
+  ret <- copyAttributes(from = xList, to = ret)
   oldClass(ret) <- c(classToAdd, oldClass(xList))
   ret
 }
