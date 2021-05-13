@@ -1088,13 +1088,6 @@ tagQueryAttrRemove <- function(els, attrs) {
     }
   })
 }
-# Remove attribute values
-tagQueryAttrsEmpty <- function(els) {
-  tagQueryWalk(els, function(el) {
-    if (!isTagEnv(el)) return()
-    el$attribs <- list()
-  })
-}
 # Check if els have attributes
 tagQueryAttrHas <- function(els, attr) {
   attr <- as_character2(attr)[[1]]
