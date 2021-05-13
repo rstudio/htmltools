@@ -259,15 +259,14 @@ asTagEnv_ <- function(x, parent = NULL) {
       # Simplify the structures by flatting the tags
       # Does NOT recurse to grand-children etc.
       children <- flattenTagsRaw(x$children)
-      envChildren <- children
       # Use a `for-loop` over `lapply` to avoid `lapply` overhead
       for (i in seq_along(children)) {
         child <- children[[i]]
         if (!is.null(child)) {
-          envChildren[[i]] <- asTagEnv_(child, parent = x)
+          children[[i]] <- asTagEnv_(child, parent = x)
         }
       }
-      x$children <- envChildren
+      x$children <- children
     }
   }
   x
@@ -296,7 +295,7 @@ tagEnvToTags_ <- function(x) {
     if (is.null(xEl[["children"]])) xEl$children <- list()
 
     # Pull the names `name`, `attribs`, and `children` first to match `tag()` name order
-    envNames <- ls(envir = xEl, all.names = TRUE)
+    envNames <- ls(envir = xEl, all.names = TRUE, sorted = FALSE)
     newNames <- c(
       "name", "attribs", "children",
       if (length(envNames) > 5) {
@@ -312,15 +311,14 @@ tagEnvToTags_ <- function(x) {
 
     # Recurse through children
     children <- x$children
-    tagChildren <- children
     # Use a `for-loop` over `lapply` to avoid overhead
     for (i in seq_along(children)) {
       child <- children[[i]]
       if (!is.null(child)) {
-        tagChildren[[i]] <- tagEnvToTags_(child)
+        children[[i]] <- tagEnvToTags_(child)
       }
     }
-    x$children <- tagChildren
+    x$children <- children
   }
   x
 }
