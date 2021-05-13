@@ -252,6 +252,13 @@ asTagEnv_ <- function(x, parent = NULL) {
       x$envKey <- obj_address(x)
     }
 
+    if (!is.character(x[["name"]])) {
+      stop("A tag environment has lost its `$name`. Did you remove it?")
+    }
+    # This alters the env, but these fields should exist!
+    if (is.null(x[["attribs"]])) x$attribs <- setNames(list(), character(0)) # Empty named list
+    if (is.null(x[["children"]])) x$children <- list()
+
     # Recurse through children
     if (length(x$children) != 0) {
       # Possible optimization... name the children tags to the formatted values.
@@ -292,12 +299,6 @@ tagEnvToTags_ <- function(x) {
   if (isTagEnv(x)) {
 
     xEl <- x
-    if (!is.character(xEl[["name"]])) {
-      stop("A tag environment has lost its `$name`. Did you remove it?")
-    }
-    # This alters the env, but these fields should exist!
-    if (is.null(xEl[["attribs"]])) xEl$attribs <- setNames(list(), character(0))
-    if (is.null(xEl[["children"]])) xEl$children <- list()
 
     # Pull the names `name`, `attribs`, and `children` first to match `tag()` name order
     envNames <- ls(envir = xEl, all.names = TRUE, sorted = FALSE)
