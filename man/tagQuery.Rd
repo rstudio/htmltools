@@ -73,6 +73,12 @@ CSS selector.
 }
 }
 
+\subsection{Length}{
+\itemize{
+\item \verb{$length()}: Number of tags that have been selected.
+}
+}
+
 \subsection{Reset}{
 \itemize{
 \item \verb{$resetSelected()}: Reset selected tags to the \verb{$root()} tag. Useful

@@ -128,6 +128,7 @@ test_that("tagQuery()$find()", {
   )
 
   x <- x$find("span")
+  expect_equal(x$length(), 2)
   expect_length(x$selectedTags(), 2)
   expect_equal_tags(
     x$selectedTags(),
@@ -137,10 +138,13 @@ test_that("tagQuery()$find()", {
   ul <- tags$ul
   li <- tags$li
   x <- tagQuery(div(div(div(ul(li("a"), li("b"), li("c"))))))
+  expect_equal(x$length(), 1)
   expect_length(x$selectedTags(), 1)
   x <- x$find("div")
+  expect_equal(x$length(), 2)
   expect_length(x$selectedTags(), 2)
   x <- x$find("div")
+  expect_equal(x$length(), 1)
   expect_length(x$selectedTags(), 1)
 
   x <- tagQuery(
@@ -151,25 +155,30 @@ test_that("tagQuery()$find()", {
     )
   )
   x <- x$find("a")
+  expect_equal(x$length(), 2)
   expect_length(x$selectedTags(), 2)
   x <- x$resetSelected()
 
   x <- x$find("a > p")
+  expect_equal(x$length(), 1)
   expect_length(x$selectedTags(), 1)
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(p("text2")))
   x <- x$resetSelected()
 
   x <- x$find("a > > p")
+  expect_equal(x$length(), 1)
   expect_length(x$selectedTags(), 1)
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(p("text1")))
   x <- x$resetSelected()
 
   x <- x$find("div > *")
+  expect_equal(x$length(), 2)
   expect_length(x$selectedTags(), 2)
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(a(span(p("text1"))), a(p("text2"))))
   x <- x$resetSelected()
 
   x <- x$find("div>>p")
+  expect_equal(x$length(), 1)
   expect_length(x$selectedTags(), 1)
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(p("text2")))
 })
@@ -510,8 +519,10 @@ test_that("tagQuery()$remove()", {
       span("e")
     )
   x <- tagQuery(xTags)$find("span")
+  expect_equal(x$length(), 5)
   expect_length(x$selectedTags(), 5)
   x <- x$filter(".A")$remove()
+  expect_equal(x$length(), 0)
   expect_length(x$selectedTags(), 0)
 
   expect_equal_tags(
@@ -520,6 +531,7 @@ test_that("tagQuery()$remove()", {
   )
 
   x <- x$resetSelected()$find("span")
+  expect_equal(x$length(), 3)
   expect_length(x$selectedTags(), 3)
   x <- x$remove()
   expect_equal_tags(
