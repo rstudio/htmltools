@@ -250,7 +250,7 @@ tagQ$find("span")$empty()$allTags()
 
 ## Performance {#performance}
 
-One main reason why `tagQuery()` is fast is that it converts the underlying `tag()` list structure into a environment (i.e., [reference object](https://en.wikipedia.org/wiki/Reference_(computer_science))). As a result, `tagQuery()` is able to keep a reference to selected tags and modify them without having to re-find tags for each modification. This is why, even if you can achieve multiple modifications via multiple calls to `tagAppendAttributes()`, `tagInsertChildren()`, etc., you should consider using `tagQuery()` directly instead.
+One main reason why `tagQuery()` is fast is that it converts the underlying `tag()` list structure into a environment (i.e., [reference object](https://en.wikipedia.org/wiki/Reference_(computer_science))). As a result, `tagQuery()` is able to keep a reference to selected tags and modify them without having to re-find tags for each modification. This is why, even if you can achieve multiple modifications via multiple calls to `tagAppendAttributes()`, `tagInsertChildren()`, etc. (with a `.cssSelector`), you should consider using `tagQuery()` directly instead.
 
 For a basic example, since `tagQuery()` can prepend and append in one shot, it's twice as fast as using  `tagInsertChildren()`
  then `tagAppendChildren()` (with the same `.cssSelector`). Internally, the latter approach calls `tagQuery(html)$find()` twice, which is why it's 2 times slower.
@@ -264,7 +264,7 @@ bench::mark(
     prepend(span())$
     append(tags$table())$
     allTags(),
-  tagAppend = html %>% 
+  tagAppend = html %>%
     tagInsertChildren(.cssSelector = "p", after = 0, span()) %>%
     tagAppendChildren(.cssSelector = "p", tags$table()),
   check = FALSE,
