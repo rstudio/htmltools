@@ -17,7 +17,18 @@ tagGetAttribute(tag, attr)
 
 \item{...}{a collection of attributes.}
 
-\item{.cssSelector}{A character string containing a \href{https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors}{CSS selector} for targeting particular (inner) tags of interest. At the moment, only a combination of \href{https://www.w3.org/TR/CSS22/selector.html#type-selectors}{type} (e.g, \code{div}), \href{https://www.w3.org/TR/CSS22/selector.html#class-html}{class} (e.g., \code{.my-class}), \href{https://www.w3.org/TR/CSS22/selector.html#id-selectors}{id} (e.g., \verb{#myID}), and \href{https://www.w3.org/TR/CSS22/selector.html#universal-selector}{universal} (\code{*}) selectors within a given \href{https://www.w3.org/TR/CSS22/selector.html#selector-syntax}{simple selector} is supported.}
+\item{.cssSelector}{A character string containing a \href{https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors}{CSS selector}
+for targeting particular (inner) tags of interest. At the moment, only a
+combination of
+\href{https://www.w3.org/TR/CSS22/selector.html#type-selectors}{type} (e.g,
+\code{div}), \href{https://www.w3.org/TR/CSS22/selector.html#class-html}{class}
+(e.g., \code{.my-class}),
+\href{https://www.w3.org/TR/CSS22/selector.html#id-selectors}{id} (e.g.,
+\verb{#myID}), and
+\href{https://www.w3.org/TR/CSS22/selector.html#universal-selector}{universal}
+(\code{*}) selectors within a given \href{https://www.w3.org/TR/CSS22/selector.html#selector-syntax}{simple selector} is
+supported. Note, if \code{.cssSelector} is used, the returned tags will have
+their \verb{$children} fields flattened to a single \code{list()} via \code{\link[=tagQuery]{tagQuery()}}.}
 
 \item{attr}{The name of an attribute.}
 }
@@ -36,5 +47,5 @@ tagGetAttribute(div(foo = "bar"), "foo")
 
 }
 \seealso{
-\code{\link[=tagAppendChildren]{tagAppendChildren()}}
+\code{\link[=tagAppendChildren]{tagAppendChildren()}}, \code{\link[=tagQuery]{tagQuery()}}
 }

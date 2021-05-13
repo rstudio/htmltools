@@ -407,8 +407,21 @@ tagAddRenderHook <- function(tag, func, replace = FALSE) {
 #' @export
 #' @param tag a [tag] object.
 #' @param ... a collection of attributes.
-#' @param .cssSelector A character string containing a [CSS selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors) for targeting particular (inner) tags of interest. At the moment, only a combination of [type](https://www.w3.org/TR/CSS22/selector.html#type-selectors) (e.g, `div`), [class](https://www.w3.org/TR/CSS22/selector.html#class-html) (e.g., `.my-class`), [id](https://www.w3.org/TR/CSS22/selector.html#id-selectors) (e.g., `#myID`), and [universal](https://www.w3.org/TR/CSS22/selector.html#universal-selector) (`*`) selectors within a given [simple selector](https://www.w3.org/TR/CSS22/selector.html#selector-syntax) is supported.
-#' @seealso [tagAppendChildren()]
+#' @param .cssSelector A character string containing a [CSS
+#'   selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors)
+#'   for targeting particular (inner) tags of interest. At the moment, only a
+#'   combination of
+#'   [type](https://www.w3.org/TR/CSS22/selector.html#type-selectors) (e.g,
+#'   `div`), [class](https://www.w3.org/TR/CSS22/selector.html#class-html)
+#'   (e.g., `.my-class`),
+#'   [id](https://www.w3.org/TR/CSS22/selector.html#id-selectors) (e.g.,
+#'   `#myID`), and
+#'   [universal](https://www.w3.org/TR/CSS22/selector.html#universal-selector)
+#'   (`*`) selectors within a given [simple
+#'   selector](https://www.w3.org/TR/CSS22/selector.html#selector-syntax) is
+#'   supported. Note, if `.cssSelector` is used, the returned tags will have
+#'   their `$children` fields flattened to a single `list()` via [`tagQuery()`].
+#' @seealso [tagAppendChildren()], [tagQuery()]
 #' @examples
 #'
 #' html <- div(a())
@@ -476,7 +489,7 @@ tagGetAttribute <- function(tag, attr) {
 #' @inheritParams tagAppendAttributes
 #' @param child A child element to append to a parent tag.
 #' @export
-#' @seealso [tagAppendAttributes()]
+#' @seealso [tagAppendAttributes()], [tagQuery()]
 #' @examples
 #'
 #' html <- div(a(), h1())

@@ -433,7 +433,9 @@ tagQueryAsTagErr <- function() {
 #' @return A class with methods that are described below. This class can't be
 #'   used directly inside other [tag()] or a [renderTags()] context, but
 #'   underlying HTML tags may be extracted via `$allTags()` or
-#'   `$selectedTags()`.
+#'   `$selectedTags()`. Note: The returned tags will have their `$children`
+#'   fields flattened to a single `list()`, which may not be the same shape
+#'   that was provided to `tagQuery()`.
 #' @export
 tagQuery <- function(tags) {
 

@@ -13,7 +13,9 @@ tagQuery(tags)
 A class with methods that are described below. This class can't be
 used directly inside other \code{\link[=tag]{tag()}} or a \code{\link[=renderTags]{renderTags()}} context, but
 underlying HTML tags may be extracted via \verb{$allTags()} or
-\verb{$selectedTags()}.
+\verb{$selectedTags()}. Note: The returned tags will have their \verb{$children}
+fields flattened to a single \code{list()}, which may not be the same shape
+that was provided to \code{tagQuery()}.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}\cr\cr \code{tagQuery()} provides a
