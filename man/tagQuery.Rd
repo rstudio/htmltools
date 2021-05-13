@@ -95,8 +95,8 @@ a  class value already exists, remove it.
 class(es)?
 \item \verb{$hasAttr(attr)}: Does each selected tag have particular
 attributes?
-\item \verb{$addAttrs(...)}: Add a set of attributes to each selected tag.
-\item \verb{$removeAttrs(attrs)}: Remove a set of attributes from each
+\item \verb{$addAttr(...)}: Add a set of attributes to each selected tag.
+\item \verb{$removeAttr(attrs)}: Remove a set of attributes from each
 selected tag.
 }
 }

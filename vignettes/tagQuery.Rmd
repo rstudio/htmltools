@@ -153,7 +153,7 @@ The [mutable](https://en.wikipedia.org/wiki/Immutable_object) behavior of modifi
 
 ### Attributes {#modify-attrs}
 
-Use `$addAttrs()` to add and `$removeAttrs()` to remove any HTML attribute from each selected tag. If you're just working with `class` attributes, consider using the more convenient `$addClass()`, `$removeClass()`, or `$toggleClass()`
+Use `$addAttr()` to add and `$removeAttr()` to remove any HTML attribute from each selected tag. If you're just working with `class` attributes, consider using the more convenient `$addClass()`, `$removeClass()`, or `$toggleClass()`
 
 ```{r}
 (html <- div(span(a()), span()))
@@ -164,7 +164,7 @@ tagQ <- tagQuery(html)
 # Equivalent to tagAppendAttributes(html, .cssSelector = "span", "data-bar" = "foo")
 tagQ$
   find("span")$
-  addAttrs("data-bar" = "foo")$
+  addAttr("data-bar" = "foo")$
   allTags()
 ```
 

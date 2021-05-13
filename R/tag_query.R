@@ -35,7 +35,7 @@ NULL
 ## Instead write them where they are needed since they are small.
 ## (Just like we don't wrap dplyr code)
 # tagAppendAttributesAt <- function(tag, cssSelector, ...) {
-#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$allTags()
+#   tagQuery(tag)$find(cssSelector)$addAttr(...)$allTags()
 # }
 # tagAddClassAt <- function(tag, cssSelector, class) {
 #   tagQuery(tag)$find(cssSelector)$addClass(class)$allTags()
@@ -672,15 +672,15 @@ tagQuery_ <- function(
         hasAttr = function(attr) {
           tagQueryAttrHas(selected_, attr)
         },
-        #' * `$addAttrs(...)`: Add a set of attributes to each selected tag.
-        addAttrs = function(...) {
-          tagQueryAttrsAdd(selected_, ...)
+        #' * `$addAttr(...)`: Add a set of attributes to each selected tag.
+        addAttr = function(...) {
+          tagQueryAttrAdd(selected_, ...)
           self
         },
-        #' * `$removeAttrs(attrs)`: Remove a set of attributes from each
+        #' * `$removeAttr(attrs)`: Remove a set of attributes from each
         #' selected tag.
-        removeAttrs = function(attrs) {
-          tagQueryAttrsRemove(selected_, attrs)
+        removeAttr = function(attrs) {
+          tagQueryAttrRemove(selected_, attrs)
           self
         },
         #' ### Children
@@ -1067,7 +1067,7 @@ tagQueryChildrenInsert <- function(els, after, ...) {
 
 
 # Add attribute values
-tagQueryAttrsAdd <- function(els, ...) {
+tagQueryAttrAdd <- function(els, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
     el <- tagAppendAttributes(el, ...)
@@ -1075,7 +1075,7 @@ tagQueryAttrsAdd <- function(els, ...) {
   })
 }
 # Remove attribute values
-tagQueryAttrsRemove <- function(els, attrs) {
+tagQueryAttrRemove <- function(els, attrs) {
   attrs <- as_character2(attrs)
   if (length(attrs) < 1) return()
   if (!is.character(attrs)) {
