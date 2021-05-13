@@ -177,46 +177,35 @@ envirStackUnique <- function() {
 
 
 
-
-
-# Retrieve all attributes that can be manually set
+# Copy all attributes that can be manually set
 # ?attr
 # Note that some attributes (namely ‘class’, ‘comment’, ‘dim’,
 # ‘dimnames’, ‘names’, ‘row.names’ and ‘tsp’) are treated specially
 # and have restrictions on the values which can be set.
-safeAttrValues <- function(x) {
-  badElAttrs <- c("class", "comment", "dim", "dimnames", "names", "row.names", "tsp")
-  attrVals <- attributes(x)
-  attrVals[badElAttrs] <- NULL
-  attrVals
+copyAttributes <- function(from, to) {
+  attrVals <- attributes(from)
+  attrNames <- names(attrVals)
+  for (i in seq_along(attrNames)) {
+    attrName <- attrNames[i]
+    switch(
+      attrName,
+      class = , comment =, dim =, dimnames =, names =, row.names =, tsp = NULL,
+      {
+        # Copy over the attribute
+        attr(to, attrName) <- attrVals[[i]]
+      }
+    )
+  }
+
+  to
 }
 
 # Convert a list to an environment and keep class and attribute information
 safeListToEnv <- function(x, classToAdd = NULL) {
   xList <- x
-
   ret <- list2env(xList, new.env(parent = emptyenv()))
-
-  attrVals <- safeAttrValues(xList)
-  walk2(names(attrVals), attrVals, function(attrName, attrValue) {
-    attr(ret, attrName) <<- attrValue
-  })
-
+  ret <- copyAttributes(from = xList, to = ret)
   oldClass(ret) <- c(classToAdd, oldClass(xList))
-  ret
-}
-
-# Convert an environment to a list and keep class and attribute information
-safeEnvToList <- function(x, classToRemove = NULL) {
-  xEnv <- x
-  ret <- as.list.environment(xEnv, all.names = TRUE)
-
-  attrVals <- safeAttrValues(xEnv)
-  walk2(names(attrVals), attrVals, function(attrName, attrValue) {
-    attr(ret, attrName) <<- attrValue
-  })
-
-  oldClass(ret) <- setdiff(oldClass(x), c(classToRemove))
   ret
 }
 
@@ -263,6 +252,13 @@ asTagEnv_ <- function(x, parent = NULL) {
       x$envKey <- obj_address(x)
     }
 
+    if (!is.character(x[["name"]])) {
+      stop("A tag environment has lost its `$name`. Did you remove it?")
+    }
+    # This alters the env, but these fields should exist!
+    if (is.null(x[["attribs"]])) x$attribs <- setNames(list(), character(0)) # Empty named list
+    if (is.null(x[["children"]])) x$children <- list()
+
     # Recurse through children
     if (length(x$children) != 0) {
       # Possible optimization... name the children tags to the formatted values.
@@ -271,14 +267,18 @@ asTagEnv_ <- function(x, parent = NULL) {
       # Attributes may be dropped
       # * Could replace with `x$children[] <- ....`
       # * Leaving as is to see if people mis-use the children field
-      x$children <- lapply(
-        # Simplify the structures by flatting the tags
-        # Does NOT recurse to grand-children etc.
-        flattenTagsRaw(x$children),
-        # recurse through each child
-        asTagEnv_,
-        parent = x
-      )
+
+      # Simplify the structures by flatting the tags
+      # Does NOT recurse to grand-children etc.
+      children <- flattenTagsRaw(x$children)
+      # Use a `for-loop` over `lapply` to avoid `lapply` overhead
+      for (i in seq_along(children)) {
+        child <- children[[i]]
+        if (!is.null(child)) {
+          children[[i]] <- asTagEnv_(child, parent = x)
+        }
+      }
+      x$children <- children
     }
   }
   x
@@ -297,14 +297,34 @@ tagEnvToTags <- function(x) {
 # Ex: tag environment, "text", 5, tagFunctions, etc.
 tagEnvToTags_ <- function(x) {
   if (isTagEnv(x)) {
+
     xEl <- x
-    # convert to list first to avoid altering the original env obj
-    x <- safeEnvToList(xEl, c("shiny.tag.env"))
-    # undo parent env and key
-    x$parent <- NULL
-    x$envKey <- NULL
-    # recurse through children
-    x$children <- lapply(x$children, tagEnvToTags_)
+
+    # Pull the names `name`, `attribs`, and `children` first to match `tag()` name order
+    envNames <- ls(envir = xEl, all.names = TRUE, sorted = FALSE)
+    newNames <- c(
+      "name", "attribs", "children",
+      if (length(envNames) > 5) {
+        # Pull remaining names if they exist
+        removeFromSet(envNames, c("name", "attribs", "children", "parent", "envKey"))
+      }
+    )
+
+    # Use mget to pull names in order to avoid always shuffling the values
+    x <- mget(newNames, xEl)
+    x <- copyAttributes(from = xEl, to = x)
+    oldClass(x) <- removeFromSet(oldClass(xEl), "shiny.tag.env")
+
+    # Recurse through children
+    children <- x$children
+    # Use a `for-loop` over `lapply` to avoid overhead
+    for (i in seq_along(children)) {
+      child <- children[[i]]
+      if (!is.null(child)) {
+        children[[i]] <- tagEnvToTags_(child)
+      }
+    }
+    x$children <- children
   }
   x
 }
@@ -1135,6 +1155,10 @@ tagQueryClassHas <- function(els, class) {
     use.names = FALSE
   )
 }
+removeFromSet <- function(set, vals) {
+  # removes the call to `unique()` with `setdiff`
+  set[match(set, vals, 0L) == 0L]
+}
 # add classes that don't already exist
 tagQueryClassAdd <- function(els, class) {
   # Quit early if class == NULL | character(0)
@@ -1145,7 +1169,7 @@ tagQueryClassAdd <- function(els, class) {
     if (!isTagEnv(el)) return()
     classVal <- el$attribs$class %||% ""
     elClasses <- splitCssClass(classVal)
-    newClasses <- c(elClasses, setdiff(classes, elClasses))
+    newClasses <- c(elClasses, removeFromSet(classes, elClasses))
     el$attribs$class <- joinCssClass(newClasses)
   })
 }
@@ -1160,7 +1184,7 @@ tagQueryClassRemove <- function(els, class) {
     classVal <- el$attribs$class
     if (is.null(classVal)) return()
     elClasses <- splitCssClass(classVal)
-    newClasses <- setdiff(elClasses, classes)
+    newClasses <- removeFromSet(elClasses, classes)
     el$attribs$class <- joinCssClass(newClasses)
   })
 }
@@ -1176,7 +1200,7 @@ tagQueryClassToggle <- function(els, class) {
     elClasses <- splitCssClass(classVal)
     hasClass <- (classes %in% elClasses)
     if (any(hasClass)) {
-      elClasses <- setdiff(elClasses, classes)
+      elClasses <- removeFromSet(elClasses, classes)
     }
     if (any(!hasClass)) {
       elClasses <- c(elClasses, classes[!hasClass])
