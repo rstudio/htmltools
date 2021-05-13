@@ -98,7 +98,6 @@ attributes?
 \item \verb{$addAttrs(...)}: Add a set of attributes to each selected tag.
 \item \verb{$removeAttrs(attrs)}: Remove a set of attributes from each
 selected tag.
-\item \verb{$emptyAttrs()}: Remove all attributes from each selected tag.
 }
 }
 

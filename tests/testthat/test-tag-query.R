@@ -390,7 +390,7 @@ test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
 })
 
 
-test_that("tagQuery()$addAttrs(), $removeAttrs(), $emptyAttrs(), $hasAttr", {
+test_that("tagQuery()$addAttrs(), $removeAttrs(), $hasAttr", {
   xTags <- tagList(
       span(key = "value - a", "a"),
       span(key = "value - b", "b"),
@@ -411,11 +411,6 @@ test_that("tagQuery()$addAttrs(), $removeAttrs(), $emptyAttrs(), $hasAttr", {
   x$removeAttrs(c("key", "key3"))
   expect_equal(x$hasAttr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
   expect_equal(x$hasAttr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
-  expect_equal(x$hasAttr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-
-  x$emptyAttrs()
-  expect_equal(x$hasAttr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-  expect_equal(x$hasAttr("key2"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
   expect_equal(x$hasAttr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
 })
 

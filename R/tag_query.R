@@ -683,11 +683,6 @@ tagQuery_ <- function(
           tagQueryAttrsRemove(selected_, attrs)
           self
         },
-        #' * `$emptyAttrs()`: Remove all attributes from each selected tag.
-        emptyAttrs = function() {
-          tagQueryAttrsEmpty(selected_)
-          self
-        },
         #' ### Children
         #'
         #' * `$append(...)`: For each selected tag, insert `...` **after** any
