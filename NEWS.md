@@ -2,7 +2,9 @@
 
 ## New Features & Improvements
 
-* Added `tagQuery(tags)`. A tag query object implements many popular features of jQuery.  Similar to jQuery, tag query objects can find internal html using CSS selections. Given a selection (which defaults to the original `tags`), many alterations may be performed before converting the tag query object back to tag objects. (#208)
+* `{htmltools}` now has its own `{pkgdown}` site hosted at <https://rstudio.github.io/htmltools/>.
+
+* The new `tagQuery()` function provides a [jQuery](https://jquery.com/) inspired interface to query and/or modify HTML `tag()` (e.g., `div()`) or `tagList()` objects. To learn more, see the [{pkgdown} article](https://rstudio.github.io/htmltools/articles/tagQuery.html). (#208)
 
 * Added `tagAddRenderHook()` for delaying modification of a tag object until it is rendered. A list of render-time hooks may also be added via the new `.renderHook` argument added to all `tag()` functions. (#215)
 
