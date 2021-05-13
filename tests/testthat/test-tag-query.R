@@ -24,9 +24,6 @@ test_that("safeListToEnv and safeEnvToList undo each other", {
   expect_s3_class(xEnv, "extra_class")
 
   expect_equal(names(xEnv), c("A", "B"))
-  expect_equal(safeAttrValues(xEnv), list(extra_dep = list(42), other_dep = "exists"))
-
-  expect_equal(safeEnvToList(xEnv, "extra_class"), xExpected)
 })
 
 

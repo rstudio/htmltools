@@ -204,20 +204,6 @@ safeListToEnv <- function(x, classToAdd = NULL) {
   ret
 }
 
-# Convert an environment to a list and keep class and attribute information
-safeEnvToList <- function(x, classToRemove = NULL) {
-  xEnv <- x
-  ret <- as.list.environment(xEnv, all.names = TRUE)
-
-  attrVals <- safeAttrValues(xEnv)
-  walk2(names(attrVals), attrVals, function(attrName, attrValue) {
-    attr(ret, attrName) <<- attrValue
-  })
-
-  oldClass(ret) <- setdiff(oldClass(x), c(classToRemove))
-  ret
-}
-
 
 # Convert any mixture of standard tag structures and tag environments into just
 # tag environments.
@@ -269,14 +255,19 @@ asTagEnv_ <- function(x, parent = NULL) {
       # Attributes may be dropped
       # * Could replace with `x$children[] <- ....`
       # * Leaving as is to see if people mis-use the children field
-      x$children <- lapply(
-        # Simplify the structures by flatting the tags
-        # Does NOT recurse to grand-children etc.
-        flattenTagsRaw(x$children),
-        # recurse through each child
-        asTagEnv_,
-        parent = x
-      )
+
+      # Simplify the structures by flatting the tags
+      # Does NOT recurse to grand-children etc.
+      children <- flattenTagsRaw(x$children)
+      envChildren <- children
+      # Use a `for-loop` over `lapply` to avoid `lapply` overhead
+      for (i in seq_along(children)) {
+        child <- children[[i]]
+        if (!is.null(child)) {
+          envChildren[[i]] <- asTagEnv_(child, parent = x)
+        }
+      }
+      x$children <- envChildren
     }
   }
   x
@@ -295,38 +286,41 @@ tagEnvToTags <- function(x) {
 # Ex: tag environment, "text", 5, tagFunctions, etc.
 tagEnvToTags_ <- function(x) {
   if (isTagEnv(x)) {
-    xEl <- x
-    # convert to list first to avoid altering the original env obj
-    x <- safeEnvToList(xEl, c("shiny.tag.env"))
-    # undo parent env and key
-    x$parent <- NULL
-    x$envKey <- NULL
 
-    # Reorder the names to match a typical tag() structure that has `name`, `attribs`, and `children` first
-    # Avoid calling `setdiff()` if possible (it is slow).
-    if (!is.character(x[["name"]])) {
+    xEl <- x
+    if (!is.character(xEl[["name"]])) {
       stop("A tag environment has lost its `$name`. Did you remove it?")
     }
-    if (is.null(x[["attribs"]])) x$attribs <- setNames(list(), character(0))
-    if (is.null(x[["children"]])) x$children <- list()
+    # This alters the env, but these fields should exist!
+    if (is.null(xEl[["attribs"]])) xEl$attribs <- setNames(list(), character(0))
+    if (is.null(xEl[["children"]])) xEl$children <- list()
 
-    xNames <- names(x)
+    # Pull the names `name`, `attribs`, and `children` first to match `tag()` name order
+    envNames <- ls(envir = xEl, all.names = TRUE)
     newNames <- c(
       "name", "attribs", "children",
-      if (length(xNames) > 3) {
-        setdiff(xNames, c("name", "attribs", "children"))
+      if (length(envNames) > 5) {
+        # Pull remaining names if they exist
+        removeFromSet(envNames, c("name", "attribs", "children", "parent", "envKey"))
       }
     )
-    if (!identical(xNames, newNames)) {
-      # Need to preserve attributes. Must move values in two steps.
-      # Reorder values
-      x[] <- x[newNames]
-      # Reorder names
-      names(x) <- newNames
-    }
+
+    # Use mget to pull names in order to avoid always shuffling the values
+    x <- mget(newNames, xEl)
+    x <- copyAttributes(from = xEl, to = x)
+    oldClass(x) <- removeFromSet(oldClass(xEl), "shiny.tag.env")
 
     # Recurse through children
-    x$children <- lapply(x$children, tagEnvToTags_)
+    children <- x$children
+    tagChildren <- children
+    # Use a `for-loop` over `lapply` to avoid overhead
+    for (i in seq_along(children)) {
+      child <- children[[i]]
+      if (!is.null(child)) {
+        tagChildren[[i]] <- tagEnvToTags_(child)
+      }
+    }
+    x$children <- tagChildren
   }
   x
 }
@@ -1285,9 +1279,9 @@ tagQueryClassHas <- function(els, class) {
     use.names = FALSE
   )
 }
-removeClassVals <- function(classes, classesToRemove) {
+removeFromSet <- function(set, vals) {
   # removes the call to `unique()` with `setdiff`
-  classes[match(classes, classesToRemove, 0L) == 0L]
+  set[match(set, vals, 0L) == 0L]
 }
 # add classes that don't already exist
 tagQueryClassAdd <- function(els, class) {
@@ -1299,7 +1293,7 @@ tagQueryClassAdd <- function(els, class) {
     if (!isTagEnv(el)) return()
     classVal <- el$attribs$class %||% ""
     elClasses <- splitCssClass(classVal)
-    newClasses <- c(elClasses, removeClassVals(classes, elClasses))
+    newClasses <- c(elClasses, removeFromSet(classes, elClasses))
     el$attribs$class <- joinCssClass(newClasses)
   })
 }
@@ -1314,7 +1308,7 @@ tagQueryClassRemove <- function(els, class) {
     classVal <- el$attribs$class
     if (is.null(classVal)) return()
     elClasses <- splitCssClass(classVal)
-    newClasses <- removeClassVals(elClasses, classes)
+    newClasses <- removeFromSet(elClasses, classes)
     el$attribs$class <- joinCssClass(newClasses)
   })
 }
@@ -1330,7 +1324,7 @@ tagQueryClassToggle <- function(els, class) {
     elClasses <- splitCssClass(classVal)
     hasClass <- (classes %in% elClasses)
     if (any(hasClass)) {
-      elClasses <- removeClassVals(elClasses, classes)
+      elClasses <- removeFromSet(elClasses, classes)
     }
     if (any(!hasClass)) {
       elClasses <- c(elClasses, classes[!hasClass])
