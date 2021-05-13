@@ -177,6 +177,11 @@ envirStackUnique <- function() {
 
 
 
+# Copy all attributes that can be manually set
+# ?attr
+# Note that some attributes (namely ‘class’, ‘comment’, ‘dim’,
+# ‘dimnames’, ‘names’, ‘row.names’ and ‘tsp’) are treated specially
+# and have restrictions on the values which can be set.
 copyAttributes <- function(from, to) {
   attrVals <- attributes(from)
   attrNames <- names(attrVals)
