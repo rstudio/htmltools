@@ -1074,12 +1074,15 @@ tagQueryChildrenInsert <- function(els, after, ...) {
 }
 
 
+tagEnvRemoveAttribs <- function(el, attrs) {
+  el$attribs[names(el$attribs) %in% attrs] <- NULL
+  el
+}
 # Add attribute values
 tagQueryAttrAdd <- function(els, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
-    el <- tagAppendAttributes(el, ...)
-    el$attribs <- flattenTagAttribs(el$attribs)
+    tagAppendAttributes(el, ...)
   })
 }
 # Remove attribute values
@@ -1091,9 +1094,7 @@ tagQueryAttrRemove <- function(els, attrs) {
   }
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
-    for (attrVal in attrs) {
-      el$attribs[[attrVal]] <- NULL
-    }
+    tagEnvRemoveAttribs(el, attrs)
   })
 }
 # Check if els have attributes
@@ -1148,8 +1149,8 @@ tagQueryClassHas <- function(els, class) {
   unlist(
     tagQueryLapply(els, function(el) {
       if (!isTagEnv(el)) return(FALSE)
-      classVal <- el$attribs$class
-      if (is.null(classVal)) {
+      classVal <- tagGetAttribute(el, "class")
+      if (isNonConformClassValue(classVal)) {
         return(FALSE)
       }
       elClasses <- splitCssClass(classVal)
@@ -1162,6 +1163,20 @@ removeFromSet <- function(set, vals) {
   # removes the call to `unique()` with `setdiff`
   set[match(set, vals, 0L) == 0L]
 }
+isNonConformClassValue <- function(classVal) {
+  is.null(classVal) ||
+  is.na(classVal) ||
+  is.list(classVal) ||
+  (!is.character(classVal)) ||
+  length(classVal) == 0
+}
+tagEnvSetClassAttrib <- function(el, class) {
+  class <- joinCssClass(class)
+  # Remove all class instances as a single collective class value is being stored
+  el <- tagEnvRemoveAttribs(el, "class")
+  # Store new class value
+  tagAppendAttributes(el, class = class)
+}
 # add classes that don't already exist
 tagQueryClassAdd <- function(els, class) {
   # Quit early if class == NULL | character(0)
@@ -1170,10 +1185,14 @@ tagQueryClassAdd <- function(els, class) {
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
-    classVal <- el$attribs$class %||% ""
-    elClasses <- splitCssClass(classVal)
-    newClasses <- c(elClasses, removeFromSet(classes, elClasses))
-    el$attribs$class <- joinCssClass(newClasses)
+    classVal <- tagGetAttribute(el, "class")
+    if (isNonConformClassValue(classVal)) {
+      tagAppendAttributes(el, class = joinCssClass(classes))
+    } else {
+      elClasses <- splitCssClass(classVal)
+      newClasses <- c(elClasses, removeFromSet(classes, elClasses))
+      tagEnvSetClassAttrib(el, newClasses)
+    }
   })
 }
 # remove classes that exist
@@ -1184,11 +1203,11 @@ tagQueryClassRemove <- function(els, class) {
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
-    classVal <- el$attribs$class
-    if (is.null(classVal)) return()
+    classVal <- tagGetAttribute(el, "class")
+    if (isNonConformClassValue(classVal)) return()
     elClasses <- splitCssClass(classVal)
     newClasses <- removeFromSet(elClasses, classes)
-    el$attribs$class <- joinCssClass(newClasses)
+    tagEnvSetClassAttrib(el, newClasses)
   })
 }
 # toggle class existence depending on if they already exist or not
@@ -1199,7 +1218,8 @@ tagQueryClassToggle <- function(els, class) {
   classes <- getCssClass(class)
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
-    classVal <- el$attribs$class %||% ""
+    classVal <- tagGetAttribute(el, "class")
+    if (isNonConformClassValue(classVal)) return()
     elClasses <- splitCssClass(classVal)
     hasClass <- (classes %in% elClasses)
     if (any(hasClass)) {
@@ -1208,7 +1228,7 @@ tagQueryClassToggle <- function(els, class) {
     if (any(!hasClass)) {
       elClasses <- c(elClasses, classes[!hasClass])
     }
-    el$attribs$class <- joinCssClass(elClasses)
+    tagEnvSetClassAttrib(el, elClasses)
   })
 }
 
@@ -1419,19 +1439,19 @@ elMatchesSelector <- function(el, selector) {
   # match on id
   if (!is.null(selector$id)) {
     # bad id match
-    if ( (el$attribs$id %||% "") != selector$id) {
+    if ( !identical(tagGetAttribute(el, "id"), selector$id)) {
       return(FALSE)
     }
   }
 
   # match on class values
   if (!is.null(selector$classes)) {
+    elClass <- tagGetAttribute(el, "class")
     if (
-      # no tag class values at all
-      is.null(el$attribs$class) ||
+      isNonConformClassValue(elClass) ||
       # missing a class value in tag
       ! all(
-        selector$classes %in% strsplit(el$attribs$class %||% "", " ")[[1]]
+        selector$classes %in% splitCssClass(elClass)
       )
     ) {
       return(FALSE)

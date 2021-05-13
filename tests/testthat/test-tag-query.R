@@ -359,6 +359,16 @@ test_that("tagQuery()$addClass()", {
     expect_equal(x$hasClass(character(0)), c(FALSE))
   })
 
+  expect_equal_tags(
+    tagQuery(
+      div(class="A", class="B", "text")
+    )$
+      addClass("C")$
+      removeClass("B")$
+      allTags(),
+    div(class = "A C", "text")
+  )
+
 })
 
 test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
@@ -619,7 +629,6 @@ test_that("tagQuery() objects inherit from each other objects", {
   y$addClass("extra")
 
   expected <- div(span(class="extra", "text"))
-
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(!!!expected$children))
   expect_equal_tags(y$selectedTags(), tagListPrintAsList(!!!expected$children))
   expect_equal_tags(z$selectedTags(), tagListPrintAsList(!!!expected$children))

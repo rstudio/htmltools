@@ -478,7 +478,7 @@ tagGetAttribute <- function(tag, attr) {
   # Convert all attribs to chars explicitly; prevents us from messing up factors
   result <- lapply(attribs[attrIdx], as.character)
   # Separate multiple attributes with the same name
-  result <- paste(result, collapse  = " ")
+  result <- paste(result, collapse = " ")
   result
 }
 
