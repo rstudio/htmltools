@@ -367,12 +367,11 @@ test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
 
   x <- x$find("div.A")
   expect_length(x$selectedTags(), 1)
-  expect_equal(x$hasClass("B A"), TRUE)
-  expect_equal(x$hasClass("A B"), TRUE)
+  expect_error(x$hasClass("B A"), "Only a single CSS `class`", fixed = TRUE)
+  expect_error(x$hasClass(c("A", "B")), "Only a single CSS `class`", fixed = TRUE)
   expect_equal(x$hasClass("B"), TRUE)
   expect_equal(x$hasClass("A"), TRUE)
   expect_equal(x$hasClass("C"), FALSE)
-  expect_equal(x$hasClass("A C"), FALSE)
 
   x <- x$resetSelected()$find("span")
   expect_equal(x$hasClass("even"), c(FALSE, TRUE, FALSE, TRUE, FALSE))

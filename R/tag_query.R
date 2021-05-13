@@ -656,14 +656,14 @@ tagQuery_ <- function(
           tagQueryClassRemove(selected_, class)
           self
         },
-        #' * `$toggleClass(class)`: If the a class value is missing, add it. If
-        #' a  class value already exists, remove it.
+        #' * `$toggleClass(class)`: If the a class(es) value is missing, add it. If
+        #' a class(es) value already exists, remove it.
         toggleClass = function(class) {
           tagQueryClassToggle(selected_, class)
           self
         },
         #' * `$hasClass(class)`: Does each selected tag have particular
-        #' class(es)?
+        #' class?
         hasClass = function(class) {
           tagQueryClassHas(selected_, class)
         },
@@ -1103,13 +1103,15 @@ tagQueryAttrHas <- function(els, attr) {
   )
 }
 
-
-getCssClass <- function(class) {
+prepCssClass <- function(class) {
   class <- as_character2(class)
   if (length(class) == 0 || !is.character(class)) {
     stop("`class` must resolve to a character value with a length of at least 1")
   }
-  splitCssClass(class)
+  class
+}
+getCssClass <- function(class) {
+  splitCssClass(prepCssClass(class))
 }
 splitCssClass <- function(class) {
   if (length(class) > 1) {
@@ -1131,7 +1133,10 @@ tagQueryClassHas <- function(els, class) {
     return(rep(FALSE, length(els)))
   }
 
-  classes <- getCssClass(class)
+  class <- prepCssClass(class)
+  if (length(class) > 1 || grepl(" ", class, fixed = TRUE)) {
+    stop("Only a single CSS `class` value is allowed")
+  }
   unlist(
     tagQueryLapply(els, function(el) {
       if (!isTagEnv(el)) return(FALSE)
@@ -1140,7 +1145,7 @@ tagQueryClassHas <- function(els, class) {
         return(FALSE)
       }
       elClasses <- splitCssClass(classVal)
-      all(classes %in% elClasses)
+      class %in% elClasses
     }),
     use.names = FALSE
   )
