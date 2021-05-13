@@ -2,48 +2,6 @@
 fakeJqueryDep <- htmlDependency("jquery", "1.11.3", c(href="shared"), script = "jquery.js")
 fakeTagFunction <- tagFunction(function(){ span("inner span") })
 
-sortInternalNames <- function(x) {
-  if (is.list(x) && is_named(x)) {
-    x[order(names(x))]
-  } else {
-    x
-  }
-}
-
-# Needed to compare tags that go from lists to envs and back to lists.
-# The names are alpha sorted in the final tag object
-expect_equal_tags <- function(x, y) {
-  if (isTag(x)) {
-    expect_true(isTag(y))
-    expect_equal(x$parent, NULL)
-    expect_equal(y$parent, NULL)
-    expect_equal(x$envKey, NULL)
-    expect_equal(y$envKey, NULL)
-    x <- sortInternalNames(x)
-    y <- sortInternalNames(y)
-    # compare everything but the children
-    expect_equal(
-      x[setdiff(names(x), "children")],
-      y[setdiff(names(y), "children")]
-    )
-    expect_equal_tags(x$children, y$children)
-  } else if (is.list(x)) {
-    if (isTagList(x)) {
-      expect_true(isTagList(y))
-      expect_equal(
-        attr(x, "print.as.list", exact = TRUE),
-        attr(y, "print.as.list", exact = TRUE)
-      )
-    } else {
-      expect_true(is.list(y))
-    }
-    expect_equal(length(x), length(y))
-    expect_equal(names2(x), names2(y))
-    Map(x, y, f = expect_equal_tags)
-  } else {
-    expect_equal(x, y)
-  }
-}
 
 test_that("safeListToEnv and safeEnvToList undo each other", {
 
@@ -66,9 +24,6 @@ test_that("safeListToEnv and safeEnvToList undo each other", {
   expect_s3_class(xEnv, "extra_class")
 
   expect_equal(names(xEnv), c("A", "B"))
-  expect_equal(safeAttrValues(xEnv), list(extra_dep = list(42), other_dep = "exists"))
-
-  expect_equal(safeEnvToList(xEnv, "extra_class"), xExpected)
 })
 
 
@@ -166,7 +121,7 @@ test_that("tagQuery()$find()", {
   # Make sure the found elements do not persist
   newX <- x$find("span")
   expect_failure(
-    expect_equal(
+    expect_equal_tags(
       x$selectedTags(),
       newX$selectedTags()
     )
@@ -743,6 +698,61 @@ test_that("tagQuery() print method displays custom output for selected tags", {
 })
 
 
+test_that("tagQuery() allows for tags with extra top level items and will preserve them", {
+  html <- div(span())
+  html$test <- "extra"
+  html <- c(list(first = TRUE), html)
+  class(html) <- "shiny.tag"
+
+  # Test different removal types: setting the value to NULL and removing the value from the envir completely.
+  for (removeType in c("set", "rm")) {
+    expect_error(
+      tagQuery(html)$each(function(el, i) {
+        switch(removeType,
+          set = {
+            el$name <- NULL
+          },
+          rm = {
+            rm(list = "name", envir = el)
+          }
+        )
+      })$allTags(),
+      "lost its `$name`", fixed = TRUE
+    )
+
+    for (missing_key in c("__not_a_match__", "attribs", "children")) {
+      htmlQ <- tagQuery(html)
+      if (missing_key %in% names(html)) {
+        htmlQ$each(function(el, i) {
+          switch(removeType,
+            set = {
+              el[[missing_key]] <- NULL
+            },
+            rm = {
+              rm(list = missing_key, envir = el)
+            }
+          )
+          el[[missing_key]] <- NULL
+        })
+      }
+      htmlPostQ <- htmlQ$allTags()
+      html_out <- html
+      if (missing_key == "attribs") html_out$attribs <- dots_list()
+      if (missing_key == "children") html_out$children <- list()
+      # expect first three names to be standard tag names
+      expect_equal(names(htmlPostQ)[1:3], names(div()))
+
+      # expect all other names to be included somewhere
+      expect_setequal(names(htmlPostQ), names(html_out))
+
+      # If done in the same order, it should be equal
+      back_to_orig <- htmlPostQ[names(html_out)]
+      class(back_to_orig) <- "shiny.tag"
+      expect_equal(back_to_orig, html_out)
+    }
+  }
+
+})
 
 
 
