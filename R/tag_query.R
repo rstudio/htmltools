@@ -725,8 +725,10 @@ tagQuery_ <- function(
         #' reference, any modifications to it will also modify the `tagQuery()`
         #' object.
         each = function(fn) {
-          tagQueryEach(selected_, fn)
-          rebuild_()
+          if (length(selected_) > 0) {
+            tagQueryEach(selected_, fn)
+            rebuild_()
+          }
           self
         },
 
