@@ -1150,7 +1150,7 @@ tagQueryClassHas <- function(els, class) {
 
   class <- prepCssClass(class)
   if (length(class) > 1 || grepl(" ", class, fixed = TRUE)) {
-    stop("Only a single CSS `class` value is allowed")
+    stop("Only a single CSS `class` value is allowed", call. = FALSE)
   }
   unlist(
     tagQueryLapply(els, function(el) {
