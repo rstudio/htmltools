@@ -634,7 +634,7 @@ tagQuery_ <- function(
         #'
         #' * `$length()`: Number of tags that have been selected.
         length = function() {
-          tagQueryFindLength(selected_)
+          length(selected_)
         },
         #' ### Reset
         #'
@@ -1238,9 +1238,6 @@ tagQueryClassToggle <- function(els, class) {
 }
 
 
-tagQueryFindLength <- function(els) {
-  length(els)
-}
 # Return a list of `root$children`.
 # This may change if root ends up becoming a list of elements
 tagQueryFindResetSelected <- function(pseudoRoot) {
