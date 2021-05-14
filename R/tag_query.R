@@ -1165,7 +1165,7 @@ removeFromSet <- function(set, vals) {
 }
 isNonConformClassValue <- function(classVal) {
   is.null(classVal) ||
-  is.na(classVal) ||
+  anyNA(classVal) ||
   is.list(classVal) ||
   (!is.character(classVal)) ||
   length(classVal) == 0
