@@ -7,6 +7,7 @@
 * Added `tagAddRenderHook()` for delaying modification of a tag object until it is rendered. A list of render-time hooks may also be added via the new `.renderHook` argument added to all `tag()` functions. (#215)
 
 * Added `withTags(.noWS)` to change the default whitespace behavior for all tags within the call to `withTags()`. (#245)
+
 ## Bug Fixes
 
 * Closed #197: Fixed rendering of boolean attributes in <script> tags rendered via renderDependencies() (#197, thanks @atusy).
