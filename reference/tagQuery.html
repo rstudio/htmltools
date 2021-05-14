@@ -99,14 +99,14 @@ tag() (and tagList()) objects." />
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9004</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9005</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9004</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9005</span>
         </div>
       </div>-->
     </div>
@@ -237,6 +237,13 @@ CSS selector.</p></li>
 </ul>
 
 
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Length</h4>
+
+<ul>
+<li><p><code>$length()</code>: Number of tags that have been selected.</p></li>
+</ul>
+
+
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Reset</h4>
 
 <ul>
@@ -255,16 +262,14 @@ in combination with <code>$replaceWith()</code> since it empties the selection.<
 <ul>
 <li><p><code>$addClass(class)</code>: Adds class(es) to each selected tag.</p></li>
 <li><p><code>$removeClass(class)</code>: Removes class(es) to each selected tag.</p></li>
-<li><p><code>$toggleClass(class)</code>: If the a class value is missing, add it. If
-a  class value already exists, remove it.</p></li>
-<li><p><code>$hasClass(class)</code>: Does each selected tag have particular
+<li><p><code>$toggleClass(class)</code>: Adds class(es) that don't already exist and
+removes class(es) that do already exist (for each selected tag).</p></li>
+<li><p><code>$hasClass(class)</code>: Does each selected tag have all the provided
 class(es)?</p></li>
-<li><p><code>$hasAttr(attr)</code>: Does each selected tag have particular
-attributes?</p></li>
 <li><p><code>$addAttrs(...)</code>: Add a set of attributes to each selected tag.</p></li>
 <li><p><code>$removeAttrs(attrs)</code>: Remove a set of attributes from each
 selected tag.</p></li>
-<li><p><code>$emptyAttrs()</code>: Remove all attributes from each selected tag.</p></li>
+<li><p><code>$hasAttrs(attr)</code>: Do each selected tags have all of the attributes?</p></li>
 </ul>
 
 
