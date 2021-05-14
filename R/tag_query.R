@@ -1131,7 +1131,7 @@ splitCssClass <- function(class) {
   if (length(class) > 1) {
     class <- paste0(class, collapse = " ")
   }
-  strsplit(class, " ")[[1]]
+  strsplit(class, "\\s+")[[1]]
 }
 joinCssClass <- function(classes) {
   if (length(classes) == 0) {
