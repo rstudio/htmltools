@@ -438,7 +438,7 @@ tagAppendAttributes <- function(tag, ..., .cssSelector = NULL) {
     return(
       tagQuery(tag)$
         find(.cssSelector)$
-        addAttr(...)$
+        addAttrs(...)$
         allTags()
     )
   }

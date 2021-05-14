@@ -98,12 +98,11 @@ Unlike query methods, modify methods modify the \code{tagQuery()} object.
 \item \verb{$toggleClass(class)}: If the a class(es) value is missing, add it. If
 a class(es) value already exists, remove it.
 \item \verb{$hasClass(class)}: Does each selected tag have particular
-class?
-\item \verb{$addAttr(...)}: Add a set of attributes to each selected tag.
-\item \verb{$removeAttr(attrs)}: Remove a set of attributes from each
+class(es)?
+\item \verb{$addAttrs(...)}: Add a set of attributes to each selected tag.
+\item \verb{$removeAttrs(attrs)}: Remove a set of attributes from each
 selected tag.
-\item \verb{$hasAttr(attr)}: Does each selected tag have a particular
-attribute?
+\item \verb{$hasAttrs(attr)}: Do each selected tags have all of the attributes?
 }
 }
 

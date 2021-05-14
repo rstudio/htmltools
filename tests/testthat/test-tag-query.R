@@ -408,7 +408,7 @@ test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
 })
 
 
-test_that("tagQuery()$addAttr(), $removeAttr(), $hasAttr", {
+test_that("tagQuery()$addAttrs(), $removeAttrs(), $s", {
   xTags <- tagList(
       span(key = "value - a", "a"),
       span(key = "value - b", "b"),
@@ -419,17 +419,18 @@ test_that("tagQuery()$addAttr(), $removeAttr(), $hasAttr", {
   x <- tagQuery(xTags)
 
   expect_length(x$selectedTags(), 5)
-  expect_equal(x$hasAttr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
+  browser()
+  expect_equal(x$hasAttrs("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
 
-  x$addAttr(key2 = "val2", key3 = "val3")
-  expect_equal(x$hasAttr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
-  expect_equal(x$hasAttr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
-  expect_equal(x$hasAttr("key3"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  x$addAttrs(key2 = "val2", key3 = "val3")
+  expect_equal(x$hasAttrs("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
+  expect_equal(x$hasAttrs("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  expect_equal(x$hasAttrs("key3"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
 
-  x$removeAttr(c("key", "key3"))
-  expect_equal(x$hasAttr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-  expect_equal(x$hasAttr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
-  expect_equal(x$hasAttr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  x$removeAttrs(c("key", "key3"))
+  expect_equal(x$hasAttrs("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$hasAttrs("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  expect_equal(x$hasAttrs("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
 })
 
 test_that("tagQuery()$append()", {

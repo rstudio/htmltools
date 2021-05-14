@@ -35,7 +35,7 @@ NULL
 ## Instead write them where they are needed since they are small.
 ## (Just like we don't wrap dplyr code)
 # tagAppendAttributesAt <- function(tag, cssSelector, ...) {
-#   tagQuery(tag)$find(cssSelector)$addAttr(...)$allTags()
+#   tagQuery(tag)$find(cssSelector)$addAttrs(...)$allTags()
 # }
 # tagAddClassAt <- function(tag, cssSelector, class) {
 #   tagQuery(tag)$find(cssSelector)$addClass(class)$allTags()
@@ -256,7 +256,7 @@ asTagEnv_ <- function(x, parent = NULL) {
       stop("A tag environment has lost its `$name`. Did you remove it?")
     }
     # This alters the env, but these fields should exist!
-    if (is.null(x[["attribs"]])) x$attribs <- setNames(list(), character(0)) # Empty named list
+    if (is.null(x[["attribs"]])) x$attribs <- list(placeholder = NULL)[0] # Empty named list
     if (is.null(x[["children"]])) x$children <- list()
 
     # Recurse through children
@@ -669,25 +669,24 @@ tagQuery_ <- function(
           self
         },
         #' * `$hasClass(class)`: Does each selected tag have particular
-        #' class?
+        #' class(es)?
         hasClass = function(class) {
           tagQueryClassHas(selected_, class)
         },
-        #' * `$addAttr(...)`: Add a set of attributes to each selected tag.
-        addAttr = function(...) {
-          tagQueryAttrAdd(selected_, ...)
+        #' * `$addAttrs(...)`: Add a set of attributes to each selected tag.
+        addAttrs = function(...) {
+          tagQueryAttrsAdd(selected_, ...)
           self
         },
-        #' * `$removeAttr(attrs)`: Remove a set of attributes from each
+        #' * `$removeAttrs(attrs)`: Remove a set of attributes from each
         #' selected tag.
-        removeAttr = function(attrs) {
-          tagQueryAttrRemove(selected_, attrs)
+        removeAttrs = function(attrs) {
+          tagQueryAttrsRemove(selected_, attrs)
           self
         },
-        #' * `$hasAttr(attr)`: Does each selected tag have a particular
-        #' attribute?
-        hasAttr = function(attr) {
-          tagQueryAttrHas(selected_, attr)
+        #' * `$hasAttrs(attr)`: Do each selected tags have all of the attributes?
+        hasAttrs = function(attrs) {
+          tagQueryAttrsHas(selected_, attrs)
         },
         #' ### Children
         #'
@@ -1079,14 +1078,14 @@ tagEnvRemoveAttribs <- function(el, attrs) {
   el
 }
 # Add attribute values
-tagQueryAttrAdd <- function(els, ...) {
+tagQueryAttrsAdd <- function(els, ...) {
   tagQueryWalk(els, function(el) {
     if (!isTagEnv(el)) return()
     tagAppendAttributes(el, ...)
   })
 }
 # Remove attribute values
-tagQueryAttrRemove <- function(els, attrs) {
+tagQueryAttrsRemove <- function(els, attrs) {
   attrs <- as_character2(attrs)
   if (length(attrs) < 1) return()
   if (!is.character(attrs)) {
@@ -1098,15 +1097,22 @@ tagQueryAttrRemove <- function(els, attrs) {
   })
 }
 # Check if els have attributes
-tagQueryAttrHas <- function(els, attr) {
-  attr <- as_character2(attr)[[1]]
-  if (length(attr) != 1 || !is.character(attr)) {
-    stop("`attr` must be a single character value")
+tagQueryAttrsHas <- function(els, attrs) {
+  attrs <- as_character2(attrs)
+  if ((length(attrs) == 0) || (!is.character(attrs))) {
+    stop("`attrs` must be a character vector")
   }
   unlist(
     tagQueryLapply(els, function(el) {
       if (!isTagEnv(el)) return(FALSE)
-      tagHasAttribute(el, attr)
+
+      for (attr in attrs) {
+        if (!tagHasAttribute(el, attr)) {
+          return(FALSE)
+        }
+      }
+      # All attrs found
+      return(TRUE)
     }),
     use.names = FALSE
   )
@@ -1170,8 +1176,8 @@ isNonConformClassValue <- function(classVal) {
   (!is.character(classVal)) ||
   length(classVal) == 0
 }
-tagEnvSetClassAttrib <- function(el, class) {
-  class <- joinCssClass(class)
+tagEnvSetClassAttrib <- function(el, classes) {
+  class <- joinCssClass(classes)
   # Remove all class instances as a single collective class value is being stored
   el <- tagEnvRemoveAttribs(el, "class")
   # Store new class value
@@ -1220,6 +1226,7 @@ tagQueryClassToggle <- function(els, class) {
     if (!isTagEnv(el)) return()
     classVal <- tagGetAttribute(el, "class")
     if (isNonConformClassValue(classVal)) return()
+
     elClasses <- splitCssClass(classVal)
     hasClass <- (classes %in% elClasses)
     if (any(hasClass)) {
