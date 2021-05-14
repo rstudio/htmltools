@@ -1100,7 +1100,7 @@ tagQueryAttrsRemove <- function(els, attrs) {
 tagQueryAttrsHas <- function(els, attrs) {
   attrs <- as_character2(attrs)
   if ((length(attrs) == 0) || (!is.character(attrs))) {
-    stop("`attrs` must be a character vector")
+    stop("`attrs` must be a character vector", call. = FALSE)
   }
   unlist(
     tagQueryLapply(els, function(el) {
