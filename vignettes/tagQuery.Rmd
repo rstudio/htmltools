@@ -1,0 +1,273 @@
+---
+title: "Using tagQuery() to query and modify HTML tags"
+output: html_document
+---
+
+```{r, include=FALSE}
+library(knitr)
+library(htmltools)
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "100%",
+  fig.align = 'center'
+)
+# Show R console output instead of embedding the HTML
+registerS3method(
+  "knit_print", "shiny.tag",
+  getS3method("print", "shiny.tag")
+)
+registerS3method(
+  "knit_print", "shiny.tag.list",
+  getS3method("print", "shiny.tag.list")
+)
+```
+
+`tagQuery()` provides a [jQuery](https://jquery.com) inspired interface to query and modify HTML fragments in R. Learning how to use `tagQuery()` directly gives you a very fast and flexible way to extract and modify HTML tags. Some other `{htmltools}` functions like `tagAppendAttributes()` actually use `tagQuery()` when `.cssSelector` is supplied, but only offer a subset of the functionality the `tagQuery()` API provides, and can be significantly slower when multiple modifications are needed (for details, see [performance](#performance)).
+
+To create a `tagQuery()` object, pass it either a `tag()` (e.g., `div()`) or `tagList()`:
+
+```{r}
+library(htmltools)
+tagQuery(div(a()))
+```
+
+Notice how `tagQuery()` tracks two essential pieces: the input tag(s) as well as _selected_ tags (by default the input tag(s) are selected). This data structure allows us to [efficiently](#performance) [query](#query), [modify](#modify), and [replace](#replace) particular fragments of the root HTML tag.
+
+Since `tagQuery()` isn't itself a `tag()` object, it can't be passed directly to `tag()` or tag rendering functions, but at any given time you can extract `$allTags()` or the `$selectedTags()`.
+
+## Query {#query}
+
+`tagQuery()` has numerous methods to select (i.e., query) HTML tag(s). Every query method accepts a [CSS selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors) for targeting particular tags of interest. At the moment, `tagQuery()` only supports a combination of [type](https://www.w3.org/TR/CSS22/selector.html#type-selectors) (e.g, `div`), [class](https://www.w3.org/TR/CSS22/selector.html#class-html) (e.g., `.my-class`), [id](https://www.w3.org/TR/CSS22/selector.html#id-selectors) (e.g., `#myID`), and [universal](https://www.w3.org/TR/CSS22/selector.html#universal-selector) (`*`) selectors within a given [simple selector](https://www.w3.org/TR/CSS22/selector.html#selector-syntax).
+
+### Children
+
+To begin querying tags, start with either `$find()` or `$children()`. The former traverses _all_ descendants whereas the latter only considers _direct_ descendants.
+
+```{r}
+(html <- div(span("foo"), div(span("bar"))))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+tagQ$find("span")$selectedTags()
+tagQ$children("span")$selectedTags()
+```
+
+And since `$find()` considers all descendants, it allows for [descendant selectors](https://www.w3.org/TR/CSS22/selector.html#descendant-selectors) (space) and direct [child selectors](https://www.w3.org/TR/CSS22/selector.html#child-selectors) (>).
+
+```{r}
+(html <- div(div(span(a()))))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+tagQ$find("div a")$selectedTags()
+tagQ$find("div > a")$selectedTags()
+tagQ$find("div > span > a")$selectedTags()
+```
+
+Since `tagQuery()` methods may be chained together, you could also implement  `tagQ$find("div > span > a")` as:
+
+```{r}
+tagQ$find("div")$children("span")$children("a")$selectedTags()
+```
+
+### Siblings
+
+Although `tagQuery()` doesn't (currently) support [sibling selectors](https://www.w3schools.com/css/css_combinators.asp) (`+` and `~`), it does provide a `$sibling()` method, which provides essentially the same functionality:
+
+```{r}
+(html <- div(a(), span(), p()))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+# The moral equivalent to `tagQ$find("a ~ span")`
+tagQ$find("a")$siblings("span")$selectedTags()
+```
+
+### Parents
+
+In some cases, after finding children, it can be useful to traverse back up the tag tree to find particular ancestors of a selection. Similar to the difference in `$find()` and `$children()`, `$parents()` traverses _all_ ancestors whereas `$parent()` considers just _direct_ ancestors.
+
+```{r}
+(html <- div(div(a(class = "foo")), span(a())))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+tagQ$find("a.foo")$parent()$selectedTags()
+tagQ$find("a.foo")$parents()$selectedTags()
+```
+
+### Filter
+
+The `$filter()` method can be used to subset selected tags using an R function or CSS selector. When combined with the universal selector (`*`), `$filter()` is particularly useful as a workaround for the fact that `tagQuery()` doesn't fully support the entire CSS selector specification. For example, here's a workaround for `tagQuery()`'s current lack of support for [attribute selectors](https://www.w3.org/TR/CSS22/selector.html#attribute-selectors):
+
+```{r}
+(html <- div(div(), div("data-foo" = "bar")))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+# The moral equivalent to `tagQ$find("[data-foo]")`
+tagQ$
+  find("*")$
+  filter(function(x, i) tagHasAttribute(x, "data-foo"))$
+  selectedTags()
+```
+
+### Reset
+
+To reset the set of selected tags to the root tag, use `$resetSelected()`:
+
+```{r}
+(html <- div(a()))
+```
+
+```{r}
+tagQ <- tagQuery(html)$find("a")
+tagQ$selectedTags()
+tagQ$resetSelected()$selectedTags()
+```
+
+
+## Modify {#modify}
+
+`tagQuery()` provides numerous functions for modifying HTML [attributes](#modify-attrs), [children](#modify-child), or [sibling](#modify-sibling) tags of the current query selection. Unlike query methods, modifier methods _modify their input_ (both the root and the selection). For example, note how the `$addClass()` call here modifies `tagQ` (but `$find()` doesn't):
+
+```{r}
+(html <- div(a()))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+tagQ$
+  find("a")$
+  addClass("foo")$
+  allTags()
+```
+
+The [mutable](https://en.wikipedia.org/wiki/Immutable_object) behavior of modifier methods not only allows us to modify child tags without losing a reference to the root tag, but it also makes modifications more [performant](#performance) than they'd otherwise be.
+
+### Attributes {#modify-attrs}
+
+Use `$addAttrs()` to add and `$removeAttrs()` to remove any HTML attribute from each selected tag. If you're just working with `class` attributes, consider using the more convenient `$addClass()`, `$removeClass()`, or `$toggleClass()`
+
+```{r}
+(html <- div(span(a()), span()))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+# Equivalent to tagAppendAttributes(html, .cssSelector = "span", "data-bar" = "foo")
+tagQ$
+  find("span")$
+  addAttrs("data-bar" = "foo")$
+  allTags()
+```
+
+Also, to check whether each selected tag has a certain attribute, use `$hasAttr()` (or `$hasClass()`)
+
+```{r}
+tagQ$find("span")$hasAttr("data-bar")
+```
+
+### Children {#modify-child}
+
+Use `$prepend()` to insert content before the children of each selected tag and `$append()` to insert content after:
+
+```{r}
+(html <- div(p(a())))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+# Equivalent to html %>% tagInsertChildren(.cssSelector = "p", after = 0, span()) %>% tagAppendChildren(.cssSelector = "p", tags$table())
+tagQ$
+  find("p")$
+  prepend(span())$
+  append(tags$table())$
+  allTags()
+```
+
+If you'd like to replace all the children, then you can first call `$empty()` before `$append()`. If you like to just remove particular child tags, then you should call `$children()` + the `$remove()` sibling method.
+
+### Siblings {#modify-sibling}
+
+Use `$before()` to insert content before each selected tag and `$after()` to insert content after:
+
+```{r}
+(html <- div(p(a())))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+tagQ$
+  find("a")$
+  before(span())$
+  after(tags$table())$
+  allTags()
+```
+
+## Replace {#replace}
+
+As with `tagQuery()`'s modifier methods, its replace methods also modify their input. They also empty selected tags, so you may want to `$resetSelection()` if you want to make more queries or modifications after-the-fact.
+
+Use `$replaceWith()` to replace selected tags with some other content.
+
+```{r}
+(html <- div(a()))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+tagQ$
+  find("a")$
+  replaceWith(p())$
+  allTags()
+```
+
+Use `$remove()` to replace selected tags with nothing:
+
+```{r}
+tagQ <- tagQuery(html)
+tagQ$find("a")$remove()$allTags()
+```
+
+And use `$empty()` to replace the _children_ of the selected tags with nothing:
+
+```{r}
+(html <- div(span(a())))
+```
+
+```{r}
+tagQ <- tagQuery(html)
+tagQ$find("span")$empty()$allTags()
+```
+
+
+## Performance {#performance}
+
+One main reason why `tagQuery()` is fast is that it converts the underlying `tag()` list structure into a environment (i.e., [reference object](https://en.wikipedia.org/wiki/Reference_(computer_science))). As a result, `tagQuery()` is able to keep a reference to selected tags and modify them without having to re-find tags for each modification. This is why, even if you can achieve multiple modifications via multiple calls to `tagAppendAttributes()`, `tagInsertChildren()`, etc. (with a `.cssSelector`), you should consider using `tagQuery()` directly instead.
+
+For a basic example, since `tagQuery()` can prepend and append in one shot, it's twice as fast as using  `tagInsertChildren()`
+ then `tagAppendChildren()` (with the same `.cssSelector`). Internally, the latter approach calls `tagQuery(html)$find()` twice, which is why it's 2 times slower.
+
+```{r}
+library(magrittr)
+html <- div(p(a()))
+bench::mark(
+  tagQuery = tagQuery(html)$
+    find("p")$
+    prepend(span())$
+    append(tags$table())$
+    allTags(),
+  tagAppend = html %>%
+    tagInsertChildren(.cssSelector = "p", after = 0, span()) %>%
+    tagAppendChildren(.cssSelector = "p", tags$table()),
+  check = FALSE,
+  time_unit = "us"
+)
+```

@@ -49,13 +49,6 @@ asSelector <- function(selector) {
     )
   }
 
-  # if it contains multiple elements, recurse
-  if (txt_detect(selector, "* ", fixed = TRUE)) {
-    # we already match on all elements. No need to know about this selector
-    warning("Removing `* ` from selector. ")
-    selector <- txt_remove_all(selector, "* ", fixed = TRUE)
-  }
-
   # Check here to avoid inf recursion
   if (txt_detect(selector, ">", fixed = TRUE)) {
     # If there is a `>`, pad it with spaces

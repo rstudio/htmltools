@@ -979,3 +979,58 @@ test_that("html render method", {
   expect_equal(newObj$name, "div")
   expect_snapshot(as.character(newObj))
 })
+
+
+test_that(".cssSelector arg only applies changes to the selected elements", {
+  html <-
+    div(
+      class = "outer",
+      div(class = "inner", "text"),
+      span("TEXT")
+    )
+
+  expect_equal_tags(
+    tagAppendAttributes(html, id = "test"),
+    div(class = "outer", id = "test", div(class="inner", "text"), span("TEXT"))
+  )
+  expect_equal_tags(
+    tagAppendAttributes(html, id = "test", .cssSelector = ".inner"),
+    div(class = "outer", div(class = "inner", id = "test", "text"), span("TEXT"))
+  )
+
+  expect_equal_tags(
+    tagAppendChild(html, h1()),
+    div(class = "outer", div(class="inner", "text"), span("TEXT"), h1())
+  )
+  expect_equal_tags(
+    tagAppendChild(html, h1(), .cssSelector = ".inner"),
+    div(class = "outer", div(class = "inner", "text", h1()), span("TEXT"))
+  )
+
+  expect_equal_tags(
+    tagAppendChildren(html, h1(), h2()),
+    div(class = "outer", div(class="inner", "text"), span("TEXT"), h1(), h2())
+  )
+  expect_equal_tags(
+    tagAppendChildren(html, h1(), h2(), .cssSelector = ".inner"),
+    div(class = "outer", div(class = "inner", "text", h1(), h2()), span("TEXT"))
+  )
+
+  expect_equal_tags(
+    tagSetChildren(html, h1(), h2()),
+    div(class = "outer", h1(), h2())
+  )
+  expect_equal_tags(
+    tagSetChildren(html, h1(), h2(), .cssSelector = ".inner"),
+    div(class = "outer", div(class = "inner", h1(), h2()), span("TEXT"))
+  )
+
+  expect_equal_tags(
+    tagInsertChildren(html, h1(), h2(), after = 0),
+    div(class = "outer", h1(), h2(), div(class="inner", "text"), span("TEXT"))
+  )
+  expect_equal_tags(
+    tagInsertChildren(html, h1(), h2(), after = 0, .cssSelector = ".inner"),
+    div(class = "outer", div(class = "inner", h1(), h2(), "text"), span("TEXT"))
+  )
+})

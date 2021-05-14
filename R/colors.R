@@ -18,7 +18,6 @@
 #'   to prevent the alpha channel from being discarded).
 #'
 #' @examples
-#'
 #' parseCssColors(c(
 #'   "#0d6efd",
 #'   "#DC35457F",

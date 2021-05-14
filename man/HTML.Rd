@@ -18,7 +18,7 @@ normally be written around this HTML. Valid options include \code{before},
 \code{end}).}
 }
 \value{
-The same value, but marked as HTML.
+The input \code{text}, but marked as HTML.
 }
 \description{
 Marks the given text as HTML, which means the \link{tag} functions will know
