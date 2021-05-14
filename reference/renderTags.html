@@ -204,8 +204,9 @@ known after rendering.</p></li>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code>doRenderTags</code> is intended for very low-level use; it ignores
-singleton, head, and dependency handling, and simply renders the given tag
-objects as HTML.</p>
+render hooks, singletons, head, and dependency handling, and simply renders the given tag
+objects as HTML. Please use <code>renderTags()</code> if <code>x</code> has not already handled its dependencies
+and render hooks.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
