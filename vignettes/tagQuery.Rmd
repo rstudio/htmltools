@@ -51,7 +51,9 @@ To begin querying tags, start with either `$find()` or `$children()`. The former
 ```{r}
 tagQ <- tagQuery(html)
 tagQ$find("span")$selectedTags()
+tagQ$find("span")$length()
 tagQ$children("span")$selectedTags()
+tagQ$find("span")$length()
 ```
 
 And since `$find()` considers all descendants, it allows for [descendant selectors](https://www.w3.org/TR/CSS22/selector.html#descendant-selectors) (space) and direct [child selectors](https://www.w3.org/TR/CSS22/selector.html#child-selectors) (>).
@@ -168,10 +170,10 @@ tagQ$
   allTags()
 ```
 
-Also, to check whether each selected tag has a certain attribute, use `$hasAttr()` (or `$hasClass()`)
+Also, to check whether each selected tag has a certain attribute, use `$hasAttrs()` (or `$hasClass()`)
 
 ```{r}
-tagQ$find("span")$hasAttr("data-bar")
+tagQ$find("span")$hasAttrs("data-bar")
 ```
 
 ### Children {#modify-child}

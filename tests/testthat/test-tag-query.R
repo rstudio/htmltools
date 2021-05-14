@@ -128,6 +128,7 @@ test_that("tagQuery()$find()", {
   )
 
   x <- x$find("span")
+  expect_equal(x$length(), 2)
   expect_length(x$selectedTags(), 2)
   expect_equal_tags(
     x$selectedTags(),
@@ -137,10 +138,13 @@ test_that("tagQuery()$find()", {
   ul <- tags$ul
   li <- tags$li
   x <- tagQuery(div(div(div(ul(li("a"), li("b"), li("c"))))))
+  expect_equal(x$length(), 1)
   expect_length(x$selectedTags(), 1)
   x <- x$find("div")
+  expect_equal(x$length(), 2)
   expect_length(x$selectedTags(), 2)
   x <- x$find("div")
+  expect_equal(x$length(), 1)
   expect_length(x$selectedTags(), 1)
 
   x <- tagQuery(
@@ -151,25 +155,30 @@ test_that("tagQuery()$find()", {
     )
   )
   x <- x$find("a")
+  expect_equal(x$length(), 2)
   expect_length(x$selectedTags(), 2)
   x <- x$resetSelected()
 
   x <- x$find("a > p")
+  expect_equal(x$length(), 1)
   expect_length(x$selectedTags(), 1)
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(p("text2")))
   x <- x$resetSelected()
 
   x <- x$find("a > > p")
+  expect_equal(x$length(), 1)
   expect_length(x$selectedTags(), 1)
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(p("text1")))
   x <- x$resetSelected()
 
   x <- x$find("div > *")
+  expect_equal(x$length(), 2)
   expect_length(x$selectedTags(), 2)
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(a(span(p("text1"))), a(p("text2"))))
   x <- x$resetSelected()
 
   x <- x$find("div>>p")
+  expect_equal(x$length(), 1)
   expect_length(x$selectedTags(), 1)
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(p("text2")))
 })
@@ -350,6 +359,16 @@ test_that("tagQuery()$addClass()", {
     expect_equal(x$hasClass(character(0)), c(FALSE))
   })
 
+  expect_equal_tags(
+    tagQuery(
+      div(class="A", class="B", "text")
+    )$
+      addClass("C")$
+      removeClass("B")$
+      allTags(),
+    div(class = "A C", "text")
+  )
+
 })
 
 test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
@@ -368,11 +387,10 @@ test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
   x <- x$find("div.A")
   expect_length(x$selectedTags(), 1)
   expect_equal(x$hasClass("B A"), TRUE)
-  expect_equal(x$hasClass("A B"), TRUE)
+  expect_equal(x$hasClass("A      B"), TRUE)
   expect_equal(x$hasClass("B"), TRUE)
   expect_equal(x$hasClass("A"), TRUE)
   expect_equal(x$hasClass("C"), FALSE)
-  expect_equal(x$hasClass("A C"), FALSE)
 
   x <- x$resetSelected()$find("span")
   expect_equal(x$hasClass("even"), c(FALSE, TRUE, FALSE, TRUE, FALSE))
@@ -390,7 +408,7 @@ test_that("tagQuery()$hasClass(), $toggleClass(), $removeClass()", {
 })
 
 
-test_that("tagQuery()$addAttrs(), $removeAttrs(), $emptyAttrs(), $hasAttr", {
+test_that("tagQuery()$addAttrs(), $removeAttrs(), $s", {
   xTags <- tagList(
       span(key = "value - a", "a"),
       span(key = "value - b", "b"),
@@ -401,22 +419,17 @@ test_that("tagQuery()$addAttrs(), $removeAttrs(), $emptyAttrs(), $hasAttr", {
   x <- tagQuery(xTags)
 
   expect_length(x$selectedTags(), 5)
-  expect_equal(x$hasAttr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
+  expect_equal(x$hasAttrs("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
 
   x$addAttrs(key2 = "val2", key3 = "val3")
-  expect_equal(x$hasAttr("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
-  expect_equal(x$hasAttr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
-  expect_equal(x$hasAttr("key3"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  expect_equal(x$hasAttrs("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
+  expect_equal(x$hasAttrs("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  expect_equal(x$hasAttrs("key3"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
 
   x$removeAttrs(c("key", "key3"))
-  expect_equal(x$hasAttr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-  expect_equal(x$hasAttr("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
-  expect_equal(x$hasAttr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-
-  x$emptyAttrs()
-  expect_equal(x$hasAttr("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-  expect_equal(x$hasAttr("key2"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
-  expect_equal(x$hasAttr("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$hasAttrs("key"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_equal(x$hasAttrs("key2"), c(TRUE, TRUE, TRUE, TRUE, TRUE))
+  expect_equal(x$hasAttrs("key3"), c(FALSE, FALSE, FALSE, FALSE, FALSE))
 })
 
 test_that("tagQuery()$append()", {
@@ -516,8 +529,10 @@ test_that("tagQuery()$remove()", {
       span("e")
     )
   x <- tagQuery(xTags)$find("span")
+  expect_equal(x$length(), 5)
   expect_length(x$selectedTags(), 5)
   x <- x$filter(".A")$remove()
+  expect_equal(x$length(), 0)
   expect_length(x$selectedTags(), 0)
 
   expect_equal_tags(
@@ -526,6 +541,7 @@ test_that("tagQuery()$remove()", {
   )
 
   x <- x$resetSelected()$find("span")
+  expect_equal(x$length(), 3)
   expect_length(x$selectedTags(), 3)
   x <- x$remove()
   expect_equal_tags(
@@ -613,7 +629,6 @@ test_that("tagQuery() objects inherit from each other objects", {
   y$addClass("extra")
 
   expected <- div(span(class="extra", "text"))
-
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(!!!expected$children))
   expect_equal_tags(y$selectedTags(), tagListPrintAsList(!!!expected$children))
   expect_equal_tags(z$selectedTags(), tagListPrintAsList(!!!expected$children))
@@ -755,7 +770,55 @@ test_that("tagQuery() allows for tags with extra top level items and will preser
 })
 
 
+test_that("flattenTagsRaw() and flattenTags() do not drop html deps", {
+  testSpan <- span()
+  htmlDependencies(testSpan) <- list(fakeJqueryDep)
+  otherObj <- HTML("test")
+  html <- tagList(div(), testSpan, otherObj)
+  htmlDependencies(html) <- list(fakeJqueryDep)
 
+  expect_equal(flattenTags(html), html)
+  expect_equal(flattenTagsRaw(html), html)
+})
+
+
+test_that("tag methods do not unexpectedly alter tag envs", {
+
+  expect_equal_tags(
+    tagEnvToTags(tagAppendAttributes(asTagEnv(div()), key = "a")),
+    tagAppendAttributes(div(), key = "a")
+  )
+
+  expect_equal_tags(
+    tagHasAttribute(asTagEnv(div(key = "a")), "key"),
+    tagHasAttribute(div(key = "a"), "key")
+  )
+
+  expect_equal_tags(
+    tagGetAttribute(asTagEnv(div(key = "a")), "key"),
+    tagGetAttribute(div(key = "a"), "key")
+  )
+
+  expect_equal_tags(
+    tagEnvToTags(tagAppendChild(asTagEnv(div()), span())),
+    tagAppendChild(div(), span())
+  )
+
+  expect_equal_tags(
+    tagEnvToTags(tagAppendChildren(asTagEnv(div()), span(), h1())),
+    tagAppendChildren(div(), span(), h1())
+  )
+
+  expect_equal_tags(
+    tagEnvToTags(tagSetChildren(asTagEnv(div()), span(), h1())),
+    tagSetChildren(div(), span(), h1())
+  )
+
+  expect_equal_tags(
+    tagEnvToTags(tagInsertChildren(asTagEnv(div()), span(), h1(), after = 12)),
+    tagInsertChildren(div(), span(), h1(), after = 12)
+  )
+})
 
 
 

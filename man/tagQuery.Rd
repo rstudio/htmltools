@@ -73,6 +73,12 @@ CSS selector.
 }
 }
 
+\subsection{Length}{
+\itemize{
+\item \verb{$length()}: Number of tags that have been selected.
+}
+}
+
 \subsection{Reset}{
 \itemize{
 \item \verb{$resetSelected()}: Reset selected tags to the \verb{$root()} tag. Useful
@@ -89,16 +95,14 @@ Unlike query methods, modify methods modify the \code{tagQuery()} object.
 \itemize{
 \item \verb{$addClass(class)}: Adds class(es) to each selected tag.
 \item \verb{$removeClass(class)}: Removes class(es) to each selected tag.
-\item \verb{$toggleClass(class)}: If the a class value is missing, add it. If
-a  class value already exists, remove it.
-\item \verb{$hasClass(class)}: Does each selected tag have particular
+\item \verb{$toggleClass(class)}: Adds class(es) that don't already exist and
+removes class(es) that do already exist (for each selected tag).
+\item \verb{$hasClass(class)}: Does each selected tag have all the provided
 class(es)?
-\item \verb{$hasAttr(attr)}: Does each selected tag have particular
-attributes?
 \item \verb{$addAttrs(...)}: Add a set of attributes to each selected tag.
 \item \verb{$removeAttrs(attrs)}: Remove a set of attributes from each
 selected tag.
-\item \verb{$emptyAttrs()}: Remove all attributes from each selected tag.
+\item \verb{$hasAttrs(attr)}: Do each selected tags have all of the attributes?
 }
 }
 
