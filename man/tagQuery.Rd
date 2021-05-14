@@ -95,9 +95,9 @@ Unlike query methods, modify methods modify the \code{tagQuery()} object.
 \itemize{
 \item \verb{$addClass(class)}: Adds class(es) to each selected tag.
 \item \verb{$removeClass(class)}: Removes class(es) to each selected tag.
-\item \verb{$toggleClass(class)}: If the a class(es) value is missing, add it. If
-a class(es) value already exists, remove it.
-\item \verb{$hasClass(class)}: Does each selected tag have particular
+\item \verb{$toggleClass(class)}: Adds class(es) that don't already exist and
+removes class(es) that do already exist (for each selected tag).
+\item \verb{$hasClass(class)}: Does each selected tag have all the provided
 class(es)?
 \item \verb{$addAttrs(...)}: Add a set of attributes to each selected tag.
 \item \verb{$removeAttrs(attrs)}: Remove a set of attributes from each

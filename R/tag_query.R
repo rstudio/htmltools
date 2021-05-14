@@ -662,13 +662,13 @@ tagQuery_ <- function(
           tagQueryClassRemove(selected_, class)
           self
         },
-        #' * `$toggleClass(class)`: If the a class(es) value is missing, add it. If
-        #' a class(es) value already exists, remove it.
+        #' * `$toggleClass(class)`: Adds class(es) that don't already exist and
+        #' removes class(es) that do already exist (for each selected tag).
         toggleClass = function(class) {
           tagQueryClassToggle(selected_, class)
           self
         },
-        #' * `$hasClass(class)`: Does each selected tag have particular
+        #' * `$hasClass(class)`: Does each selected tag have all the provided
         #' class(es)?
         hasClass = function(class) {
           tagQueryClassHas(selected_, class)
