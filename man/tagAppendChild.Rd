@@ -43,7 +43,6 @@ their \verb{$children} fields flattened to a single \code{list()} via \code{\lin
 Modify the contents (aka children) of a \link{tag} object.
 }
 \examples{
-
 html <- div(a(), h1())
 tagAppendChild(html, span())
 tagAppendChild(html, .cssSelector = "a", span())

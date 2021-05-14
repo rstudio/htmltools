@@ -18,7 +18,6 @@ When possible, use \code{\link[=tagAddRenderHook]{tagAddRenderHook()}} to provid
 structure and utilize a render function.
 }
 \examples{
-
 myDivDep <- tagFunction(function() {
   if (isTRUE(getOption("useDep", TRUE))) {
     htmlDependency(

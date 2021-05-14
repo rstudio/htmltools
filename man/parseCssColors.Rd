@@ -30,7 +30,6 @@ values are not understood by Internet Explorer, and must be converted to
 \code{rgba(red, green, blue, alpha)} format to be safe for the web.
 }
 \examples{
-
 parseCssColors(c(
   "#0d6efd",
   "#DC35457F",
