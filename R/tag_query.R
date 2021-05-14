@@ -764,7 +764,6 @@ tagQuery_ <- function(
           tagQuerySelectedAsTags(selected_)
         }
         #' @examples
-        #'
         #' tagQ <- tagQuery(div(a()))
         #' tagQ$find("a")$addClass("foo")
         #' tagQ

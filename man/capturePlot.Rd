@@ -34,7 +34,6 @@ Easily generates a .png file (or other graphics file) from a plotting
 expression.
 }
 \examples{
-
 # Default settings
 res <- capturePlot(plot(cars))
 
