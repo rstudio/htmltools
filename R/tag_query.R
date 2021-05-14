@@ -1147,10 +1147,7 @@ tagQueryClassHas <- function(els, class) {
     return(rep(FALSE, length(els)))
   }
 
-  class <- prepCssClass(class)
-  if (length(class) > 1 || grepl(" ", class, fixed = TRUE)) {
-    stop("Only a single CSS `class` value is allowed", call. = FALSE)
-  }
+  classes <- getCssClass(class)
   unlist(
     tagQueryLapply(els, function(el) {
       if (!isTagEnv(el)) return(FALSE)
@@ -1159,7 +1156,7 @@ tagQueryClassHas <- function(els, class) {
         return(FALSE)
       }
       elClasses <- splitCssClass(classVal)
-      class %in% elClasses
+      all(classes %in% elClasses)
     }),
     use.names = FALSE
   )
