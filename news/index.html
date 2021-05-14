@@ -165,71 +165,85 @@
 <li><p><a href="https://github.com/rstudio/htmltools">htmltools</a> now has its own <a href="https://pkgdown.r-lib.org">pkgdown</a> site hosted at <a href="https://rstudio.github.io/htmltools/" class="uri">https://rstudio.github.io/htmltools/</a>.</p></li>
 <li><p>The new <code><a href="../reference/tagQuery.html">tagQuery()</a></code> function provides a <a href="https://jquery.com/">jQuery</a> inspired interface to query and/or modify HTML <code><a href="../reference/builder.html">tag()</a></code> (e.g., <code><a href="../reference/builder.html">div()</a></code>) or <code><a href="../reference/tagList.html">tagList()</a></code> objects. To learn more, see the <a href="https://rstudio.github.io/htmltools/articles/tagQuery.html">{pkgdown} article</a>. (<a href='https://github.com/rstudio/htmltools/issues/208'>#208</a>)</p></li>
 <li><p>Added <code><a href="../reference/tagAddRenderHook.html">tagAddRenderHook()</a></code> for delaying modification of a tag object until it is rendered. A list of render-time hooks may also be added via the new <code>.renderHook</code> argument added to all <code><a href="../reference/builder.html">tag()</a></code> functions. (<a href='https://github.com/rstudio/htmltools/issues/215'>#215</a>)</p></li>
+<li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/251'>#251</a>: Added <code>.cssSelector</code> parameters to tag modifying functions such as <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code> or <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code>. The <code>.cssSelector</code> allows you to target particular (inner) tags of interest. See <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code> for examples. (<a href='https://github.com/rstudio/htmltools/issues/224'>#224</a>)</p></li>
+<li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/225'>#225</a>: Added <code><a href="../reference/tagAppendChild.html">tagInsertChildren()</a></code> to be able to insert child tag objects at a particular location. (<a href='https://github.com/rstudio/htmltools/issues/224'>#224</a>)</p></li>
 </ul>
 </div>
 <div id="bug-fixes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#bug-fixes" class="anchor"></a>Bug Fixes</h2>
-<ul><li>
-<p>Closed <a href='https://github.com/rstudio/htmltools/issues/197'>#197</a>: Fixed rendering of boolean attributes in</p>
-<script>
-<p>tags rendered via renderDependencies() (<a href='https://github.com/rstudio/htmltools/issues/197'>#197</a>, thanks <a href='https://github.com/atusy'>@atusy</a>).</p></li>
+<ul>
+<li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/197'>#197</a>: Fixed rendering of boolean attributes in <code>&lt;script&gt;</code> tags rendered via <code><a href="../reference/renderDependencies.html">renderDependencies()</a></code> (<a href='https://github.com/rstudio/htmltools/issues/197'>#197</a>, thanks <a href='https://github.com/atusy'>@atusy</a>).</p></li>
 <li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/222'>#222</a>: Unnamed attributes are no longer allowed to be appended via <code>tagAppendAttribs()</code>. When trying to print unnamed tag attribs, a better error message is provided. (<a href='https://github.com/rstudio/htmltools/issues/229'>#229</a>)</p></li>
 </ul>
 </div>
 </div>
-<div id="htmltools-0511" class="section level1">
-<h1>htmltools 0.5.1.1</h1>
+    <div id="htmltools-0511" class="section level1">
+<h1 class="page-header" data-toc-text="0.5.1.1">
+<a href="#htmltools-0511" class="anchor"></a>htmltools 0.5.1.1<small> 2021-01-22 </small>
+</h1>
 <ul>
 <li>Added shiny as a suggested package.</li>
 </ul>
 </div>
-<div id="htmltools-051" class="section level1">
-<h1>htmltools 0.5.1</h1>
+    <div id="htmltools-051" class="section level1">
+<h1 class="page-header" data-toc-text="0.5.1">
+<a href="#htmltools-051" class="anchor"></a>htmltools 0.5.1<small> 2021-01-12 </small>
+</h1>
 <div id="new-features--improvements-1" class="section level2">
-<h2>New Features &amp; Improvements</h2>
+<h2 class="hasAnchor">
+<a href="#new-features--improvements-1" class="anchor"></a>New Features &amp; Improvements</h2>
 <ul>
-<li><p>Added a new <code>tagFunction()</code> for generating <code>tags</code> and/or <code>htmlDependency()</code>s conditional on the rendering context. For an example, see <code>?tagFunction</code>. (<a href='https://github.com/rstudio/htmltools/issues/180'>#180</a>)</p></li>
-<li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/104'>#104</a>: <code>save_html()</code>’s <code>file</code> argument now properly handles relative paths. (<a href='https://github.com/haozhu233'>@haozhu233</a>, <a href='https://github.com/rstudio/htmltools/issues/105'>#105</a>, <a href='https://github.com/rstudio/htmltools/issues/192'>#192</a>)</p></li>
-<li><p><code>save_html()</code> now has a <code>lang</code> parameter that can be used to set the lang attribute of <code>&lt;html&gt;</code>. (<a href='https://github.com/ColinFay'>@ColinFay</a>, <a href='https://github.com/rstudio/htmltools/issues/185'>#185</a>)</p></li>
+<li><p>Added a new <code><a href="../reference/tagFunction.html">tagFunction()</a></code> for generating <code>tags</code> and/or <code><a href="../reference/htmlDependency.html">htmlDependency()</a></code>s conditional on the rendering context. For an example, see <code><a href="../reference/tagFunction.html">?tagFunction</a></code>. (<a href='https://github.com/rstudio/htmltools/issues/180'>#180</a>)</p></li>
+<li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/104'>#104</a>: <code><a href="../reference/save_html.html">save_html()</a></code>’s <code>file</code> argument now properly handles relative paths. (<a href='https://github.com/haozhu233'>@haozhu233</a>, <a href='https://github.com/rstudio/htmltools/issues/105'>#105</a>, <a href='https://github.com/rstudio/htmltools/issues/192'>#192</a>)</p></li>
+<li><p><code><a href="../reference/save_html.html">save_html()</a></code> now has a <code>lang</code> parameter that can be used to set the lang attribute of <code>&lt;html&gt;</code>. (<a href='https://github.com/ColinFay'>@ColinFay</a>, <a href='https://github.com/rstudio/htmltools/issues/185'>#185</a>)</p></li>
 <li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/101'>#101</a>: <code>htmlDependency</code> &amp; <code>renderDependencies</code> now allow the <code>script</code> argument to be given as a named list containing the elements: <code>src</code>, <code>integrity</code>, <code>crossorigin</code>. (<a href='https://github.com/matthewstrasiotto'>@matthewstrasiotto</a>, <a href='https://github.com/rstudio/htmltools/issues/188'>#188</a>)</p></li>
-<li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/189'>#189</a>: <code>validateCssUnit()</code> now accepts <code>fit-content</code>. (<a href='https://github.com/rstudio/htmltools/issues/190'>#190</a>)</p></li>
-<li><p><code>htmlPreserve()</code> can now optionally use the Pandoc <code>raw_attribute</code> extension to enclose HTML.</p></li>
+<li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/189'>#189</a>: <code><a href="../reference/validateCssUnit.html">validateCssUnit()</a></code> now accepts <code>fit-content</code>. (<a href='https://github.com/rstudio/htmltools/issues/190'>#190</a>)</p></li>
+<li><p><code><a href="../reference/htmlPreserve.html">htmlPreserve()</a></code> can now optionally use the Pandoc <code>raw_attribute</code> extension to enclose HTML.</p></li>
 </ul>
 </div>
 <div id="breaking-changes" class="section level2">
-<h2>Breaking Changes</h2>
+<h2 class="hasAnchor">
+<a href="#breaking-changes" class="anchor"></a>Breaking Changes</h2>
 <ul>
-<li>Closed <a href='https://github.com/rstudio/htmltools/issues/161'>#161</a>: <code>parseCssColors(x)</code> now requires <code>x</code> to be a character vector (it no longer accepts a <code>list()</code> of strings) and an error is no longer thrown when <code>mustWork = FALSE</code> and <code>x</code> contains <code>NA</code> value(s). (<a href='https://github.com/rstudio/htmltools/issues/194'>#194</a>)</li>
+<li>Closed <a href='https://github.com/rstudio/htmltools/issues/161'>#161</a>: <code><a href="../reference/parseCssColors.html">parseCssColors(x)</a></code> now requires <code>x</code> to be a character vector (it no longer accepts a <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> of strings) and an error is no longer thrown when <code>mustWork = FALSE</code> and <code>x</code> contains <code>NA</code> value(s). (<a href='https://github.com/rstudio/htmltools/issues/194'>#194</a>)</li>
 </ul>
 </div>
 <div id="bug-fixes-1" class="section level2">
-<h2>Bug fixes</h2>
+<h2 class="hasAnchor">
+<a href="#bug-fixes-1" class="anchor"></a>Bug fixes</h2>
 <ul>
-<li><code>print(as.tags(x))</code> no longer results in error when <code>x</code> is a generic <code>list()</code> of tag-like objects. (<a href='https://github.com/rstudio/htmltools/issues/181'>#181</a>)</li>
+<li>
+<code><a href="https://rdrr.io/r/base/print.html">print(as.tags(x))</a></code> no longer results in error when <code>x</code> is a generic <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> of tag-like objects. (<a href='https://github.com/rstudio/htmltools/issues/181'>#181</a>)</li>
 </ul>
 </div>
 </div>
-<div id="htmltools-050" class="section level1">
-<h1>htmltools 0.5.0</h1>
+    <div id="htmltools-050" class="section level1">
+<h1 class="page-header" data-toc-text="0.5.0">
+<a href="#htmltools-050" class="anchor"></a>htmltools 0.5.0<small> 2020-06-16 </small>
+</h1>
 <ul>
 <li><p><code>tags</code> is now generated by a script which collects all <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element">HTML</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element">SVG</a> element tags documented in <a href="https://developer.mozilla.org">MDN Web Docs</a>. This feature only appends to the existing set of <code>tags</code> (<a href='https://github.com/rstudio/htmltools/issues/159'>#159</a>)</p></li>
 <li><p>Removed the Rcpp depedency and the compiled code now uses C rather than C++ (<a href='https://github.com/rstudio/htmltools/issues/158'>#158</a>)</p></li>
 <li><p>BREAKING CHANGE: Fixed <a href='https://github.com/rstudio/htmltools/issues/57'>#57</a>, <a href='https://github.com/rstudio/htmltools/issues/153'>#153</a>: <code>htmlTemplate</code> output no longer inserts extra whitespace around {{…}} replacement values. (<a href='https://github.com/rstudio/htmltools/issues/154'>#154</a>)</p></li>
-<li><p><code>HTML()</code> now takes <code>.noWS</code> argument, which can be used to suppress surrounding whitespace (similar to the new argument for tags in htmltools 0.4.0). (<a href='https://github.com/rstudio/htmltools/issues/154'>#154</a>)</p></li>
-<li><p><code>css()</code> now returns <code>NULL</code> instead of <code>""</code> when no non-empty properties are specified. (<a href='https://github.com/rstudio/htmltools/issues/145'>#145</a>)</p></li>
-<li><p><code>save_html(tags$body(...))</code> no longer results in double</p>
+<li><p><code><a href="../reference/HTML.html">HTML()</a></code> now takes <code>.noWS</code> argument, which can be used to suppress surrounding whitespace (similar to the new argument for tags in htmltools 0.4.0). (<a href='https://github.com/rstudio/htmltools/issues/154'>#154</a>)</p></li>
+<li><p><code><a href="../reference/css.html">css()</a></code> now returns <code>NULL</code> instead of <code>""</code> when no non-empty properties are specified. (<a href='https://github.com/rstudio/htmltools/issues/145'>#145</a>)</p></li>
+<li>
+<p><code><a href="../reference/save_html.html">save_html(tags$body(...))</a></code> no longer results in double</p>
 
-<p>tags being written to the .html file. (Note that <code>save_html(tags$html(...))</code> is not supported at this time.) (<a href='https://github.com/rstudio/htmltools/issues/145'>#145</a>)</p></li>
-<li><p>Trailing commas now permited in <code>...</code> arguments to <code>css()</code>, <code>tagList()</code>, and the var-arg mutation functions: <code>tagAppendAttributes()</code>, <code>tagSetChildren()</code>, and <code>tagAppendChildren()</code>. (<a href='https://github.com/rstudio/htmltools/issues/145'>#145</a>)</p></li>
+<p>tags being written to the .html file. (Note that <code><a href="../reference/save_html.html">save_html(tags$html(...))</a></code> is not supported at this time.) (<a href='https://github.com/rstudio/htmltools/issues/145'>#145</a>)</p>
+</li>
+<li><p>Trailing commas now permited in <code>...</code> arguments to <code><a href="../reference/css.html">css()</a></code>, <code><a href="../reference/tagList.html">tagList()</a></code>, and the var-arg mutation functions: <code><a href="../reference/tagAppendAttributes.html">tagAppendAttributes()</a></code>, <code><a href="../reference/tagAppendChild.html">tagSetChildren()</a></code>, and <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code>. (<a href='https://github.com/rstudio/htmltools/issues/145'>#145</a>)</p></li>
 <li><p>Added <code>capturePlot</code> and <code>plotTag</code> functions, for easily creating image files and HTML <img> tags (respectively) from plot expressions. (<a href='https://github.com/rstudio/htmltools/issues/150'>#150</a>)</p></li>
 <li><p>Added <code>parseCssColors</code> function, for normalizing the various CSS color formats into #RRGGBB(AA) strings. (<a href='https://github.com/rstudio/htmltools/issues/155'>#155</a>)</p></li>
-<li><p>Fixed <a href='https://github.com/rstudio/htmltools/issues/156'>#156</a>: Now <code>extractPreserveChunks()</code> handles strings contain Emoji Unicode strings correctly on Windows. (<a href='https://github.com/rstudio/htmltools/issues/157'>#157</a>)</p></li>
-<li><p>The <code>.noWS</code> parameter for suppressing whitespace can now take an <code>"inside"</code> value (equivalent to <code>c("after-start", "before-end")</code>). (<a href='https://github.com/rstudio/htmltools/issues/163'>#163</a>)</p></li>
+<li><p>Fixed <a href='https://github.com/rstudio/htmltools/issues/156'>#156</a>: Now <code><a href="../reference/htmlPreserve.html">extractPreserveChunks()</a></code> handles strings contain Emoji Unicode strings correctly on Windows. (<a href='https://github.com/rstudio/htmltools/issues/157'>#157</a>)</p></li>
+<li><p>The <code>.noWS</code> parameter for suppressing whitespace can now take an <code>"inside"</code> value (equivalent to <code><a href="https://rdrr.io/r/base/c.html">c("after-start", "before-end")</a></code>). (<a href='https://github.com/rstudio/htmltools/issues/163'>#163</a>)</p></li>
 </ul>
 </div>
-<div id="htmltools-040" class="section level1">
-<h1>htmltools 0.4.0</h1>
+    <div id="htmltools-040" class="section level1">
+<h1 class="page-header" data-toc-text="0.4.0">
+<a href="#htmltools-040" class="anchor"></a>htmltools 0.4.0<small> 2019-10-04 </small>
+</h1>
 <ul>
 <li><p>Fixed <a href='https://github.com/rstudio/htmltools/issues/128'>#128</a>: Added support for trailing commas in tagLists and the predefined tags. (<a href='https://github.com/rstudio/htmltools/issues/135'>#135</a>)</p></li>
 <li><p>Added some HTML tag functions to <code>tags</code> that were missing. (<a href='https://github.com/rstudio/htmltools/issues/111'>#111</a>)</p></li>
@@ -238,75 +252,87 @@
 <li><p>Fixed <a href='https://github.com/rstudio/htmltools/issues/99'>#99</a>: <code>NA</code> attributes were sometimes rendered as <code>"NA"</code> in the HTML, instead of being blank. (<a href='https://github.com/rstudio/htmltools/issues/100'>#100</a>)</p></li>
 <li><p>The error message for trailing commas in tag functions now provides context and useful information. (<a href='https://github.com/rstudio/htmltools/issues/109'>#109</a>)</p></li>
 <li><p>Stopped using inline styles to set background color for <code>save_html</code>, as doing so makes it difficult to override using other CSS rules. (<a href='https://github.com/rstudio/htmltools/issues/123'>#123</a>)</p></li>
-<li><p>Added a <code>.noWS</code> argument to <code>tag()</code> and <code>tags</code> which can be used to suppress the automatically generated whitespace around a particular tag. (<a href='https://github.com/rstudio/htmltools/issues/131'>#131</a>)</p></li>
-<li><p>Added a shim for <code>system.file()</code> so that htmltools works with <code>htmlDependency</code> objects created by a package that was loaded with <code>devtools::load_all()</code>. (<a href='https://github.com/rstudio/htmltools/issues/129'>#129</a>)</p></li>
-<li><p><code>validateCssUnit()</code> now accepts <code>ch</code>, <code>rem</code>, and <code>calc()</code>. (<a href='https://github.com/rstudio/htmltools/issues/134'>#134</a>)</p></li>
+<li><p>Added a <code>.noWS</code> argument to <code><a href="../reference/builder.html">tag()</a></code> and <code>tags</code> which can be used to suppress the automatically generated whitespace around a particular tag. (<a href='https://github.com/rstudio/htmltools/issues/131'>#131</a>)</p></li>
+<li><p>Added a shim for <code><a href="https://rdrr.io/r/base/system.file.html">system.file()</a></code> so that htmltools works with <code>htmlDependency</code> objects created by a package that was loaded with <code>devtools::load_all()</code>. (<a href='https://github.com/rstudio/htmltools/issues/129'>#129</a>)</p></li>
+<li><p><code><a href="../reference/validateCssUnit.html">validateCssUnit()</a></code> now accepts <code>ch</code>, <code>rem</code>, and <code>calc()</code>. (<a href='https://github.com/rstudio/htmltools/issues/134'>#134</a>)</p></li>
 <li><p>Fixed <a href='https://github.com/rstudio/htmltools/issues/125'>#125</a>: <code>print.html</code> removes html dependencies. (<a href='https://github.com/rstudio/htmltools/issues/126'>#126</a>)</p></li>
 <li><p>Stopped extra carriage returns from being inserted by <code>save_html</code> on Windows. (<a href='https://github.com/rstudio/htmltools/issues/137'>#137</a>)</p></li>
 </ul>
 </div>
-<div id="htmltools-036" class="section level1">
-<h1>htmltools 0.3.6</h1>
+    <div id="htmltools-036" class="section level1">
+<h1 class="page-header" data-toc-text="0.3.6">
+<a href="#htmltools-036" class="anchor"></a>htmltools 0.3.6<small> 2017-04-28 </small>
+</h1>
 <ul>
-<li><p><code>validateCssUnit()</code> now accepts viewport units (vw, vh, vmin, vmax). (<a href='https://github.com/rstudio/htmltools/issues/56'>#56</a>)</p></li>
-<li><p><code>restorePreserveChunks()</code> marks the output with the correct encoding now (UTF-8).</p></li>
+<li><p><code><a href="../reference/validateCssUnit.html">validateCssUnit()</a></code> now accepts viewport units (vw, vh, vmin, vmax). (<a href='https://github.com/rstudio/htmltools/issues/56'>#56</a>)</p></li>
+<li><p><code><a href="../reference/htmlPreserve.html">restorePreserveChunks()</a></code> marks the output with the correct encoding now (UTF-8).</p></li>
 <li><p>Length-0 attributes are now dropped, like NULLs. (<a href='https://github.com/rstudio/htmltools/issues/65'>#65</a>)</p></li>
-<li><p>Fixed <a href='https://github.com/rstudio/htmltools/issues/69'>#69</a>: On Windows, <code>renderDocument()</code> did not mark output as UTF-8 if the head was UTF-8 but body was ASCII. (<a href='https://github.com/rstudio/htmltools/issues/71'>#71</a>)</p></li>
+<li><p>Fixed <a href='https://github.com/rstudio/htmltools/issues/69'>#69</a>: On Windows, <code><a href="../reference/renderDocument.html">renderDocument()</a></code> did not mark output as UTF-8 if the head was UTF-8 but body was ASCII. (<a href='https://github.com/rstudio/htmltools/issues/71'>#71</a>)</p></li>
 </ul>
 </div>
-<div id="htmltools-035" class="section level1">
-<h1>htmltools 0.3.5</h1>
+    <div id="htmltools-035" class="section level1">
+<h1 class="page-header" data-toc-text="0.3.5">
+<a href="#htmltools-035" class="anchor"></a>htmltools 0.3.5<small> 2016-03-21 </small>
+</h1>
 <ul>
 <li><p><code>as.character</code> now returns a character vector with no other attributes. Previously it returned a character vector of class ‘html’. (<a href='https://github.com/rstudio/htmltools/issues/31'>#31</a>, <a href='https://github.com/rstudio/htmltools/issues/41'>#41</a>)</p></li>
 <li><p><code>htmlTemplate</code> now can use a string as a template instead of requiring a file. (<a href='https://github.com/rstudio/htmltools/issues/41'>#41</a>, <a href='https://github.com/rstudio/htmltools/issues/43'>#43</a>)</p></li>
-<li><p>HTML dependencies can now be added inline, instead of needing to use <code>attachDependencies()</code>. (<a href='https://github.com/rstudio/htmltools/issues/40'>#40</a>, <a href='https://github.com/rstudio/htmltools/issues/42'>#42</a>)</p></li>
-<li><p><code>htmlDependency()</code> gained a new argument <code>all_files</code> to indicate whether all files under the src directory should be copied when rendering dependencies, or only those specified in the dependency objects. (<a href='https://github.com/rstudio/htmltools/issues/48'>#48</a>)</p></li>
-<li><p><code>copyDependencyToDir()</code> will always completely overwrite the target directory when copying HTML dependency files to make sure all dependency files are definitely updated in the target directory when the original dependency directory has been updated. In the past, the dependency files were not updated if they already existed. (<a href='https://github.com/rstudio/htmltools/issues/36'>#36</a>)</p></li>
-<li><p>The version number in the directory name of an HTML dependency can be suppressed by setting options(htmltools.dir.version = FALSE) when the dependency is copied via <code>copyDependencyToDir()</code>. (<a href='https://github.com/rstudio/htmltools/issues/37'>#37</a>)</p></li>
+<li><p>HTML dependencies can now be added inline, instead of needing to use <code><a href="../reference/htmlDependencies.html">attachDependencies()</a></code>. (<a href='https://github.com/rstudio/htmltools/issues/40'>#40</a>, <a href='https://github.com/rstudio/htmltools/issues/42'>#42</a>)</p></li>
+<li><p><code><a href="../reference/htmlDependency.html">htmlDependency()</a></code> gained a new argument <code>all_files</code> to indicate whether all files under the src directory should be copied when rendering dependencies, or only those specified in the dependency objects. (<a href='https://github.com/rstudio/htmltools/issues/48'>#48</a>)</p></li>
+<li><p><code><a href="../reference/copyDependencyToDir.html">copyDependencyToDir()</a></code> will always completely overwrite the target directory when copying HTML dependency files to make sure all dependency files are definitely updated in the target directory when the original dependency directory has been updated. In the past, the dependency files were not updated if they already existed. (<a href='https://github.com/rstudio/htmltools/issues/36'>#36</a>)</p></li>
+<li><p>The version number in the directory name of an HTML dependency can be suppressed by setting options(htmltools.dir.version = FALSE) when the dependency is copied via <code><a href="../reference/copyDependencyToDir.html">copyDependencyToDir()</a></code>. (<a href='https://github.com/rstudio/htmltools/issues/37'>#37</a>)</p></li>
 <li><p>Performance improvement rendering tags, by switching from <code>readLines</code> to <code>readChar</code>.</p></li>
 </ul>
 </div>
-<div id="htmltools-03" class="section level1">
-<h1>htmltools 0.3</h1>
+    <div id="htmltools-03" class="section level1">
+<h1 class="page-header" data-toc-text="0.3">
+<a href="#htmltools-03" class="anchor"></a>htmltools 0.3<small> 2015-12-29 </small>
+</h1>
 <ul>
 <li><p>Add <code>css</code> function for conveniently forming CSS declaration strings.</p></li>
-<li><p>Add template support, with the <code>htmlTemplate()</code>, <code>renderDocument()</code>, and <code>suppressDependencies()</code> functions.</p></li>
+<li><p>Add template support, with the <code><a href="../reference/htmlTemplate.html">htmlTemplate()</a></code>, <code><a href="../reference/renderDocument.html">renderDocument()</a></code>, and <code><a href="../reference/suppressDependencies.html">suppressDependencies()</a></code> functions.</p></li>
 </ul>
 </div>
-<div id="htmltools-029" class="section level1">
-<h1>htmltools 0.2.9</h1>
+    <div id="htmltools-029" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.9">
+<a href="#htmltools-029" class="anchor"></a>htmltools 0.2.9<small> Unreleased </small>
+</h1>
 <ul>
-<li><p>Add check that <code>htmlDependency()</code> isn’t called with an absolute path when a binary package is built. (<a href='https://github.com/rstudio/htmltools/issues/22'>#22</a>)</p></li>
+<li><p>Add check that <code><a href="../reference/htmlDependency.html">htmlDependency()</a></code> isn’t called with an absolute path when a binary package is built. (<a href='https://github.com/rstudio/htmltools/issues/22'>#22</a>)</p></li>
 <li><p>Allow HTML content to include UTF-8, Latin1, and system encoded content. All will be converted to UTF-8 using enc2utf8() at render time. (<a href='https://github.com/rstudio/htmltools/issues/21'>#21</a>)</p></li>
-<li><p>Add <code>tagGetAttribute()</code> and <code>tagHasAttribute()</code> functions.</p></li>
+<li><p>Add <code><a href="../reference/tagAppendAttributes.html">tagGetAttribute()</a></code> and <code><a href="../reference/tagAppendAttributes.html">tagHasAttribute()</a></code> functions.</p></li>
 </ul>
 </div>
-<div id="htmltools-027" class="section level1">
-<h1>htmltools 0.2.7</h1>
+    <div id="htmltools-027" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.7">
+<a href="#htmltools-027" class="anchor"></a>htmltools 0.2.7<small> Unreleased </small>
+</h1>
 <ul>
 <li>Add “append” parameter to attachDependencies, to allow adding dependencies, instead of replacing them.</li>
 </ul>
 </div>
-<div id="htmltools-026" class="section level1">
-<h1>htmltools 0.2.6</h1>
+    <div id="htmltools-026" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.6">
+<a href="#htmltools-026" class="anchor"></a>htmltools 0.2.6<small> 2014-09-08 </small>
+</h1>
 <ul>
 <li>Add “attachment” parameter to htmlDependency, which can be used to allow any file in the dependency directory to be available via URL at runtime.</li>
 </ul>
 </div>
-<div id="htmltools-025" class="section level1">
-<h1>htmltools 0.2.5</h1>
+    <div id="htmltools-025" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.5">
+<a href="#htmltools-025" class="anchor"></a>htmltools 0.2.5<small> Unreleased </small>
+</h1>
 <ul>
 <li><p>Explicit library(htmltools) is no longer required for tags to be rendered in knitr/rmarkdown documents.</p></li>
 <li><p>Added “viewer” parameter to html_print.</p></li>
 </ul>
 </div>
-<div id="htmltools-024" class="section level1">
-<h1>htmltools 0.2.4</h1>
+    <div id="htmltools-024" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.4">
+<a href="#htmltools-024" class="anchor"></a>htmltools 0.2.4<small> 2014-05-28 </small>
+</h1>
 <p>Initial release</p>
-</div>
-</script>
-</li></ul>
-</div>
 </div>
   </div>
 
