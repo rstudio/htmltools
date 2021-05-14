@@ -39,6 +39,7 @@ framework libraries, not directly by most users--see
 }
 \details{
 \code{doRenderTags} is intended for very low-level use; it ignores
-singleton, head, and dependency handling, and simply renders the given tag
-objects as HTML.
+render hooks, singletons, head, and dependency handling, and simply renders the given tag
+objects as HTML. Please use \code{renderTags()} if \code{x} has not already handled its dependencies
+and render hooks.
 }

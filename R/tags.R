@@ -943,8 +943,9 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 }
 
 #' @details `doRenderTags` is intended for very low-level use; it ignores
-#'   singleton, head, and dependency handling, and simply renders the given tag
-#'   objects as HTML.
+#'   render hooks, singletons, head, and dependency handling, and simply renders the given tag
+#'   objects as HTML. Please use `renderTags()` if `x` has not already handled its dependencies
+#'   and render hooks.
 #' @return `doRenderTags` returns a simple [HTML()] string.
 #' @rdname renderTags
 #' @export
