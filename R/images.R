@@ -18,7 +18,6 @@
 #'   tag.
 #'
 #' @examples
-#'
 #' # Default settings
 #' res <- capturePlot(plot(cars))
 #'
@@ -133,7 +132,6 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
 #' @seealso [capturePlot()] saves plots as an image file.
 #'
 #' @examples
-#'
 #' img <- plotTag({
 #'   plot(cars)
 #' }, "A plot of the 'cars' dataset", width = 375, height = 275)

@@ -158,7 +158,6 @@ tags.
 }
 
 \examples{
-
 tagQ <- tagQuery(div(a()))
 tagQ$find("a")$addClass("foo")
 tagQ

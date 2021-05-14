@@ -37,7 +37,6 @@ Append (\code{tagAppendAttributes()}), check existence (\code{tagHasAttribute()}
 and obtain the value (\code{tagGetAttribute()}) of HTML attribute(s).
 }
 \examples{
-
 html <- div(a())
 tagAppendAttributes(html, class = "foo")
 tagAppendAttributes(html, .cssSelector = "a", class = "bar")

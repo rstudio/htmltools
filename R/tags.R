@@ -291,7 +291,6 @@ tagList <- function(...) {
 #' @seealso [`tagAddRenderHook()`]
 #' @export
 #' @examples
-#'
 #' myDivDep <- tagFunction(function() {
 #'   if (isTRUE(getOption("useDep", TRUE))) {
 #'     htmlDependency(
@@ -423,7 +422,6 @@ tagAddRenderHook <- function(tag, func, replace = FALSE) {
 #'   their `$children` fields flattened to a single `list()` via [`tagQuery()`].
 #' @seealso [tagAppendChildren()], [tagQuery()]
 #' @examples
-#'
 #' html <- div(a())
 #' tagAppendAttributes(html, class = "foo")
 #' tagAppendAttributes(html, .cssSelector = "a", class = "bar")
@@ -491,7 +489,6 @@ tagGetAttribute <- function(tag, attr) {
 #' @export
 #' @seealso [tagAppendAttributes()], [tagQuery()]
 #' @examples
-#'
 #' html <- div(a(), h1())
 #' tagAppendChild(html, span())
 #' tagAppendChild(html, .cssSelector = "a", span())
@@ -946,8 +943,9 @@ renderTags <- function(x, singletons = character(0), indent = 0) {
 }
 
 #' @details `doRenderTags` is intended for very low-level use; it ignores
-#'   singleton, head, and dependency handling, and simply renders the given tag
-#'   objects as HTML.
+#'   render hooks, singletons, head, and dependency handling, and simply renders the given tag
+#'   objects as HTML. Please use `renderTags()` if `x` has not already handled its dependencies
+#'   and render hooks.
 #' @return `doRenderTags` returns a simple [HTML()] string.
 #' @rdname renderTags
 #' @export

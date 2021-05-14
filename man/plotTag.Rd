@@ -61,7 +61,6 @@ source.
 Capture a plot as a self-contained \verb{<img>} tag
 }
 \examples{
-
 img <- plotTag({
   plot(cars)
 }, "A plot of the 'cars' dataset", width = 375, height = 275)
