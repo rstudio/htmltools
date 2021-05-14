@@ -783,6 +783,44 @@ test_that("flattenTagsRaw() and flattenTags() do not drop html deps", {
 })
 
 
+test_that("tag methods do not unexpectedly alter tag envs", {
+
+  expect_equal_tags(
+    tagEnvToTags(tagAppendAttributes(asTagEnv(div()), key = "a")),
+    tagAppendAttributes(div(), key = "a")
+  )
+
+  expect_equal_tags(
+    tagHasAttribute(asTagEnv(div(key = "a")), "key"),
+    tagHasAttribute(div(key = "a"), "key")
+  )
+
+  expect_equal_tags(
+    tagGetAttribute(asTagEnv(div(key = "a")), "key"),
+    tagGetAttribute(div(key = "a"), "key")
+  )
+
+  expect_equal_tags(
+    tagEnvToTags(tagAppendChild(asTagEnv(div()), span())),
+    tagAppendChild(div(), span())
+  )
+
+  expect_equal_tags(
+    tagEnvToTags(tagAppendChildren(asTagEnv(div()), span(), h1())),
+    tagAppendChildren(div(), span(), h1())
+  )
+
+  expect_equal_tags(
+    tagEnvToTags(tagSetChildren(asTagEnv(div()), span(), h1())),
+    tagSetChildren(div(), span(), h1())
+  )
+
+  expect_equal_tags(
+    tagEnvToTags(tagInsertChildren(asTagEnv(div()), span(), h1(), after = 12)),
+    tagInsertChildren(div(), span(), h1(), after = 12)
+  )
+})
+
 
 
 
