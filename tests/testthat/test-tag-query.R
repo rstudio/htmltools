@@ -419,7 +419,6 @@ test_that("tagQuery()$addAttrs(), $removeAttrs(), $s", {
   x <- tagQuery(xTags)
 
   expect_length(x$selectedTags(), 5)
-  browser()
   expect_equal(x$hasAttrs("key"), c(TRUE, TRUE, FALSE, FALSE, TRUE))
 
   x$addAttrs(key2 = "val2", key3 = "val3")
