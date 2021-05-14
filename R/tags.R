@@ -1206,7 +1206,10 @@ flattenTags <- function(x) {
       x
     } else {
       # For items that are lists (but not tags), recurse
-      unlist(lapply(x, flattenTags), recursive = FALSE)
+      ret <- unlist(lapply(x, flattenTags), recursive = FALSE)
+      # Copy over attributes put on the original list (ex: html deps)
+      mostattributes(ret) <- attributes(x)
+      ret
     }
   } else if (is.character(x)){
     # This will preserve attributes if x is a character with attribute,
@@ -1234,7 +1237,10 @@ flattenTagsRaw <- function(x) {
       x
     } else {
       # For items that are lists (but not tags), recurse
-      unlist(lapply(x, flattenTagsRaw), recursive = FALSE)
+      ret <- unlist(lapply(x, flattenTagsRaw), recursive = FALSE)
+      # Copy over attributes put on the original list (ex: html deps)
+      mostattributes(ret) <- attributes(x)
+      ret
     }
   } else {
     # This will preserve attributes if x is a character with attribute,

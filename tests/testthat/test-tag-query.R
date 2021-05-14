@@ -770,6 +770,16 @@ test_that("tagQuery() allows for tags with extra top level items and will preser
 })
 
 
+test_that("flattenTagsRaw() and flattenTags() do not drop html deps", {
+  testSpan <- span()
+  htmlDependencies(testSpan) <- list(fakeJqueryDep)
+  otherObj <- HTML("test")
+  html <- tagList(div(), testSpan, otherObj)
+  htmlDependencies(html) <- list(fakeJqueryDep)
+
+  expect_equal(flattenTags(html), html)
+  expect_equal(flattenTagsRaw(html), html)
+})
 
 
 
