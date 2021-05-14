@@ -1170,11 +1170,9 @@ removeFromSet <- function(set, vals) {
   set[match(set, vals, 0L) == 0L]
 }
 isNonConformClassValue <- function(classVal) {
-  is.null(classVal) ||
-  anyNA(classVal) ||
-  is.list(classVal) ||
+  length(classVal) == 0 ||
   (!is.character(classVal)) ||
-  length(classVal) == 0
+  anyNA(classVal)
 }
 tagEnvSetClassAttrib <- function(el, classes) {
   class <- joinCssClass(classes)
