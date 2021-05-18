@@ -10,9 +10,9 @@ template:
   package: quillt
   params:
     footer: <b>htmltools</b> is an R package developed by <a href='https://rstudio.com'>RStudio</a>
- #   docsearch:
- #     api_key: 53fd87c79a13e431b4298611470d023a
- #     index_name: bslib
+  docsearch:
+     api_key: d2cd688ec4b36006092a3a6a5ad8c7cd
+     index_name: htmltools
 
 navbar:
   type: default
