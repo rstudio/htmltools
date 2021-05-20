@@ -1178,17 +1178,19 @@ tagEnvSetClassAttrib <- function(el, classes) {
 
   if (isClassLen == 0) {
     # Store new class value
-    tagAppendAttributes(el, class = class)
-  } else {
-    # isClassLen > 0
-    if (isClassLen > 1) {
-      # Remove other occurrences of class
-      el$attribs[classAttribPos[-1]] <- NULL
-    }
-    # Overwrite "class" attrib
-    el$attribs[[classAttribPos[1]]] <- class
-    el
+    return(
+      tagAppendAttributes(el, class = class)
+    )
   }
+
+  # isClassLen > 0
+  if (isClassLen > 1) {
+    # Remove other occurrences of class
+    el$attribs[classAttribPos[-1]] <- NULL
+  }
+  # Overwrite "class" attrib
+  el$attribs[[classAttribPos[1]]] <- class
+  el
 }
 # add classes that don't already exist
 tagQueryClassAdd <- function(els, class) {
