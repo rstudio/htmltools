@@ -835,7 +835,7 @@ test_that("adding a class does not reorder attribs", {
     div(class="bar foo", test = "A", "text")
   )
 
-  # Multiple classes class
+  # Multiple classes
   expect_equal_tags(
     tagQuery(div(class = "bar", test = "A", class = "baz", "text"))$addClass("foo")$allTags(),
     div(class = "bar baz foo", test = "A", "text")
