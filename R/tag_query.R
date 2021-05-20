@@ -1172,10 +1172,25 @@ isNonConformClassValue <- function(classVal) {
 }
 tagEnvSetClassAttrib <- function(el, classes) {
   class <- joinCssClass(classes)
-  # Remove all class instances as a single collective class value is being stored
-  el <- tagEnvRemoveAttribs(el, "class")
-  # Store new class value
-  tagAppendAttributes(el, class = class)
+
+  classAttribPos <- which(names(el$attribs) == "class")
+  isClassLen <- length(classAttribPos)
+
+  if (isClassLen == 0) {
+    # Store new class value
+    return(
+      tagAppendAttributes(el, class = class)
+    )
+  }
+
+  # isClassLen > 0
+  if (isClassLen > 1) {
+    # Remove other occurrences of class
+    el$attribs[classAttribPos[-1]] <- NULL
+  }
+  # Overwrite "class" attrib
+  el$attribs[[classAttribPos[1]]] <- class
+  el
 }
 # add classes that don't already exist
 tagQueryClassAdd <- function(els, class) {

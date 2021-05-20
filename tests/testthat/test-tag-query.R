@@ -821,7 +821,26 @@ test_that("tag methods do not unexpectedly alter tag envs", {
 })
 
 
+test_that("adding a class does not reorder attribs", {
 
+  # No class
+  expect_equal_tags(
+    tagQuery(div(test = "A", "text"))$addClass("foo")$allTags(),
+    div(test = "A", class = "foo", "text")
+  )
+
+  # One class
+  expect_equal_tags(
+    tagQuery(div(class = "bar", test = "A", "text"))$addClass("foo")$allTags(),
+    div(class="bar foo", test = "A", "text")
+  )
+
+  # Multiple classes
+  expect_equal_tags(
+    tagQuery(div(class = "bar", test = "A", class = "baz", "text"))$addClass("foo")$allTags(),
+    div(class = "bar baz foo", test = "A", "text")
+  )
+})
 
 
 
