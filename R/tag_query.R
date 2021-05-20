@@ -1182,7 +1182,7 @@ tagEnvSetClassAttrib <- function(el, classes) {
   } else {
     # isClassLen > 0
     if (isClassLen > 1) {
-      # Remove other occurances of class
+      # Remove other occurrences of class
       el$attribs[classAttribPos[-1]] <- NULL
     }
     # Overwrite "class" attrib
