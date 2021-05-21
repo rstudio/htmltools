@@ -29,13 +29,6 @@
 ---
 
     Code
-      as.character(tagFuncExt)
-    Output
-      [1] "<span>example</span>\n<p>test</p>"
-
----
-
-    Code
       renderTags(newDep)
     Output
       $head
