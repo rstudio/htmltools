@@ -4,7 +4,7 @@
 \alias{tagList}
 \title{Create a list of tags}
 \usage{
-tagList(...)
+tagList(..., .renderHook = NULL, .postRenderHook = NULL)
 }
 \arguments{
 \item{...}{A collection of \link{tag}s.}

@@ -4,14 +4,19 @@
 \alias{tagAddRenderHook}
 \title{Modify a tag prior to rendering}
 \usage{
-tagAddRenderHook(tag, func, replace = FALSE)
+tagAddRenderHook(tag, func, replace = FALSE, post = FALSE)
 }
 \arguments{
-\item{tag}{A \code{\link[=tag]{tag()}} object.}
+\item{tag}{A \code{\link[=tag]{tag()}} or \code{\link[=tagList]{tagList()}}.}
 
-\item{func}{A function (\emph{hook}) to call when the \code{tag} is rendered. This function
-should have at least one argument (the \code{tag}) and return anything that can
-be converted into tags via \code{\link[=as.tags]{as.tags()}}.}
+\item{func}{A function (\emph{hook}) to call when the \code{tag} is rendered. This
+function should have at least one argument (the \code{tag}) and it's return
+value should be 'resolved' in the sense that it shouldn't return:
+\itemize{
+\item A \code{\link[=tagFunction]{tagFunction()}}.
+\item A \code{\link[=tag]{tag()}} or \code{\link[=tagList]{tagList()}} with render hooks.
+\item Any object that requires a \code{\link[=as.tags]{as.tags()}} call to be written to HTML.
+}}
 
 \item{replace}{If \code{TRUE}, the previous hooks will be removed. If \code{FALSE},
 \code{func} is appended to the previous hooks.}
@@ -22,8 +27,9 @@ A \code{\link[=tag]{tag()}} object with a \code{.renderHooks} field containing a
 these functions will be called just prior to writing the HTML.
 }
 \description{
-Adds a hook to call on a \code{\link[=tag]{tag()}} object when it is is rendered as HTML (with,
-for example, \code{\link[=print]{print()}}, \code{\link[=renderTags]{renderTags()}}, \code{\link[=as.tags]{as.tags()}}, etc).
+Adds a hook to call on a \code{\link[=tag]{tag()}} (or \code{\link[=tagList]{tagList()}}) object when it is is
+rendered as HTML (with, for example, \code{\link[=print]{print()}}, \code{\link[=renderTags]{renderTags()}}, \code{\link[=as.tags]{as.tags()}},
+etc).
 }
 \details{
 The primary motivation for \code{\link[=tagAddRenderHook]{tagAddRenderHook()}} is to create tags that can

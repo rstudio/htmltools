@@ -1014,13 +1014,6 @@ test_that("html render method", {
   expect_equal(spanExtended$children, obj$children)
   expect_snapshot(as.character(spanExtended))
 
-  tagFuncExt <- tagAddRenderHook(obj, function(x) {
-    tagFunction(function() tagList(x, tags$p("test")) )
-  })
-  expect_equal(tagFuncExt$name, "div")
-  expect_equal(tagFuncExt$children, obj$children)
-  expect_snapshot(as.character(tagFuncExt))
-
   # Add a new html dependency
   newDep <- tagAddRenderHook(obj, function(x) {
     fa <- htmlDependency(

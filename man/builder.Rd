@@ -25,41 +25,47 @@
 \usage{
 tags
 
-p(..., .noWS = NULL, .renderHook = NULL)
+p(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-h1(..., .noWS = NULL, .renderHook = NULL)
+h1(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-h2(..., .noWS = NULL, .renderHook = NULL)
+h2(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-h3(..., .noWS = NULL, .renderHook = NULL)
+h3(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-h4(..., .noWS = NULL, .renderHook = NULL)
+h4(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-h5(..., .noWS = NULL, .renderHook = NULL)
+h5(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-h6(..., .noWS = NULL, .renderHook = NULL)
+h6(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-a(..., .noWS = NULL, .renderHook = NULL)
+a(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-br(..., .noWS = NULL, .renderHook = NULL)
+br(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-div(..., .noWS = NULL, .renderHook = NULL)
+div(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-span(..., .noWS = NULL, .renderHook = NULL)
+span(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-pre(..., .noWS = NULL, .renderHook = NULL)
+pre(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-code(..., .noWS = NULL, .renderHook = NULL)
+code(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-img(..., .noWS = NULL, .renderHook = NULL)
+img(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-strong(..., .noWS = NULL, .renderHook = NULL)
+strong(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-em(..., .noWS = NULL, .renderHook = NULL)
+em(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-hr(..., .noWS = NULL, .renderHook = NULL)
+hr(..., .noWS = NULL, .renderHook = NULL, .postRenderHook = NULL)
 
-tag(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL)
+tag(
+  `_tag_name`,
+  varArgs,
+  .noWS = NULL,
+  .renderHook = NULL,
+  .postRenderHook = NULL
+)
 }
 \arguments{
 \item{...}{Tag attributes (named arguments) and children (unnamed arguments).
