@@ -1190,10 +1190,9 @@ HTML <- function(text, ..., .noWS = NULL) {
 #' @export
 withTags <- function(code, .noWS = NULL) {
   if (!is.null(.noWS)) {
-    .noWS_global <- .noWS
+    .noWSWithTags <- .noWS
     tags <- lapply(tags, function(tag) {
-      function(..., .noWS = rlang::missing_arg()) {
-        if (rlang::is_missing(.noWS)) .noWS <- .noWS_global
+      function(..., .noWS = .noWSWithTags) {
         tag(..., .noWS = .noWS)
       }
     })
