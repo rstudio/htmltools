@@ -175,10 +175,6 @@ dropNullsOrEmpty <- function(x) {
   x[!vapply(x, nullOrEmpty, FUN.VALUE=logical(1))]
 }
 
-isResolvedTag <- function(x) {
-  inherits(x, "shiny.tag") && length(x$.renderHooks) == 0
-}
-
 isTag <- function(x) {
   inherits(x, "shiny.tag")
 }
@@ -282,7 +278,7 @@ tagList <- function(..., .renderHook = NULL, .postRenderHook = NULL) {
   }
 
   if (!is.null(.postRenderHook)) {
-    lst <- tagAddRenderHook(lst, func = .postRenderHook, post = TRUE)
+    lst <- tagAddPostRenderHook(lst, func = .postRenderHook)
   }
 
   lst
@@ -395,16 +391,27 @@ tagFunction <- function(func) {
 #'   tags$p("Something else")
 #' })
 #' newObj
-tagAddRenderHook <- function(tag, func, replace = FALSE, post = FALSE) {
+tagAddRenderHook <- function(tag, func, replace = FALSE) {
   if (!is.function(func) || length(formals(func)) == 0) {
     stop("`func` must be a function that accepts at least 1 argument")
   }
+  addRenderHook(tag, func, replace, post = FALSE)
+}
 
+#' @export
+#' @rdname tagAddRenderHook
+tagAddPostRenderHook <- function(tag, func, replace = FALSE) {
+  if (!is.function(func) || length(formals(func)) != 0) {
+    stop("`func` must be a function that accepts 0 arguments")
+  }
+  addRenderHook(tag, func, replace, post = TRUE)
+}
+
+addRenderHook <- function(tag, func, replace, post = FALSE) {
   if (!(isTag(tag) || isTagList(tag))) {
     stop("Can't set a renderHook on non tag/tagList objects", call. = FALSE)
   }
-
-  name <- if (isTRUE(post)) "postRenderHooks" else "renderHooks"
+  name <- if (isTRUE(post)) "renderHook" else "postRenderHooks"
   hooks <- list(func)
   if (!isTRUE(replace)) {
     hooks <- append(attr(tag, name), hooks)
@@ -791,7 +798,7 @@ tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL, .postRen
     st <- tagAddRenderHook(st, .renderHook)
   }
   if (!is.null(.postRenderHook)) {
-    st <- tagAddRenderHook(st, .postRenderHook, post = TRUE)
+    st <- tagAddPostRenderHook(st, .postRenderHook)
   }
 
   # Return tag data structure
@@ -1218,31 +1225,35 @@ withTags <- function(code, .noWS = NULL) {
 
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
-  rewriteTags(x, tagify_node, FALSE)
+
+  # Schedule .postRenderHook(s) to run _after_ converting to tags
+  postHooks <- list()
+  on.exit({
+    for (hook in postHooks) tryWarn(hook())
+  })
+
+  rewriteTags(x, function(ui) {
+    if (is.character(ui)) return(ui)
+
+    pre <- attr(ui, "renderHooks")
+    for (hook in pre) {
+      tryWarn(ui <- as.tags(hook(ui)))
+    }
+    attr(ui, "renderHooks") <- NULL
+
+    post <- attr(ui, "postRenderHooks")
+    if (length(post)) {
+      postHooks <<- c(postHooks, post)
+      attr(ui, "postRenderHooks") <- NULL
+    }
+
+    if (isTag(ui) || isTagList(ui)) ui else tagify(as.tags(ui))
+
+  }, FALSE)
 }
 
-tagify_node <- function(ui) {
-  if (isTag(ui) || isTagList(ui)) {
-    pre <- attr(ui, "renderHooks")
-    post <- attr(ui, "postRenderHooks")
-    attr(ui, "renderHooks") <- NULL
-    attr(ui, "postRenderHooks") <- NULL
-
-    for (hook in pre) {
-      ui <- hook(ui)
-    }
-    for (hook in post) {
-      on.exit(return(hook(ui)), add = TRUE)
-    }
-    # Hooks must return a "writable" tag (TODO: throw if they don't?)
-    return(ui)
-  }
-
-  if (is.character(ui)) {
-    return(ui)
-  }
-
-  tagify(as.tags(ui))
+tryWarn <- function(expr) {
+  tryCatch(expr, error = function(e) warning(conditionMessage(e)))
 }
 
 # Given a list of tags, lists, and other items, return a flat list, where the
