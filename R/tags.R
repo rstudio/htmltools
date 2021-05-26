@@ -411,7 +411,7 @@ addRenderHook <- function(tag, func, replace, post = FALSE) {
   if (!(isTag(tag) || isTagList(tag))) {
     stop("Can't set a renderHook on non tag/tagList objects", call. = FALSE)
   }
-  name <- if (isTRUE(post)) "renderHook" else "postRenderHooks"
+  name <- if (isTRUE(post)) "postRenderHook" else "renderHooks"
   hooks <- list(func)
   if (!isTRUE(replace)) {
     hooks <- append(attr(tag, name), hooks)
