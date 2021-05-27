@@ -58,6 +58,70 @@ test_that("withTags works", {
   expect_identical(tags$p(100), foo())
 })
 
+test_that(".noWS argument of withTags()", {
+  get_noWS <- function(tag) tag[[".noWS"]]
+
+  default <- withTags(
+    div(
+      class = "myclass",
+      h3("header"),
+      p("One", strong(span("two")), "three")
+    )
+  )
+
+  expect_null(get_noWS(default))
+  expect_null(get_noWS(default$children[[1]]))
+  expect_null(get_noWS(default$children[[2]]))
+  expect_null(get_noWS(default$children[[2]]$children[[2]]))
+  expect_null(get_noWS(default$children[[2]]$children[[2]]$children[[1]]))
+
+  default_special <- withTags(
+    div(
+      class = "myclass",
+      h3("header", .noWS = "after-begin"),
+      p("One", strong(span("two")), "three", .noWS = "before-end")
+    )
+  )
+
+  expect_null(get_noWS(default_special))
+  expect_equal(get_noWS(default_special$children[[1]]), "after-begin")
+  expect_equal(get_noWS(default_special$children[[2]]), "before-end")
+  expect_null(get_noWS(default_special$children[[2]]$children[[2]]))
+  expect_null(get_noWS(default_special$children[[2]]$children[[2]]$children[[1]]))
+
+  all_same_noWS <- c("outside", "inside")
+  all_same <- withTags(
+    div(
+      class = "myclass",
+      h3("header"),
+      p("One", strong(span("two")), "three")
+    ),
+    .noWS = all_same_noWS
+  )
+
+  expect_equal(get_noWS(all_same), all_same_noWS)
+  expect_equal(get_noWS(all_same$children[[1]]), all_same_noWS)
+  expect_equal(get_noWS(all_same$children[[2]]), all_same_noWS)
+  expect_equal(get_noWS(all_same$children[[2]]$children[[2]]), all_same_noWS)
+  expect_equal(get_noWS(all_same$children[[2]]$children[[2]]$children[[1]]), all_same_noWS)
+
+  varied_default <- "outside"
+  varied_special <- "inside"
+  varied <- withTags(
+    div(
+      class = "myclass",
+      h3("header"),
+      p("One", strong(span("two"), .noWS = varied_special), "three")
+    ),
+    .noWS = varied_default
+  )
+
+  expect_equal(get_noWS(varied), varied_default)
+  expect_equal(get_noWS(varied$children[[1]]), varied_default)
+  expect_equal(get_noWS(varied$children[[2]]), varied_default)
+  expect_equal(get_noWS(varied$children[[2]]$children[[2]]), varied_special)
+  expect_equal(get_noWS(varied$children[[2]]$children[[2]]$children[[1]]), varied_default)
+})
 
 test_that("HTML escaping in tags", {
   # Regular text is escaped

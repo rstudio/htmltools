@@ -4,10 +4,14 @@
 \alias{withTags}
 \title{Evaluate an expression using \code{tags}}
 \usage{
-withTags(code)
+withTags(code, .noWS = NULL)
 }
 \arguments{
 \item{code}{A set of tags.}
+
+\item{.noWS}{Default whitespace behavior for all tags within this call to
+\code{withTags()}. Setting \code{.noWS} on an individual tag fuction inside
+\code{withTags()} will override the default. See \code{\link[=tag]{tag()}} for complete options.}
 }
 \description{
 This function makes it simpler to write HTML-generating code. Instead of
@@ -35,6 +39,16 @@ withTags(
     h3("header"),
     p("text")
   )
+)
+
+# Setting .noWS for all tags in withTags()
+withTags(
+  div(
+    class = "myclass",
+    h3("header"),
+    p("One", strong(span("two")), "three")
+  ),
+  .noWS = c("outside", "inside")
 )
 
 

@@ -1158,6 +1158,9 @@ HTML <- function(text, ..., .noWS = NULL) {
 #' namespace, as in `base::source()` or `base::summary()`.
 #'
 #' @param code A set of tags.
+#' @param .noWS Default whitespace behavior for all tags within this call to
+#'   `withTags()`. Setting `.noWS` on an individual tag fuction inside
+#'   `withTags()` will override the default. See [tag()] for complete options.
 #'
 #' @examples
 #' # Using tags$ each time
@@ -1174,9 +1177,27 @@ HTML <- function(text, ..., .noWS = NULL) {
 #'   )
 #' )
 #'
+#' # Setting .noWS for all tags in withTags()
+#' withTags(
+#'   div(
+#'     class = "myclass",
+#'     h3("header"),
+#'     p("One", strong(span("two")), "three")
+#'   ),
+#'   .noWS = c("outside", "inside")
+#' )
+#'
 #'
 #' @export
-withTags <- function(code) {
+withTags <- function(code, .noWS = NULL) {
+  if (!is.null(.noWS)) {
+    .noWSWithTags <- .noWS
+    tags <- lapply(tags, function(tag) {
+      function(..., .noWS = .noWSWithTags) {
+        tag(..., .noWS = .noWS)
+      }
+    })
+  }
   eval(substitute(code), envir = as.list(tags), enclos = parent.frame())
 }
 
