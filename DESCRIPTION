@@ -20,7 +20,8 @@ Imports:
     grDevices,
     base64enc,
     rlang (>= 0.4.11.9000),
-    fastmap
+    fastmap,
+    withr
 Suggests:
     markdown,
     testthat,

@@ -389,9 +389,10 @@ tagAddPostRenderHook <- function(tag, func, replace = FALSE) {
 }
 
 addRenderHook <- function(tag, func, replace, post = FALSE) {
-  if (!is.function(func) || length(formals(func)) == 0) {
-    stop("`func` must be a function that accepts at least 1 argument")
-  }
+  # TODO: can postRender hooks have an arg?
+  #if (!is.function(func) || length(formals(func)) == 0) {
+  #  stop("`func` must be a function that accepts at least 1 argument")
+  #}
   if (!(isTag(tag) || isTagList(tag))) {
     stop("Can't set a renderHook on non tag/tagList objects", call. = FALSE)
   }
@@ -1219,46 +1220,36 @@ withTags <- function(code, .noWS = NULL) {
 
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
+  rewriteTags(x, function(ui) {
+    if (is.character(ui)) return(ui)
 
-  # Run pre-render hooks now, post-render after tag conversion (if relevant)
-  if (isTagLike(x) && !isResolvedTag(x)) {
-    pre <- attr(x, "renderHooks")
-    post <- attr(x, "postRenderHooks")
-    attr(x, "renderHooks") <- NULL
-    attr(x, "postRenderHooks") <- NULL
-    for (hook in pre) x <- tryHook(x, hook)
-    x <- tagify(as.tags(x))
-    on.exit({
-      for (hook in post) x <- tryHook(x, hook)
-      return(tagify(as.tags(x)))
-    }, add = TRUE)
-  }
+    pre <- attr(ui, "renderHooks")
+    post <- attr(ui, "postRenderHooks")
+    attr(ui, "renderHooks") <- NULL
+    attr(ui, "postRenderHooks") <- NULL
 
-  x <- rewriteTags(x, function(uiObj) {
-    if (isResolvedTag(uiObj) || is.character(uiObj))
-      uiObj
-    else
-      tagify(as.tags(uiObj))
+    for (hook in pre) {
+      ui <- tryCatch({ hook(ui) }, error = function(e) {
+        warning(conditionMessage(e), call. = FALSE)
+        ui
+      })
+    }
+
+    # Since tagify() is called recursively within this anonymous function (which
+    # is applied in a preorder=F fashion), I don't think we can simply schedule
+    # post hooks with an on.exit() since both tagify() and this anonymous
+    # function both exit before we've walked the entire tree.
+    if (length(post)) {
+      withr::defer(
+        for (hook in post)
+          tryCatch(hook(), error = function(e) warning(conditionMessage(e), call. = FALSE)),
+        envir = parent.frame(2L),
+        priority = "last"
+      )
+    }
+
+    if (isTag(ui) || isTagList(ui)) ui else tagify(as.tags(ui))
   }, FALSE)
-
-  x
-}
-
-isResolvedTag <- function(x) {
-  isTagLike(x) &&
-    is.null(attr(x, "renderHooks")) &&
-    is.null(attr(x, "postRenderHooks"))
-}
-
-isTagLike <- function(x) {
-  isTag(x) || isTagList(x)
-}
-
-tryHook <- function(x, hook) {
-  tryCatch({ hook(x) }, error = function(e) {
-    warning(conditionMessage(e), call. = FALSE)
-    x
-  })
 }
 
 # Given a list of tags, lists, and other items, return a flat list, where the
