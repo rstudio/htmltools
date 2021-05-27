@@ -1254,14 +1254,10 @@ isTagLike <- function(x) {
 }
 
 tryHook <- function(x, hook) {
-  msg <- NULL
-  x <- tryCatch({ hook(x) }, error = function(e) {
-    msg <<- conditionMessage(e)
+  tryCatch({ hook(x) }, error = function(e) {
+    warning(conditionMessage(e), call. = FALSE)
+    x
   })
-  if (length(msg)) {
-    warning(msg, call. = FALSE)
-  }
-  x
 }
 
 
