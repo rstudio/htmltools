@@ -143,32 +143,6 @@ test_that("Pre hooks render in order", {
   ))
   expect_equal(state, 4)
 
-  state <- 0
-  renderTags(tagList(
-    div(
-      .renderHook = function(x) {
-        state <<- state + 1
-        message("A", state)
-      },
-      div(
-        .renderHook = function(x) {
-          state <<- state + 1
-          message("B", state)
-        },
-        .postRenderHook = function() {
-          state <<- state + 1
-          message("C", state)
-        }
-      ),
-      .postRenderHook = function() {
-        state <<- state + 1
-        message("D", state)
-      }
-    )
-  ))
-  expect_equal(state, 4)
-
-
   # post render hook still executes on failure
   state <- 0
   expect_warning(renderTags(tagList(
