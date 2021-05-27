@@ -84,10 +84,16 @@ normally be written around this tag. Valid options include \code{before},
 \code{after}, \code{outside}, \code{after-begin}, and \code{before-end}.
 Any number of these options can be specified.}
 
-\item{.renderHook}{A function (or list of functions) to call when the \code{tag} is rendered. This
-function should have at least one argument (the \code{tag}) and return anything
-that can be converted into tags via \code{\link[=as.tags]{as.tags()}}. Additional hooks may also be
-added to a particular \code{tag} via \code{\link[=tagAddRenderHook]{tagAddRenderHook()}}.}
+\item{.renderHook}{A function (or list of functions) to call when the \code{tag}
+is rendered. Each function should have at least one argument (the \code{tag}).
+Additional hooks may also be added to a particular \code{tag} via
+\code{\link[=tagAddRenderHook]{tagAddRenderHook()}} (see there for more details and examples).}
+
+\item{.postRenderHook}{A function (or list of functions) to call after the
+entire HTML tree has rendered. Each function should have at least one
+argument (the \code{tag}). Additional hooks may also be added to a particular
+\code{tag} via \code{\link[=tagAddPostRenderHook]{tagAddPostRenderHook()}} (see there for more details and
+examples).}
 
 \item{_tag_name}{A character string to use for the tag name.}
 

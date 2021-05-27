@@ -8,6 +8,17 @@ tagList(..., .renderHook = NULL, .postRenderHook = NULL)
 }
 \arguments{
 \item{...}{A collection of \link{tag}s.}
+
+\item{.renderHook}{A function (or list of functions) to call when the \code{tag}
+is rendered. Each function should have at least one argument (the \code{tag}).
+Additional hooks may also be added to a particular \code{tag} via
+\code{\link[=tagAddRenderHook]{tagAddRenderHook()}} (see there for more details and examples).}
+
+\item{.postRenderHook}{A function (or list of functions) to call after the
+entire HTML tree has rendered. Each function should have at least one
+argument (the \code{tag}). Additional hooks may also be added to a particular
+\code{tag} via \code{\link[=tagAddPostRenderHook]{tagAddPostRenderHook()}} (see there for more details and
+examples).}
 }
 \description{
 Create a \code{list()} of \link{tag}s with methods for \code{\link[=print]{print()}}, \code{\link[=as.character]{as.character()}},
