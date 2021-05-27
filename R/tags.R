@@ -271,16 +271,12 @@ normalizeText <- function(text) {
 #'   p("Text here")
 #' )
 tagList <- function(..., .renderHook = NULL, .postRenderHook = NULL) {
+
   lst <- dots_list(...)
   class(lst) <- c("shiny.tag.list", "list")
 
-  if (!is.null(.renderHook)) {
-    lst <- tagAddRenderHook(lst, func = .renderHook)
-  }
-
-  if (!is.null(.postRenderHook)) {
-    lst <- tagAddPostRenderHook(lst, func = .postRenderHook)
-  }
+  lst <- tagAddHooks(lst, .renderHook, tagAddRenderHook)
+  lst <- tagAddHooks(lst, .postRenderHook, tagAddPostRenderHook)
 
   lst
 }
@@ -399,7 +395,7 @@ addRenderHook <- function(tag, func, replace, post = FALSE) {
   if (!(isTag(tag) || isTagList(tag))) {
     stop("Can't set a renderHook on non tag/tagList objects", call. = FALSE)
   }
-  name <- if (isTRUE(post)) "postRenderHook" else "renderHooks"
+  name <- if (isTRUE(post)) "postRenderHooks" else "renderHooks"
   hooks <- list(func)
   if (!isTRUE(replace)) {
     hooks <- append(attr(tag, name), hooks)
@@ -780,22 +776,27 @@ tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL, .postRen
       attribs = attribs,
       children = children)
 
+  class(st) <- "shiny.tag"
+
   # Conditionally include the `.noWS` field.
   # We do this to avoid breaking the hashes of existing tags that weren't leveraging .noWS.
   if (!is.null(.noWS)) {
     st$.noWS <- .noWS
   }
-  # Conditionally include the `.renderHooks` field.
-  # We do this to avoid breaking the hashes of existing tags that weren't leveraging .renderHooks.
-  if (!is.null(.renderHook)) {
-    st <- tagAddRenderHook(st, .renderHook)
-  }
-  if (!is.null(.postRenderHook)) {
-    st <- tagAddPostRenderHook(st, .postRenderHook)
-  }
 
-  # Return tag data structure
-  structure(st, class = "shiny.tag")
+  st <- tagAddHooks(st, funcs = .renderHook, addFunc = tagAddRenderHook)
+  tagAddHooks(st, funcs = .postRenderHook, addFunc = tagAddPostRenderHook)
+}
+
+tagAddHooks <- function(tag, funcs = NULL, addFunc = tagAddRenderHook) {
+  if (is.null(funcs)) return(tag)
+  if (is.function(funcs)) {
+    funcs <- list(funcs)
+  }
+  for (func in funcs) {
+    tag <- addFunc(tag, func)
+  }
+  tag
 }
 
 isTagList <- function(x) {
@@ -1259,8 +1260,6 @@ tryHook <- function(x, hook) {
     x
   })
 }
-
-
 
 # Given a list of tags, lists, and other items, return a flat list, where the
 # items from the inner, nested lists are pulled to the top level, recursively.
