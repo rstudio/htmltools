@@ -1226,35 +1226,42 @@ withTags <- function(code, .noWS = NULL) {
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
 
-  # Schedule .postRenderHook(s) to run _after_ converting to tags
-  postHooks <- list()
-  on.exit({
-    for (hook in postHooks) tryWarn(hook())
-  })
+  # Run pre-render hooks now, post-render after tag conversion (if relevant)
+  if (!isResolvedTag(x)) {
+    pre <- attr(x, "renderHooks")
+    post <- attr(x, "postRenderHooks")
+    attr(x, "renderHooks") <- NULL
+    attr(x, "postRenderHooks") <- NULL
+    for (hook in pre) x <- tryHook(x, hook)
+    on.exit(for (hook in post) x <- tryHook(x, hook), add = TRUE)
+  }
 
-  rewriteTags(x, function(ui) {
-    if (is.character(ui)) return(ui)
-
-    pre <- attr(ui, "renderHooks")
-    for (hook in pre) {
-      tryWarn(ui <- as.tags(hook(ui)))
-    }
-    attr(ui, "renderHooks") <- NULL
-
-    post <- attr(ui, "postRenderHooks")
-    if (length(post)) {
-      postHooks <<- c(postHooks, post)
-      attr(ui, "postRenderHooks") <- NULL
-    }
-
-    if (isTag(ui) || isTagList(ui)) ui else tagify(as.tags(ui))
-
+  rewriteTags(x, function(uiObj) {
+    if (isResolvedTag(uiObj) || is.character(uiObj))
+      uiObj
+    else
+      tagify(as.tags(uiObj))
   }, FALSE)
 }
 
-tryWarn <- function(expr) {
-  tryCatch(expr, error = function(e) warning(conditionMessage(e)))
+isResolvedTag <- function(x) {
+  (isTag(x) || isTagList(x)) &&
+    is.null(attr(x, "renderHooks")) &&
+    is.null(attr(x, "postRenderHooks"))
 }
+
+tryHook <- function(x, hook) {
+  msg <- NULL
+  x <- tryCatch({ hook(x) }, error = function(e) {
+    msg <<- conditionMessage(e)
+  })
+  if (length(msg)) {
+    warning(msg, call. = FALSE)
+  }
+  x
+}
+
+
 
 # Given a list of tags, lists, and other items, return a flat list, where the
 # items from the inner, nested lists are pulled to the top level, recursively.

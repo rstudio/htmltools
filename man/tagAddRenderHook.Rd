@@ -2,9 +2,12 @@
 % Please edit documentation in R/tags.R
 \name{tagAddRenderHook}
 \alias{tagAddRenderHook}
+\alias{tagAddPostRenderHook}
 \title{Modify a tag prior to rendering}
 \usage{
-tagAddRenderHook(tag, func, replace = FALSE, post = FALSE)
+tagAddRenderHook(tag, func, replace = FALSE)
+
+tagAddPostRenderHook(tag, func, replace = FALSE)
 }
 \arguments{
 \item{tag}{A \code{\link[=tag]{tag()}} or \code{\link[=tagList]{tagList()}}.}
