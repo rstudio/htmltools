@@ -180,7 +180,7 @@ evaluated with <code>tags</code> searched first, so you can simply use
 <code><a href='builder.html'>div()</a></code> and <code><a href='builder.html'>p()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>withTags</span><span class='op'>(</span><span class='va'>code</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>withTags</span><span class='op'>(</span><span class='va'>code</span>, .noWS <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -188,6 +188,12 @@ evaluated with <code>tags</code> searched first, so you can simply use
     <tr>
       <th>code</th>
       <td><p>A set of tags.</p></td>
+    </tr>
+    <tr>
+      <th>.noWS</th>
+      <td><p>Default whitespace behavior for all tags within this call to
+<code>withTags()</code>. Setting <code>.noWS</code> on an individual tag fuction inside
+<code>withTags()</code> will override the default. See <code><a href='builder.html'>tag()</a></code> for complete options.</p></td>
     </tr>
     </table>
 
@@ -219,6 +225,16 @@ namespace, as in <code><a href='https://rdrr.io/r/base/source.html'>base::source
 #&gt;   &lt;h3&gt;header&lt;/h3&gt;
 #&gt;   &lt;p&gt;text&lt;/p&gt;
 #&gt; &lt;/div&gt;</div><div class='input'>
+<span class='co'># Setting .noWS for all tags in withTags()</span>
+<span class='fu'>withTags</span><span class='op'>(</span>
+  <span class='fu'><a href='builder.html'>div</a></span><span class='op'>(</span>
+    class <span class='op'>=</span> <span class='st'>"myclass"</span>,
+    <span class='fu'><a href='builder.html'>h3</a></span><span class='op'>(</span><span class='st'>"header"</span><span class='op'>)</span>,
+    <span class='fu'><a href='builder.html'>p</a></span><span class='op'>(</span><span class='st'>"One"</span>, <span class='fu'><a href='builder.html'>strong</a></span><span class='op'>(</span><span class='fu'><a href='builder.html'>span</a></span><span class='op'>(</span><span class='st'>"two"</span><span class='op'>)</span><span class='op'>)</span>, <span class='st'>"three"</span><span class='op'>)</span>
+  <span class='op'>)</span>,
+  .noWS <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"outside"</span>, <span class='st'>"inside"</span><span class='op'>)</span>
+<span class='op'>)</span>
+</div><div class='output co'>#&gt; &lt;div class="myclass"&gt;&lt;h3&gt;header&lt;/h3&gt;&lt;p&gt;One&lt;strong&gt;&lt;span&gt;two&lt;/span&gt;&lt;/strong&gt;three&lt;/p&gt;&lt;/div&gt;</div><div class='input'>
 
 </div></pre>
   </div>
