@@ -678,7 +678,7 @@ tagQuery_ <- function(
           tagQueryAttrsAdd(selected_, ...)
           self
         },
-        #' * `$removeAttrs(attrs)`: Remove a set of attributes from each
+        #' * `$removeAttrs(attrs)`: Remove a set of attributes (supplied as a character vector) from each
         #' selected tag.
         removeAttrs = function(attrs) {
           tagQueryAttrsRemove(selected_, attrs)
