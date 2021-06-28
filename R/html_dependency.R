@@ -352,6 +352,7 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   # relatively safe to be removed recursively
   if (dir_exists(target_dir)) unlink(target_dir, recursive = TRUE)
   dir.create(target_dir)
+  dependency$src$file <- normalizePath(target_dir, "/", TRUE)
 
   files <- if (dependency$all_files) list.files(dir) else {
     unlist(dependency[c('script', 'stylesheet', 'attachment')])
@@ -365,6 +366,13 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
       )
     )
   }
+  if (!length(srcfiles)) {
+    # This dependency doesn't include any src files
+    # no need to copy and we can clean up the target directory
+    unlink(target_dir, recursive = TRUE)
+    return(dependency)
+  }
+
   destfiles <- file.path(target_dir, files)
   isdir <- file.info(srcfiles)$isdir
   destfiles <- ifelse(isdir, dirname(destfiles), destfiles)
@@ -376,8 +384,6 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
       dir.create(to)
     file.copy(from, to, overwrite = TRUE, recursive = isdir, copy.mode = FALSE)
   }, srcfiles, destfiles, isdir)
-
-  dependency$src$file <- normalizePath(target_dir, "/", TRUE)
 
   dependency
 }

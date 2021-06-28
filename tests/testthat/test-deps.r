@@ -332,3 +332,28 @@ test_that("html escaping is carried out correctly in script rendering", {
   expect_equal(!!as.character(out), !!expect)
 
 })
+
+test_that("copyDependencyToDir() doesn't create an empty directory", {
+  tmp_dep <- tempfile("dep")
+  dir.create(tmp_dep)
+  on.exit(unlink(tmp_dep))
+
+  tmp_rmd <- tempfile("rmd_files")
+  dir.create(tmp_rmd)
+  on.exit(unlink(tmp_rmd), add = TRUE)
+
+  empty <-   htmltools::htmlDependency(
+    name = "empty",
+    version = "9.9.9",
+    src = tmp_dep,
+    head = "<script>alert('boo')</script>",
+    all_files = FALSE
+  )
+
+  copied_dep <- copyDependencyToDir(empty, tmp_rmd)
+  # no directory is created for the empty dep
+  expect_equal(dir(tmp_rmd), character())
+  # copied dependency src points to folder where files should be so that
+  # to keep relativeTo() from throwing an error later in Rmd render process
+  expect_match(copied_dep$src$file, normalizePath(tmp_rmd, "/", TRUE), fixed = TRUE)
+})
