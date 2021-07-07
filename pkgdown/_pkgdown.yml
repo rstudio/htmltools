@@ -3,46 +3,65 @@ url: https://rstudio.github.io/htmltools/
 # development:
 #   mode: auto
 
+toc:
+  depth: 2
 
-# template:
-#  # assets: pkgdown/assets
-#   params:
-#     docsearch:
-#       api_key: 'e8f0e2420e2e9aac7973efb2cc877b06'
-#       index_name: 'rplumber'
+template:
+  package: quillt
+  params:
+    footer: <b>htmltools</b> is an R package developed by <a href='https://rstudio.com'>RStudio</a>
+    docsearch:
+      api_key: d2cd688ec4b36006092a3a6a5ad8c7cd
+      index_name: htmltools
 
-# articles:
-# - title: Creating APIs in R with Plumber
-#   navbar: ~
-#   # desc: description here
-#   contents:
-#   - 'introduction'
-#   - 'quickstart'
-#   - 'routing-and-input'
-#   - 'rendering-output'
-#   - 'execution-model'
-#   - 'security'
-#   - 'hosting'
-#   - 'programmatic-usage'
-#   - 'annotations'
-#   - 'tips-and-tricks'
-#   - 'migration'
+navbar:
+  type: default
+  structure:
+    left:  [intro, articles]
+    right: [reference, news, github]
+  components:
+    home: ~
+    articles:
+      text: Articles
+      menu:
+        - text: Query and modify tags
+          href: articles/tagQuery.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    news:
+      text: News
+      href: news/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/rstudio/htmltools
 
+articles:
+- title: ~
+  desc: ~
+  contents:
+  - '`htmltools`'
+  - '`tagQuery`'
 
 reference:
 
-- title: Tags
+- title: Create HTML tags
   contents:
   - '`builder`'
+  - '`tagList`'
   - '`HTML`'
   - '`tag`'
   - '`plotTag`'
   - '`include`'
   - '`browsable`'
-  - '`as.tags`'
   - '`withTags`'
 
-- title: Rendering tags
+- title: Modify tags
+  contents:
+  - '`tagAppendChild`'
+  - '`tagAppendAttributes`'
+
+- title: Render tags
   contents:
   - '`print.html`'
   - '`renderDependencies`'
@@ -89,6 +108,7 @@ reference:
 
 - title: Advanced tag objects
   contents:
-  - '`tagAddRenderHook`'
   - '`tagQuery`'
+  - '`tagAddRenderHook`'
   - '`tagFunction`'
+  - '`as.tags`'

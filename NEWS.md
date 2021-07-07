@@ -6,15 +6,23 @@
 
 ## New Features & Improvements
 
-* Added `tagQuery(tags)`. A tag query object implements many popular features of jQuery.  Similar to jQuery, tag query objects can find internal html using CSS selections. Given a selection (which defaults to the original `tags`), many alterations may be performed before converting the tag query object back to tag objects. (#208)
+* `{htmltools}` now has its own `{pkgdown}` site hosted at <https://rstudio.github.io/htmltools/>.
+
+* The new `tagQuery()` function provides a [jQuery](https://jquery.com/) inspired interface to query and/or modify HTML `tag()` (e.g., `div()`) or `tagList()` objects. To learn more, see the [{pkgdown} article](https://rstudio.github.io/htmltools/articles/tagQuery.html). (#208)
 
 * Added `tagAddRenderHook()` for delaying modification of a tag object until it is rendered. A list of render-time hooks may also be added via the new `.renderHook` argument added to all `tag()` functions. (#215)
+
+* Closed #243: Added `withTags(.noWS)` to change the default whitespace behavior for all tags within the call to `withTags()`. (#245)
+
+* Closed #251: Added `.cssSelector` parameters to tag modifying functions such as `tagAppendChildren()` or `tagAppendChildren()`. The `.cssSelector` allows you to target particular (inner) tags of interest. See `tagAppendChildren()` for examples. (#224)
+
+* Closed #225: Added `tagInsertChildren()` to be able to insert child tag objects at a particular location. (#224)
 
 ## Bug Fixes
 
 * When retrieving a tag attribute using `tagGetAttribute(tag, attr)`, `NA` values will be removed before combining remaining attribute values. If all attribute values are `NA`, then a single `NA` value will be returned. (#212)
 
-* Closed #197: Fixed rendering of boolean attributes in <script> tags rendered via renderDependencies() (#197, thanks @atusy).
+* Closed #197: Fixed rendering of boolean attributes in `<script>` tags rendered via `renderDependencies()` (#197, thanks @atusy).
 
 * Closed #222: Unnamed attributes are no longer allowed to be appended via `tagAppendAttribs()`. When trying to print unnamed tag attribs, a better error message is provided. (#229)
 

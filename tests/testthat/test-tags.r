@@ -58,6 +58,70 @@ test_that("withTags works", {
   expect_identical(tags$p(100), foo())
 })
 
+test_that(".noWS argument of withTags()", {
+  get_noWS <- function(tag) tag[[".noWS"]]
+
+  default <- withTags(
+    div(
+      class = "myclass",
+      h3("header"),
+      p("One", strong(span("two")), "three")
+    )
+  )
+
+  expect_null(get_noWS(default))
+  expect_null(get_noWS(default$children[[1]]))
+  expect_null(get_noWS(default$children[[2]]))
+  expect_null(get_noWS(default$children[[2]]$children[[2]]))
+  expect_null(get_noWS(default$children[[2]]$children[[2]]$children[[1]]))
+
+  default_special <- withTags(
+    div(
+      class = "myclass",
+      h3("header", .noWS = "after-begin"),
+      p("One", strong(span("two")), "three", .noWS = "before-end")
+    )
+  )
+
+  expect_null(get_noWS(default_special))
+  expect_equal(get_noWS(default_special$children[[1]]), "after-begin")
+  expect_equal(get_noWS(default_special$children[[2]]), "before-end")
+  expect_null(get_noWS(default_special$children[[2]]$children[[2]]))
+  expect_null(get_noWS(default_special$children[[2]]$children[[2]]$children[[1]]))
+
+  all_same_noWS <- c("outside", "inside")
+  all_same <- withTags(
+    div(
+      class = "myclass",
+      h3("header"),
+      p("One", strong(span("two")), "three")
+    ),
+    .noWS = all_same_noWS
+  )
+
+  expect_equal(get_noWS(all_same), all_same_noWS)
+  expect_equal(get_noWS(all_same$children[[1]]), all_same_noWS)
+  expect_equal(get_noWS(all_same$children[[2]]), all_same_noWS)
+  expect_equal(get_noWS(all_same$children[[2]]$children[[2]]), all_same_noWS)
+  expect_equal(get_noWS(all_same$children[[2]]$children[[2]]$children[[1]]), all_same_noWS)
+
+  varied_default <- "outside"
+  varied_special <- "inside"
+  varied <- withTags(
+    div(
+      class = "myclass",
+      h3("header"),
+      p("One", strong(span("two"), .noWS = varied_special), "three")
+    ),
+    .noWS = varied_default
+  )
+
+  expect_equal(get_noWS(varied), varied_default)
+  expect_equal(get_noWS(varied$children[[1]]), varied_default)
+  expect_equal(get_noWS(varied$children[[2]]), varied_default)
+  expect_equal(get_noWS(varied$children[[2]]$children[[2]]), varied_special)
+  expect_equal(get_noWS(varied$children[[2]]$children[[2]]$children[[1]]), varied_default)
+})
 
 test_that("HTML escaping in tags", {
   # Regular text is escaped
@@ -1016,4 +1080,59 @@ test_that("html render method", {
   })
   expect_equal(newObj$name, "div")
   expect_snapshot(as.character(newObj))
+})
+
+
+test_that(".cssSelector arg only applies changes to the selected elements", {
+  html <-
+    div(
+      class = "outer",
+      div(class = "inner", "text"),
+      span("TEXT")
+    )
+
+  expect_equal_tags(
+    tagAppendAttributes(html, id = "test"),
+    div(class = "outer", id = "test", div(class="inner", "text"), span("TEXT"))
+  )
+  expect_equal_tags(
+    tagAppendAttributes(html, id = "test", .cssSelector = ".inner"),
+    div(class = "outer", div(class = "inner", id = "test", "text"), span("TEXT"))
+  )
+
+  expect_equal_tags(
+    tagAppendChild(html, h1()),
+    div(class = "outer", div(class="inner", "text"), span("TEXT"), h1())
+  )
+  expect_equal_tags(
+    tagAppendChild(html, h1(), .cssSelector = ".inner"),
+    div(class = "outer", div(class = "inner", "text", h1()), span("TEXT"))
+  )
+
+  expect_equal_tags(
+    tagAppendChildren(html, h1(), h2()),
+    div(class = "outer", div(class="inner", "text"), span("TEXT"), h1(), h2())
+  )
+  expect_equal_tags(
+    tagAppendChildren(html, h1(), h2(), .cssSelector = ".inner"),
+    div(class = "outer", div(class = "inner", "text", h1(), h2()), span("TEXT"))
+  )
+
+  expect_equal_tags(
+    tagSetChildren(html, h1(), h2()),
+    div(class = "outer", h1(), h2())
+  )
+  expect_equal_tags(
+    tagSetChildren(html, h1(), h2(), .cssSelector = ".inner"),
+    div(class = "outer", div(class = "inner", h1(), h2()), span("TEXT"))
+  )
+
+  expect_equal_tags(
+    tagInsertChildren(html, h1(), h2(), after = 0),
+    div(class = "outer", h1(), h2(), div(class="inner", "text"), span("TEXT"))
+  )
+  expect_equal_tags(
+    tagInsertChildren(html, h1(), h2(), after = 0, .cssSelector = ".inner"),
+    div(class = "outer", div(class = "inner", h1(), h2(), "text"), span("TEXT"))
+  )
 })

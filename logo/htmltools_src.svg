@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 4153.42 4795.93">
+  <defs>
+    <style>
+    tspan { white-space:pre; }
+    .fill { fill:#f16529; }     <!-- Flame -->
+    .border { fill:#e44d26; }     <!-- Halloween orange -->
+    .txt { font-size:25px;fill:#000000;font-family: 'Metropolis Extra Bold', sans-serif; }
+    .txt-white { fill:#ffffff; }
+    .txt-grey { fill:#ebebeb; }
+    .txt-blk { fill:#000000; }
+    .cls-1,.cls-10,.cls-5,.cls-6,.cls-7,.cls-8{fill:none;stroke-miterlimit:10;}.cls-1{stroke:#e44d26;stroke-width:130px;}.cls-2{clip-path:url(#clip-path);}.cls-3{fill:#f16529;}.cls-4{fill:#353535;}.cls-5,.cls-6,.cls-7{stroke:#494949;}.cls-5{stroke-width:350px;}.cls-6{stroke-width:300px;}.cls-7{stroke-width:160px;}.cls-8{stroke:#00ffa3;}.cls-10,.cls-8{stroke-width:90px;}.cls-9{fill:#008471;}.cls-10{stroke:#3effa3;}.cls-11{fill:#00ffa3;}.cls-12{fill:#b2b2b2;}</style>
+    <clipPath id="clip-path">
+      <path class="cls-1" d="M4088.35,3559.43V1236.55L2076.68,75.1,1052.52,666.4,65,1236.55V3559.43L2076.68,4720.87Z"/>
+    </clipPath>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <g class="cls-2">
+      <rect class="cls-3" x="-425.86" y="-102.01" width="5000" height="5000"/>
+      <rect class="border" x="-500" y="-100" width="2576.71" height="5000"/>
+    </g>
+    <path class="border cls-1" d="M4088.35,3559.43V1236.55L2076.68,75.1,1052.52,666.4,65,1236.55V3559.43L2076.68,4720.87Z"/>
+  </g>
+  <g id="Layer" dominant-baseline="middle" class="txt" transform="translate(2076.71 2397.965) scale(23, 26)">
+    <text text-anchor="end" class="txt-grey">
+      <tspan dx="-0.5" font-style="italic">&lt;</tspan><tspan dx="1" font-style = "regular">html</tspan>
+    </text>
+    <text text-anchor="start" class="txt-white">
+      <tspan font-style="regular" dx="1.25">tools</tspan><tspan dx="1" font-style = "italic">&gt;</tspan>
+    </text>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+---
+title: "Customize your UI with HTML"
+output: html_document
+---
+
+<meta http-equiv="Refresh" content="0; url='https://shiny.rstudio.com/articles/html-tags.html'" />
+
+Redirecting to [Customize your UI with HTML](https://shiny.rstudio.com/articles/html-tags.html)
