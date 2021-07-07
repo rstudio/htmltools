@@ -1,4 +1,9 @@
 # htmltools (development version)
+
+## Breaking Changes
+
+* Closed #205: When calling `tagGetAttribute(x)` on an object with a non-atomic attribute, a list of untouched values will be returned. It is still recommended to only store character values inside attributes. (#212)
+
 ## New Features & Improvements
 
 * `{htmltools}` now has its own `{pkgdown}` site hosted at <https://rstudio.github.io/htmltools/>.
@@ -14,6 +19,8 @@
 * Closed #225: Added `tagInsertChildren()` to be able to insert child tag objects at a particular location. (#224)
 
 ## Bug Fixes
+
+* When retrieving a tag attribute using `tagGetAttribute(tag, attr)`, `NA` values will be removed before combining remaining attribute values. If all attribute values are `NA`, then a single `NA` value will be returned. (#212)
 
 * Closed #197: Fixed rendering of boolean attributes in `<script>` tags rendered via `renderDependencies()` (#197, thanks @atusy).
 

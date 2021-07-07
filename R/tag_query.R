@@ -1128,6 +1128,9 @@ getCssClass <- function(class) {
   splitCssClass(prepCssClass(class))
 }
 splitCssClass <- function(class) {
+  if (!is.character(class)) {
+    stop("tagGetAttribute(x, \"class\") did not return a character value")
+  }
   if (length(class) > 1) {
     class <- paste0(class, collapse = " ")
   }

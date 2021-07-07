@@ -1,0 +1,111 @@
+---
+title: "flattenTagAttribs benchmarks"
+author: "Barret Schloerke"
+date: "4/16/2021"
+output: html_document
+---
+
+
+## Goal
+
+Find for what values of key size and unique key size is `split()` faster.
+
+## Setup
+
+Make a list of keys of size `n` and have the unique count of keys be `nn`.  The values will be `"1"`.
+
+```{r attribs}
+combineKeys <- function(x) {
+  if (anyNA(x)) {
+    na_idx <- is.na(x)
+    if (all(na_idx)) {
+      return(NA)
+    }
+    x <- x[!na_idx]
+  }
+  unlist(x, recursive = FALSE, use.names = FALSE)
+}
+flattenTagAttribs <- function(attribs) {
+
+  # Convert all attribs to chars explicitly; prevents us from messing up factors
+  attribs <- lapply(attribs, as.character)
+  # concatenate attributes
+  # split() is very slow, so avoid it if possible
+  if (anyDuplicated(names(attribs))) {
+    attribs <- lapply(split(attribs, names(attribs)), combineKeys)
+  }
+
+  attribs
+}
+```
+
+```{r attribs2}
+flattenTagAttribs2 <- function(attribs) {
+
+  attribNames <- names(attribs)
+
+  uniqueAttribNames <- unique(attribNames)
+  uniqueAttribNamesLen <- length(uniqueAttribNames)
+
+  if (uniqueAttribNamesLen != length(attribNames)) {
+    if (uniqueAttribNamesLen > 45) {
+      # unique key length is > 45
+      # `split()` performs better with larger sets
+      splitAttribs <- split(attribs, attribNames)
+      attribs <- lapply(splitAttribs, combineKeys)
+    } else {
+      # unique key length is <= 45
+      # subsetting performs better with smaller sets
+      attribs <- lapply(uniqueAttribNames, function(name) {
+        obj <- attribs[attribNames == name]
+        combineKeys(obj)
+      })
+      names(attribs) <- uniqueAttribNames
+    }
+  }
+  attribs
+}
+```
+
+# Test
+
+```{r setup}
+dts <- list()
+for (n in seq(from = 5, to = 100, by = 5)) {
+  for (nn in unique(floor(n * c(0, 0.25, 0.5, 0.75, 1)) + 1)) {
+    nn <- min(c(nn, n))
+    cat("n: ", n, " nn: ", nn, "\n")
+    k <- paste0("key", 1:nn)
+    if (nn < n) k <- c(k, sample(k, n - nn, replace = TRUE))
+    v <- as.list(sample(1L, n, replace = TRUE))
+    attribs <- setNames(v, k)
+    info <- bench::mark(
+      check = FALSE,
+      flattenTagAttribs(attribs),
+      flattenTagAttribs2(attribs)
+    )
+    info$key_size <- n
+    info$unique_size <- nn
+    dts[[length(dts) + 1]] <- info
+  }
+}
+dt <- dplyr::bind_rows(dts)
+```
+
+```{r plot}
+dt %>%
+  dplyr::select(expression, median, key_size, unique_size) %>%
+  tidyr::pivot_wider(names_from = expression, values_from = median) %>%
+  dplyr::rename(old = `flattenTagAttribs(attribs)`, new = `flattenTagAttribs2(attribs)`) %>%
+  # dplyr::mutate(
+  #   old = purrr::map_dbl(old, as.numeric) * 1000000,
+  #   new = purrr::map_dbl(new, as.numeric) * 1000000
+  # )
+
+  dplyr::mutate(diff = (as.numeric(new) - as.numeric(old)) * 1000000) %>%
+  {
+    ggplot(., aes(x = key_size, y = unique_size, color = diff, shape = diff > 0)) +
+    geom_point(size = 10) +
+    scale_color_gradient2(low = "#006837", mid = "#ffffbf", high = "#a50026")
+  }
+```

@@ -473,10 +473,33 @@ tagGetAttribute <- function(tag, attr) {
     return (NULL)
   }
 
-  # Convert all attribs to chars explicitly; prevents us from messing up factors
-  result <- lapply(attribs[attrIdx], as.character)
-  # Separate multiple attributes with the same name
-  result <- paste(result, collapse = " ")
+  result <- attribs[attrIdx]
+  # Remove NA values or return a single NA value
+  if (anyNA(result)) {
+    na_idx <- is.na(result)
+    if (all(na_idx)) {
+      return(NA)
+    }
+    result <- result[!na_idx]
+  }
+
+  if (all(vapply(result, is.atomic, logical(1)))) {
+    # Convert all attribs to chars explicitly; prevents us from messing up factors
+    # Separate multiple attributes with the same name
+    vals <- vapply(result, function(val) {
+      val <- as.character(val)
+      # Combine vector values if they exist
+      if (length(val) > 1) {
+        val <- paste0(val, collapse = " ")
+      }
+      val
+    }, character(1))
+    result <- paste0(vals, collapse = " ")
+  } else {
+    # When retrieving values that are not atomic, return a list of values
+    names(result) <- NULL
+  }
+
   result
 }
 
@@ -838,7 +861,8 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   # write tag name
   textWriter$write(concat8("<", tag$name))
 
-  attribs <- flattenTagAttribs(tag$attribs)
+  # Convert all attribs to chars explicitly; prevents us from messing up factors
+  attribs <- flattenTagAttribs(lapply(tag$attribs, as.character))
   attribNames <- names2(attribs)
   if (any(!nzchar(attribNames))) {
     # Can not display attrib without a key
@@ -851,9 +875,13 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   # write attributes
   for (attrib in attribNames) {
     attribValue <- attribs[[attrib]]
+    if (length(attribValue) > 1) {
+      attribValue <- concat8(attribValue, collapse = " ")
+    }
     if (!is.na(attribValue)) {
-      if (is.logical(attribValue))
+      if (is.logical(attribValue)) {
         attribValue <- tolower(attribValue)
+      }
       text <- htmlEscape(attribValue, attribute=TRUE)
       textWriter$write(concat8(" ", attrib,"=\"", text, "\""))
     }
@@ -1268,27 +1296,46 @@ flattenTagsRaw <- function(x) {
   }
 }
 
+
+combineKeys <- function(x) {
+  if (anyNA(x)) {
+    na_idx <- is.na(x)
+    if (all(na_idx)) {
+      return(NA)
+    }
+    x <- x[!na_idx]
+  }
+  unlist(x, recursive = FALSE, use.names = FALSE)
+}
+# Do not adjust single values
+# Only merge keys
 flattenTagAttribs <- function(attribs) {
 
-  # Convert all attribs to chars explicitly; prevents us from messing up factors
-  attribs <- lapply(attribs, as.character)
-  # concatenate attributes
-  # split() is very slow, so avoid it if possible
-  if (anyDuplicated(names(attribs))) {
-    attribs <- lapply(split(attribs, names(attribs)), function(x) {
-      na_idx <- is.na(x)
-      if (any(na_idx)) {
-        if (all(na_idx)) {
-          return(NA)
-        }
-        x <- x[!na_idx]
-      }
-      paste(x, collapse = " ")
-    })
+  attribs <- dropNullsOrEmpty(attribs)
+
+  attribNames <- names(attribs)
+
+  uniqueAttribNames <- unique(attribNames)
+  uniqueAttribNamesLen <- length(uniqueAttribNames)
+
+  if (uniqueAttribNamesLen != length(attribNames)) {
+    if (uniqueAttribNamesLen > 45) {
+      # unique key length is > 45
+      # `split()` performs better with larger sets
+      splitAttribs <- split(attribs, attribNames)
+      attribs <- lapply(splitAttribs, combineKeys)
+    } else {
+      # unique key length is <= 45
+      # subsetting performs better with smaller sets
+      attribs <- lapply(uniqueAttribNames, function(name) {
+        obj <- attribs[attribNames == name]
+        combineKeys(obj)
+      })
+      names(attribs) <- uniqueAttribNames
+    }
   }
 
   attribs
-
 }
 
 #' Convert a value to tags
