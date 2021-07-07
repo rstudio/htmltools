@@ -102,14 +102,14 @@
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9006</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9005</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9006</span>
         </div>
       </div>-->
     </div>
@@ -170,6 +170,13 @@
 <h1 class="page-header" data-toc-text="development version">
 <a href="#htmltools-development-version" class="anchor"></a>htmltools (development version)<small> Unreleased </small>
 </h1>
+<div id="breaking-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#breaking-changes" class="anchor"></a>Breaking Changes</h2>
+<ul>
+<li>Closed <a href='https://github.com/rstudio/htmltools/issues/205'>#205</a>: When calling <code><a href="../reference/tagAppendAttributes.html">tagGetAttribute(x)</a></code> on an object with a non-atomic attribute, a list of untouched values will be returned. It is still recommended to only store character values inside attributes. (<a href='https://github.com/rstudio/htmltools/issues/212'>#212</a>)</li>
+</ul>
+</div>
 <div id="new-features--improvements" class="section level2">
 <h2 class="hasAnchor">
 <a href="#new-features--improvements" class="anchor"></a>New Features &amp; Improvements</h2>
@@ -186,6 +193,7 @@
 <h2 class="hasAnchor">
 <a href="#bug-fixes" class="anchor"></a>Bug Fixes</h2>
 <ul>
+<li><p>When retrieving a tag attribute using <code><a href="../reference/tagAppendAttributes.html">tagGetAttribute(tag, attr)</a></code>, <code>NA</code> values will be removed before combining remaining attribute values. If all attribute values are <code>NA</code>, then a single <code>NA</code> value will be returned. (<a href='https://github.com/rstudio/htmltools/issues/212'>#212</a>)</p></li>
 <li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/197'>#197</a>: Fixed rendering of boolean attributes in <code>&lt;script&gt;</code> tags rendered via <code><a href="../reference/renderDependencies.html">renderDependencies()</a></code> (<a href='https://github.com/rstudio/htmltools/issues/197'>#197</a>, thanks <a href='https://github.com/atusy'>@atusy</a>).</p></li>
 <li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/222'>#222</a>: Unnamed attributes are no longer allowed to be appended via <code>tagAppendAttribs()</code>. When trying to print unnamed tag attribs, a better error message is provided. (<a href='https://github.com/rstudio/htmltools/issues/229'>#229</a>)</p></li>
 </ul>
@@ -215,9 +223,9 @@
 <li><p><code><a href="../reference/htmlPreserve.html">htmlPreserve()</a></code> can now optionally use the Pandoc <code>raw_attribute</code> extension to enclose HTML.</p></li>
 </ul>
 </div>
-<div id="breaking-changes" class="section level2">
+<div id="breaking-changes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#breaking-changes" class="anchor"></a>Breaking Changes</h2>
+<a href="#breaking-changes-1" class="anchor"></a>Breaking Changes</h2>
 <ul>
 <li>Closed <a href='https://github.com/rstudio/htmltools/issues/161'>#161</a>: <code><a href="../reference/parseCssColors.html">parseCssColors(x)</a></code> now requires <code>x</code> to be a character vector (it no longer accepts a <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> of strings) and an error is no longer thrown when <code>mustWork = FALSE</code> and <code>x</code> contains <code>NA</code> value(s). (<a href='https://github.com/rstudio/htmltools/issues/194'>#194</a>)</li>
 </ul>
