@@ -1,12 +1,6 @@
 #' @importFrom fastmap fastmap faststack
 NULL
 
-# TODO: change to rlang::obj_address() after rlang >= 0.4.12 hits CRAN
-# (lionel says he'll keep the alias in rlang for the next few years)
-obj_address <- function(x) {
-  getFromNamespace("sexp_address", "rlang")(x)
-}
-
 # TODO-barret followup PR
 # * onRender(x, fn) - tagFunction(x, fn)
 
