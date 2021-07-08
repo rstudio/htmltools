@@ -19,7 +19,7 @@ Imports:
     digest,
     grDevices,
     base64enc,
-    rlang (>= 0.4.11.9000),
+    rlang (>= 0.4.10),
     fastmap
 Suggests:
     markdown,
@@ -28,8 +28,6 @@ Suggests:
     Cairo,
     ragg,
     shiny
-Remotes:
-    r-lib/rlang
 Enhances: knitr
 License: GPL (>= 2)
 URL: https://github.com/rstudio/htmltools
