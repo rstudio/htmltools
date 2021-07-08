@@ -1,7 +1,5 @@
 #' @importFrom fastmap fastmap faststack
-#' @importFrom rlang obj_address
 NULL
-
 
 # TODO-barret followup PR
 # * onRender(x, fn) - tagFunction(x, fn)

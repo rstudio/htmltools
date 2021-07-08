@@ -54,6 +54,11 @@ registerMethods <- function(methods) {
     c("knitr", "knit_print", "shiny.tag"),
     c("knitr", "knit_print", "shiny.tag.list")
   ))
+
+  # TODO: After rlang >= 0.4.12 hits CRAN, remove this and replace
+  # with ` #' @importFrom rlang obj_address`
+  # (lionel says rlang:::sexp_address() will be available for the next few years)
+  assign("obj_address", getFromNamespace("sexp_address", "rlang"), environment(.onLoad))
 }
 
 depListToNamedDepList <- function(dependencies) {
