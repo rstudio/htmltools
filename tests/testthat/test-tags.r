@@ -1136,3 +1136,20 @@ test_that(".cssSelector arg only applies changes to the selected elements", {
     div(class = "outer", div(class = "inner", h1(), h2(), "text"), span("TEXT"))
   )
 })
+
+
+
+
+test_that("flattenTagAttribs", {
+  attribs <- list(
+    b = "1",
+    a = "2",
+    b = "3"
+  )
+
+  flatAttribs <- flattenTagAttribs(attribs)
+  # alpha sorted
+  expect_equal(names(flatAttribs), c("a", "b"))
+  # b values are collected
+  expect_equal(flatAttribs, list(a = "2", b = c("1", "3")))
+})
