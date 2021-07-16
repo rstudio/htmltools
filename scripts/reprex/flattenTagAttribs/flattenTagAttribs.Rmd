@@ -26,9 +26,6 @@ combineKeys <- function(x) {
   unlist(x, recursive = FALSE, use.names = FALSE)
 }
 flattenTagAttribs <- function(attribs) {
-
-  # # Convert all attribs to chars explicitly; prevents us from messing up factors
-  # attribs <- lapply(attribs, as.character)
   # concatenate attributes
   # split() is very slow, so avoid it if possible
   if (anyDuplicated(names(attribs))) {
