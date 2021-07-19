@@ -1320,24 +1320,13 @@ flattenTagAttribs <- function(attribs) {
 
   attribNames <- names(attribs)
 
-  uniqueAttribNames <- unique(attribNames)
-  uniqueAttribNamesLen <- length(uniqueAttribNames)
-
-  if (uniqueAttribNamesLen != length(attribNames)) {
-    if (uniqueAttribNamesLen > 45) {
-      # unique key length is > 45
-      # `split()` performs better with larger sets
-      splitAttribs <- split(attribs, attribNames)
-      attribs <- lapply(splitAttribs, combineKeys)
-    } else {
-      # unique key length is <= 45
-      # subsetting performs better with smaller sets
-      attribs <- lapply(uniqueAttribNames, function(name) {
-        obj <- attribs[attribNames == name]
-        combineKeys(obj)
-      })
-      names(attribs) <- uniqueAttribNames
-    }
+  if (anyDuplicated(attribNames)) {
+    uniqueAttribNames <- sort(unique(attribNames))
+    attribs <- lapply(uniqueAttribNames, function(name) {
+      obj <- attribs[attribNames == name]
+      combineKeys(obj)
+    })
+    names(attribs) <- uniqueAttribNames
   }
 
   attribs
