@@ -205,38 +205,41 @@ the tag function. To call the intended (non-tags function), specify the
 namespace, as in <code><a href='https://rdrr.io/r/base/source.html'>base::source()</a></code> or <code><a href='https://rdrr.io/r/base/summary.html'>base::summary()</a></code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Using tags$ each time</span>
-<span class='va'>tags</span><span class='op'>$</span><span class='fu'>div</span><span class='op'>(</span>class <span class='op'>=</span> <span class='st'>"myclass"</span>,
-  <span class='va'>tags</span><span class='op'>$</span><span class='fu'>h3</span><span class='op'>(</span><span class='st'>"header"</span><span class='op'>)</span>,
-  <span class='va'>tags</span><span class='op'>$</span><span class='fu'>p</span><span class='op'>(</span><span class='st'>"text"</span><span class='op'>)</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; &lt;div class="myclass"&gt;
-#&gt;   &lt;h3&gt;header&lt;/h3&gt;
-#&gt;   &lt;p&gt;text&lt;/p&gt;
-#&gt; &lt;/div&gt;</div><div class='input'>
-<span class='co'># Equivalent to above, but using withTags</span>
-<span class='fu'>withTags</span><span class='op'>(</span>
-  <span class='fu'><a href='builder.html'>div</a></span><span class='op'>(</span>class <span class='op'>=</span> <span class='st'>"myclass"</span>,
-    <span class='fu'><a href='builder.html'>h3</a></span><span class='op'>(</span><span class='st'>"header"</span><span class='op'>)</span>,
-    <span class='fu'><a href='builder.html'>p</a></span><span class='op'>(</span><span class='st'>"text"</span><span class='op'>)</span>
-  <span class='op'>)</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; &lt;div class="myclass"&gt;
-#&gt;   &lt;h3&gt;header&lt;/h3&gt;
-#&gt;   &lt;p&gt;text&lt;/p&gt;
-#&gt; &lt;/div&gt;</div><div class='input'>
-<span class='co'># Setting .noWS for all tags in withTags()</span>
-<span class='fu'>withTags</span><span class='op'>(</span>
-  <span class='fu'><a href='builder.html'>div</a></span><span class='op'>(</span>
-    class <span class='op'>=</span> <span class='st'>"myclass"</span>,
-    <span class='fu'><a href='builder.html'>h3</a></span><span class='op'>(</span><span class='st'>"header"</span><span class='op'>)</span>,
-    <span class='fu'><a href='builder.html'>p</a></span><span class='op'>(</span><span class='st'>"One"</span>, <span class='fu'><a href='builder.html'>strong</a></span><span class='op'>(</span><span class='fu'><a href='builder.html'>span</a></span><span class='op'>(</span><span class='st'>"two"</span><span class='op'>)</span><span class='op'>)</span>, <span class='st'>"three"</span><span class='op'>)</span>
-  <span class='op'>)</span>,
-  .noWS <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"outside"</span>, <span class='st'>"inside"</span><span class='op'>)</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; &lt;div class="myclass"&gt;&lt;h3&gt;header&lt;/h3&gt;&lt;p&gt;One&lt;strong&gt;&lt;span&gt;two&lt;/span&gt;&lt;/strong&gt;three&lt;/p&gt;&lt;/div&gt;</div><div class='input'>
-
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Using tags$ each time</span></span>
+<span class='r-in'><span class='va'>tags</span><span class='op'>$</span><span class='fu'>div</span><span class='op'>(</span>class <span class='op'>=</span> <span class='st'>"myclass"</span>,</span>
+<span class='r-in'>  <span class='va'>tags</span><span class='op'>$</span><span class='fu'>h3</span><span class='op'>(</span><span class='st'>"header"</span><span class='op'>)</span>,</span>
+<span class='r-in'>  <span class='va'>tags</span><span class='op'>$</span><span class='fu'>p</span><span class='op'>(</span><span class='st'>"text"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> &lt;div class="myclass"&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   &lt;h3&gt;header&lt;/h3&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   &lt;p&gt;text&lt;/p&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> &lt;/div&gt;</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Equivalent to above, but using withTags</span></span>
+<span class='r-in'><span class='fu'>withTags</span><span class='op'>(</span></span>
+<span class='r-in'>  <span class='fu'><a href='builder.html'>div</a></span><span class='op'>(</span>class <span class='op'>=</span> <span class='st'>"myclass"</span>,</span>
+<span class='r-in'>    <span class='fu'><a href='builder.html'>h3</a></span><span class='op'>(</span><span class='st'>"header"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    <span class='fu'><a href='builder.html'>p</a></span><span class='op'>(</span><span class='st'>"text"</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> &lt;div class="myclass"&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   &lt;h3&gt;header&lt;/h3&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   &lt;p&gt;text&lt;/p&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> &lt;/div&gt;</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Setting .noWS for all tags in withTags()</span></span>
+<span class='r-in'><span class='fu'>withTags</span><span class='op'>(</span></span>
+<span class='r-in'>  <span class='fu'><a href='builder.html'>div</a></span><span class='op'>(</span></span>
+<span class='r-in'>    class <span class='op'>=</span> <span class='st'>"myclass"</span>,</span>
+<span class='r-in'>    <span class='fu'><a href='builder.html'>h3</a></span><span class='op'>(</span><span class='st'>"header"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    <span class='fu'><a href='builder.html'>p</a></span><span class='op'>(</span><span class='st'>"One"</span>, <span class='fu'><a href='builder.html'>strong</a></span><span class='op'>(</span><span class='fu'><a href='builder.html'>span</a></span><span class='op'>(</span><span class='st'>"two"</span><span class='op'>)</span><span class='op'>)</span>, <span class='st'>"three"</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>)</span>,</span>
+<span class='r-in'>  .noWS <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"outside"</span>, <span class='st'>"inside"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> &lt;div class="myclass"&gt;&lt;h3&gt;header&lt;/h3&gt;&lt;p&gt;One&lt;strong&gt;&lt;span&gt;two&lt;/span&gt;&lt;/strong&gt;three&lt;/p&gt;&lt;/div&gt;</span>
+<span class='r-in'></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -247,17 +250,7 @@ namespace, as in <code><a href='https://rdrr.io/r/base/source.html'>base::source
 
 
       <footer>
-      <div class="tidyverse">
-  <p><b>htmltools</b> is an R package developed by <a href='https://rstudio.com'>RStudio</a></p>
-</div>
-
-<div class="author">
-  <p>
-    Developed by Joe Cheng, Carson Sievert, Barret Schloerke, Winston Chang, Yihui Xie, Jeff Allen.
-    Site built with <a href="https://pkgdown.r-lib.org">pkgdown</a>.
-  </p>
-</div>
-
+      
       </footer>
    </div>
 

@@ -174,7 +174,7 @@
 <h2 class="hasAnchor">
 <a href="#breaking-changes" class="anchor"></a>Breaking Changes</h2>
 <ul>
-<li>Closed <a href='https://github.com/rstudio/htmltools/issues/205'>#205</a>: When calling <code><a href="../reference/tagAppendAttributes.html">tagGetAttribute(x)</a></code> on an object with a non-atomic attribute, a list of untouched values will be returned. It is still recommended to only store character values inside attributes. (<a href='https://github.com/rstudio/htmltools/issues/212'>#212</a>)</li>
+<li>Closed <a href='https://github.com/rstudio/htmltools/issues/205'>#205</a>: When calling <code>tagGetAttribute(x)</code> on an object with a non-atomic attribute, a list of untouched values will be returned. It is still recommended to only store character values inside attributes. (<a href='https://github.com/rstudio/htmltools/issues/212'>#212</a>)</li>
 </ul>
 </div>
 <div id="new-features--improvements" class="section level2">
@@ -184,7 +184,7 @@
 <li><p><a href="https://github.com/rstudio/htmltools">htmltools</a> now has its own <a href="https://pkgdown.r-lib.org">pkgdown</a> site hosted at <a href="https://rstudio.github.io/htmltools/" class="uri">https://rstudio.github.io/htmltools/</a>.</p></li>
 <li><p>The new <code><a href="../reference/tagQuery.html">tagQuery()</a></code> function provides a <a href="https://jquery.com/">jQuery</a> inspired interface to query and/or modify HTML <code><a href="../reference/builder.html">tag()</a></code> (e.g., <code><a href="../reference/builder.html">div()</a></code>) or <code><a href="../reference/tagList.html">tagList()</a></code> objects. To learn more, see the <a href="https://rstudio.github.io/htmltools/articles/tagQuery.html">{pkgdown} article</a>. (<a href='https://github.com/rstudio/htmltools/issues/208'>#208</a>)</p></li>
 <li><p>Added <code><a href="../reference/tagAddRenderHook.html">tagAddRenderHook()</a></code> for delaying modification of a tag object until it is rendered. A list of render-time hooks may also be added via the new <code>.renderHook</code> argument added to all <code><a href="../reference/builder.html">tag()</a></code> functions. (<a href='https://github.com/rstudio/htmltools/issues/215'>#215</a>)</p></li>
-<li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/243'>#243</a>: Added <code><a href="../reference/withTags.html">withTags(.noWS)</a></code> to change the default whitespace behavior for all tags within the call to <code><a href="../reference/withTags.html">withTags()</a></code>. (<a href='https://github.com/rstudio/htmltools/issues/245'>#245</a>)</p></li>
+<li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/243'>#243</a>: Added <code>withTags(.noWS)</code> to change the default whitespace behavior for all tags within the call to <code><a href="../reference/withTags.html">withTags()</a></code>. (<a href='https://github.com/rstudio/htmltools/issues/245'>#245</a>)</p></li>
 <li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/251'>#251</a>: Added <code>.cssSelector</code> parameters to tag modifying functions such as <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code> or <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code>. The <code>.cssSelector</code> allows you to target particular (inner) tags of interest. See <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code> for examples. (<a href='https://github.com/rstudio/htmltools/issues/224'>#224</a>)</p></li>
 <li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/225'>#225</a>: Added <code><a href="../reference/tagAppendChild.html">tagInsertChildren()</a></code> to be able to insert child tag objects at a particular location. (<a href='https://github.com/rstudio/htmltools/issues/224'>#224</a>)</p></li>
 </ul>
@@ -193,7 +193,7 @@
 <h2 class="hasAnchor">
 <a href="#bug-fixes" class="anchor"></a>Bug Fixes</h2>
 <ul>
-<li><p>When retrieving a tag attribute using <code><a href="../reference/tagAppendAttributes.html">tagGetAttribute(tag, attr)</a></code>, <code>NA</code> values will be removed before combining remaining attribute values. If all attribute values are <code>NA</code>, then a single <code>NA</code> value will be returned. (<a href='https://github.com/rstudio/htmltools/issues/212'>#212</a>)</p></li>
+<li><p>When retrieving a tag attribute using <code>tagGetAttribute(tag, attr)</code>, <code>NA</code> values will be removed before combining remaining attribute values. If all attribute values are <code>NA</code>, then a single <code>NA</code> value will be returned. (<a href='https://github.com/rstudio/htmltools/issues/212'>#212</a>)</p></li>
 <li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/197'>#197</a>: Fixed rendering of boolean attributes in <code>&lt;script&gt;</code> tags rendered via <code><a href="../reference/renderDependencies.html">renderDependencies()</a></code> (<a href='https://github.com/rstudio/htmltools/issues/197'>#197</a>, thanks <a href='https://github.com/atusy'>@atusy</a>).</p></li>
 <li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/222'>#222</a>: Unnamed attributes are no longer allowed to be appended via <code>tagAppendAttribs()</code>. When trying to print unnamed tag attribs, a better error message is provided. (<a href='https://github.com/rstudio/htmltools/issues/229'>#229</a>)</p></li>
 </ul>
@@ -227,7 +227,7 @@
 <h2 class="hasAnchor">
 <a href="#breaking-changes-1" class="anchor"></a>Breaking Changes</h2>
 <ul>
-<li>Closed <a href='https://github.com/rstudio/htmltools/issues/161'>#161</a>: <code><a href="../reference/parseCssColors.html">parseCssColors(x)</a></code> now requires <code>x</code> to be a character vector (it no longer accepts a <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> of strings) and an error is no longer thrown when <code>mustWork = FALSE</code> and <code>x</code> contains <code>NA</code> value(s). (<a href='https://github.com/rstudio/htmltools/issues/194'>#194</a>)</li>
+<li>Closed <a href='https://github.com/rstudio/htmltools/issues/161'>#161</a>: <code>parseCssColors(x)</code> now requires <code>x</code> to be a character vector (it no longer accepts a <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> of strings) and an error is no longer thrown when <code>mustWork = FALSE</code> and <code>x</code> contains <code>NA</code> value(s). (<a href='https://github.com/rstudio/htmltools/issues/194'>#194</a>)</li>
 </ul>
 </div>
 <div id="bug-fixes-1" class="section level2">
@@ -235,7 +235,7 @@
 <a href="#bug-fixes-1" class="anchor"></a>Bug fixes</h2>
 <ul>
 <li>
-<code><a href="https://rdrr.io/r/base/print.html">print(as.tags(x))</a></code> no longer results in error when <code>x</code> is a generic <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> of tag-like objects. (<a href='https://github.com/rstudio/htmltools/issues/181'>#181</a>)</li>
+<code>print(as.tags(x))</code> no longer results in error when <code>x</code> is a generic <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> of tag-like objects. (<a href='https://github.com/rstudio/htmltools/issues/181'>#181</a>)</li>
 </ul>
 </div>
 </div>
@@ -250,15 +250,15 @@
 <li><p><code><a href="../reference/HTML.html">HTML()</a></code> now takes <code>.noWS</code> argument, which can be used to suppress surrounding whitespace (similar to the new argument for tags in htmltools 0.4.0). (<a href='https://github.com/rstudio/htmltools/issues/154'>#154</a>)</p></li>
 <li><p><code><a href="../reference/css.html">css()</a></code> now returns <code>NULL</code> instead of <code>""</code> when no non-empty properties are specified. (<a href='https://github.com/rstudio/htmltools/issues/145'>#145</a>)</p></li>
 <li>
-<p><code><a href="../reference/save_html.html">save_html(tags$body(...))</a></code> no longer results in double</p>
+<p><code>save_html(tags$body(...))</code> no longer results in double</p>
 
-<p>tags being written to the .html file. (Note that <code><a href="../reference/save_html.html">save_html(tags$html(...))</a></code> is not supported at this time.) (<a href='https://github.com/rstudio/htmltools/issues/145'>#145</a>)</p>
+<p>tags being written to the .html file. (Note that <code>save_html(tags$html(...))</code> is not supported at this time.) (<a href='https://github.com/rstudio/htmltools/issues/145'>#145</a>)</p>
 </li>
 <li><p>Trailing commas now permited in <code>...</code> arguments to <code><a href="../reference/css.html">css()</a></code>, <code><a href="../reference/tagList.html">tagList()</a></code>, and the var-arg mutation functions: <code><a href="../reference/tagAppendAttributes.html">tagAppendAttributes()</a></code>, <code><a href="../reference/tagAppendChild.html">tagSetChildren()</a></code>, and <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code>. (<a href='https://github.com/rstudio/htmltools/issues/145'>#145</a>)</p></li>
 <li><p>Added <code>capturePlot</code> and <code>plotTag</code> functions, for easily creating image files and HTML <img> tags (respectively) from plot expressions. (<a href='https://github.com/rstudio/htmltools/issues/150'>#150</a>)</p></li>
 <li><p>Added <code>parseCssColors</code> function, for normalizing the various CSS color formats into #RRGGBB(AA) strings. (<a href='https://github.com/rstudio/htmltools/issues/155'>#155</a>)</p></li>
 <li><p>Fixed <a href='https://github.com/rstudio/htmltools/issues/156'>#156</a>: Now <code><a href="../reference/htmlPreserve.html">extractPreserveChunks()</a></code> handles strings contain Emoji Unicode strings correctly on Windows. (<a href='https://github.com/rstudio/htmltools/issues/157'>#157</a>)</p></li>
-<li><p>The <code>.noWS</code> parameter for suppressing whitespace can now take an <code>"inside"</code> value (equivalent to <code><a href="https://rdrr.io/r/base/c.html">c("after-start", "before-end")</a></code>). (<a href='https://github.com/rstudio/htmltools/issues/163'>#163</a>)</p></li>
+<li><p>The <code>.noWS</code> parameter for suppressing whitespace can now take an <code>"inside"</code> value (equivalent to <code>c("after-start", "before-end")</code>). (<a href='https://github.com/rstudio/htmltools/issues/163'>#163</a>)</p></li>
 </ul>
 </div>
     <div id="htmltools-040" class="section level1">
@@ -367,17 +367,7 @@
 
 
       <footer>
-      <div class="tidyverse">
-  <p><b>htmltools</b> is an R package developed by <a href='https://rstudio.com'>RStudio</a></p>
-</div>
-
-<div class="author">
-  <p>
-    Developed by Joe Cheng, Carson Sievert, Barret Schloerke, Winston Chang, Yihui Xie, Jeff Allen.
-    Site built with <a href="https://pkgdown.r-lib.org">pkgdown</a>.
-  </p>
-</div>
-
+      
       </footer>
    </div>
 

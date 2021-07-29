@@ -136,7 +136,7 @@
 <div id="query" class="section level2">
 <h2 class="hasAnchor">
 <a href="#query" class="anchor"></a>Query</h2>
-<p><code><a href="../reference/tagQuery.html">tagQuery()</a></code> has numerous methods to select (i.e., query) HTML tag(s). Every query method accepts a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors">CSS selector</a> for targeting particular tags of interest. At the moment, <code><a href="../reference/tagQuery.html">tagQuery()</a></code> only supports a combination of <a href="https://www.w3.org/TR/CSS22/selector.html#type-selectors">type</a> (e.g, <code>div</code>), <a href="https://www.w3.org/TR/CSS22/selector.html#class-html">class</a> (e.g., <code>.my-class</code>), <a href="https://www.w3.org/TR/CSS22/selector.html#id-selectors">id</a> (e.g., <code>#myID</code>), and <a href="https://www.w3.org/TR/CSS22/selector.html#universal-selector">universal</a> (<code><a href="https://rdrr.io/r/base/Arithmetic.html">*</a></code>) selectors within a given <a href="https://www.w3.org/TR/CSS22/selector.html#selector-syntax">simple selector</a>.</p>
+<p><code><a href="../reference/tagQuery.html">tagQuery()</a></code> has numerous methods to select (i.e., query) HTML tag(s). Every query method accepts a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors">CSS selector</a> for targeting particular tags of interest. At the moment, <code><a href="../reference/tagQuery.html">tagQuery()</a></code> only supports a combination of <a href="https://www.w3.org/TR/CSS22/selector.html#type-selectors">type</a> (e.g, <code>div</code>), <a href="https://www.w3.org/TR/CSS22/selector.html#class-html">class</a> (e.g., <code>.my-class</code>), <a href="https://www.w3.org/TR/CSS22/selector.html#id-selectors">id</a> (e.g., <code>#myID</code>), and <a href="https://www.w3.org/TR/CSS22/selector.html#universal-selector">universal</a> (<code>*</code>) selectors within a given <a href="https://www.w3.org/TR/CSS22/selector.html#selector-syntax">simple selector</a>.</p>
 <div id="children" class="section level3">
 <h3 class="hasAnchor">
 <a href="#children" class="anchor"></a>Children</h3>
@@ -193,7 +193,7 @@
 <div id="siblings" class="section level3">
 <h3 class="hasAnchor">
 <a href="#siblings" class="anchor"></a>Siblings</h3>
-<p>Although <code><a href="../reference/tagQuery.html">tagQuery()</a></code> doesn’t (currently) support <a href="https://www.w3schools.com/css/css_combinators.asp">sibling selectors</a> (<code><a href="https://rdrr.io/r/base/Arithmetic.html">+</a></code> and <code><a href="https://rdrr.io/r/base/tilde.html">~</a></code>), it does provide a <code>$sibling()</code> method, which provides essentially the same functionality:</p>
+<p>Although <code><a href="../reference/tagQuery.html">tagQuery()</a></code> doesn’t (currently) support <a href="https://www.w3schools.com/css/css_combinators.asp">sibling selectors</a> (<code>+</code> and <code>~</code>), it does provide a <code>$sibling()</code> method, which provides essentially the same functionality:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; &lt;div&gt;</span>
@@ -248,7 +248,7 @@
 <div id="filter" class="section level3">
 <h3 class="hasAnchor">
 <a href="#filter" class="anchor"></a>Filter</h3>
-<p>The <code>$filter()</code> method can be used to subset selected tags using an R function or CSS selector. When combined with the universal selector (<code><a href="https://rdrr.io/r/base/Arithmetic.html">*</a></code>), <code>$filter()</code> is particularly useful as a workaround for the fact that <code><a href="../reference/tagQuery.html">tagQuery()</a></code> doesn’t fully support the entire CSS selector specification. For example, here’s a workaround for <code><a href="../reference/tagQuery.html">tagQuery()</a></code>’s current lack of support for <a href="https://www.w3.org/TR/CSS22/selector.html#attribute-selectors">attribute selectors</a>:</p>
+<p>The <code>$filter()</code> method can be used to subset selected tags using an R function or CSS selector. When combined with the universal selector (<code>*</code>), <code>$filter()</code> is particularly useful as a workaround for the fact that <code><a href="../reference/tagQuery.html">tagQuery()</a></code> doesn’t fully support the entire CSS selector specification. For example, here’s a workaround for <code><a href="../reference/tagQuery.html">tagQuery()</a></code>’s current lack of support for <a href="https://www.w3.org/TR/CSS22/selector.html#attribute-selectors">attribute selectors</a>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="st">"data-foo"</span> <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; &lt;div&gt;</span>
@@ -443,17 +443,17 @@
     <span class="fu">prepend</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
     <span class="fu">append</span><span class="op">(</span><span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
     <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>,
-  tagAppend <span class="op">=</span> <span class="va">html</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/tagAppendChild.html">tagInsertChildren</a></span><span class="op">(</span>.cssSelector <span class="op">=</span> <span class="st">"p"</span>, after <span class="op">=</span> <span class="fl">0</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  tagAppend <span class="op">=</span> <span class="va">html</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="../reference/tagAppendChild.html">tagInsertChildren</a></span><span class="op">(</span>.cssSelector <span class="op">=</span> <span class="st">"p"</span>, after <span class="op">=</span> <span class="fl">0</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/tagAppendChild.html">tagAppendChildren</a></span><span class="op">(</span>.cssSelector <span class="op">=</span> <span class="st">"p"</span>, <span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,
   check <span class="op">=</span> <span class="cn">FALSE</span>,
   time_unit <span class="op">=</span> <span class="st">"us"</span>
 <span class="op">)</span>
-<span class="co">#&gt; # A tibble: 2 x 6</span>
+<span class="co">#&gt; # A tibble: 2 × 6</span>
 <span class="co">#&gt;   expression   min median `itr/sec` mem_alloc `gc/sec`</span>
 <span class="co">#&gt;   &lt;bch:expr&gt; &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 tagQuery    927.   964.     1031.    11.4KB     10.4</span>
-<span class="co">#&gt; 2 tagAppend  1703.  1780.      553.    50.5KB     10.5</span></code></pre></div>
+<span class="co">#&gt; 1 tagQuery   1091.  1172.      820.    11.4KB     8.28</span>
+<span class="co">#&gt; 2 tagAppend  1987.  2118.      455.    50.5KB     8.35</span></code></pre></div>
 </div>
   </div>
 
@@ -467,18 +467,7 @@
 
 
 
-      <footer><div class="tidyverse">
-  <p><b>htmltools</b> is an R package developed by <a href="https://rstudio.com">RStudio</a></p>
-</div>
-
-<div class="author">
-  <p>
-    Developed by Joe Cheng, Carson Sievert, Barret Schloerke, Winston Chang, Yihui Xie, Jeff Allen.
-    Site built with <a href="https://pkgdown.r-lib.org">pkgdown</a>.
-  </p>
-</div>
-
-      </footer>
+      <footer></footer>
 </div>
 
   

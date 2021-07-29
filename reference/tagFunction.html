@@ -193,55 +193,57 @@ structure and utilize a render function.</p>
     <div class='dont-index'><p><code><a href='tagAddRenderHook.html'>tagAddRenderHook()</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>myDivDep</span> <span class='op'>&lt;-</span> <span class='fu'>tagFunction</span><span class='op'>(</span><span class='kw'>function</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Logic.html'>isTRUE</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"useDep"</span>, <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='fu'><a href='htmlDependency.html'>htmlDependency</a></span><span class='op'>(</span>
-      name <span class='op'>=</span> <span class='st'>"lazy-dependency"</span>,
-      version <span class='op'>=</span> <span class='st'>"1.0"</span>, src <span class='op'>=</span> <span class='st'>""</span>
-    <span class='op'>)</span>
-  <span class='op'>}</span>
-<span class='op'>}</span><span class='op'>)</span>
-<span class='va'>myDiv</span> <span class='op'>&lt;-</span> <span class='fu'><a href='htmlDependencies.html'>attachDependencies</a></span><span class='op'>(</span><span class='fu'><a href='builder.html'>div</a></span><span class='op'>(</span><span class='op'>)</span>, <span class='va'>myDivDep</span><span class='op'>)</span>
-<span class='fu'><a href='renderTags.html'>renderTags</a></span><span class='op'>(</span><span class='va'>myDiv</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $head
-#&gt; 
-#&gt; 
-#&gt; $singletons
-#&gt; character(0)
-#&gt; 
-#&gt; $dependencies
-#&gt; $dependencies[[1]]
-#&gt; List of 10
-#&gt;  $ name      : chr "lazy-dependency"
-#&gt;  $ version   : chr "1.0"
-#&gt;  $ src       :List of 1
-#&gt;   ..$ file: chr ""
-#&gt;  $ meta      : NULL
-#&gt;  $ script    : NULL
-#&gt;  $ stylesheet: NULL
-#&gt;  $ head      : NULL
-#&gt;  $ attachment: NULL
-#&gt;  $ package   : NULL
-#&gt;  $ all_files : logi TRUE
-#&gt;  - attr(*, "class")= chr "html_dependency"
-#&gt; 
-#&gt; 
-#&gt; $html
-#&gt; &lt;div&gt;&lt;/div&gt;
-#&gt; </div><div class='input'><span class='fu'>withr</span><span class='fu'>::</span><span class='fu'><a href='https://withr.r-lib.org/reference/with_options.html'>with_options</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>useDep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>, <span class='fu'><a href='renderTags.html'>renderTags</a></span><span class='op'>(</span><span class='va'>myDiv</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $head
-#&gt; 
-#&gt; 
-#&gt; $singletons
-#&gt; character(0)
-#&gt; 
-#&gt; $dependencies
-#&gt; list()
-#&gt; 
-#&gt; $html
-#&gt; &lt;div&gt;&lt;/div&gt;
-#&gt; </div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>myDivDep</span> <span class='op'>&lt;-</span> <span class='fu'>tagFunction</span><span class='op'>(</span><span class='kw'>function</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Logic.html'>isTRUE</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"useDep"</span>, <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>    <span class='fu'><a href='htmlDependency.html'>htmlDependency</a></span><span class='op'>(</span></span>
+<span class='r-in'>      name <span class='op'>=</span> <span class='st'>"lazy-dependency"</span>,</span>
+<span class='r-in'>      version <span class='op'>=</span> <span class='st'>"1.0"</span>, src <span class='op'>=</span> <span class='st'>""</span></span>
+<span class='r-in'>    <span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>}</span></span>
+<span class='r-in'><span class='op'>}</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>myDiv</span> <span class='op'>&lt;-</span> <span class='fu'><a href='htmlDependencies.html'>attachDependencies</a></span><span class='op'>(</span><span class='fu'><a href='builder.html'>div</a></span><span class='op'>(</span><span class='op'>)</span>, <span class='va'>myDivDep</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='renderTags.html'>renderTags</a></span><span class='op'>(</span><span class='va'>myDiv</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $head</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $singletons</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> character(0)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $dependencies</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $dependencies[[1]]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> List of 10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ name      : chr "lazy-dependency"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ version   : chr "1.0"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ src       :List of 1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   ..$ file: chr ""</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ meta      : NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ script    : NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ stylesheet: NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ head      : NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ attachment: NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ package   : NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $ all_files : logi TRUE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  - attr(*, "class")= chr "html_dependency"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $html</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> &lt;div&gt;&lt;/div&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='fu'>withr</span><span class='fu'>::</span><span class='fu'><a href='https://withr.r-lib.org/reference/with_options.html'>with_options</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>useDep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>, <span class='fu'><a href='renderTags.html'>renderTags</a></span><span class='op'>(</span><span class='va'>myDiv</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $head</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $singletons</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> character(0)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $dependencies</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> list()</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $html</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> &lt;div&gt;&lt;/div&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -252,17 +254,7 @@ structure and utilize a render function.</p>
 
 
       <footer>
-      <div class="tidyverse">
-  <p><b>htmltools</b> is an R package developed by <a href='https://rstudio.com'>RStudio</a></p>
-</div>
-
-<div class="author">
-  <p>
-    Developed by Joe Cheng, Carson Sievert, Barret Schloerke, Winston Chang, Yihui Xie, Jeff Allen.
-    Site built with <a href="https://pkgdown.r-lib.org">pkgdown</a>.
-  </p>
-</div>
-
+      
       </footer>
    </div>
 

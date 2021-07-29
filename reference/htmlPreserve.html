@@ -221,21 +221,22 @@ with a benign but unique string before processing, and undoing those
 substitutions after processing.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># htmlPreserve will prevent "&lt;script&gt;alert(10*2*3);&lt;/script&gt;"</span>
-<span class='co'># from getting an &lt;em&gt; tag inserted in the middle</span>
-<span class='va'>markup</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span>sep <span class='op'>=</span> <span class='st'>"\n"</span>,
-  <span class='st'>"This is *emphasized* text in markdown."</span>,
-  <span class='fu'>htmlPreserve</span><span class='op'>(</span><span class='st'>"&lt;script&gt;alert(10*2*3);&lt;/script&gt;"</span><span class='op'>)</span>,
-  <span class='st'>"Here is some more *emphasized text*."</span>
-<span class='op'>)</span>
-<span class='va'>extracted</span> <span class='op'>&lt;-</span> <span class='fu'>extractPreserveChunks</span><span class='op'>(</span><span class='va'>markup</span><span class='op'>)</span>
-<span class='va'>markup</span> <span class='op'>&lt;-</span> <span class='va'>extracted</span><span class='op'>$</span><span class='va'>value</span>
-<span class='co'># Just think of this next line as Markdown processing</span>
-<span class='va'>output</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span><span class='op'>(</span><span class='st'>"\\*(.*?)\\*"</span>, <span class='st'>"&lt;em&gt;\\1&lt;/em&gt;"</span>, <span class='va'>markup</span><span class='op'>)</span>
-<span class='va'>output</span> <span class='op'>&lt;-</span> <span class='fu'>restorePreserveChunks</span><span class='op'>(</span><span class='va'>output</span>, <span class='va'>extracted</span><span class='op'>$</span><span class='va'>chunks</span><span class='op'>)</span>
-<span class='va'>output</span>
-</div><div class='output co'>#&gt; [1] "This is &lt;em&gt;emphasized&lt;/em&gt; text in markdown.\n&lt;script&gt;alert(10*2*3);&lt;/script&gt;\nHere is some more &lt;em&gt;emphasized text&lt;/em&gt;."</div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># htmlPreserve will prevent "&lt;script&gt;alert(10*2*3);&lt;/script&gt;"</span></span>
+<span class='r-in'><span class='co'># from getting an &lt;em&gt; tag inserted in the middle</span></span>
+<span class='r-in'><span class='va'>markup</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span>sep <span class='op'>=</span> <span class='st'>"\n"</span>,</span>
+<span class='r-in'>  <span class='st'>"This is *emphasized* text in markdown."</span>,</span>
+<span class='r-in'>  <span class='fu'>htmlPreserve</span><span class='op'>(</span><span class='st'>"&lt;script&gt;alert(10*2*3);&lt;/script&gt;"</span><span class='op'>)</span>,</span>
+<span class='r-in'>  <span class='st'>"Here is some more *emphasized text*."</span></span>
+<span class='r-in'><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>extracted</span> <span class='op'>&lt;-</span> <span class='fu'>extractPreserveChunks</span><span class='op'>(</span><span class='va'>markup</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>markup</span> <span class='op'>&lt;-</span> <span class='va'>extracted</span><span class='op'>$</span><span class='va'>value</span></span>
+<span class='r-in'><span class='co'># Just think of this next line as Markdown processing</span></span>
+<span class='r-in'><span class='va'>output</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span><span class='op'>(</span><span class='st'>"\\*(.*?)\\*"</span>, <span class='st'>"&lt;em&gt;\\1&lt;/em&gt;"</span>, <span class='va'>markup</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>output</span> <span class='op'>&lt;-</span> <span class='fu'>restorePreserveChunks</span><span class='op'>(</span><span class='va'>output</span>, <span class='va'>extracted</span><span class='op'>$</span><span class='va'>chunks</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>output</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "This is &lt;em&gt;emphasized&lt;/em&gt; text in markdown.\n&lt;script&gt;alert(10*2*3);&lt;/script&gt;\nHere is some more &lt;em&gt;emphasized text&lt;/em&gt;."</span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -246,17 +247,7 @@ substitutions after processing.</p>
 
 
       <footer>
-      <div class="tidyverse">
-  <p><b>htmltools</b> is an R package developed by <a href='https://rstudio.com'>RStudio</a></p>
-</div>
-
-<div class="author">
-  <p>
-    Developed by Joe Cheng, Carson Sievert, Barret Schloerke, Winston Chang, Yihui Xie, Jeff Allen.
-    Site built with <a href="https://pkgdown.r-lib.org">pkgdown</a>.
-  </p>
-</div>
-
+      
       </footer>
    </div>
 
