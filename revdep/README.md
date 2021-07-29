@@ -1,6 +1,6 @@
 # Revdeps
 
-## Failed to check (37)
+## Failed to check (38)
 
 |package  |version |error |warning |note |
 |:--------|:-------|:-----|:-------|:----|
@@ -37,14 +37,9 @@
 |NA       |?       |      |        |     |
 |NA       |?       |      |        |     |
 |NA       |?       |      |        |     |
+|NA       |?       |      |        |     |
 |trackr   |?       |      |        |     |
 |NA       |?       |      |        |     |
 |NA       |?       |      |        |     |
 |NA       |?       |      |        |     |
-
-## New problems (1)
-
-|package                                |version |error |warning |note |
-|:--------------------------------------|:-------|:-----|:-------|:----|
-|[shinyMobile](problems.md#shinymobile) |0.8.0   |      |__+1__  |     |
 
