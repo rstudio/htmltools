@@ -258,11 +258,8 @@ format.html <- function(x, ...) {
   as.character(x)
 }
 
-normalizeText <- function(text) {
-  if (!is.null(attr(text, "html", TRUE)))
-    text
-  else
-    htmlEscape(text, attribute=FALSE)
+normalizeText <- function(x) {
+  if (isHTML(x)) x else htmlEscape(x, attribute = FALSE)
 }
 
 #' Create a list of tags
@@ -867,7 +864,9 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   textWriter$write(concat8("<", tag$name))
 
   # Convert all attribs to chars explicitly; prevents us from messing up factors
-  attribs <- flattenTagAttribs(lapply(tag$attribs, as.character))
+  attribs <- flattenTagAttribs(
+    lapply(tag$attribs, function(x) if (isHTML(x)) x else as.character(x))
+  )
   attribNames <- names2(attribs)
   if (any(!nzchar(attribNames))) {
     # Can not display attrib without a key
@@ -883,15 +882,16 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     if (length(attribValue) > 1) {
       attribValue <- concat8(attribValue, collapse = " ")
     }
-    if (!is.na(attribValue)) {
+    if (is.na(attribValue)) {
+      textWriter$write(concat8(" ", attrib))
+    } else if (isHTML(attribValue)) {
+      textWriter$write(concat8(" ", attrib, "=", attribValue))
+    } else {
       if (is.logical(attribValue)) {
         attribValue <- tolower(attribValue)
       }
-      text <- htmlEscape(attribValue, attribute=TRUE)
-      textWriter$write(concat8(" ", attrib,"=\"", text, "\""))
-    }
-    else {
-      textWriter$write(concat8(" ", attrib))
+      text <- htmlEscape(attribValue, attribute = TRUE)
+      textWriter$write(concat8(" ", attrib, "=\"", text, "\""))
     }
   }
 
@@ -934,6 +934,10 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     textWriter$eatWS()
   }
   textWriter$writeWS(eol)
+}
+
+isHTML <- function(x) {
+  isTRUE(attr(x, "html", exact = TRUE))
 }
 
 #' Render tags into HTML
