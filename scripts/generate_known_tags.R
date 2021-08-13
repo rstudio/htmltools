@@ -71,6 +71,9 @@ setdiff(svg_tags, cran_tags)
 # combine old and new tags so that old tags are not lost
 save_tags <- c(new_tags, cran_tags) %>% unique() %>% sort()
 
+# Save a JSON version so other languages can read them in easily
+cat(jsonlite::toJSON(save_tags), file = "scripts/known_tags.json")
+
 save_line <- paste0(
   format(paste0("  \"", save_tags, "\"", ifelse(seq_along(save_tags) == length(save_tags), "", ",")), justify = "left"), "#",
   ifelse(save_tags %in% html_tags, " html", "     "),
