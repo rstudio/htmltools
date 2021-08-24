@@ -101,11 +101,14 @@ jobs:
         if: runner.os == 'macOS' && matrix.config.r == 'devel'
         run: |
           brew install libxt
+      # xquartz and cairo are needed for Cairo package.
+      # harfbuzz and fribidi are needed for textshaping package.
       - name: Mac systemdeps
         if: runner.os == 'macOS'
         run: |
           brew install --cask xquartz
           brew install cairo
+          brew install harfbuzz fribidi
 
       - name: Install dependencies
         run: |
