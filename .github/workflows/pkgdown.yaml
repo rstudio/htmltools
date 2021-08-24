@@ -55,7 +55,8 @@ jobs:
       - name: Install dependencies
         run: |
           pak::local_install_dev_deps(upgrade = TRUE, dependencies = c("all", "Config/Needs/website"))
-          pak::pkg_install(c("pkgdown", "bench", "rstudio/quillt"))
+          pak::pkg_install("rstudio/quillt")
+          pak::pkg_install(c("pkgdown", "bench"))
         shell: Rscript {0}
 
       - name: Install package
