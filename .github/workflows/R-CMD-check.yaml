@@ -95,6 +95,12 @@ jobs:
           pak::pkg_system_requirements("rcmdcheck", execute = TRUE)
         shell: Rscript {0}
 
+      # https://stackoverflow.com/a/66568545/591574
+      #> fatal error: 'X11/Intrinsic.h' file not found
+      - name: Install Cairo macOS R devel dependency
+        if: runner.os == 'macOS' && matrix.config.r == 'devel'
+        run: |
+          brew install libxt
       - name: Mac systemdeps
         if: runner.os == 'macOS'
         run: |
