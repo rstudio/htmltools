@@ -170,10 +170,17 @@
 <h1 class="page-header" data-toc-text="0.5.2.9000">
 <a href="#htmltools-0529000" class="anchor"></a>htmltools 0.5.2.9000<small> Unreleased </small>
 </h1>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor"></a>Bug fixes</h2>
+<ul>
+<li>Closed <a href='https://github.com/rstudio/htmltools/issues/290'>#290</a>: htmltools previously did not specify which version of fastmap to use, and would fail to install with an old version of fastmap. (<a href='https://github.com/rstudio/htmltools/issues/291'>#291</a>)</li>
+</ul>
+</div>
 </div>
     <div id="htmltools-052" class="section level1">
 <h1 class="page-header" data-toc-text="0.5.2">
-<a href="#htmltools-052" class="anchor"></a>htmltools 0.5.2<small> Unreleased </small>
+<a href="#htmltools-052" class="anchor"></a>htmltools 0.5.2<small> 2021-08-25 </small>
 </h1>
 <div id="breaking-changes" class="section level2">
 <h2 class="hasAnchor">
@@ -194,9 +201,9 @@
 <li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/225'>#225</a>: Added <code><a href="../reference/tagAppendChild.html">tagInsertChildren()</a></code> to be able to insert child tag objects at a particular location. (<a href='https://github.com/rstudio/htmltools/issues/224'>#224</a>)</p></li>
 </ul>
 </div>
-<div id="bug-fixes" class="section level2">
+<div id="bug-fixes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes" class="anchor"></a>Bug Fixes</h2>
+<a href="#bug-fixes-1" class="anchor"></a>Bug Fixes</h2>
 <ul>
 <li><p>When retrieving a tag attribute using <code>tagGetAttribute(tag, attr)</code>, <code>NA</code> values will be removed before combining remaining attribute values. If all attribute values are <code>NA</code>, then a single <code>NA</code> value will be returned. (<a href='https://github.com/rstudio/htmltools/issues/212'>#212</a>)</p></li>
 <li><p>Closed <a href='https://github.com/rstudio/htmltools/issues/197'>#197</a>: Fixed rendering of boolean attributes in <code>&lt;script&gt;</code> tags rendered via <code><a href="../reference/renderDependencies.html">renderDependencies()</a></code> (<a href='https://github.com/rstudio/htmltools/issues/197'>#197</a>, thanks <a href='https://github.com/atusy'>@atusy</a>).</p></li>
@@ -235,9 +242,9 @@
 <li>Closed <a href='https://github.com/rstudio/htmltools/issues/161'>#161</a>: <code>parseCssColors(x)</code> now requires <code>x</code> to be a character vector (it no longer accepts a <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> of strings) and an error is no longer thrown when <code>mustWork = FALSE</code> and <code>x</code> contains <code>NA</code> value(s). (<a href='https://github.com/rstudio/htmltools/issues/194'>#194</a>)</li>
 </ul>
 </div>
-<div id="bug-fixes-1" class="section level2">
+<div id="bug-fixes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-1" class="anchor"></a>Bug fixes</h2>
+<a href="#bug-fixes-2" class="anchor"></a>Bug fixes</h2>
 <ul>
 <li>
 <code>print(as.tags(x))</code> no longer results in error when <code>x</code> is a generic <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> of tag-like objects. (<a href='https://github.com/rstudio/htmltools/issues/181'>#181</a>)</li>
