@@ -1,5 +1,9 @@
 # htmltools 0.5.2.9000
 
+## Bug fixes
+
+* Closed #290: htmltools previously did not specify which version of fastmap to use, and would fail to install with an old version of fastmap. (#291)
+
 # htmltools 0.5.2
 
 ## Breaking Changes
