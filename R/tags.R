@@ -258,11 +258,22 @@ format.html <- function(x, ...) {
   as.character(x)
 }
 
-normalizeText <- function(text) {
-  if (!is.null(attr(text, "html", TRUE)))
-    text
-  else
-    htmlEscape(text, attribute=FALSE)
+normalizeText <- function(x, isJsxTemplate = FALSE) {
+  if (isHTML(x)) {
+    return(x)
+  }
+  if (!withinJsxTag(x)) {
+    return(htmlEscape(x, attribute = FALSE))
+  }
+  if (isJsxExpr(x)) {
+    return(concat8(if (isJsxTemplate) "$", "{", x, "}"))
+  }
+  # https://github.com/facebook/react/issues/1545
+  if (isJsxTemplate) {
+    gsub('(\\$\\{)', "${'${'}", x)
+  } else {
+    gsub('([{}]+)', "{'\\1'}", x)
+  }
 }
 
 #' Create a list of tags
@@ -811,6 +822,190 @@ tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL) {
   structure(st, class = "shiny.tag")
 }
 
+#' JSX components
+#'
+#' Create JSX tag(s) that can be used alongside other [tag()]s and/or [HTML()]. Tags can be rendered
+#'
+#' @export
+preactTag <- function(name, allowedProps = NULL) {
+  jsxTag(name, allowedProps = allowedProps, toHTML = preactHtml, template = "html")
+}
+
+preactHtml <- function(x) {
+  id <- randomId()
+  res <- tagList(
+    tags$div(id = id),
+    # TODO: avoid the inline script tag (for security)
+    tags$script(
+      HTML(sprintf("var html = htm.bind(preact.h); preact.render(%s, document.getElementById('%s'));", as.character(x), id))
+    )
+  )
+  res <- attachDependencies(res, preactHtmDeps())
+  attachDependencies(res, findDependencies(x), append = TRUE)
+}
+
+preactHtmDeps <- function() {
+  list(
+    libDependency("preact", script = "preact.min.js"),
+    libDependency("htm", script = "htm.umd.js")
+  )
+}
+
+#' @rdname preactTag
+#' @export
+reactTag <- function(name, allowedProps = NULL) {
+  if (system.file(package = "V8") == "") {
+    stop("`reactTag()` requires the V8 package. Either install V8 or use `preactTag()` instead.")
+  }
+  jsxTag(name, allowedProps = allowedProps, toHTML = reactHtml, template = NULL)
+}
+
+reactHtml <- function(x) {
+  id <- randomId()
+  res <- tagList(
+    tags$div(id = id),
+    # TODO: avoid the inline script tag (for security)
+    tags$script(
+      HTML(sprintf("ReactDOM.render(%s, document.getElementById('%s'));", babelTransform(as.character(x)), id))
+    )
+  )
+  res <- attachDependencies(res, reactDeps())
+  attachDependencies(res, findDependencies(x), append = TRUE)
+}
+
+babelTransform <- function(code) {
+  ctx <- V8::v8()
+  ctx$source(system.file("lib/@babel/standalone/babel.min.js", package = "htmltools"))
+  ctx$assign("code", code)
+  # TODO:
+  # 1. Why is env not available as a preset even though their docs suggest it? https://babeljs.io/docs/en/babel-standalone
+  # 2. allow presets to be customized?
+  sub(";$", "", ctx$get('Babel.transform(code, {presets: [["es2015", {modules: false}],"react"]}).code'))
+}
+
+reactDeps <- function() {
+  list(
+    libDependency("react", "react.production.min.js"),
+    libDependency("react-dom", "react-dom.production.min.js")
+  )
+}
+
+libDependency <- function(pkg, ...) {
+  htmlDependency(
+    name = pkg,
+    version = versions[[pkg]],
+    package = "htmltools",
+    src = file.path("lib", pkg),
+    ...
+  )
+}
+
+#' Create JSX tags
+#'
+#' Create JSX tag(s) that can be embedded inside a larger collection of HTML [tag()]s.
+#'
+#' @param name JSX component name as a string. Must start with a capital letter.
+#' @param allowedProps character string of prop names that the component supports.
+#' By default, any props are allowed.
+#' @param toHTML a function to transform the JSX tag into valid [tag()](s) or
+#'   [HTML()]. The default transforms JSX tags into a script tag that depends on
+#'   [preact](https://github.com/preactjs/preact) and
+#'   [htm](https://github.com/developit/htm) for rendering.
+#' @param template whether or not to wrap JSX tag(s) in a [template
+#'   literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals),
+#'   which has the benefit of avoiding [transpilation of JSX at
+#'   runtime](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx), but
+#'   has the downside of [not working in
+#'   IE11](https://caniuse.com/template-literals). If you'd prefer a more
+#'   classic and powerful approach to JSX rendering, consider setting this value
+#'   to `NULL` and defining `toHTML` to transpile via Babel.
+#' @export
+#' @return A function that accepts positional arguments (i.e., children) and named arguments (i.e., attributes) and returns a tag object.
+#' @examples
+#' Foo <- jsxTag("Foo")
+#' Foo("I like", bar = JSX(tags$i("turtles")))
+jsxTag <- function(name, allowedProps = NULL, toHTML, template) {
+  if (!grepl("^[[:upper:]]|\\.[[:upper:]]", name)) {
+    stop("JSX tag names must start with a capital letter: ", name)
+  }
+  if (!is.character(allowedProps %||% "")) {
+    stop("`allowedProps` must be NULL or a character vector.")
+  }
+  if (!is.function(toHTML) || length(formals(toHTML)) < 1) {
+    stop("`toHTML` must be a function of length 1")
+  }
+  if (!rlang::is_scalar_character(template %||% "")) {
+    stop("`template` must be NULL or a string.")
+  }
+
+  function(..., .noWS = NULL) {
+    args <- dots_list(...)
+    if (length(allowedProps)) {
+      props <- names2(args)
+      badProps <- nzchar(props) & !(props %in% allowedProps)
+      if (any(badProps)) {
+        stop(
+          "The ", name, " JSX tag doesn't allow for these props (i.e., attributes): ",
+          paste(props[badProps], collapse = ", "), call. = FALSE
+        )
+      }
+    }
+
+    setJsxFlags <- function(x) {
+      # Flag to know when to escape {} (or ${}) in text
+      attr(x, "_within_jsx") <- TRUE
+      # The root JSX tag has final say on how the tree gets rendered
+      if (isJsxTag(x)) {
+        x$`_template` <- template
+        x$`_toHTML` <- NULL
+      }
+      x
+    }
+
+    x <- rewriteTags(
+      tag(name, args, .noWS = .noWS),
+      setJsxFlags, preorder = TRUE
+    )
+    x$attribs <- lapply(x$attribs, setJsxFlags)
+
+    class(x) <- c("jsx.tag", class(x))
+    x$`_template` <- template
+    x$`_toHTML` <- toHTML
+    x
+  }
+}
+
+#' @rdname jsxTag
+#' @export
+JSX <- function(...) {
+  x <- paste0(..., collapse = "\n")
+  attr(x, "JSX") <- TRUE
+  x
+}
+
+isJsxTag <- function(x) {
+  inherits(x, "jsx.tag")
+}
+
+isJsxExpr <- function(x) {
+  isTRUE(attr(x, "JSX", exact = TRUE))
+}
+
+withinJsxTag <- function(x) {
+  isTRUE(attr(x, "_within_jsx", exact = TRUE))
+}
+
+#' @export
+print.jsx.tag <- function(x) {
+  cat("<!--- HTML result --->\n")
+  print.shiny.tag(x)
+  cat("\n\n/* JSX Tag */\n")
+  print.shiny.tag(
+    jsxTag(x$name, toHTML = identity, template = NULL)(!!!x$attribs, x$children)
+  )
+}
+
+
 isTagList <- function(x) {
   is.list(x) && (inherits(x, "shiny.tag.list") || identical(class(x), "list"))
 }
@@ -827,13 +1022,22 @@ validateNoWS <- function(.noWS) {
 tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
   if (length(tag) == 0)
-    return (NULL)
+    return(NULL)
+
+  isJsx <- isJsxTag(tag) || withinJsxTag(tag)
 
   # optionally process a list of tags
   if (!isTag(tag) && isTagList(tag)) {
     tag <- dropNullsOrEmpty(flattenTags(tag))
-    lapply(tag, tagWrite, textWriter, indent)
-    return (NULL)
+    if (!isJsx) {
+      lapply(tag, tagWrite, textWriter, indent)
+      return(NULL)
+    }
+    # HTML fragments appear to 'just work' for template literals,
+    # but for 'classic' JSX, we must wrap tag lists in <>
+    if (!isTRUE(tag$`_template`)) {
+      tag <- tag("", tag)
+    }
   }
 
   nextIndent <- if (is.numeric(indent)) indent + 1 else indent
@@ -863,12 +1067,16 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     textWriter$eatWS()
   }
 
-  # write tag name
-  textWriter$write(concat8("<", tag$name))
+  # start the tag
+  name <- tag$name
+  isJsxTemplate <- isJsxTag(tag) && isTRUE(nzchar(tag$`_template`))
+  if (isJsxTemplate) {
+    textWriter$write(concat8(tag$`_template`, "`<${", name, "}"))
+  } else {
+    textWriter$write(concat8("<", name))
+  }
 
-  # Convert all attribs to chars explicitly; prevents us from messing up factors
-  attribs <- flattenTagAttribs(lapply(tag$attribs, as.character))
-  attribNames <- names2(attribs)
+  attribNames <- unique(names2(tag$attribs))
   if (any(!nzchar(attribNames))) {
     # Can not display attrib without a key
     stop(
@@ -878,21 +1086,44 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
   }
 
   # write attributes
-  for (attrib in attribNames) {
-    attribValue <- attribs[[attrib]]
-    if (length(attribValue) > 1) {
-      attribValue <- concat8(attribValue, collapse = " ")
+  attribs <- flattenTagAttribs(tag$attribs)
+  for (nm in attribNames) {
+    val <- attribs[[nm]]
+    if (is.logical(val)) {
+      val <- tolower(val)
     }
-    if (!is.na(attribValue)) {
-      if (is.logical(attribValue)) {
-        attribValue <- tolower(attribValue)
+    textWriter$write(concat8(" ", nm))
+    if (isTRUE(is.na(val))) {
+      next
+    }
+    textWriter$write('=')
+    if (!isJsx) {
+      val <- paste(as.character(val), collapse = " ")
+      textWriter$write(concat8('"', htmlEscape(val, attribute = TRUE), '"'))
+      next
+    }
+    writeJsx <- function(val) {
+      textWriter$write(concat8(if (isJsxTemplate) '$', '{', val, '}'))
+    }
+    if (isJsxExpr(val)) {
+      writeJsx(val)
+      next
+    }
+    if (isTag(val) || isTagList(val)) {
+      if (!isJsxTemplate || isJsxTag(val)) {
+        val <- as.character(val)
+      } else {
+        val <- paste0(tag$`_template`, "`", as.character(val), "`")
       }
-      text <- htmlEscape(attribValue, attribute=TRUE)
-      textWriter$write(concat8(" ", attrib,"=\"", text, "\""))
+      writeJsx(val)
+      next
     }
-    else {
-      textWriter$write(concat8(" ", attrib))
+    if (rlang::is_scalar_character(val)) {
+      val <- paste0('"', val, '"')
+    } else {
+      val <- jsonlite::toJSON(val, auto_unbox = TRUE)
     }
+    writeJsx(val)
   }
 
   # write any children
@@ -902,38 +1133,44 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
 
     # special case for a single child text node (skip newlines and indentation)
     if ((length(children) == 1) && is.character(children[[1]]) ) {
-      textWriter$write(concat8(normalizeText(children[[1]]), "</", tag$name, ">"))
+      child <- normalizeText(children[[1]], isJsxTemplate)
+      textWriter$write(concat8(child, "</", name, ">"))
     }
     else {
       if ("after-begin" %in% .noWS || "inside" %in% .noWS) {
         textWriter$eatWS()
       }
-      textWriter$writeWS("\n")
+      textWriter$writeWS(eol)
       for (child in children)
         tagWrite(child, textWriter, nextIndent)
       textWriter$writeWS(indentText)
       if ("before-end" %in% .noWS || "inside" %in% .noWS) {
         textWriter$eatWS()
       }
-      textWriter$write(concat8("</", tag$name, ">"))
+      textWriter$write(concat8("</", name, ">"))
     }
   }
   else {
     # only self-close void elements
     # (see: http://dev.w3.org/html5/spec/single-page.html#void-elements)
-    if (tag$name %in% c("area", "base", "br", "col", "command", "embed", "hr",
+    if (name %in% c("area", "base", "br", "col", "command", "embed", "hr",
       "img", "input", "keygen", "link", "meta", "param",
       "source", "track", "wbr")) {
       textWriter$write("/>")
     }
     else {
-      textWriter$write(concat8("></", tag$name, ">"))
+      textWriter$write(concat8("></", name, ">"))
     }
   }
   if ("after" %in% .noWS || "outside" %in% .noWS) {
     textWriter$eatWS()
   }
+  if (isJsxTemplate) textWriter$write("`")
   textWriter$writeWS(eol)
+}
+
+isHTML <- function(x) {
+  isTRUE(attr(x, "html", exact = TRUE))
 }
 
 #' Render tags into HTML
@@ -1237,6 +1474,13 @@ withTags <- function(code, .noWS = NULL) {
 # Make sure any objects in the tree that can be converted to tags, have been
 tagify <- function(x) {
   rewriteTags(x, function(uiObj) {
+    if (isJsxTag(uiObj)) {
+      toHTML <- uiObj$`_toHTML`
+      uiObj$`_toHTML` <- NULL
+      if (is.function(toHTML)) {
+        uiObj <- toHTML(uiObj)
+      }
+    }
     if (isResolvedTag(uiObj) || isTagList(uiObj) || is.character(uiObj))
       return(uiObj)
     else

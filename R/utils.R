@@ -148,3 +148,27 @@ anyUnnamed <- function(x) {
   # List with name attribute; check for any ""
   any(!nzchar(nms))
 }
+
+removeClass <- function(x, cls) {
+  oldClass(x) <- setdiff(oldClass(x), cls)
+  x
+}
+
+# static import of htmlwidgets:::createWidgetId
+.globals <- new.env(parent = emptyenv())
+randomId <- function(bytes = 10) {
+  sysSeed <- .GlobalEnv$.Random.seed
+  if (!is.null(.globals$idSeed)) {
+    .GlobalEnv$.Random.seed <- .globals$idSeed
+  }
+  on.exit({
+    .globals$idSeed <- .GlobalEnv$.Random.seed
+    if (!is.null(sysSeed)) {
+      .GlobalEnv$.Random.seed <- sysSeed
+    } else {
+      rm(".Random.seed", envir = .GlobalEnv)
+    }
+  })
+  hex <- as.hexmode(sample(256, bytes, replace = TRUE) - 1)
+  paste(format(hex, width = 2), collapse = "")
+}
