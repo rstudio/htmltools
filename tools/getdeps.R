@@ -22,11 +22,11 @@ download_to_lib <- function(pkg, files) {
 }
 
 # TODO: include esm and source maps (for umd)
-download_to_lib("preact", file.path("dist", c("preact.min.js", "preact.min.js.map")))
-download_to_lib("htm", "dist/htm.umd.js")
+#download_to_lib("preact", file.path("dist", c("preact.min.js", "preact.min.js.map")))
+#download_to_lib("htm", "dist/htm.umd.js")
 download_to_lib("react", "umd/react.production.min.js")
 download_to_lib("react-dom", "umd/react-dom.production.min.js")
-download_to_lib("@babel/standalone", "babel.min.js")
+#download_to_lib("@babel/standalone", "babel.min.js")
 
 
 cat(

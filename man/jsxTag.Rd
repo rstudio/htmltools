@@ -5,7 +5,7 @@
 \alias{JSX}
 \title{Create JSX tags}
 \usage{
-jsxTag(name, allowedProps = NULL, toHTML, template)
+jsxTag(name, allowedProps = NULL)
 
 JSX(...)
 }
@@ -20,9 +20,11 @@ By default, any props are allowed.}
 \href{https://github.com/preactjs/preact}{preact} and
 \href{https://github.com/developit/htm}{htm} for rendering.}
 
-\item{template}{if a non-zero character string is provided, JSX tags are
-wrapped up in a \href{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals}{template literal}, which removes the need to \href{https://babeljs.io/docs/en/babel-plugin-transform-react-jsx}{transpile via Babel}, but has the downside of \href{https://caniuse.com/template-literals}{not working in IE11}. If you'd prefer a more classic and powerful approach to JSX rendering,
-consider setting this value to \code{NULL} and defining \code{toHTML} to transpile via Babel}
+\item{template}{whether or not to wrap JSX tag(s) in a \href{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals}{template literal},
+which has the benefit of avoiding \href{https://babeljs.io/docs/en/babel-plugin-transform-react-jsx}{transpilation of JSX at runtime}, but
+has the downside of \href{https://caniuse.com/template-literals}{not working in IE11}. If you'd prefer a more
+classic and powerful approach to JSX rendering, consider setting this value
+to \code{NULL} and defining \code{toHTML} to transpile via Babel.}
 }
 \value{
 A function that accepts positional arguments (i.e., children) and named arguments (i.e., attributes) and returns a tag object.
