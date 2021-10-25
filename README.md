@@ -34,7 +34,7 @@ remotes::install_github("rstudio/htmltools")
 
 [This Shiny article](https://shiny.rstudio.com/articles/html-tags.html) provides a great introduction to `{htmltools}` (even if you're not interested in Shiny). As you'll learn in that article, the general foundation that `{htmltools}` provides allows other R packages (e.g., [`{htmlwidgets}`](http://www.htmlwidgets.org/), [`{crosstalk}`](https://rstudio.github.io/crosstalk/), etc.) to provide "HTML components" in R that users can manipulate and combine in ways the component authors didn't foresee.
 
-For example, as described in depth [here](https://plotly-r.com/arranging-views.html#arranging-htmlwidgets), `{htmltools}` makes it is fairly easy to arrange numerous `{htmlwidgets}` (e.g., `{plotly}` graphs) into a single static HTML webpage:
+For example, as described in depth [here](https://plotly-r.com/arranging-views.html#arranging-htmlwidgets), `{htmltools}` makes it fairly easy to arrange numerous `{htmlwidgets}` (e.g., `{plotly}` graphs) into a single static HTML webpage:
 
 ```r
 library(htmltools)
