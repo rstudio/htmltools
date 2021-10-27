@@ -48,7 +48,7 @@ browsable(tagList(
   <img src="man/figures/plotly-taglist.png" width="60%" />
 </div>
 
-Also, thanks to `tagQuery()`, it fairly easy to query and manipulate the underlying HTML structure of components. See the [`tagQuery()` article](https://rstudio.github.io/htmltools//articles/tagQuery.html) to learn more.
+Also, thanks to `tagQuery()`, it is fairly easy to query and manipulate the underlying HTML structure of components. See the [`tagQuery()` article](https://rstudio.github.io/htmltools//articles/tagQuery.html) to learn more.
 
 
 ## Learn more
