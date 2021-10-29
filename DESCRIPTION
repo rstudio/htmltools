@@ -48,3 +48,5 @@ Collate:
     'tags.R'
     'template.R'
 Roxygen: list(markdown = TRUE)
+Config/Needs/website:
+    bench
