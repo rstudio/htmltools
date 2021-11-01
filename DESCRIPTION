@@ -49,4 +49,5 @@ Collate:
     'template.R'
 Roxygen: list(markdown = TRUE)
 Config/Needs/website:
+    rstudio/quillt,
     bench
