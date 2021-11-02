@@ -12,7 +12,7 @@ findDep <- function(x, name, version) {
 }
 
 test_that("Code blocks are evaluated and rendered correctly", {
-  template <- htmlTemplate("template-document.html",
+  template <- htmlTemplate(test_path("template-document.html"),
     x = div(class = "foo", "bar")
   )
   html <- renderDocument(template)
@@ -29,7 +29,7 @@ test_that("Code blocks are evaluated and rendered correctly", {
 })
 
 test_template <- function(){
-  template <- htmlTemplate("template-document.html", x = "")
+  template <- htmlTemplate(test_path("template-document.html"), x = "")
   html <- renderDocument(template)
   expect_identical(Encoding(html), "UTF-8")
 
@@ -66,7 +66,7 @@ test_that("UTF-8 characters in template head but not body", {
     tags$head(tags$script("alert('中文')")),
     "test"
   )
-  html <- htmlTemplate("template-basic.html", body = ui)
+  html <- htmlTemplate(test_path("template-basic.html"), body = ui)
   res <- renderDocument(html)
   expect_identical(Encoding(res), "UTF-8")
   expect_true(grepl("中文", res, fixed = TRUE))
@@ -76,7 +76,7 @@ test_that("UTF-8 characters in template head but not body", {
     tags$head(tags$script("alert('á')")),
     "test"
   )
-  html <- htmlTemplate("template-basic.html", body = ui)
+  html <- htmlTemplate(test_path("template-basic.html"), body = ui)
   res <- renderDocument(html)
   expect_identical(Encoding(res), "UTF-8")
   expect_true(grepl("á", res, fixed = TRUE))
@@ -86,7 +86,7 @@ test_that("Dependencies are added properly", {
   dep <- htmlDependency("d3", "3.5.10", c(href="shared"), script = "d3.js")
 
   # Add dependency by inserting a tag with a dependency
-  template <- htmlTemplate("template-document.html",
+  template <- htmlTemplate(test_path("template-document.html"),
     x = attachDependencies(div(), dep)
   )
   html <- renderDocument(template)
@@ -94,7 +94,7 @@ test_that("Dependencies are added properly", {
   expect_true(grepl('<script src="shared/d3.js"></script>', html, fixed = TRUE))
 
   # Add dependency via a renderDocument
-  template <- htmlTemplate("template-document.html", x = "")
+  template <- htmlTemplate(test_path("template-document.html"), x = "")
   html <- renderDocument(template, dep)
   expect_true(findDep(html, "d3", "3.5.10"))
   expect_true(grepl('<script src="shared/d3.js"></script>', html, fixed = TRUE))
@@ -107,7 +107,7 @@ test_that("Dependencies can be suppressed", {
   dep <- htmlDependency("jquery", "1.11.3", c(href="shared"), script = "jquery.js")
 
   # Add dependency by inserting a tag with a dependency
-  template <- htmlTemplate("template-document.html",
+  template <- htmlTemplate(test_path("template-document.html"),
     x = attachDependencies(div(), dep)
   )
   html <- renderDocument(template)
@@ -115,7 +115,7 @@ test_that("Dependencies can be suppressed", {
   expect_false(grepl('<script[^>]+jquery[^>]+>', html))
 
   # Add dependency via a renderDocument
-  template <- htmlTemplate("template-document.html", x = "")
+  template <- htmlTemplate(test_path("template-document.html"), x = "")
   html <- renderDocument(template, dep)
   expect_true(findDep(html, "jquery", "9999"))
   expect_false(grepl('<script[^>]+jquery[^>]+>', html))
