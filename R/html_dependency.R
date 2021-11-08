@@ -328,7 +328,7 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   }
   # resolve the relative file path to absolute path in package
   if (!is.null(dependency$package))
-    dir <- system.file(dir, package = dependency$package)
+    dir <- system_file(dir, package = dependency$package)
 
   if (length(outputDir) != 1 || outputDir %in% c("", "/"))
     stop('outputDir must be of length 1 and cannot be "" or "/"')

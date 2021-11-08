@@ -1,3 +1,6 @@
+# @staticimports pkg:staticimports
+#  system_file is_installed
+
 # Implements a "whitespace eating" writer.
 #
 # WSTextWriter relies on the caller distinguishing between writes of important
