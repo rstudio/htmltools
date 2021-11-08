@@ -42,7 +42,7 @@ Collate:
     'images.R'
     'known_tags.R'
     'selector.R'
-    'shim.R'
+    'staticimports.R'
     'tag_query.R'
     'utils.R'
     'tags.R'
