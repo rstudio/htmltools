@@ -13,6 +13,8 @@
 
 * Closed #225: Added `tagInsertChildren()` to be able to insert child tag objects at a particular location. (#224)
 
+* `copyDependencyToDir()` no longer creates empty directories for dependencies that do not have any files. (@gadenbuie, #276)
+
 ## Bug Fixes
 
 * Closed #197: Fixed rendering of boolean attributes in `<script>` tags rendered via `renderDependencies()` (#197, thanks @atusy).
