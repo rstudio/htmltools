@@ -342,7 +342,7 @@ test_that("copyDependencyToDir() doesn't create an empty directory", {
   dir.create(tmp_rmd)
   on.exit(unlink(tmp_rmd), add = TRUE)
 
-  empty <-   htmltools::htmlDependency(
+  empty <- htmltools::htmlDependency(
     name = "empty",
     version = "9.9.9",
     src = tmp_dep,
