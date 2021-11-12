@@ -357,6 +357,14 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   files <- if (dependency$all_files) list.files(dir) else {
     unlist(dependency[c('script', 'stylesheet', 'attachment')])
   }
+
+  if (length(files) == 0) {
+    # This dependency doesn't include any files
+    # no need to copy and we can clean up the target directory
+    unlink(target_dir, recursive = TRUE)
+    return(dependency)
+  }
+
   srcfiles <- file.path(dir, files)
   if (any(!file.exists(srcfiles))) {
     stop(
@@ -365,12 +373,6 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
         paste(srcfiles, collapse = "', '")
       )
     )
-  }
-  if (!length(srcfiles)) {
-    # This dependency doesn't include any src files
-    # no need to copy and we can clean up the target directory
-    unlink(target_dir, recursive = TRUE)
-    return(dependency)
   }
 
   destfiles <- file.path(target_dir, files)
