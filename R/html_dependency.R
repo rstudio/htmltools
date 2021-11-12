@@ -374,7 +374,6 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
       )
     )
   }
-
   destfiles <- file.path(target_dir, files)
   isdir <- file.info(srcfiles)$isdir
   destfiles <- ifelse(isdir, dirname(destfiles), destfiles)
