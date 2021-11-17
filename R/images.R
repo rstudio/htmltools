@@ -192,9 +192,9 @@ plotTag <- function(expr, alt, device = defaultPngDevice(), width = 400, height 
 defaultPngDevice <- function() {
   if (capabilities("aqua")) {
     grDevices::png
-  } else if (system.file(package = "ragg") != "") {
+  } else if (is_installed("ragg")) {
     ragg::agg_png
-  } else if (system.file(package = "Cairo") != "") {
+  } else if (is_installed("Cairo")) {
     Cairo::CairoPNG
   } else {
     grDevices::png

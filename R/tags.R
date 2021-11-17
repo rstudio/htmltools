@@ -103,7 +103,7 @@ resolveDependencies <- function(dependencies, resolvePackageDir = TRUE) {
     dep <- deps[[sorted[[1]]]]
     if (resolvePackageDir && !is.null(dep$package)) {
       dir <- dep$src$file
-      if (!is.null(dir)) dep$src$file <- system.file(dir, package = dep$package)
+      if (!is.null(dir)) dep$src$file <- system_file(dir, package = dep$package)
       dep$package <- NULL
     }
     dep
