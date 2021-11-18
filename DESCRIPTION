@@ -1,7 +1,7 @@
 Package: htmltools
 Type: Package
 Title: Tools for HTML
-Version: 0.5.1.9005
+Version: 0.5.2.9000
 Authors@R: c(
   person("Joe", "Cheng", role = "aut", email = "joe@rstudio.com"),
   person("Carson", "Sievert", role = c("aut", "cre"), email = "carson@rstudio.com", comment = c(ORCID = "0000-0002-4958-2844")),
@@ -19,8 +19,8 @@ Imports:
     digest,
     grDevices,
     base64enc,
-    rlang (>= 0.4.11.9000),
-    fastmap
+    rlang (>= 0.4.10),
+    fastmap (>= 1.1.0)
 Suggests:
     markdown,
     testthat,
@@ -28,8 +28,6 @@ Suggests:
     Cairo,
     ragg,
     shiny
-Remotes:
-    r-lib/rlang
 Enhances: knitr
 License: GPL (>= 2)
 URL: https://github.com/rstudio/htmltools
@@ -44,9 +42,12 @@ Collate:
     'images.R'
     'known_tags.R'
     'selector.R'
-    'shim.R'
+    'staticimports.R'
     'tag_query.R'
     'utils.R'
     'tags.R'
     'template.R'
 Roxygen: list(markdown = TRUE)
+Config/Needs/website:
+    rstudio/quillt,
+    bench

@@ -138,12 +138,13 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
 #'
 #' if (interactive()) img
 #'
-#'
-#' svg <- plotTag(plot(pressure), "A plot of the 'pressure' dataset",
-#'   device = grDevices::svg, width = 375, height = 275, pixelratio = 1/72,
-#'   mimeType = "image/svg+xml")
-#'
-#' if (interactive()) svg
+#' if (interactive() && capabilities("cairo")) {
+#'   plotTag(
+#'     plot(pressure), "A plot of the 'pressure' dataset",
+#'     device = grDevices::svg, width = 375, height = 275, pixelratio = 1/72,
+#'     mimeType = "image/svg+xml"
+#'   )
+#' }
 #'
 #' @export
 plotTag <- function(expr, alt, device = defaultPngDevice(), width = 400, height = 400,
@@ -191,9 +192,9 @@ plotTag <- function(expr, alt, device = defaultPngDevice(), width = 400, height 
 defaultPngDevice <- function() {
   if (capabilities("aqua")) {
     grDevices::png
-  } else if (system.file(package = "ragg") != "") {
+  } else if (is_installed("ragg")) {
     ragg::agg_png
-  } else if (system.file(package = "Cairo") != "") {
+  } else if (is_installed("Cairo")) {
     Cairo::CairoPNG
   } else {
     grDevices::png

@@ -1,0 +1,99 @@
+---
+title: "flattenTagAttribs benchmarks"
+author: "Barret Schloerke"
+date: "4/16/2021"
+output: html_document
+---
+
+
+## Goal
+
+Find for what values of key size and unique key size is `split()` faster.
+
+## Setup
+
+Make a list of keys of size `n` and have the unique count of keys be `nn`.  The values will be `"1"`.
+
+```{r attribs}
+combineKeys <- function(x) {
+  if (anyNA(x)) {
+    na_idx <- is.na(x)
+    if (all(na_idx)) {
+      return(NA)
+    }
+    x <- x[!na_idx]
+  }
+  unlist(x, recursive = FALSE, use.names = FALSE)
+}
+flattenTagAttribs <- function(attribs) {
+  # concatenate attributes
+  # split() is very slow, so avoid it if possible
+  if (anyDuplicated(names(attribs))) {
+    attribs <- lapply(split(attribs, names(attribs)), combineKeys)
+  }
+
+  attribs
+}
+```
+
+```{r attribs2}
+flattenTagAttribs2 <- function(attribs) {
+
+  attribNames <- names(attribs)
+
+  if (anyDuplicated(attribNames)) {
+    uniqueAttribNames <- sort(unique(attribNames))
+    attribs <- lapply(uniqueAttribNames, function(name) {
+      obj <- attribs[attribNames == name]
+      combineKeys(obj)
+    })
+    names(attribs) <- uniqueAttribNames
+  }
+  attribs
+}
+```
+
+# Test
+
+```{r setup}
+dts <- list()
+for (n in seq(from = 1, to = 25, by = 1)) {
+  for (nn in seq(from = 1, to = n, by = 1)) {
+    nn <- min(c(nn, n))
+    cat("n: ", n, " nn: ", nn, "\n")
+    k <- paste0("key", 1:nn)
+    if (nn < n) k <- c(k, sample(k, n - nn, replace = TRUE))
+    v <- as.list(sample(1L, n, replace = TRUE))
+    attribs <- setNames(v, k)
+    info <- bench::mark(
+      check = TRUE,
+      flattenTagAttribs(attribs),
+      flattenTagAttribs2(attribs)
+    )
+    info$key_size <- n
+    info$unique_size <- nn
+    dts[[length(dts) + 1]] <- info
+  }
+}
+dt <- dplyr::bind_rows(dts)
+```
+
+# A negative diff shows that the new function (`flattenTagAttribs2()`) is faster than the old function (`flattenTagAttribs()`).
+```{r plot}
+library(ggplot2)
+dt_plot <-
+  dt %>%
+  dplyr::select(expression, median, key_size, unique_size) %>%
+  tidyr::pivot_wider(names_from = expression, values_from = median) %>%
+  dplyr::rename(old = `flattenTagAttribs(attribs)`, new = `flattenTagAttribs2(attribs)`) %>%
+  dplyr::mutate(diff = (as.numeric(new) - as.numeric(old)) * 1000000)
+
+dt_plot %>%
+  {
+    ggplot(., aes(x = key_size, y = unique_size, color = diff, shape = diff > 0)) +
+    geom_point(size = 10) +
+    scale_color_gradient2(low = "#006837", mid = "#ffffbf", high = "#a50026")
+  }
+```
+
+When the key size is less than 20, the difference between the two methods is ~0 or negative. Negative is good for `flattenTagAttribs2()`, showing it is faster. When the key are all unique (the diagonal), then the difference is neglible. This would advocate for only using the new method as having a key count > 20 is not a typical case. The performance loss and is less in magnitude than the what is gained in the typical cases (< 5 key) situations.

@@ -7,10 +7,10 @@ status](https://www.r-pkg.org/badges/version/htmltools)](https://CRAN.R-project.
 Downloads](https://cranlogs.r-pkg.org/badges/grand-total/htmltools)](https://www.rpackages.io/package/htmltools)
 [![monthly](https://cranlogs.r-pkg.org/badges/htmltools)](https://www.rpackages.io/package/htmltools)
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+experimental](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 <!-- badges: end -->
 
-# htmltools <a href='https://rstudio.github.io/htmltools'><img src='man/figures/logo.png' align="right" height="138" /></a>
+# htmltools <a href='https://rstudio.github.io/htmltools/'><img src='man/figures/logo.png' align="right" height="138" /></a>
 
 Tools for creating, manipulating, and writing HTML from R.
 
@@ -48,7 +48,7 @@ browsable(tagList(
   <img src="man/figures/plotly-taglist.png" width="60%" />
 </div>
 
-Also, thanks to `tagQuery()`, it fairly easy to query and manipulate the underlying HTML structure of components. See the [`tagQuery()` article](https://rstudio.github.io/htmltools/articles/tagQuery.html) to learn more.
+Also, thanks to `tagQuery()`, it is fairly easy to query and manipulate the underlying HTML structure of components. See the [`tagQuery()` article](https://rstudio.github.io/htmltools//articles/tagQuery.html) to learn more.
 
 
 ## Learn more

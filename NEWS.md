@@ -1,4 +1,15 @@
-# htmltools (development version)
+# htmltools 0.5.2.9000
+
+## Bug fixes
+
+* Closed #290: htmltools previously did not specify which version of fastmap to use, and would fail to install with an old version of fastmap. (#291)
+
+# htmltools 0.5.2
+
+## Breaking Changes
+
+* Closed #205: When calling `tagGetAttribute(x)` on an object with a non-atomic attribute, a list of untouched values will be returned. It is still recommended to only store character values inside attributes. (#212)
+
 ## New Features & Improvements
 
 * `{htmltools}` now has its own `{pkgdown}` site hosted at <https://rstudio.github.io/htmltools/>.
@@ -16,6 +27,8 @@
 * `copyDependencyToDir()` no longer creates empty directories for dependencies that do not have any files. (@gadenbuie, #276)
 
 ## Bug Fixes
+
+* When retrieving a tag attribute using `tagGetAttribute(tag, attr)`, `NA` values will be removed before combining remaining attribute values. If all attribute values are `NA`, then a single `NA` value will be returned. (#212)
 
 * Closed #197: Fixed rendering of boolean attributes in `<script>` tags rendered via `renderDependencies()` (#197, thanks @atusy).
 

@@ -1,7 +1,5 @@
 #' @importFrom fastmap fastmap faststack
-#' @importFrom rlang obj_address
 NULL
-
 
 # TODO-barret followup PR
 # * onRender(x, fn) - tagFunction(x, fn)
@@ -1128,6 +1126,9 @@ getCssClass <- function(class) {
   splitCssClass(prepCssClass(class))
 }
 splitCssClass <- function(class) {
+  if (!is.character(class)) {
+    stop("tagGetAttribute(x, \"class\") did not return a character value")
+  }
   if (length(class) > 1) {
     class <- paste0(class, collapse = " ")
   }
