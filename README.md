@@ -1,6 +1,6 @@
 <!-- badges: start -->
 [![R build
-status](https://github.com/rstudio/htmltools/workflows/R-CMD-check/badge.svg)](https://github.com/rstudio/htmltools)
+status](https://github.com/rstudio/htmltools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rstudio/htmltools)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/htmltools)](https://CRAN.R-project.org/package=htmltools)
 [![CRAN
