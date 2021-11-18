@@ -4,6 +4,8 @@
 
 * Closed #290: htmltools previously did not specify which version of fastmap to use, and would fail to install with an old version of fastmap. (#291)
 
+* `copyDependencyToDir()` no longer creates empty directories for dependencies that do not have any files. (@gadenbuie, #276)
+
 # htmltools 0.5.2
 
 ## Breaking Changes
@@ -23,8 +25,6 @@
 * Closed #251: Added `.cssSelector` parameters to tag modifying functions such as `tagAppendChildren()` or `tagAppendChildren()`. The `.cssSelector` allows you to target particular (inner) tags of interest. See `tagAppendChildren()` for examples. (#224)
 
 * Closed #225: Added `tagInsertChildren()` to be able to insert child tag objects at a particular location. (#224)
-
-* `copyDependencyToDir()` no longer creates empty directories for dependencies that do not have any files. (@gadenbuie, #276)
 
 ## Bug Fixes
 
