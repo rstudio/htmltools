@@ -1,11 +1,11 @@
 pandoc: 2.7.3
-pkgdown: 1.6.1
-pkgdown_sha: ~
+pkgdown: 1.9000.9000.9000
+pkgdown_sha: e72fc30f333dc4f50f3f9d1f274fc29d67e34974
 articles:
   htmltools: htmltools.html
   tagQuery: tagQuery.html
-last_built: 2021-11-18T19:10Z
+last_built: 2021-11-19T15:24Z
 urls:
-  reference: https://rstudio.github.io/htmltools//reference
-  article: https://rstudio.github.io/htmltools//articles
+  reference: https://rstudio.github.io/htmltools/reference
+  article: https://rstudio.github.io/htmltools/articles
 

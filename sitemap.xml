@@ -1,129 +1,147 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://rstudio.github.io/htmltools//index.html</loc>
+    <loc>https://rstudio.github.io/htmltools/404.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/HTML.html</loc>
+    <loc>https://rstudio.github.io/htmltools/CONTRIBUTING.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/as.tags.html</loc>
+    <loc>https://rstudio.github.io/htmltools/articles/htmltools.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/browsable.html</loc>
+    <loc>https://rstudio.github.io/htmltools/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/builder.html</loc>
+    <loc>https://rstudio.github.io/htmltools/articles/tagQuery.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/capturePlot.html</loc>
+    <loc>https://rstudio.github.io/htmltools/authors.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/copyDependencyToDir.html</loc>
+    <loc>https://rstudio.github.io/htmltools/index.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/css.html</loc>
+    <loc>https://rstudio.github.io/htmltools/news/index.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/defaultPngDevice.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/HTML.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/findDependencies.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/as.tags.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/htmlDependencies.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/browsable.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/htmlDependency.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/builder.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/htmlEscape.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/capturePlot.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/htmlPreserve.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/copyDependencyToDir.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/htmlTemplate.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/css.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/html_print.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/defaultPngDevice.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/include.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/findDependencies.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/knitr_methods.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/htmlDependencies.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/makeDependencyRelative.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/htmlDependency.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/parseCssColors.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/htmlEscape.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/plotTag.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/htmlPreserve.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/print.html.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/htmlTemplate.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/renderDependencies.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/html_print.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/renderDocument.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/include.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/renderTags.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/resolveDependencies.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/knitr_methods.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/save_html.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/makeDependencyRelative.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/singleton.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/parseCssColors.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/singleton_tools.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/plotTag.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/subtractDependencies.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/print.html.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/suppressDependencies.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/renderDependencies.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/tagAddRenderHook.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/renderDocument.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/tagAppendAttributes.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/renderTags.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/tagAppendChild.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/resolveDependencies.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/tagFunction.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/save_html.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/tagList.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/singleton.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/tagQuery.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/singleton_tools.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/urlEncodePath.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/subtractDependencies.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/validateCssUnit.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/suppressDependencies.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//reference/withTags.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/tagAddRenderHook.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//articles/htmltools.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/tagAppendAttributes.html</loc>
   </url>
   <url>
-    <loc>https://rstudio.github.io/htmltools//articles/tagQuery.html</loc>
+    <loc>https://rstudio.github.io/htmltools/reference/tagAppendChild.html</loc>
+  </url>
+  <url>
+    <loc>https://rstudio.github.io/htmltools/reference/tagFunction.html</loc>
+  </url>
+  <url>
+    <loc>https://rstudio.github.io/htmltools/reference/tagList.html</loc>
+  </url>
+  <url>
+    <loc>https://rstudio.github.io/htmltools/reference/tagQuery.html</loc>
+  </url>
+  <url>
+    <loc>https://rstudio.github.io/htmltools/reference/urlEncodePath.html</loc>
+  </url>
+  <url>
+    <loc>https://rstudio.github.io/htmltools/reference/validateCssUnit.html</loc>
+  </url>
+  <url>
+    <loc>https://rstudio.github.io/htmltools/reference/withTags.html</loc>
   </url>
 </urlset>

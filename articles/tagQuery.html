@@ -37,6 +37,8 @@
 </script><!-- javascript assets for rmarkdown --><script src="../ace-1.2.3/ace.js" type="text/javascript" charset="utf-8"></script><script src="../holder-2.9.0/holder.min.js" type="text/javascript" charset="utf-8"></script><script src="../snippets/snippets.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -50,14 +52,14 @@
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
         </div>
       </div>-->
     </div>
@@ -86,7 +88,7 @@
   <a href="../news/index.html">News</a>
 </li>
 <li>
-  <a href="https://github.com/rstudio/htmltools">
+  <a href="https://github.com/rstudio/htmltools" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -113,17 +115,17 @@
       <h1 data-toc-skip>Using tagQuery() to query and modify HTML tags</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/rstudio/htmltools/blob/master/vignettes/tagQuery.Rmd"><code>vignettes/tagQuery.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/rstudio/htmltools/blob/HEAD/vignettes/tagQuery.Rmd" class="external-link"><code>vignettes/tagQuery.Rmd</code></a></small>
       <div class="hidden name"><code>tagQuery.Rmd</code></div>
 
     </div>
 
     
     
-<p><code><a href="../reference/tagQuery.html">tagQuery()</a></code> provides a <a href="https://jquery.com">jQuery</a> inspired interface to query and modify HTML fragments in R. Learning how to use <code><a href="../reference/tagQuery.html">tagQuery()</a></code> directly gives you a very fast and flexible way to extract and modify HTML tags. Some other <a href="https://github.com/rstudio/htmltools">htmltools</a> functions like <code><a href="../reference/tagAppendAttributes.html">tagAppendAttributes()</a></code> actually use <code><a href="../reference/tagQuery.html">tagQuery()</a></code> when <code>.cssSelector</code> is supplied, but only offer a subset of the functionality the <code><a href="../reference/tagQuery.html">tagQuery()</a></code> API provides, and can be significantly slower when multiple modifications are needed (for details, see <a href="#performance">performance</a>).</p>
+<p><code><a href="../reference/tagQuery.html">tagQuery()</a></code> provides a <a href="https://jquery.com" class="external-link">jQuery</a> inspired interface to query and modify HTML fragments in R. Learning how to use <code><a href="../reference/tagQuery.html">tagQuery()</a></code> directly gives you a very fast and flexible way to extract and modify HTML tags. Some other <a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> functions like <code><a href="../reference/tagAppendAttributes.html">tagAppendAttributes()</a></code> actually use <code><a href="../reference/tagQuery.html">tagQuery()</a></code> when <code>.cssSelector</code> is supplied, but only offer a subset of the functionality the <code><a href="../reference/tagQuery.html">tagQuery()</a></code> API provides, and can be significantly slower when multiple modifications are needed (for details, see <a href="#performance">performance</a>).</p>
 <p>To create a <code><a href="../reference/tagQuery.html">tagQuery()</a></code> object, pass it either a <code><a href="../reference/builder.html">tag()</a></code> (e.g., <code><a href="../reference/builder.html">div()</a></code>) or <code><a href="../reference/tagList.html">tagList()</a></code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/htmltools">htmltools</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a></span><span class="op">)</span>
 <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `$allTags()`:</span>
 <span class="co">#&gt; &lt;div&gt;</span>
@@ -133,13 +135,13 @@
 <span class="co">#&gt; `$selectedTags()`: `$allTags()`</span></code></pre></div>
 <p>Notice how <code><a href="../reference/tagQuery.html">tagQuery()</a></code> tracks two essential pieces: the input tag(s) as well as <em>selected</em> tags (by default the input tag(s) are selected). This data structure allows us to <a href="#performance">efficiently</a> <a href="#query">query</a>, <a href="#modify">modify</a>, and <a href="#replace">replace</a> particular fragments of the root HTML tag.</p>
 <p>Since <code><a href="../reference/tagQuery.html">tagQuery()</a></code> isn’t itself a <code><a href="../reference/builder.html">tag()</a></code> object, it can’t be passed directly to <code><a href="../reference/builder.html">tag()</a></code> or tag rendering functions, but at any given time you can extract <code>$allTags()</code> or the <code>$selectedTags()</code>.</p>
-<div id="query" class="section level2">
-<h2 class="hasAnchor">
-<a href="#query" class="anchor"></a>Query</h2>
-<p><code><a href="../reference/tagQuery.html">tagQuery()</a></code> has numerous methods to select (i.e., query) HTML tag(s). Every query method accepts a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors">CSS selector</a> for targeting particular tags of interest. At the moment, <code><a href="../reference/tagQuery.html">tagQuery()</a></code> only supports a combination of <a href="https://www.w3.org/TR/CSS22/selector.html#type-selectors">type</a> (e.g, <code>div</code>), <a href="https://www.w3.org/TR/CSS22/selector.html#class-html">class</a> (e.g., <code>.my-class</code>), <a href="https://www.w3.org/TR/CSS22/selector.html#id-selectors">id</a> (e.g., <code>#myID</code>), and <a href="https://www.w3.org/TR/CSS22/selector.html#universal-selector">universal</a> (<code>*</code>) selectors within a given <a href="https://www.w3.org/TR/CSS22/selector.html#selector-syntax">simple selector</a>.</p>
-<div id="children" class="section level3">
-<h3 class="hasAnchor">
-<a href="#children" class="anchor"></a>Children</h3>
+<div class="section level2">
+<h2 id="query">Query<a class="anchor" aria-label="anchor" href="#query"></a>
+</h2>
+<p><code><a href="../reference/tagQuery.html">tagQuery()</a></code> has numerous methods to select (i.e., query) HTML tag(s). Every query method accepts a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors" class="external-link">CSS selector</a> for targeting particular tags of interest. At the moment, <code><a href="../reference/tagQuery.html">tagQuery()</a></code> only supports a combination of <a href="https://www.w3.org/TR/CSS22/selector.html#type-selectors" class="external-link">type</a> (e.g, <code>div</code>), <a href="https://www.w3.org/TR/CSS22/selector.html#class-html" class="external-link">class</a> (e.g., <code>.my-class</code>), <a href="https://www.w3.org/TR/CSS22/selector.html#id-selectors" class="external-link">id</a> (e.g., <code>#myID</code>), and <a href="https://www.w3.org/TR/CSS22/selector.html#universal-selector" class="external-link">universal</a> (<code>*</code>) selectors within a given <a href="https://www.w3.org/TR/CSS22/selector.html#selector-syntax" class="external-link">simple selector</a>.</p>
+<div class="section level3">
+<h3 id="children">Children<a class="anchor" aria-label="anchor" href="#children"></a>
+</h3>
 <p>To begin querying tags, start with either <code>$find()</code> or <code>$children()</code>. The former traverses <em>all</em> descendants whereas the latter only considers <em>direct</em> descendants.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="st">"foo"</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -164,7 +166,7 @@
 <span class="co">#&gt; &lt;span&gt;foo&lt;/span&gt;</span>
 <span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">length</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] 2</span></code></pre></div>
-<p>And since <code>$find()</code> considers all descendants, it allows for <a href="https://www.w3.org/TR/CSS22/selector.html#descendant-selectors">descendant selectors</a> (space) and direct <a href="https://www.w3.org/TR/CSS22/selector.html#child-selectors">child selectors</a> (&gt;).</p>
+<p>And since <code>$find()</code> considers all descendants, it allows for <a href="https://www.w3.org/TR/CSS22/selector.html#descendant-selectors" class="external-link">descendant selectors</a> (space) and direct <a href="https://www.w3.org/TR/CSS22/selector.html#child-selectors" class="external-link">child selectors</a> (&gt;).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; &lt;div&gt;</span>
@@ -190,10 +192,10 @@
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; &lt;a&gt;&lt;/a&gt;</span></code></pre></div>
 </div>
-<div id="siblings" class="section level3">
-<h3 class="hasAnchor">
-<a href="#siblings" class="anchor"></a>Siblings</h3>
-<p>Although <code><a href="../reference/tagQuery.html">tagQuery()</a></code> doesn’t (currently) support <a href="https://www.w3schools.com/css/css_combinators.asp">sibling selectors</a> (<code>+</code> and <code>~</code>), it does provide a <code>$sibling()</code> method, which provides essentially the same functionality:</p>
+<div class="section level3">
+<h3 id="siblings">Siblings<a class="anchor" aria-label="anchor" href="#siblings"></a>
+</h3>
+<p>Although <code><a href="../reference/tagQuery.html">tagQuery()</a></code> doesn’t (currently) support <a href="https://www.w3schools.com/css/css_combinators.asp" class="external-link">sibling selectors</a> (<code>+</code> and <code>~</code>), it does provide a <code>$sibling()</code> method, which provides essentially the same functionality:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; &lt;div&gt;</span>
@@ -208,9 +210,9 @@
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; &lt;span&gt;&lt;/span&gt;</span></code></pre></div>
 </div>
-<div id="parents" class="section level3">
-<h3 class="hasAnchor">
-<a href="#parents" class="anchor"></a>Parents</h3>
+<div class="section level3">
+<h3 id="parents">Parents<a class="anchor" aria-label="anchor" href="#parents"></a>
+</h3>
 <p>In some cases, after finding children, it can be useful to traverse back up the tag tree to find particular ancestors of a selection. Similar to the difference in <code>$find()</code> and <code>$children()</code>, <code>$parents()</code> traverses <em>all</em> ancestors whereas <code>$parent()</code> considers just <em>direct</em> ancestors.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span>class <span class="op">=</span> <span class="st">"foo"</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -245,10 +247,10 @@
 <span class="co">#&gt;   &lt;/span&gt;</span>
 <span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
 </div>
-<div id="filter" class="section level3">
-<h3 class="hasAnchor">
-<a href="#filter" class="anchor"></a>Filter</h3>
-<p>The <code>$filter()</code> method can be used to subset selected tags using an R function or CSS selector. When combined with the universal selector (<code>*</code>), <code>$filter()</code> is particularly useful as a workaround for the fact that <code><a href="../reference/tagQuery.html">tagQuery()</a></code> doesn’t fully support the entire CSS selector specification. For example, here’s a workaround for <code><a href="../reference/tagQuery.html">tagQuery()</a></code>’s current lack of support for <a href="https://www.w3.org/TR/CSS22/selector.html#attribute-selectors">attribute selectors</a>:</p>
+<div class="section level3">
+<h3 id="filter">Filter<a class="anchor" aria-label="anchor" href="#filter"></a>
+</h3>
+<p>The <code>$filter()</code> method can be used to subset selected tags using an R function or CSS selector. When combined with the universal selector (<code>*</code>), <code>$filter()</code> is particularly useful as a workaround for the fact that <code><a href="../reference/tagQuery.html">tagQuery()</a></code> doesn’t fully support the entire CSS selector specification. For example, here’s a workaround for <code><a href="../reference/tagQuery.html">tagQuery()</a></code>’s current lack of support for <a href="https://www.w3.org/TR/CSS22/selector.html#attribute-selectors" class="external-link">attribute selectors</a>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="st">"data-foo"</span> <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; &lt;div&gt;</span>
@@ -265,9 +267,9 @@
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; &lt;div data-foo="bar"&gt;&lt;/div&gt;</span></code></pre></div>
 </div>
-<div id="reset" class="section level3">
-<h3 class="hasAnchor">
-<a href="#reset" class="anchor"></a>Reset</h3>
+<div class="section level3">
+<h3 id="reset">Reset<a class="anchor" aria-label="anchor" href="#reset"></a>
+</h3>
 <p>To reset the set of selected tags to the root tag, use <code>$resetSelected()</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -286,9 +288,9 @@
 <span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
 </div>
 </div>
-<div id="modify" class="section level2">
-<h2 class="hasAnchor">
-<a href="#modify" class="anchor"></a>Modify</h2>
+<div class="section level2">
+<h2 id="modify">Modify<a class="anchor" aria-label="anchor" href="#modify"></a>
+</h2>
 <p><code><a href="../reference/tagQuery.html">tagQuery()</a></code> provides numerous functions for modifying HTML <a href="#modify-attrs">attributes</a>, <a href="#modify-child">children</a>, or <a href="#modify-sibling">sibling</a> tags of the current query selection. Unlike query methods, modifier methods <em>modify their input</em> (both the root and the selection). For example, note how the <code>$addClass()</code> call here modifies <code>tagQ</code> (but <code>$find()</code> doesn’t):</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -304,10 +306,10 @@
 <span class="co">#&gt; &lt;div&gt;</span>
 <span class="co">#&gt;   &lt;a class="foo"&gt;&lt;/a&gt;</span>
 <span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
-<p>The <a href="https://en.wikipedia.org/wiki/Immutable_object">mutable</a> behavior of modifier methods not only allows us to modify child tags without losing a reference to the root tag, but it also makes modifications more <a href="#performance">performant</a> than they’d otherwise be.</p>
-<div id="modify-attrs" class="section level3">
-<h3 class="hasAnchor">
-<a href="#modify-attrs" class="anchor"></a>Attributes</h3>
+<p>The <a href="https://en.wikipedia.org/wiki/Immutable_object" class="external-link">mutable</a> behavior of modifier methods not only allows us to modify child tags without losing a reference to the root tag, but it also makes modifications more <a href="#performance">performant</a> than they’d otherwise be.</p>
+<div class="section level3">
+<h3 id="modify-attrs">Attributes<a class="anchor" aria-label="anchor" href="#modify-attrs"></a>
+</h3>
 <p>Use <code>$addAttrs()</code> to add and <code>$removeAttrs()</code> to remove any HTML attribute from each selected tag. If you’re just working with <code>class</code> attributes, consider using the more convenient <code>$addClass()</code>, <code>$removeClass()</code>, or <code>$toggleClass()</code></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -335,9 +337,9 @@
 <code class="sourceCode R"><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">hasAttrs</span><span class="op">(</span><span class="st">"data-bar"</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE TRUE</span></code></pre></div>
 </div>
-<div id="modify-child" class="section level3">
-<h3 class="hasAnchor">
-<a href="#modify-child" class="anchor"></a>Children</h3>
+<div class="section level3">
+<h3 id="modify-child">Children<a class="anchor" aria-label="anchor" href="#modify-child"></a>
+</h3>
 <p>Use <code>$prepend()</code> to insert content before the children of each selected tag and <code>$append()</code> to insert content after:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -363,9 +365,9 @@
 <span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
 <p>If you’d like to replace all the children, then you can first call <code>$empty()</code> before <code>$append()</code>. If you like to just remove particular child tags, then you should call <code>$children()</code> + the <code>$remove()</code> sibling method.</p>
 </div>
-<div id="modify-sibling" class="section level3">
-<h3 class="hasAnchor">
-<a href="#modify-sibling" class="anchor"></a>Siblings</h3>
+<div class="section level3">
+<h3 id="modify-sibling">Siblings<a class="anchor" aria-label="anchor" href="#modify-sibling"></a>
+</h3>
 <p>Use <code>$before()</code> to insert content before each selected tag and <code>$after()</code> to insert content after:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -390,9 +392,9 @@
 <span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
 </div>
 </div>
-<div id="replace" class="section level2">
-<h2 class="hasAnchor">
-<a href="#replace" class="anchor"></a>Replace</h2>
+<div class="section level2">
+<h2 id="replace">Replace<a class="anchor" aria-label="anchor" href="#replace"></a>
+</h2>
 <p>As with <code><a href="../reference/tagQuery.html">tagQuery()</a></code>’s modifier methods, its replace methods also modify their input. They also empty selected tags, so you may want to <code>$resetSelection()</code> if you want to make more queries or modifications after-the-fact.</p>
 <p>Use <code>$replaceWith()</code> to replace selected tags with some other content.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
@@ -429,31 +431,31 @@
 <span class="co">#&gt;   &lt;span&gt;&lt;/span&gt;</span>
 <span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
 </div>
-<div id="performance" class="section level2">
-<h2 class="hasAnchor">
-<a href="#performance" class="anchor"></a>Performance</h2>
-<p>One main reason why <code><a href="../reference/tagQuery.html">tagQuery()</a></code> is fast is that it converts the underlying <code><a href="../reference/builder.html">tag()</a></code> list structure into a environment (i.e., <a href="https://en.wikipedia.org/wiki/Reference_(computer_science)">reference object</a>). As a result, <code><a href="../reference/tagQuery.html">tagQuery()</a></code> is able to keep a reference to selected tags and modify them without having to re-find tags for each modification. This is why, even if you can achieve multiple modifications via multiple calls to <code><a href="../reference/tagAppendAttributes.html">tagAppendAttributes()</a></code>, <code><a href="../reference/tagAppendChild.html">tagInsertChildren()</a></code>, etc. (with a <code>.cssSelector</code>), you should consider using <code><a href="../reference/tagQuery.html">tagQuery()</a></code> directly instead.</p>
+<div class="section level2">
+<h2 id="performance">Performance<a class="anchor" aria-label="anchor" href="#performance"></a>
+</h2>
+<p>One main reason why <code><a href="../reference/tagQuery.html">tagQuery()</a></code> is fast is that it converts the underlying <code><a href="../reference/builder.html">tag()</a></code> list structure into a environment (i.e., <a href="https://en.wikipedia.org/wiki/Reference_(computer_science)" class="external-link">reference object</a>). As a result, <code><a href="../reference/tagQuery.html">tagQuery()</a></code> is able to keep a reference to selected tags and modify them without having to re-find tags for each modification. This is why, even if you can achieve multiple modifications via multiple calls to <code><a href="../reference/tagAppendAttributes.html">tagAppendAttributes()</a></code>, <code><a href="../reference/tagAppendChild.html">tagInsertChildren()</a></code>, etc. (with a <code>.cssSelector</code>), you should consider using <code><a href="../reference/tagQuery.html">tagQuery()</a></code> directly instead.</p>
 <p>For a basic example, since <code><a href="../reference/tagQuery.html">tagQuery()</a></code> can prepend and append in one shot, it’s twice as fast as using <code><a href="../reference/tagAppendChild.html">tagInsertChildren()</a></code> then <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code> (with the same <code>.cssSelector</code>). Internally, the latter approach calls <code>tagQuery(html)$find()</code> twice, which is why it’s 2 times slower.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org">magrittr</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span>
 <span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/bench/man/mark.html">mark</a></span><span class="op">(</span>
+<span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/bench/man/mark.html" class="external-link">mark</a></span><span class="op">(</span>
   tagQuery <span class="op">=</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span><span class="op">$</span>
     <span class="fu">find</span><span class="op">(</span><span class="st">"p"</span><span class="op">)</span><span class="op">$</span>
     <span class="fu">prepend</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
     <span class="fu">append</span><span class="op">(</span><span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
     <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>,
-  tagAppend <span class="op">=</span> <span class="va">html</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="../reference/tagAppendChild.html">tagInsertChildren</a></span><span class="op">(</span>.cssSelector <span class="op">=</span> <span class="st">"p"</span>, after <span class="op">=</span> <span class="fl">0</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  tagAppend <span class="op">=</span> <span class="va">html</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="../reference/tagAppendChild.html">tagInsertChildren</a></span><span class="op">(</span>.cssSelector <span class="op">=</span> <span class="st">"p"</span>, after <span class="op">=</span> <span class="fl">0</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
     <span class="fu"><a href="../reference/tagAppendChild.html">tagAppendChildren</a></span><span class="op">(</span>.cssSelector <span class="op">=</span> <span class="st">"p"</span>, <span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,
   check <span class="op">=</span> <span class="cn">FALSE</span>,
   time_unit <span class="op">=</span> <span class="st">"us"</span>
 <span class="op">)</span>
-<span class="co">#&gt; # A tibble: 2 × 6</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span>
 <span class="co">#&gt;   expression   min median `itr/sec` mem_alloc `gc/sec`</span>
-<span class="co">#&gt;   &lt;bch:expr&gt; &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 tagQuery   1318.  1438.      678.    11.4KB     6.18</span>
-<span class="co">#&gt; 2 tagAppend  2334.  2574.      379.    50.5KB     8.42</span></code></pre></div>
+<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;bch:expr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> tagQuery   <span style="text-decoration: underline;">1</span>094.  <span style="text-decoration: underline;">1</span>131.      882.    11.4KB     8.28</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> tagAppend  <span style="text-decoration: underline;">2</span>028.  <span style="text-decoration: underline;">2</span>084.      480.    50.5KB     8.38</span></code></pre></div>
 </div>
   </div>
 
@@ -467,7 +469,16 @@
 
 
 
-      <footer></footer>
+      <footer><div class="tidyverse">
+  <p><b>htmltools</b> is an R package developed by <a href="https://rstudio.com" class="external-link">RStudio</a></p>
+</div>
+
+<div class="author">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+</div>
+
+      </footer>
 </div>
 
   

@@ -2,21 +2,21 @@
   "index_name": "htmltools",
   "start_urls": [
     {
-      "url": "https://rstudio.github.io/htmltools//index.html",
+      "url": "https://rstudio.github.io/htmltools/index.html",
       "selectors_key": "homepage",
       "tags": [
         "homepage"
       ]
     },
     {
-      "url": "https://rstudio.github.io/htmltools//reference",
+      "url": "https://rstudio.github.io/htmltools/reference",
       "selectors_key": "reference",
       "tags": [
         "reference"
       ]
     },
     {
-      "url": "https://rstudio.github.io/htmltools//articles",
+      "url": "https://rstudio.github.io/htmltools/articles",
       "selectors_key": "articles",
       "tags": [
         "articles"
@@ -30,7 +30,7 @@
     "/articles/index.html"
   ],
   "sitemap_urls": [
-    "https://rstudio.github.io/htmltools//sitemap.xml"
+    "https://rstudio.github.io/htmltools/sitemap.xml"
   ],
   "selectors": {
     "homepage": {

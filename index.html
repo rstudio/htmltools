@@ -34,9 +34,15 @@
   gtag('js', new Date());
 
   gtag('config', 'UA-115082821-1');
-</script><!-- javascript assets for rmarkdown --><script src="ace-1.2.3/ace.js" type="text/javascript" charset="utf-8"></script><script src="holder-2.9.0/holder.min.js" type="text/javascript" charset="utf-8"></script><script src="snippets/snippets.js" type="text/javascript" charset="utf-8"></script>
+</script><!-- javascript assets for rmarkdown --><script src="ace-1.2.3/ace.js" type="text/javascript" charset="utf-8"></script><script src="holder-2.9.0/holder.min.js" type="text/javascript" charset="utf-8"></script><script src="snippets/snippets.js" type="text/javascript" charset="utf-8"></script><!-- from quillt: JS redirect for homepage --><script>
+  if (!/(\/|html?)$/.test(window.location.href)){
+    window.location.replace(window.location.href + '/');
+  }
+</script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -50,14 +56,14 @@
 
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
         </div>
       </div>-->
     </div>
@@ -86,7 +92,7 @@
   <a href="news/index.html">News</a>
 </li>
 <li>
-  <a href="https://github.com/rstudio/htmltools">
+  <a href="https://github.com/rstudio/htmltools" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -111,48 +117,48 @@
   <div class="contents col-md-9">
 
 
-<div id="htmltools-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#htmltools-" class="anchor"></a>htmltools <a href="https://rstudio.github.io/htmltools/"><img src="reference/figures/logo.png" align="right" height="138"></a>
+<div class="section level1">
+<div class="page-header"><h1 id="htmltools-">htmltools <a href="https://rstudio.github.io/htmltools/"><img src="reference/figures/logo.png" align="right" height="138"></a>
+<a class="anchor" aria-label="anchor" href="#htmltools-"></a>
 </h1></div>
 <p>Tools for creating, manipulating, and writing HTML from R.</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <p>Install the stable release of <code>htmltools</code> on CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"htmltools"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"htmltools"</span><span class="op">)</span></code></pre></div>
 <p>Install the development version with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"rstudio/htmltools"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="quick-overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#quick-overview" class="anchor"></a>Quick overview</h2>
-<p><a href="https://github.com/rstudio/htmltools">htmltools</a> makes it easy to customize the user interface (UI) of any <a href="https://shiny.rstudio.com/">Shiny</a> or <a href="https://rmarkdown.rstudio.com/">R Markdown</a> project by using R code to generate custom HTML (including JavaScript and CSS).</p>
-<p><a href="https://shiny.rstudio.com/articles/html-tags.html">This Shiny article</a> provides a great introduction to <a href="https://github.com/rstudio/htmltools">htmltools</a> (even if you’re not interested in Shiny). As you’ll learn in that article, the general foundation that <a href="https://github.com/rstudio/htmltools">htmltools</a> provides allows other R packages (e.g., <a href="http://www.htmlwidgets.org/"><code>{htmlwidgets}</code></a>, <a href="https://rstudio.github.io/crosstalk/"><code>{crosstalk}</code></a>, etc.) to provide “HTML components” in R that users can manipulate and combine in ways the component authors didn’t foresee.</p>
-<p>For example, as described in depth <a href="https://plotly-r.com/arranging-views.html#arranging-htmlwidgets">here</a>, <a href="https://github.com/rstudio/htmltools">htmltools</a> makes it fairly easy to arrange numerous <a href="https://github.com/ramnathv/htmlwidgets">htmlwidgets</a> (e.g., <a href="https://plotly-r.com">plotly</a> graphs) into a single static HTML webpage:</p>
+<div class="section level2">
+<h2 id="quick-overview">Quick overview<a class="anchor" aria-label="anchor" href="#quick-overview"></a>
+</h2>
+<p><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> makes it easy to customize the user interface (UI) of any <a href="https://shiny.rstudio.com/" class="external-link">Shiny</a> or <a href="https://rmarkdown.rstudio.com/" class="external-link">R Markdown</a> project by using R code to generate custom HTML (including JavaScript and CSS).</p>
+<p><a href="https://shiny.rstudio.com/articles/html-tags.html" class="external-link">This Shiny article</a> provides a great introduction to <a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> (even if you’re not interested in Shiny). As you’ll learn in that article, the general foundation that <a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> provides allows other R packages (e.g., <a href="http://www.htmlwidgets.org/" class="external-link"><code>{htmlwidgets}</code></a>, <a href="https://rstudio.github.io/crosstalk/" class="external-link"><code>{crosstalk}</code></a>, etc.) to provide “HTML components” in R that users can manipulate and combine in ways the component authors didn’t foresee.</p>
+<p>For example, as described in depth <a href="https://plotly-r.com/arranging-views.html#arranging-htmlwidgets" class="external-link">here</a>, <a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> makes it fairly easy to arrange numerous <a href="https://github.com/ramnathv/htmlwidgets" class="external-link">htmlwidgets</a> (e.g., <a href="https://plotly-r.com" class="external-link">plotly</a> graphs) into a single static HTML webpage:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/htmltools">htmltools</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a></span><span class="op">)</span>
 <span class="fu"><a href="reference/browsable.html">browsable</a></span><span class="op">(</span><span class="fu"><a href="reference/tagList.html">tagList</a></span><span class="op">(</span>
   <span class="fu">plot_ly</span><span class="op">(</span><span class="va">diamonds</span>, x <span class="op">=</span> <span class="op">~</span><span class="va">carat</span>, height <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>,
   <span class="fu">plot_ly</span><span class="op">(</span><span class="va">diamonds</span>, x <span class="op">=</span> <span class="op">~</span><span class="va">price</span>, height <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>
 <span class="op">)</span><span class="op">)</span></code></pre></div>
 <div align="center">
-<img src="reference/figures/plotly-taglist.png" width="60%">
+<p><img src="reference/figures/plotly-taglist.png" width="60%"></p>
 </div>
 <p>Also, thanks to <code><a href="reference/tagQuery.html">tagQuery()</a></code>, it is fairly easy to query and manipulate the underlying HTML structure of components. See the <a href="https://rstudio.github.io/htmltools//articles/tagQuery.html"><code>tagQuery()</code> article</a> to learn more.</p>
 </div>
-<div id="learn-more" class="section level2">
-<h2 class="hasAnchor">
-<a href="#learn-more" class="anchor"></a>Learn more</h2>
+<div class="section level2">
+<h2 id="learn-more">Learn more<a class="anchor" aria-label="anchor" href="#learn-more"></a>
+</h2>
 <p>If you’re looking to learn how to build more custom user interfaces by writing custom HTML/JavaScript/CSS, we recommend the following resource:</p>
 <ul>
-<li>Shiny’s <a href="https://shiny.rstudio.com/articles/#user-interface">UI</a> and <a href="https://shiny.rstudio.com/articles/#extensions">extensions</a> articles</li>
+<li>Shiny’s <a href="https://shiny.rstudio.com/articles/#user-interface" class="external-link">UI</a> and <a href="https://shiny.rstudio.com/articles/#extensions" class="external-link">extensions</a> articles</li>
 <li>
-<a href="https://unleash-shiny.rinterface.com/">Outstanding UI with Shiny</a> by David Granjon</li>
+<a href="https://unleash-shiny.rinterface.com/" class="external-link">Outstanding UI with Shiny</a> by David Granjon</li>
 <li>
-<a href="https://book.javascript-for-r.com/">JavaScript for R</a> by John Coene</li>
+<a href="https://book.javascript-for-r.com/" class="external-link">JavaScript for R</a> by John Coene</li>
 </ul>
 </div>
 </div>
@@ -161,56 +167,66 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=htmltools">https://​cloud.r-project.org/​package=htmltools</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/rstudio/htmltools/">https://​github.com/​rstudio/​htmltools/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/rstudio/htmltools/issues">https://​github.com/​rstudio/​htmltools/​issues</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=htmltools" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/rstudio/htmltools/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/rstudio/htmltools/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>GPL (&gt;= 2)</li>
 </ul>
 </div>
+
 <div class="community">
-<h2>Community</h2>
+<h2 data-toc-skip>Community</h2>
 <ul class="list-unstyled">
 <li><a href="CONTRIBUTING.html">Contributing guide</a></li>
 </ul>
 </div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Joe Cheng <br><small class="roles"> Author </small>  </li>
-<li>Carson Sievert <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-4958-2844" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Barret Schloerke <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-9986-114X" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Winston Chang <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1576-2126" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Carson Sievert <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-4958-2844" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Barret Schloerke <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-9986-114X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Winston Chang <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1576-2126" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Yihui Xie <br><small class="roles"> Author </small>  </li>
 <li>Jeff Allen <br><small class="roles"> Author </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/rstudio/htmltools"><img src="https://github.com/rstudio/htmltools/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://CRAN.R-project.org/package=htmltools"><img src="https://www.r-pkg.org/badges/version/htmltools" alt="CRAN status"></a></li>
-<li><a href="https://www.rpackages.io/package/htmltools"><img src="https://cranlogs.r-pkg.org/badges/grand-total/htmltools" alt="CRAN Downloads"></a></li>
-<li><a href="https://www.rpackages.io/package/htmltools"><img src="https://cranlogs.r-pkg.org/badges/htmltools" alt="monthly"></a></li>
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: experimental"></a></li>
+<li><a href="https://github.com/rstudio/htmltools" class="external-link"><img src="https://github.com/rstudio/htmltools/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R build status"></a></li>
+<li><a href="https://CRAN.R-project.org/package=htmltools" class="external-link"><img src="https://www.r-pkg.org/badges/version/htmltools" alt="CRAN status"></a></li>
+<li><a href="https://www.rpackages.io/package/htmltools" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/htmltools" alt="CRAN Downloads"></a></li>
+<li><a href="https://www.rpackages.io/package/htmltools" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/htmltools" alt="monthly"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: experimental"></a></li>
 </ul>
 </div>
-</div>
+
+  </div>
 </div>
 
 
-      <footer></footer>
+      <footer><div class="tidyverse">
+  <p><b>htmltools</b> is an R package developed by <a href="https://rstudio.com" class="external-link">RStudio</a></p>
+</div>
+
+<div class="author">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+</div>
+
+      </footer>
 </div>
 
   
