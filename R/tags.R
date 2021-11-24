@@ -1629,7 +1629,6 @@ restorePreserveChunks <- function(strval, chunks) {
 NULL
 
 #' @rdname knitr_methods
-#' @export
 knit_print.shiny.tag <- function(x, ...) {
   x <- tagify(x)
   output <- surroundSingletons(x)
@@ -1648,7 +1647,6 @@ knit_print.shiny.tag <- function(x, ...) {
 }
 
 #' @rdname knitr_methods
-#' @export
 knit_print.html <- function(x, ...) {
   deps <- resolveDependencies(findDependencies(x, tagify = FALSE))
   knitr::asis_output(htmlPreserve(as.character(x)),
@@ -1656,7 +1654,6 @@ knit_print.html <- function(x, ...) {
 }
 
 #' @rdname knitr_methods
-#' @export
 knit_print.shiny.tag.list <- knit_print.shiny.tag
 
 
