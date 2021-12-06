@@ -1292,6 +1292,14 @@ flattenTagsRaw <- function(x) {
       ret <- unlist(lapply(x, flattenTagsRaw), recursive = FALSE)
       # Copy over attributes put on the original list (ex: html deps)
       mostattributes(ret) <- attributes(x)
+
+      # Copy over individual html deps into the final list
+      # This does not work for attributes in general,
+      # but we can make it work for html deps
+      x_html_deps <- unlist(lapply(x, htmlDependencies), recursive = FALSE)
+      if (length(x_html_deps) > 0) {
+        ret <- attachDependencies(ret, x_html_deps, append = TRUE)
+      }
       ret
     }
   } else {
