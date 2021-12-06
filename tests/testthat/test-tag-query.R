@@ -842,6 +842,30 @@ test_that("adding a class does not reorder attribs", {
   )
 })
 
+test_that("tag list html deps are not lost when tag children are squashed", {
+  # https://github.com/rstudio/htmltools/issues/301
+
+  a_dep <- htmlDependency(name = "A", version = 1, src = "a.js")
+  b_dep <- htmlDependency(name = "B", version = 2, src = "b.js")
+  c_dep <- htmlDependency(name = "C", version = 3, src = "c.js")
+
+  children <-
+    attachDependencies(
+      list(
+        attachDependencies(list("X", "Y"), a_dep),
+        "Z"
+      ),
+      list(b_dep, c_dep)
+    )
+
+  html <- div("test", children)
+  tq_html <- tagQuery(html)$allTags()
+
+  tq_deps <- findDependencies(tq_html$children)
+  expect_length(tq_deps, 3)
+  expect_equal(tq_deps, list(b_dep, c_dep, a_dep))
+})
+
 
 
 
