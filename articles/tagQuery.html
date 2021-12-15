@@ -164,8 +164,8 @@
 <span class="va">tagQ</span><span class="op">$</span><span class="fu">children</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; &lt;span&gt;foo&lt;/span&gt;</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">length</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 2</span></code></pre></div>
+<span class="va">tagQ</span><span class="op">$</span><span class="fu">children</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">length</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 1</span></code></pre></div>
 <p>And since <code>$find()</code> considers all descendants, it allows for <a href="https://www.w3.org/TR/CSS22/selector.html#descendant-selectors" class="external-link">descendant selectors</a> (space) and direct <a href="https://www.w3.org/TR/CSS22/selector.html#child-selectors" class="external-link">child selectors</a> (&gt;).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -439,7 +439,7 @@
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span>
 <span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/bench/man/mark.html" class="external-link">mark</a></span><span class="op">(</span>
+<span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="http://bench.r-lib.org/reference/mark.html" class="external-link">mark</a></span><span class="op">(</span>
   tagQuery <span class="op">=</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span><span class="op">$</span>
     <span class="fu">find</span><span class="op">(</span><span class="st">"p"</span><span class="op">)</span><span class="op">$</span>
     <span class="fu">prepend</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
@@ -454,8 +454,8 @@
 <span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span>
 <span class="co">#&gt;   expression   min median `itr/sec` mem_alloc `gc/sec`</span>
 <span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;bch:expr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> tagQuery   <span style="text-decoration: underline;">1</span>094.  <span style="text-decoration: underline;">1</span>131.      882.    11.4KB     8.28</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> tagAppend  <span style="text-decoration: underline;">2</span>028.  <span style="text-decoration: underline;">2</span>084.      480.    50.5KB     8.38</span></code></pre></div>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> tagQuery    845.  <span style="text-decoration: underline;">1</span>139.      887.    11.4KB     8.29</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> tagAppend  <span style="text-decoration: underline;">1</span>768.  <span style="text-decoration: underline;">2</span>090.      480.    50.5KB     8.39</span></code></pre></div>
 </div>
   </div>
 
@@ -475,7 +475,7 @@
 
 <div class="author">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>

@@ -87,9 +87,10 @@ not to perform HTML escaping on it."><meta property="og:image" content="https://
 not to perform HTML escaping on it.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">HTML</span><span class="op">(</span><span class="va">text</span>, <span class="va">...</span>, .noWS <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">HTML</span><span class="op">(</span><span class="va">text</span>, <span class="va">...</span>, .noWS <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>text</dt>
@@ -107,11 +108,10 @@ normally be written around this HTML. Valid options include <code>before</code>,
     <h2>Value</h2>
     <p>The input <code>text</code>, but marked as HTML.</p>
     </div>
-    </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">el</span> <span class="op">&lt;-</span> <span class="fu"><a href="builder.html">div</a></span><span class="op">(</span><span class="fu">HTML</span><span class="op">(</span><span class="st">"I like &lt;u&gt;turtles&lt;/u&gt;"</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">el</span> <span class="op">&lt;-</span> <span class="fu"><a href="builder.html">div</a></span><span class="op">(</span><span class="fu">HTML</span><span class="op">(</span><span class="st">"I like &lt;u&gt;turtles&lt;/u&gt;"</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">el</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;div&gt;I like &lt;u&gt;turtles&lt;/u&gt;&lt;/div&gt;</span>
 <span class="r-in"></span>
@@ -129,7 +129,7 @@ normally be written around this HTML. Valid options include <code>before</code>,
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer></div>

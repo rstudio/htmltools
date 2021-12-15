@@ -93,9 +93,10 @@ evaluated with <code>tags</code> searched first, so you can simply use
 <code><a href="builder.html">div()</a></code> and <code><a href="builder.html">p()</a></code>.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">withTags</span><span class="op">(</span><span class="va">code</span>, .noWS <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">withTags</span><span class="op">(</span><span class="va">code</span>, .noWS <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>code</dt>
@@ -112,11 +113,10 @@ HTML tag function, such as <code><a href="https://rdrr.io/r/base/source.html" cl
 the tag function. To call the intended (non-tags function), specify the
 namespace, as in <code><a href="https://rdrr.io/r/base/source.html" class="external-link">base::source()</a></code> or <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">base::summary()</a></code>.</p>
     </div>
-    </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Using tags$ each time</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Using tags$ each time</span></span>
 <span class="r-in"><span class="va">tags</span><span class="op">$</span><span class="fu">div</span><span class="op">(</span>class <span class="op">=</span> <span class="st">"myclass"</span>,</span>
 <span class="r-in">  <span class="va">tags</span><span class="op">$</span><span class="fu">h3</span><span class="op">(</span><span class="st">"header"</span><span class="op">)</span>,</span>
 <span class="r-in">  <span class="va">tags</span><span class="op">$</span><span class="fu">p</span><span class="op">(</span><span class="st">"text"</span><span class="op">)</span></span>
@@ -164,7 +164,7 @@ namespace, as in <code><a href="https://rdrr.io/r/base/source.html" class="exter
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer></div>
