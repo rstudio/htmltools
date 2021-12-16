@@ -427,13 +427,27 @@ tagQueryAsTagErr <- function() {
 #' [`jQuery`](https://jquery.com/) inspired interface for querying and modifying
 #' [tag()] (and [tagList()]) objects.
 #'
+#' @section Altered Tag structure:
+#'
+#' For performance reasons, the input tag structure to `tagQuery()` will be
+#' altered into a consistently expected shape.
+#'
+#' Some alterations include:
+#' * tags flattening their `$children` fields into a single `list()`
+#' * tags relocating any attribute `html_dependency() to be located in `$children`
+#' * `tagList()`-like structures relocating any attribute html dependency to
+#'   be a entry in its list structure.
+#'
+#' While the resulting tag shape has possibly changed,
+#' `tagQuery()`'s' resulting tags will still render
+#' to the same HTML value (ex: [`renderTags()`]) and
+#' HTML dependencies (ex: [`findDependencies()`]).
+#'
 #' @param tags A [tag()], [tagList()], or [list()] of tags.
 #' @return A class with methods that are described below. This class can't be
 #'   used directly inside other [tag()] or a [renderTags()] context, but
 #'   underlying HTML tags may be extracted via `$allTags()` or
-#'   `$selectedTags()`. Note: The returned tags will have their `$children`
-#'   fields flattened to a single `list()`, which may not be the same shape
-#'   that was provided to `tagQuery()`.
+#'   `$selectedTags()`.
 #' @export
 tagQuery <- function(tags) {
 
