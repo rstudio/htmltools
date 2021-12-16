@@ -13,15 +13,33 @@ tagQuery(tags)
 A class with methods that are described below. This class can't be
 used directly inside other \code{\link[=tag]{tag()}} or a \code{\link[=renderTags]{renderTags()}} context, but
 underlying HTML tags may be extracted via \verb{$allTags()} or
-\verb{$selectedTags()}. Note: The returned tags will have their \verb{$children}
-fields flattened to a single \code{list()}, which may not be the same shape
-that was provided to \code{tagQuery()}.
+\verb{$selectedTags()}.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}\cr\cr \code{tagQuery()} provides a
 \href{https://jquery.com/}{\code{jQuery}} inspired interface for querying and modifying
 \code{\link[=tag]{tag()}} (and \code{\link[=tagList]{tagList()}}) objects.
 }
+\section{Altered Tag structure}{
+
+
+For performance reasons, the input tag structure to \code{tagQuery()} will be
+altered into a consistently expected shape.
+
+Some alterations include:
+\itemize{
+\item tags flattening their \verb{$children} fields into a single \code{list()}
+\item tags relocating any attribute \verb{html_dependency() to be located in }$children`
+\item \code{tagList()}-like structures relocating any attribute html dependency to
+be a entry in its list structure.
+}
+
+While the resulting tag shape has possibly changed,
+\code{tagQuery()}'s' resulting tags will still render
+to the same HTML value (ex: \code{\link[=renderTags]{renderTags()}}) and
+HTML dependencies (ex: \code{\link[=findDependencies]{findDependencies()}}).
+}
+
 \section{Vignette}{
 To get started with using \code{tagQuery()}, visit
 \url{https://rstudio.github.io/htmltools/articles/tagQuery.html}.

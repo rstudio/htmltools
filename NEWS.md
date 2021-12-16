@@ -2,6 +2,8 @@
 
 ## Bug fixes
 
+* Closed #301: `tagQuery()` was failing to copy all `tagList()` html dependencies within nest child tag lists. `tagQuery()` will now relocate html dependencies as child objects. (#302)
+
 * Closed #290: htmltools previously did not specify which version of fastmap to use, and would fail to install with an old version of fastmap. (#291)
 
 * `copyDependencyToDir()` no longer creates empty directories for dependencies that do not have any files. (@gadenbuie, #276)
