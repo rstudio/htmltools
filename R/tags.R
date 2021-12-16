@@ -1482,22 +1482,22 @@ as.tags.html_dependency <- function(x, ...) {
 #'
 #' @export
 htmlPreserve <- function(x) {
-  raw = getOption("htmltools.preserve.raw", FALSE)
   x <- paste(x, collapse = "\n")
-  if (nzchar(x))
-    if (raw) {
-      # use fenced code block if there are embedded newlines
-      if (grepl("\n", x, fixed = TRUE))
-        sprintf("\n```{=html}\n%s\n```\n", x)
-      # otherwise use inline span
-      else
-        sprintf("`%s`{=html}", x)
-    }
-    else {
-      sprintf("<!--html_preserve-->%s<!--/html_preserve-->", x)
-    }
-  else
-    x
+  # Do nothing for empty string
+  if (!nzchar(x)) {
+    return(x)
+  }
+  # rmarkdown sets this option to TRUE to leverage various benefits
+  # that come with preserving HTML via pandoc 2.0's raw attribute feature
+  # https://github.com/rstudio/rmarkdown/pull/1965#issuecomment-734804176
+  if (!getOption("htmltools.preserve.raw", FALSE)) {
+    return(sprintf("<!--html_preserve-->%s<!--/html_preserve-->", x))
+  }
+  # Always use the block (not inline) form since the latter wraps x in
+  # a <p> tag, which can have unfortunate consequences, most notably
+  # https://github.com/rstudio/flexdashboard/issues/379
+  # https://github.com/rstudio/rmarkdown/issues/2259#issuecomment-995996958
+  sprintf("\n```{=html}\n%s\n```\n", x)
 }
 
 # Temporarily set x in env to value, evaluate expr, and
