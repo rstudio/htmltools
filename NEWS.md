@@ -1,5 +1,9 @@
 # htmltools 0.5.2.9000
 
+## Breaking changes
+
+* Closed #305: `htmlPreserve()` no longer uses inline code blocks for Pandoc's raw attribute feature (i.e., when `options(htmltools.preserve.raw = TRUE)`. As a result, rmarkdown no longer adds an addition `<p>` tag around 'literal' HTML. (#306)
+
 ## Bug fixes
 
 * Closed #301: `tagQuery()` was failing to copy all `tagList()` html dependencies within nest child tag lists. `tagQuery()` will now relocate html dependencies as child objects. (#302)
