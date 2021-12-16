@@ -1280,29 +1280,38 @@ flattenTags <- function(x) {
 # By not calling `as.tags(x)`, tagFunctions are not evaluated and other items
 # are not converted.
 flattenTagsRaw <- function(x) {
-  if (isTag(x) || isTagEnv(x)) {
+  if (isTagEnv(x)) {
+    # For tags, wrap them into a list (which will be unwrapped by caller)
+    list(x)
+  } else if (isTag(x)) {
+    tagDeps <- htmlDependencies(x)
+    # Move the tag's html deps to its children
+    if (length(tagDeps) > 0) {
+      x$children <- c(x$children, tagDeps)
+      htmlDependencies(x) <- NULL
+    }
     # For tags, wrap them into a list (which will be unwrapped by caller)
     list(x)
   } else if (isTagList(x)) {
-    if (length(x) == 0) {
-      # Empty lists are simply returned
-      x
-    } else {
-      # For items that are lists (but not tags), recurse
-      flattened_tags <- lapply(x, flattenTagsRaw)
-      ret <- unlist(flattened_tags, recursive = FALSE)
-      # Copy over attributes put on the original list (ex: html deps)
-      mostattributes(ret) <- attributes(x)
+    # For items that are lists (but not tags), recurse
+    ret <- unlist(lapply(x, flattenTagsRaw), recursive = FALSE)
+    # Copy over attributes put on the original list (ex: html deps)
+    mostattributes(ret) <- attributes(x)
 
-      # Copy over individual html deps into the final list from the flattened tags
-      # This does not work for attributes in general,
-      # but we can make it work for html deps
-      x_html_deps <- unlist(lapply(flattened_tags, htmlDependencies), recursive = FALSE)
-      if (length(x_html_deps) > 0) {
-        ret <- attachDependencies(ret, x_html_deps, append = TRUE)
-      }
-      ret
+    # Append individual html deps into the final list from the flattened tags
+    # It does not work out well to add attributes to `ret`, as the html deps are not found by findDependencies()
+    # Instead, use the _newer_/stable approach of adding the html dep as a direct child
+    tagListDeps <- htmlDependencies(ret)
+    # Append the incoming tagList's html deps to its children
+    tagListDepsLen <- length(tagListDeps)
+    if (tagListDepsLen > 0) {
+      # Do position insert to not lose attrs on ret
+      retLen <- length(ret)
+      ret[(retLen + 1):(retLen + tagListDepsLen)] <- tagListDeps
+      # Remove html deps on ret, as they are now in the children
+      htmlDependencies(ret) <- NULL
     }
+    ret
   } else {
     # This will preserve attributes if x is a character with attribute,
     # like what HTML() produces

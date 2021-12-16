@@ -770,18 +770,6 @@ test_that("tagQuery() allows for tags with extra top level items and will preser
 })
 
 
-test_that("flattenTagsRaw() and flattenTags() do not drop html deps", {
-  testSpan <- span()
-  htmlDependencies(testSpan) <- list(fakeJqueryDep)
-  otherObj <- HTML("test")
-  html <- tagList(div(), testSpan, otherObj)
-  htmlDependencies(html) <- list(fakeJqueryDep)
-
-  expect_equal(flattenTags(html), html)
-  expect_equal(flattenTagsRaw(html), html)
-})
-
-
 test_that("tag methods do not unexpectedly alter tag envs", {
 
   expect_equal_tags(
@@ -842,18 +830,59 @@ test_that("adding a class does not reorder attribs", {
   )
 })
 
-test_that("tag list html deps are not lost when tag children are squashed", {
+
+
+test_that("flattenTagsRaw() and flattenTags() do not drop html deps", {
+  emptyDiv <- div()
+  emptySpan <- span()
+  testSpan <- span("test")
+  otherObj <- HTML("test")
+
+  fakeDep <- function(i) {
+    ret <- fakeJqueryDep
+    ret$i <- i
+    ret
+  }
+
+  # `flattenTagsRaw()` moves html deps on tag lists to children
+  htmlRaw <- tagList(
+    emptyDiv,
+    tagAppendChild(emptySpan, fakeDep(1)),
+    tagAppendChild(testSpan, fakeDep(2)),
+    otherObj,
+    fakeDep(3)
+  )
+
+  htmlDependencies(emptySpan) <- list(fakeDep(1))
+  htmlDependencies(testSpan) <- list(fakeDep(2))
+  html <- tagList(
+    emptyDiv,
+    emptySpan,
+    testSpan,
+    otherObj
+  )
+  htmlDependencies(html) <- list(fakeDep(3))
+
+  expect_equal(flattenTags(html), html)
+  expect_equal(flattenTagsRaw(html), htmlRaw)
+})
+
+test_that("flattenTagsRaw(): tag list html deps are not lost when tag children are squashed", {
   # https://github.com/rstudio/htmltools/issues/301
 
   a_dep <- htmlDependency(name = "A", version = 1, src = "a.js")
   b_dep <- htmlDependency(name = "B", version = 2, src = "b.js")
   c_dep <- htmlDependency(name = "C", version = 3, src = "c.js")
+  d_dep <- htmlDependency(name = "D", version = 4, src = "d.js")
+
+  z <- div("Z")
+  z$children <- list(attachDependencies(list("z1"), d_dep))
 
   children <-
     attachDependencies(
       list(
         attachDependencies(list("X", "Y"), a_dep),
-        "Z"
+        z
       ),
       list(b_dep, c_dep)
     )
@@ -862,8 +891,8 @@ test_that("tag list html deps are not lost when tag children are squashed", {
   tq_html <- tagQuery(html)$allTags()
 
   tq_deps <- findDependencies(tq_html$children)
-  expect_length(tq_deps, 3)
-  expect_equal(tq_deps, list(b_dep, c_dep, a_dep))
+  expect_length(tq_deps, 4)
+  expect_equal(tq_deps, list(a_dep, d_dep, b_dep, c_dep))
 })
 
 
