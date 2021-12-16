@@ -103,8 +103,23 @@ tag() (and tagList()) objects."><meta property="og:image" content="https://rstud
     <p>A class with methods that are described below. This class can't be
 used directly inside other <code><a href="builder.html">tag()</a></code> or a <code><a href="renderTags.html">renderTags()</a></code> context, but
 underlying HTML tags may be extracted via <code>$allTags()</code> or
-<code>$selectedTags()</code>. Note: The returned tags will have their <code>$children</code>fields flattened to a single <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>, which may not be the same shape
-that was provided to <code>tagQuery()</code>.</p>
+<code>$selectedTags()</code>.</p>
+    </div>
+    <div id="altered-tag-structure">
+    <h2>Altered Tag structure</h2>
+    
+
+
+<p>For performance reasons, the input tag structure to <code>tagQuery()</code> will be
+altered into a consistently expected shape.</p>
+<p>Some alterations include:</p><ul><li><p>tags flattening their <code>$children</code> fields into a single <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code></p></li>
+<li><p>tags relocating any attribute <code>html_dependency() to be located in </code>$children`</p></li>
+<li><p><code><a href="tagList.html">tagList()</a></code>-like structures relocating any attribute html dependency to
+be a entry in its list structure.</p></li>
+</ul><p>While the resulting tag shape has possibly changed,
+<code>tagQuery()</code>'s' resulting tags will still render
+to the same HTML value (ex: <code><a href="renderTags.html">renderTags()</a></code>) and
+HTML dependencies (ex: <code><a href="findDependencies.html">findDependencies()</a></code>).</p>
     </div>
     <div id="vignette">
     <h2>Vignette</h2>
