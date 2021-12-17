@@ -7,11 +7,11 @@
 \alias{knit_print.shiny.tag.list}
 \title{Knitr S3 methods}
 \usage{
-knit_print.shiny.tag(x, ...)
+knit_print.shiny.tag(x, ..., inline = FALSE)
 
-knit_print.html(x, ...)
+knit_print.html(x, ..., inline = FALSE)
 
-knit_print.shiny.tag.list(x, ...)
+knit_print.shiny.tag.list(x, ..., inline = FALSE)
 }
 \arguments{
 \item{x}{Object to knit_print}
