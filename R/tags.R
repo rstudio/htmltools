@@ -1497,9 +1497,7 @@ html_preserve <- function(x, inline = "auto") {
   # that come with preserving HTML via pandoc 2.0's raw attribute feature
   # https://github.com/rstudio/rmarkdown/pull/1965#issuecomment-734804176
   if (!getOption("htmltools.preserve.raw", FALSE)) {
-    return(
-      sprintf("<!--html_preserve-->%s<!--/html_preserve-->", x)
-    )
+    return(sprintf("<!--html_preserve-->%s<!--/html_preserve-->", x))
   }
 
   # With no other context, the presence of line break(s) is used

@@ -1,5 +1,9 @@
 # htmltools 0.5.2.9000
 
+## Breaking changes
+
+* Closed #305: `htmlPreserve()` no longer uses _inline_ code blocks for Pandoc's raw attribute feature when used inside a _non_-inline knitr/rmarkdown code chunk, and as a result, in this case, an additional `<p>` tag is no longer wrapped around the HTML content. (#306)
+
 ## Bug fixes
 
 * Closed #301: `tagQuery()` was failing to copy all `tagList()` html dependencies within nest child tag lists. `tagQuery()` will now relocate html dependencies as child objects. (#302)
