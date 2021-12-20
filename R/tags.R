@@ -1482,7 +1482,7 @@ as.tags.html_dependency <- function(x, ...) {
 #'
 #' @export
 htmlPreserve <- function(x) {
-  html_preserve(x)
+  html_preserve(x, inline = "auto")
 }
 
 html_preserve <- function(x, inline = "auto") {
