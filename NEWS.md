@@ -2,7 +2,7 @@
 
 ## Breaking changes
 
-* Closed #305: `htmlPreserve()` no longer uses inline code blocks for Pandoc's raw attribute feature (i.e., when `options(htmltools.preserve.raw = TRUE)`. As a result, rmarkdown no longer adds an addition `<p>` tag around 'literal' HTML. (#306)
+* Closed #305: `htmlPreserve()` no longer uses _inline_ code blocks for Pandoc's raw attribute feature when used inside a _non_-inline knitr/rmarkdown code chunk, and as a result, in this case, an additional `<p>` tag is no longer wrapped around the HTML content. (#306)
 
 ## Bug fixes
 
