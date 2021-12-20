@@ -88,11 +88,11 @@ knitr/rmarkdown documents.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">knit_print.shiny.tag</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">knit_print.shiny.tag</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span>, inline <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="fu">knit_print.html</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span>
+<span class="fu">knit_print.html</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span>, inline <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="fu">knit_print.shiny.tag.list</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+<span class="fu">knit_print.shiny.tag.list</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span>, inline <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -101,6 +101,8 @@ knitr/rmarkdown documents.</p>
 <dd><p>Object to knit_print</p></dd>
 <dt>...</dt>
 <dd><p>Additional knit_print arguments</p></dd>
+<dt>inline</dt>
+<dd><p>Whether or not the code chunk is inline.</p></dd>
 </dl></div>
 
   </div>
