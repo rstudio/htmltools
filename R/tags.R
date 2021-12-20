@@ -1500,17 +1500,14 @@ html_preserve <- function(x, inline = "auto") {
     return(sprintf("<!--html_preserve-->%s<!--/html_preserve-->", x))
   }
 
-  # With no other context, the presence of line break(s) is used
-  # to determine whether a block or inline code chunk should be
-  # used for pandoc's raw attributes. This is problematic, however, when
-  # embedding shiny apps in flexdashboard (for example) since the inline form
-  # adds an additional <p> tag around the HTML (iframe in that case, which can
-  # mess up the computed height since the parent-child relationship is changed)
-  # https://github.com/rstudio/flexdashboard/issues/379
-  # https://github.com/rstudio/rmarkdown/issues/2259#issuecomment-995996958
-  #
+  # With no other context, the presence of line break(s) determines whether a
+  # block or inline code chunk is used for pandoc's raw attributes (the inline
+  # version may add an additional <p> tag around the HTML (which can be
+  # problematic, for instance, when embedding shiny inside flexdashboard)
   # Thankfully knitr::knit_print() can tell us whether we're inside a inline
   # code which is why this is here essentially just for non-knit usage
+  # https://github.com/rstudio/flexdashboard/issues/379
+  # https://github.com/rstudio/rmarkdown/issues/2259#issuecomment-995996958
   if (identical(inline, "auto")) {
     inline <- grepl(x, "\n", fixed = TRUE)
   }
@@ -1686,6 +1683,7 @@ restorePreserveChunks <- function(strval, chunks) {
 #' @name knitr_methods
 #' @param x Object to knit_print
 #' @param ... Additional knit_print arguments
+#' @param inline Whether or not the code chunk is inline.
 NULL
 
 #' @rdname knitr_methods

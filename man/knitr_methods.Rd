@@ -17,6 +17,8 @@ knit_print.shiny.tag.list(x, ..., inline = FALSE)
 \item{x}{Object to knit_print}
 
 \item{...}{Additional knit_print arguments}
+
+\item{inline}{Whether or not the code chunk is inline.}
 }
 \description{
 These S3 methods are necessary to allow HTML tags to print themselves in
