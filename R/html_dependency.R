@@ -355,7 +355,10 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   dependency$src$file <- normalizePath(target_dir, "/", TRUE)
 
   files <- if (dependency$all_files) list.files(dir) else {
-    unlist(dependency[c('script', 'stylesheet', 'attachment')])
+    c(
+      src_script(dependency[["script"]]),
+      unlist(dependency[c('stylesheet', 'attachment')])
+    )
   }
 
   if (length(files) == 0) {
@@ -387,6 +390,23 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   }, srcfiles, destfiles, isdir)
 
   dependency
+}
+
+src_script <- function(script, allow_unnamed_list = TRUE) {
+  if (is.null(script) || is.character(script)) return(script)
+  if (!is.list(script)) stop(
+    "Script must be specified as a character vector, a named list, ",
+    "or a unnamed list combining the former two. ",
+    "See `?htmltools::htmlDependency` for the detail."
+  )
+
+  if (rlang::is_named(script)) return(script[["src"]])
+  if (!allow_unnamed_list) stop(
+    "When script is specified by an unnamed list, its elements must be ",
+    "character vectors or named lists.",
+    "See `?htmltools::htmlDependency` for the detail."
+  )
+  unlist(lapply(script, src_script, allow_unnamed_list = FALSE))
 }
 
 dir_exists <- function(paths) {
