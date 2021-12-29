@@ -371,10 +371,10 @@ test_that("copyDependencyToDir() supports script as character or list", {
       htmlDependency(name = "example", version = "1.0", src = src, ...),
       outputDir = outputDir
     )
-    all(file.exists(file.path(outputDir, src_script(script))))
+    all(file.exists(file.path(outputDir, "example-1.0", script)))
   }
   for (all_files in c(TRUE, FALSE)) {
-    expect_true(copy_dep(script = script, all_files = TRUE))
+    expect_true(copy_dep(script = script, all_files = all_files))
     expect_true(copy_dep(script = list(src = script), all_files = all_files))
     expect_true(copy_dep(
       script = list(
