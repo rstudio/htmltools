@@ -357,3 +357,31 @@ test_that("copyDependencyToDir() doesn't create an empty directory", {
   # to keep relativeTo() from throwing an error later in Rmd render process
   expect_match(copied_dep$src$file, normalizePath(tmp_rmd, "/", TRUE), fixed = TRUE)
 })
+
+test_that("copyDependencyToDir() supports script as character or list", {
+  # Prepare example data
+  src <- tempfile()
+  dir.create(src, showWarnings = FALSE)
+  script <- c("1.js", "2.js")
+  invisible(file.create(file.path(src, script)))
+  copy_dep <- function(...) {
+    outputDir = tempfile()
+    dir.create(outputDir, showWarnings = FALSE)
+    copyDependencyToDir(
+      htmlDependency(name = "example", version = "1.0", src = src, ...),
+      outputDir = outputDir
+    )
+    all(file.exists(file.path(outputDir, src_script(script))))
+  }
+  for (all_files in c(TRUE, FALSE)) {
+    expect_true(copy_dep(script = script, all_files = TRUE))
+    expect_true(copy_dep(script = list(src = script), all_files = all_files))
+    expect_true(copy_dep(
+      script = list(
+        script[1L],
+        list(src = script[2L], defer = NA)
+      ),
+      all_files = all_files
+    ))
+  }
+})
