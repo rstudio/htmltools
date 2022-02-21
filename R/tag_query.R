@@ -598,7 +598,7 @@ tagQuery_ <- function(
         },
         #' ### Siblings
         #'
-        #' * `siblings(cssSelector = NULL)`: Get the
+        #' * `$siblings(cssSelector = NULL)`: Get the
         #' siblings of each selected tag, optionally filtered by a
         #' `cssSelector`.
         siblings = function(cssSelector = NULL) {
