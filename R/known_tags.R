@@ -27,8 +27,8 @@ known_tags <- c(
   "code",               # html
   "col",                # html
   "colgroup",           # html
-  "color-profile",      #      svg
-  "command",            #
+  "color-profile",      #          deprecated
+  "command",            #          deprecated
   "data",               # html
   "datalist",           # html
   "dd",                 # html
@@ -45,7 +45,7 @@ known_tags <- c(
   "ellipse",            #      svg
   "em",                 # html
   "embed",              # html
-  "eventsource",        #
+  "eventsource",        #          deprecated
   "feBlend",            #      svg
   "feColorMatrix",      #      svg
   "feComponentTransfer",#      svg
@@ -89,7 +89,7 @@ known_tags <- c(
   "hatchpath",          #      svg
   "head",               # html
   "header",             # html
-  "hgroup",             # html
+  "hgroup",             #          deprecated
   "hr",                 # html
   "html",               # html
   "i",                  # html
@@ -99,7 +99,7 @@ known_tags <- c(
   "input",              # html
   "ins",                # html
   "kbd",                # html
-  "keygen",             #
+  "keygen",             #          deprecated
   "label",              # html
   "legend",             # html
   "li",                 # html
@@ -111,6 +111,7 @@ known_tags <- c(
   "mark",               # html
   "marker",             #      svg
   "mask",               #      svg
+  "math",               # html
   "menu",               # html
   "meta",               # html
   "metadata",           #      svg
@@ -130,15 +131,16 @@ known_tags <- c(
   "picture",            # html
   "polygon",            #      svg
   "polyline",           #      svg
+  "portal",             # html
   "pre",                # html
   "progress",           # html
   "q",                  # html
   "radialGradient",     #      svg
-  "rb",                 # html
+  "rb",                 #          deprecated
   "rect",               #      svg
   "rp",                 # html
   "rt",                 # html
-  "rtc",                # html
+  "rtc",                #          deprecated
   "ruby",               # html
   "s",                  # html
   "samp",               # html
@@ -148,7 +150,7 @@ known_tags <- c(
   "set",                #      svg
   "slot",               # html
   "small",              # html
-  "solidcolor",         #      svg
+  "solidcolor",         #          deprecated
   "source",             # html
   "span",               # html
   "stop",               #      svg
@@ -157,7 +159,7 @@ known_tags <- c(
   "sub",                # html
   "summary",            # html
   "sup",                # html
-  "svg",                #      svg
+  "svg",                # html svg
   "switch",             #      svg
   "symbol",             #      svg
   "table",              # html

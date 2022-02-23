@@ -3,47 +3,77 @@
 ## This script web scrapes two Mozilla websites for HTML and SVG tag elements.
 ## All HTML tags
 
+library(rvest)
+library(dplyr)
 
-library(magrittr)
+# Note: Mozilla seems to have a more up to date set of what is possible / not obsolete compared to W3 schools
+base_url <- "https://developer.mozilla.org/en-US/docs/Web"
+
+html_tag_dfs <- read_html(file.path(base_url, "HTML", "Element")) %>%
+  html_table()
+
+# The last table is obsolete/deprecated elements
+n_dfs <- length(html_tag_dfs)
+
+html_tags_df <- html_tag_dfs[-n_dfs] %>%
+  bind_rows() %>%
+  # h1-h6 all appear in one comma-separated row
+  mutate(name = strsplit(Element, ", ")) %>%
+  tidyr::unnest(name) %>%
+  select(Element = name, Description) %>%
+  transmute(
+    name = sub("^<", "", sub(">$", "", Element)),
+    desc = paste(
+      Description, "Learn more at",
+      file.path(base_url, "HTML", "Element", name)
+    )
+  )
+
+svg <- read_html(file.path(base_url, "SVG", "Element"))
+
+# Due to a lack of structure on the SVG page,
+# this seems to be the best way to target just
+# the hyperlinks under the "SVG elements A to Z" section
+svg_tags <- lapply(letters, function(x) {
+  html_elements(svg, sprintf("h3[id=%s] + div > ul > li > a", x)) %>%
+    html_attr("href") %>%
+    basename()
+})
+
+# TODO: evenetually it might be nice to also scrape
+# the descriptions by following the url
+svg_tags_df <- tibble(
+  name = unlist(svg_tags),
+  desc = sprintf(
+    "Creates the <%s> SVG element. Learn more at %s",
+    name, file.path(base_url, "SVG", "Element", name)
+  )
+)
 
 
-get_tags <- function(url, css) {
-  url %>%
-    httr::GET() %>%
-    httr::content() %>%
-    rvest::html_nodes(css) %>%
-    rvest::html_text() %>%
-    sub("^<", "", .) %>%
-    sub(">$", "", .) %>%
-    sort() %>%
-    unique() %>%
-    print()
-}
+# Save a JSON version so other languages can read them in easily
+cat(
+  jsonlite::toJSON(html_tags_df),
+  file = "scripts/html_tags.json"
+)
 
-## W3 Schools
-## Mozilla seemed to have a more up to date set of what is possible / not obsolete
-# w3html_tags <- get_tags("https://www.w3schools.com/tags/default.asp", "#htmltags tr td:first-child a:not(.notsupported)")
-## Had extra tags not seen in other places `altGlyph`
-# w3svg_tags <- get_tags("https://www.w3schools.com/graphics/svg_reference.asp", "#main td:first-child")
+cat(
+  jsonlite::toJSON(svg_tags_df),
+  file = "scripts/svg_tags.json"
+)
 
-## W3 Standard
-# # The original spec websites made it very hard to determine what was obsolete / shouldn't be used and what was to be used
-# html_tags <- get_tags("https://www.w3.org/TR/2018/WD-html53-20181018/single-page.html", "dfn[data-dfn-type='element']")
-# svg_tags <- get_tags("https://svgwg.org/svg2-draft/single-page.html", "dfn[data-dfn-type='element']")
-
-
-## Mozilla
-# do not include the last section of obsolete tags
-html_tags <- get_tags("https://developer.mozilla.org/en-US/docs/Web/HTML/Element", "article table:not(:last-child) td:first-child code")
-# html_tags_obsolete <- get_tags("https://developer.mozilla.org/en-US/docs/Web/HTML/Element", "#content table:last-child td:first-child a")
-
-# do not include tags that do not contain documentation articles
-# Only pull from the index, as elements not in the index are considered obsolete. (ex: altGlyph or font-face)
-svg_tags <- get_tags("https://developer.mozilla.org/en-US/docs/Web/SVG/Element", "article .index a:not([rel='nofollow']) code")
+html_tags <- html_tags_df$name
+svg_tags <- svg_tags_df$name
 
 
 # Both SVG2 and HTML5
 svg_tags[svg_tags %in% html_tags]
+#> [1] "a"  "script" "style"  "svg"  "title"
+
+
+new_tags <- c(svg_tags, html_tags) %>%
+  unique() %>%
+  sort()
 
 # Call using callr::r to avoid any devtools loaded htmltools::tags namespace issues
 cran_tags <- callr::r(
@@ -54,30 +84,43 @@ cran_tags <- callr::r(
   show = TRUE
 )
 
-new_tags <- c(svg_tags, html_tags) %>% unique() %>% sort()
-
 # tags which should not HTML5 / SVG2 supported
 setdiff(cran_tags, new_tags)
-#> "command"     "eventsource" "keygen"
+#> [1] "color-profile" "command"       "eventsource"   "hgroup"
+#> [5] "keygen"        "rb"            "rtc"           "solidcolor"
 
 
 # New HTML5 tags
 setdiff(html_tags, cran_tags)
-#> "rb"   "rtc"  "slot"
+#> "portal" "math"
+
 # New SVG2 tags
 setdiff(svg_tags, cran_tags)
-### ...basically all svg tags
+#> character(0)
 
 # combine old and new tags so that old tags are not lost
-save_tags <- c(new_tags, cran_tags) %>% unique() %>% sort()
-
-# Save a JSON version so other languages can read them in easily
-cat(jsonlite::toJSON(save_tags), file = "scripts/known_tags.json")
+save_tags <- c(new_tags, cran_tags) %>%
+  unique() %>%
+  sort()
 
 save_line <- paste0(
-  format(paste0("  \"", save_tags, "\"", ifelse(seq_along(save_tags) == length(save_tags), "", ",")), justify = "left"), "#",
-  ifelse(save_tags %in% html_tags, " html", "     "),
-  ifelse(save_tags %in% svg_tags, " svg", "")
+  format(
+    paste0(
+      "  \"", save_tags, "\"",
+      ifelse(
+        seq_along(save_tags) == length(save_tags),
+        "", ","
+      )
+    ),
+    justify = "left"
+  ),
+  "#",
+  case_when(
+    save_tags %in% html_tags & save_tags %in% svg_tags ~ " html svg",
+    save_tags %in% html_tags ~ " html",
+    save_tags %in% svg_tags ~  "      svg",
+    TRUE ~  "          deprecated"
+  )
 ) %>%
   sub("\\s+$", "", .)
 cat(
