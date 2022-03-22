@@ -1192,7 +1192,7 @@ HTML <- function(text, ..., .noWS = NULL) {
 #'
 #' @param code A set of tags.
 #' @param .noWS Default whitespace behavior for all tags within this call to
-#'   `withTags()`. Setting `.noWS` on an individual tag fuction inside
+#'   `withTags()`. Setting `.noWS` on an individual tag function inside
 #'   `withTags()` will override the default. See [tag()] for complete options.
 #'
 #' @examples
