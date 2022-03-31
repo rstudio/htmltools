@@ -354,9 +354,11 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   dir.create(target_dir)
   dependency$src$file <- normalizePath(target_dir, "/", TRUE)
 
-  files <- if (dependency$all_files) list.files(dir) else {
-    unlist(dependency[c('script', 'stylesheet', 'attachment')])
-  }
+  files <- if (dependency$all_files)
+    list.files(dir)
+  else
+    vapply(unlist(dependency[c('script', 'stylesheet', 'attachment')], recursive = FALSE),
+           function(f) if (is.list(f)) f[['src']] else f, "")
 
   if (length(files) == 0) {
     # This dependency doesn't include any files
@@ -366,11 +368,11 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   }
 
   srcfiles <- file.path(dir, files)
-  if (any(!file.exists(srcfiles))) {
+  if (any(bad <- !file.exists(srcfiles))) {
     stop(
       sprintf(
         "Can't copy dependency files that don't exist: '%s'",
-        paste(srcfiles, collapse = "', '")
+        paste(srcfiles[bad], collapse = "', '")
       )
     )
   }
