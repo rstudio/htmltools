@@ -13,7 +13,7 @@
 * `copyDependencyToDir()` no longer creates empty directories for dependencies that do not have any files. (@gadenbuie, #276)
 
 * Closed #320: `copyDependencyToDir()` now works with dependencies
-with specified attributes.  (@dmurdoch, #320)
+with specified attributes.  (@dmurdoch, #321)
 
 # htmltools 0.5.2
 
