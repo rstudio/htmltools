@@ -151,3 +151,12 @@ anyUnnamed <- function(x) {
   # List with name attribute; check for any ""
   any(!nzchar(nms))
 }
+
+# Get the source filename out of a script or similar
+# entry.
+pluck_src <- function(x) {
+  if (is.character(x)) return(x)
+  if (is.list(x) && "src" %in% names(x)) return(x$src)
+  if (is.list(x)) return(vapply(x, pluck_src, ""))
+  NULL
+}

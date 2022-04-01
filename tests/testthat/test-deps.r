@@ -363,10 +363,13 @@ test_that("copyDependencyToDir() handles attributes", {
   dir.create(tmp_dep)
   on.exit(unlink(tmp_dep))
 
-  tmp_txt <- basename(tempfile("text", fileext = ".txt"))
-  tmp_path <- file.path(tmp_dep, tmp_txt)
-  writeLines("Some text in the text/plain dep", tmp_path)
-  on.exit(unlink(tmp_path), add = TRUE)
+  tmp_txt <- "temp.txt"
+  path <- file.path(tmp_dep, tmp_txt)
+  writeLines("Some text in the text/plain dep", path)
+
+  tmp_js <- "javascript.js"
+  path <- file.path(tmp_dep, tmp_js)
+  writeLines('console.log("log message");', path)
 
   tmp_rmd <- tempfile("rmd_files")
   dir.create(tmp_rmd)
@@ -384,7 +387,7 @@ test_that("copyDependencyToDir() handles attributes", {
     name = "textPlain",
     version = "9.9.9",
     src = tmp_dep,
-    script = tmp_txt,
+    script = tmp_js,
     all_files = FALSE
   )
 
@@ -392,15 +395,52 @@ test_that("copyDependencyToDir() handles attributes", {
     name = "textPlain",
     version = "9.9.9",
     src = tmp_dep,
-    script = list(tmp_txt,
+    script = list(tmp_js,
                   list(src = tmp_txt, type = "text/plain")),
     all_files = FALSE
   )
-  # None of these should trigger errors as the first two did in
-  # issue #320
+
+  dep_with_one_nested <- htmltools::htmlDependency(
+    name = "textPlain",
+    version = "9.9.9",
+    src = tmp_dep,
+    script = list(list(src = tmp_txt, type = "text/plain")),
+    all_files = FALSE
+  )
+
+  dep_with_missings <- htmltools::htmlDependency(
+    name = "textPlain",
+    version = "9.9.9",
+    src = tmp_dep,
+    script = list(tmp_js,
+                  "foobar1",
+                  list(src = "foobar2")),
+    all_files = FALSE
+  )
+
+  # None of these except the last should trigger errors as
+  # the first two did in issue #320
 
   copyDependencyToDir(dep_with_attributes, tmp_rmd)
+  expect_equal(dir(tmp_rmd, recursive = TRUE),
+               "textPlain-9.9.9/temp.txt")
+
+  unlink(dir(tmp_rmd, recursive = TRUE))
   copyDependencyToDir(dep_with_both, tmp_rmd)
+  expect_equal(dir(tmp_rmd, recursive = TRUE),
+               c("textPlain-9.9.9/javascript.js",
+                 "textPlain-9.9.9/temp.txt"))
+
+  unlink(dir(tmp_rmd, recursive = TRUE))
   copyDependencyToDir(dep_without, tmp_rmd)
-  succeed()
+  expect_equal(dir(tmp_rmd, recursive = TRUE),
+               "textPlain-9.9.9/javascript.js")
+
+  unlink(dir(tmp_rmd, recursive = TRUE))
+  copyDependencyToDir(dep_with_one_nested, tmp_rmd)
+  expect_equal(dir(tmp_rmd, recursive = TRUE),
+               "textPlain-9.9.9/temp.txt")
+
+  expect_error(copyDependencyToDir(dep_with_missings, tmp_rmd))
+
 })

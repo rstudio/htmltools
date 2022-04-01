@@ -356,17 +356,10 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
 
   if (dependency$all_files)
     files <- list.files(dir)
-  else {
-    file_list <- c(dependency[['script']],
-                   dependency[['stylesheet']],
-                   dependency[['attachment']])
-    if (anyUnnamed(file_list))
-      files <- vapply(file_list,
-                      function(f) if (is.list(f)) f[['src']] else f,
-                      "")
-    else
-      files <- file_list[['src']]
-  }
+  else
+    files <- c(pluck_src(dependency$script),
+               pluck_src(dependency$stylesheet),
+               pluck_src(dependency$attachment))
 
   if (length(files) == 0) {
     # This dependency doesn't include any files
