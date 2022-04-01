@@ -357,3 +357,50 @@ test_that("copyDependencyToDir() doesn't create an empty directory", {
   # to keep relativeTo() from throwing an error later in Rmd render process
   expect_match(copied_dep$src$file, normalizePath(tmp_rmd, "/", TRUE), fixed = TRUE)
 })
+
+test_that("copyDependencyToDir() handles attributes", {
+  tmp_dep <- tempfile("dep")
+  dir.create(tmp_dep)
+  on.exit(unlink(tmp_dep))
+
+  tmp_txt <- basename(tempfile("text", fileext = ".txt"))
+  tmp_path <- file.path(tmp_dep, tmp_txt)
+  writeLines("Some text in the text/plain dep", tmp_path)
+  on.exit(unlink(tmp_path), add = TRUE)
+
+  tmp_rmd <- tempfile("rmd_files")
+  dir.create(tmp_rmd)
+  on.exit(unlink(tmp_rmd), add = TRUE)
+
+  dep_with_attributes <- htmltools::htmlDependency(
+    name = "textPlain",
+    version = "9.9.9",
+    src = tmp_dep,
+    script = list(src = tmp_txt, type = "text/plain"),
+    all_files = FALSE
+  )
+
+  dep_without <- htmltools::htmlDependency(
+    name = "textPlain",
+    version = "9.9.9",
+    src = tmp_dep,
+    script = tmp_txt,
+    all_files = FALSE
+  )
+
+  dep_with_both <- htmltools::htmlDependency(
+    name = "textPlain",
+    version = "9.9.9",
+    src = tmp_dep,
+    script = list(tmp_txt,
+                  list(src = tmp_txt, type = "text/plain")),
+    all_files = FALSE
+  )
+  # None of these should trigger errors as the first two did in
+  # issue #320
+
+  copyDependencyToDir(dep_with_attributes, tmp_rmd)
+  copyDependencyToDir(dep_with_both, tmp_rmd)
+  copyDependencyToDir(dep_without, tmp_rmd)
+  succeed()
+})
