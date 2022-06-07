@@ -24,14 +24,14 @@
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
         </div>
       </div>-->
     </div>
@@ -41,7 +41,7 @@
   <a href="../articles/htmltools.html">Get started</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,13 +81,12 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.5.2.9000" id="htmltools-0529000">htmltools 0.5.2.9000<a class="anchor" aria-label="anchor" href="#htmltools-0529000"></a></h2>
+<h2 class="page-header" data-toc-text="0.5.3" id="htmltools-053">htmltools 0.5.3<a class="anchor" aria-label="anchor" href="#htmltools-053"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-0-5-2-9000">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-2-9000"></a></h3>
-<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/305" class="external-link">#305</a>: <code><a href="../reference/htmlPreserve.html">htmlPreserve()</a></code> no longer uses <em>inline</em> code blocks for Pandoc’s raw attribute feature when used inside a <em>non</em>-inline knitr/rmarkdown code chunk, and as a result, in this case, an additional <code>&lt;p&gt;</code> tag is no longer wrapped around the HTML content. (<a href="https://github.com/rstudio/htmltools/issues/306" class="external-link">#306</a>)</li>
-</ul></div>
+<h3 id="breaking-changes-0-5-3">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-3"></a></h3>
+<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/305" class="external-link">#305</a>: <code><a href="../reference/htmlPreserve.html">htmlPreserve()</a></code> no longer uses <em>inline</em> code blocks for Pandoc’s raw attribute feature when used inside a <em>non</em>-inline knitr/rmarkdown code chunk, and as a result, in this case, an additional <code>&lt;p&gt;</code> tag is no longer wrapped around the HTML content. (<a href="https://github.com/rstudio/htmltools/issues/306" class="external-link">#306</a>)</li></ul></div>
 <div class="section level3">
-<h3 id="bug-fixes-0-5-2-9000">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-2-9000"></a></h3>
+<h3 id="bug-fixes-0-5-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-3"></a></h3>
 <ul><li><p>Closed <a href="https://github.com/rstudio/htmltools/issues/301" class="external-link">#301</a>: <code><a href="../reference/tagQuery.html">tagQuery()</a></code> was failing to copy all <code><a href="../reference/tagList.html">tagList()</a></code> html dependencies within nest child tag lists. <code><a href="../reference/tagQuery.html">tagQuery()</a></code> will now relocate html dependencies as child objects. (<a href="https://github.com/rstudio/htmltools/issues/302" class="external-link">#302</a>)</p></li>
 <li><p>Closed <a href="https://github.com/rstudio/htmltools/issues/290" class="external-link">#290</a>: htmltools previously did not specify which version of fastmap to use, and would fail to install with an old version of fastmap. (<a href="https://github.com/rstudio/htmltools/issues/291" class="external-link">#291</a>)</p></li>
 <li><p><code><a href="../reference/copyDependencyToDir.html">copyDependencyToDir()</a></code> no longer creates empty directories for dependencies that do not have any files. (<a href="https://github.com/gadenbuie" class="external-link">@gadenbuie</a>, <a href="https://github.com/rstudio/htmltools/issues/276" class="external-link">#276</a>)</p></li>
@@ -97,8 +96,7 @@
 <h2 class="page-header" data-toc-text="0.5.2" id="htmltools-052">htmltools 0.5.2<small>2021-08-25</small><a class="anchor" aria-label="anchor" href="#htmltools-052"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-5-2">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-2"></a></h3>
-<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/205" class="external-link">#205</a>: When calling <code>tagGetAttribute(x)</code> on an object with a non-atomic attribute, a list of untouched values will be returned. It is still recommended to only store character values inside attributes. (<a href="https://github.com/rstudio/htmltools/issues/212" class="external-link">#212</a>)</li>
-</ul></div>
+<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/205" class="external-link">#205</a>: When calling <code>tagGetAttribute(x)</code> on an object with a non-atomic attribute, a list of untouched values will be returned. It is still recommended to only store character values inside attributes. (<a href="https://github.com/rstudio/htmltools/issues/212" class="external-link">#212</a>)</li></ul></div>
 <div class="section level3">
 <h3 id="new-features--improvements-0-5-2">New Features &amp; Improvements<a class="anchor" aria-label="anchor" href="#new-features--improvements-0-5-2"></a></h3>
 <ul><li><p><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> now has its own <a href="https://pkgdown.r-lib.org" class="external-link">pkgdown</a> site hosted at <a href="https://rstudio.github.io/htmltools/" class="uri">https://rstudio.github.io/htmltools/</a>.</p></li>
@@ -117,8 +115,7 @@
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.1.1" id="htmltools-0511">htmltools 0.5.1.1<small>2021-01-22</small><a class="anchor" aria-label="anchor" href="#htmltools-0511"></a></h2>
-<ul><li>Added shiny as a suggested package.</li>
-</ul></div>
+<ul><li>Added shiny as a suggested package.</li></ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.1" id="htmltools-051">htmltools 0.5.1<small>2021-01-12</small><a class="anchor" aria-label="anchor" href="#htmltools-051"></a></h2>
 <div class="section level3">
@@ -132,13 +129,11 @@
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-0-5-1">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-1"></a></h3>
-<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/161" class="external-link">#161</a>: <code>parseCssColors(x)</code> now requires <code>x</code> to be a character vector (it no longer accepts a <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> of strings) and an error is no longer thrown when <code>mustWork = FALSE</code> and <code>x</code> contains <code>NA</code> value(s). (<a href="https://github.com/rstudio/htmltools/issues/194" class="external-link">#194</a>)</li>
-</ul></div>
+<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/161" class="external-link">#161</a>: <code>parseCssColors(x)</code> now requires <code>x</code> to be a character vector (it no longer accepts a <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> of strings) and an error is no longer thrown when <code>mustWork = FALSE</code> and <code>x</code> contains <code>NA</code> value(s). (<a href="https://github.com/rstudio/htmltools/issues/194" class="external-link">#194</a>)</li></ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-5-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-1"></a></h3>
 <ul><li>
-<code>print(as.tags(x))</code> no longer results in error when <code>x</code> is a generic <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> of tag-like objects. (<a href="https://github.com/rstudio/htmltools/issues/181" class="external-link">#181</a>)</li>
-</ul></div>
+<code>print(as.tags(x))</code> no longer results in error when <code>x</code> is a generic <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> of tag-like objects. (<a href="https://github.com/rstudio/htmltools/issues/181" class="external-link">#181</a>)</li></ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.0" id="htmltools-050">htmltools 0.5.0<small>2020-06-16</small><a class="anchor" aria-label="anchor" href="#htmltools-050"></a></h2>
@@ -149,7 +144,6 @@
 <li><p><code><a href="../reference/css.html">css()</a></code> now returns <code>NULL</code> instead of <code>""</code> when no non-empty properties are specified. (<a href="https://github.com/rstudio/htmltools/issues/145" class="external-link">#145</a>)</p></li>
 <li>
 <p><code>save_html(tags$body(...))</code> no longer results in double</p>
-
 <p>tags being written to the .html file. (Note that <code>save_html(tags$html(...))</code> is not supported at this time.) (<a href="https://github.com/rstudio/htmltools/issues/145" class="external-link">#145</a>)</p>
 </li>
 <li><p>Trailing commas now permited in <code>...</code> arguments to <code><a href="../reference/css.html">css()</a></code>, <code><a href="../reference/tagList.html">tagList()</a></code>, and the var-arg mutation functions: <code><a href="../reference/tagAppendAttributes.html">tagAppendAttributes()</a></code>, <code><a href="../reference/tagAppendChild.html">tagSetChildren()</a></code>, and <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code>. (<a href="https://github.com/rstudio/htmltools/issues/145" class="external-link">#145</a>)</p></li>
@@ -203,12 +197,10 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.7" id="htmltools-027">htmltools 0.2.7<a class="anchor" aria-label="anchor" href="#htmltools-027"></a></h2>
-<ul><li>Add “append” parameter to attachDependencies, to allow adding dependencies, instead of replacing them.</li>
-</ul></div>
+<ul><li>Add “append” parameter to attachDependencies, to allow adding dependencies, instead of replacing them.</li></ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.6" id="htmltools-026">htmltools 0.2.6<small>2014-09-08</small><a class="anchor" aria-label="anchor" href="#htmltools-026"></a></h2>
-<ul><li>Add “attachment” parameter to htmlDependency, which can be used to allow any file in the dependency directory to be available via URL at runtime.</li>
-</ul></div>
+<ul><li>Add “attachment” parameter to htmlDependency, which can be used to allow any file in the dependency directory to be available via URL at runtime.</li></ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.5" id="htmltools-025">htmltools 0.2.5<a class="anchor" aria-label="anchor" href="#htmltools-025"></a></h2>
 <ul><li><p>Explicit library(htmltools) is no longer required for tags to be rendered in knitr/rmarkdown documents.</p></li>
@@ -232,7 +224,7 @@
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>
