@@ -1,4 +1,4 @@
-# htmltools 0.5.2.9000
+# htmltools 0.5.3
 
 ## Breaking changes
 
