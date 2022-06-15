@@ -369,11 +369,12 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   }
 
   srcfiles <- file.path(dir, files)
-  if (any(bad <- !file.exists(srcfiles))) {
+  missing_srcfiles <- !file.exists(srcfiles)
+  if (any(missing_srcfiles)) {
     stop(
       sprintf(
         "Can't copy dependency files that don't exist: '%s'",
-        paste(srcfiles[bad], collapse = "', '")
+        paste(srcfiles[missing_srcfiles], collapse = "', '")
       )
     )
   }
