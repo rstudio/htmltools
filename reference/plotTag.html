@@ -105,41 +105,60 @@
     <dl><dt>expr</dt>
 <dd><p>A plotting expression that generates a plot (or yields an object
 that generates a plot when printed, like a ggplot2).</p></dd>
+
+
 <dt>alt</dt>
 <dd><p>A single-element character vector that contains a text description
 of the image. This is used by accessibility tools, such as screen readers
 for vision impaired users.</p></dd>
+
+
 <dt>device</dt>
 <dd><p>A graphics device function; by default, this will be either
 <code><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">grDevices::png()</a></code>, <code><a href="https://ragg.r-lib.org/reference/agg_png.html" class="external-link">ragg::agg_png()</a></code>, or <code><a href="https://rdrr.io/pkg/Cairo/man/Cairo.html" class="external-link">Cairo::CairoPNG()</a></code>, depending on
 your system and configuration. See <code><a href="defaultPngDevice.html">defaultPngDevice()</a></code>.</p></dd>
+
+
 <dt>width, height</dt>
 <dd><p>The width/height that the generated tag should be
 displayed at, in logical (browser) pixels.</p></dd>
+
+
 <dt>pixelratio</dt>
 <dd><p>Indicates the ratio between physical and logical units of
 length. For PNGs that may be displayed on high-DPI screens, use <code>2</code>;
 for graphics devices that express width/height in inches (like
 <code><a href="https://rdrr.io/r/grDevices/cairo.html" class="external-link">grDevices::svg()</a></code>, try <code>1/72</code> or <code>1/96</code>.</p></dd>
+
+
 <dt>mimeType</dt>
 <dd><p>The MIME type associated with the <code>device</code>. Examples are
 <code>image/png</code>, <code>image/tiff</code>, <code>image/svg+xml</code>.</p></dd>
+
+
 <dt>deviceArgs</dt>
 <dd><p>A list of additional arguments that should be included when
 the <code>device</code> function is invoked.</p></dd>
+
+
 <dt>attribs</dt>
 <dd><p>A list of additional attributes that should be included on the
 generated <code>&lt;img&gt;</code> (e.g. <code>id</code>, <code>class</code>).</p></dd>
+
+
 <dt>suppressSize</dt>
 <dd><p>By default, <code>plotTag</code> will include a <code>style</code>
 attribute with <code>width</code> and <code>height</code> properties specified in
 pixels. If you'd rather specify the image size using other methods (like
 responsive CSS rules) you can use this argument to suppress width
 (<code>"x"</code>), height (<code>"y"</code>), or both (<code>"xy"</code>) properties.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code><a href="browsable.html">browsable()</a></code> HTML <code>&lt;img&gt;</code> tag object. Print it at
+    
+
+<p>A <code><a href="browsable.html">browsable()</a></code> HTML <code>&lt;img&gt;</code> tag object. Print it at
 the console to preview, or call <code><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character()</a></code> on it to view the HTML
 source.</p>
     </div>
@@ -178,7 +197,7 @@ source.</p>
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

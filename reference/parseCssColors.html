@@ -97,16 +97,24 @@ and 8 digit forms, <code><a href="https://rdrr.io/r/grDevices/rgb.html" class="e
     <h2>Arguments</h2>
     <dl><dt>str</dt>
 <dd><p>CSS color strings</p></dd>
+
+
 <dt>mustWork</dt>
 <dd><p>If true, invalid color strings will cause an error; if false,
 then the result will contain <code>NA</code> for invalid colors.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A vector of strings in <code>#RRGGBB</code> or <code>#RRGGBBAA</code> format (the latter is
+    
+
+<p>A vector of strings in <code>#RRGGBB</code> or <code>#RRGGBBAA</code> format (the latter is
 only used for colors whose alpha values are less than <code>FF</code>), or <code>NA</code> for
 invalid colors when <code>mustWork</code> is false. Such strings are suitable for
-use in plots, or parsing with <code><a href="https://rdrr.io/r/grDevices/col2rgb.html" class="external-link">col2rgb()</a></code> (be sure to pass <code>alpha = TRUE</code>to prevent the alpha channel from being discarded).</p>
+use in plots, or parsing with <code><a href="https://rdrr.io/r/grDevices/col2rgb.html" class="external-link">col2rgb()</a></code> (be sure to pass <code>alpha = TRUE</code></p>
+
+
+<p>to prevent the alpha channel from being discarded).</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -140,7 +148,7 @@ values are not understood by Internet Explorer, and must be converted to
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

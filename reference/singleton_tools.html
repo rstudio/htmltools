@@ -97,19 +97,31 @@ hierarchies. Intended for framework authors.</p>
     <h2>Arguments</h2>
     <dl><dt>ui</dt>
 <dd><p>Tag object or lists of tag objects. See <a href="builder.html">builder</a> topic.</p></dd>
+
+
 <dt>singletons</dt>
 <dd><p>Character vector of singleton signatures that have already
 been encountered (i.e. returned from previous calls to
 <code>takeSingletons</code>).</p></dd>
+
+
 <dt>desingleton</dt>
 <dd><p>Logical value indicating whether singletons that are
 encountered should have the singleton attribute removed.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>surroundSingletons</code> preprocesses a tag object by changing any
-singleton X into <code>&lt;!--SHINY.SINGLETON[sig]--&gt;X'&lt;!--/SHINY.SINGLETON[sig]--&gt;</code>where sig is the sha1 of X, and X' is X minus the singleton attribute.
-<code>takeSingletons</code> returns a list with the elements <code>ui</code> (the
+    
+
+<p><code>surroundSingletons</code> preprocesses a tag object by changing any
+singleton X into <code>&lt;!--SHINY.SINGLETON[sig]--&gt;X'&lt;!--/SHINY.SINGLETON[sig]--&gt;</code></p>
+
+
+<p>where sig is the sha1 of X, and X' is X minus the singleton attribute.</p>
+
+
+<p><code>takeSingletons</code> returns a list with the elements <code>ui</code> (the
 processed tag objects with any duplicate singleton objects removed) and
 <code>singletons</code> (the list of known singleton signatures).</p>
     </div>
@@ -126,7 +138,7 @@ processed tag objects with any duplicate singleton objects removed) and
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

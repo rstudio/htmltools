@@ -99,22 +99,33 @@ text processing tools.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>A character vector of HTML to be preserved.</p></dd>
+
+
 <dt>strval</dt>
 <dd><p>Input string from which to extract/restore chunks.</p></dd>
+
+
 <dt>chunks</dt>
 <dd><p>The <code>chunks</code> element of the return value of
 <code>extractPreserveChunks</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>htmlPreserve</code> returns a single-element character vector with
+    
+
+<p><code>htmlPreserve</code> returns a single-element character vector with
 "magic" HTML comments surrounding the original text (unless the original
-text was empty, in which case an empty string is returned).
-<code>extractPreserveChunks</code> returns a list with two named elements:
+text was empty, in which case an empty string is returned).</p>
+
+
+<p><code>extractPreserveChunks</code> returns a list with two named elements:
 <code>value</code> is the string with the regions replaced, and <code>chunks</code> is
 a named character vector where the names are the IDs and the values are the
-regions that were extracted.
-<code>restorePreserveChunks</code> returns a character vector with the
+regions that were extracted.</p>
+
+
+<p><code>restorePreserveChunks</code> returns a character vector with the
 chunk IDs replaced with their original values.</p>
     </div>
     <div id="details">
@@ -160,7 +171,7 @@ substitutions after processing.</p>
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

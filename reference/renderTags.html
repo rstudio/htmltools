@@ -101,17 +101,24 @@ framework libraries, not directly by most users--see
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>Tag object(s) to render</p></dd>
+
+
 <dt>singletons</dt>
 <dd><p>A list of <a href="singleton.html">singleton</a> signatures to consider already
 rendered; any matching singletons will be dropped instead of rendered.
 (This is useful (only?) for incremental rendering.)</p></dd>
+
+
 <dt>indent</dt>
 <dd><p>Initial indent level, or <code>FALSE</code> if no indentation should
 be used.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>renderTags</code> returns a list with the following variables:</p><ul><li><p><code>head</code>: An <code><a href="HTML.html">HTML()</a></code> string that should be included in <code>&lt;head&gt;</code>.</p></li>
+    
+
+<p><code>renderTags</code> returns a list with the following variables:</p><ul><li><p><code>head</code>: An <code><a href="HTML.html">HTML()</a></code> string that should be included in <code>&lt;head&gt;</code>.</p></li>
 <li><p><code>singletons</code>: Character vector of singleton signatures that are
 known after rendering.</p></li>
 <li><p><code>dependencies</code>: A list of <a href="resolveDependencies.html">resolved</a> <code><a href="htmlDependency.html">htmlDependency()</a></code> objects.</p></li>
@@ -138,7 +145,7 @@ and render hooks.</p>
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

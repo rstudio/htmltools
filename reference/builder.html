@@ -144,24 +144,35 @@ A named argument with an <code>NA</code> value is rendered as a boolean attribut
 <li><p>Single-element atomic vectors</p></li>
 <li><p><code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>s containing any combination of the above</p></li>
 </ul></dd>
+
+
 <dt>.noWS</dt>
 <dd><p>Character vector used to omit some of the whitespace that would
 normally be written around this tag. Valid options include <code>before</code>,
 <code>after</code>, <code>outside</code>, <code>after-begin</code>, and <code>before-end</code>.
 Any number of these options can be specified.</p></dd>
+
+
 <dt>.renderHook</dt>
 <dd><p>A function (or list of functions) to call when the <code>tag</code> is rendered. This
 function should have at least one argument (the <code>tag</code>) and return anything
 that can be converted into tags via <code><a href="as.tags.html">as.tags()</a></code>. Additional hooks may also be
 added to a particular <code>tag</code> via <code><a href="tagAddRenderHook.html">tagAddRenderHook()</a></code>.</p></dd>
+
+
 <dt>_tag_name</dt>
 <dd><p>A character string to use for the tag name.</p></dd>
+
+
 <dt>varArgs</dt>
 <dd><p>List of tag attributes and children.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> with a <code>shiny.tag</code> class that can be converted into an
+    
+
+<p>A <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> with a <code>shiny.tag</code> class that can be converted into an
 HTML string via <code><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character()</a></code> and saved to a file with <code><a href="save_html.html">save_html()</a></code>.</p>
     </div>
     <div id="see-also">
@@ -229,7 +240,7 @@ HTML string via <code><a href="https://rdrr.io/r/base/character.html" class="ext
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

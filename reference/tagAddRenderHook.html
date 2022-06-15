@@ -95,17 +95,24 @@ for example, <code><a href="https://rdrr.io/r/base/print.html" class="external-l
     <h2>Arguments</h2>
     <dl><dt>tag</dt>
 <dd><p>A <code><a href="builder.html">tag()</a></code> object.</p></dd>
+
+
 <dt>func</dt>
 <dd><p>A function (<em>hook</em>) to call when the <code>tag</code> is rendered. This function
 should have at least one argument (the <code>tag</code>) and return anything that can
 be converted into tags via <code><a href="as.tags.html">as.tags()</a></code>.</p></dd>
+
+
 <dt>replace</dt>
 <dd><p>If <code>TRUE</code>, the previous hooks will be removed. If <code>FALSE</code>,
 <code>func</code> is appended to the previous hooks.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code><a href="builder.html">tag()</a></code> object with a <code>.renderHooks</code> field containing a list of functions
+    
+
+<p>A <code><a href="builder.html">tag()</a></code> object with a <code>.renderHooks</code> field containing a list of functions
 (e.g. <code>func</code>). When the return value is <em>rendered</em> (such as with <code><a href="as.tags.html">as.tags()</a></code>),
 these functions will be called just prior to writing the HTML.</p>
     </div>
@@ -227,7 +234,7 @@ until it's rendered.</p>
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
