@@ -85,6 +85,8 @@
 #'
 #' @seealso Use [attachDependencies()] to associate a list of
 #'   dependencies with the HTML it belongs with.
+#'   The shape of the `htmlDependency` object is described (in TypeScript code)
+#'   [here](https://github.com/rstudio/shiny/blob/474f1400/srcts/src/shiny/render.ts#L79-L115).
 #'
 #' @export
 htmlDependency <- function(name,

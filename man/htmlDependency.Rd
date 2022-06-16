@@ -115,4 +115,6 @@ function.
 \seealso{
 Use \code{\link[=attachDependencies]{attachDependencies()}} to associate a list of
 dependencies with the HTML it belongs with.
+The shape of the \code{htmlDependency} object is described (in TypeScript code)
+\href{https://github.com/rstudio/shiny/blob/474f1400/srcts/src/shiny/render.ts#L79-L115}{here}.
 }
