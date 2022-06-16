@@ -24,14 +24,14 @@
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
         </div>
       </div>-->
     </div>
@@ -81,12 +81,12 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.5.2.9000" id="htmltools-0529000">htmltools 0.5.2.9000<a class="anchor" aria-label="anchor" href="#htmltools-0529000"></a></h2>
+<h2 class="page-header" data-toc-text="0.5.3" id="htmltools-053">htmltools 0.5.3<a class="anchor" aria-label="anchor" href="#htmltools-053"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-0-5-2-9000">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-2-9000"></a></h3>
+<h3 id="breaking-changes-0-5-3">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-3"></a></h3>
 <ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/305" class="external-link">#305</a>: <code><a href="../reference/htmlPreserve.html">htmlPreserve()</a></code> no longer uses <em>inline</em> code blocks for Pandoc’s raw attribute feature when used inside a <em>non</em>-inline knitr/rmarkdown code chunk, and as a result, in this case, an additional <code>&lt;p&gt;</code> tag is no longer wrapped around the HTML content. (<a href="https://github.com/rstudio/htmltools/issues/306" class="external-link">#306</a>)</li></ul></div>
 <div class="section level3">
-<h3 id="bug-fixes-0-5-2-9000">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-2-9000"></a></h3>
+<h3 id="bug-fixes-0-5-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-3"></a></h3>
 <ul><li><p>Closed <a href="https://github.com/rstudio/htmltools/issues/301" class="external-link">#301</a>: <code><a href="../reference/tagQuery.html">tagQuery()</a></code> was failing to copy all <code><a href="../reference/tagList.html">tagList()</a></code> html dependencies within nest child tag lists. <code><a href="../reference/tagQuery.html">tagQuery()</a></code> will now relocate html dependencies as child objects. (<a href="https://github.com/rstudio/htmltools/issues/302" class="external-link">#302</a>)</p></li>
 <li><p>Closed <a href="https://github.com/rstudio/htmltools/issues/290" class="external-link">#290</a>: htmltools previously did not specify which version of fastmap to use, and would fail to install with an old version of fastmap. (<a href="https://github.com/rstudio/htmltools/issues/291" class="external-link">#291</a>)</p></li>
 <li><p><code><a href="../reference/copyDependencyToDir.html">copyDependencyToDir()</a></code> no longer creates empty directories for dependencies that do not have any files. (<a href="https://github.com/gadenbuie" class="external-link">@gadenbuie</a>, <a href="https://github.com/rstudio/htmltools/issues/276" class="external-link">#276</a>)</p></li>
