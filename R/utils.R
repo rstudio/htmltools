@@ -151,3 +151,24 @@ anyUnnamed <- function(x) {
   # List with name attribute; check for any ""
   any(!nzchar(nms))
 }
+
+# Get source filename(s) out of a script, stylesheet, or attachment entry of an
+# htmlDependency object. The spec is here:
+# https://github.com/rstudio/shiny/blob/474f1400/srcts/src/shiny/render.ts#L79-L115
+# This returns a character vector of filenames.
+#  `attr` should be "src" for script, and "href" for stylesheet and attachment
+find_dep_filenames <- function(x, attr = "src") {
+  # In the case below, the structure is "abc" or c("abc", "xyz")
+  if (is.character(x)) return(x)
+
+  if (is.list(x)) {
+    # In the case below, the structure is list(src="abc")
+    if (!is.null(x[[attr]])) return(x[[attr]])
+
+    # If we get here, the structure is list(list(src="abc"), list(src="xyz")).
+    return(unlist(lapply(x, find_dep_filenames)))
+  }
+
+  # If we get here, we didn't find anything.
+  character(0)
+}
