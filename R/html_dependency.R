@@ -357,9 +357,9 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
   if (dependency$all_files)
     files <- list.files(dir)
   else
-    files <- c(pluck_src(dependency$script),
-               pluck_src(dependency$stylesheet),
-               pluck_src(dependency$attachment))
+    files <- c(find_dep_filenames(dependency$script, "src"),
+               find_dep_filenames(dependency$stylesheet, "href"),
+               find_dep_filenames(dependency$attachment, "href"))
 
   if (length(files) == 0) {
     # This dependency doesn't include any files
