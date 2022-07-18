@@ -94,7 +94,7 @@ evaluated with <code>tags</code> searched first, so you can simply use
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">withTags</span><span class="op">(</span><span class="va">code</span>, .noWS <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">withTags</span><span class="op">(</span><span class="va">code</span>, .noWS <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -119,40 +119,40 @@ namespace, as in <code><a href="https://rdrr.io/r/base/source.html" class="exter
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Using tags$ each time</span></span>
-<span class="r-in"><span class="va">tags</span><span class="op">$</span><span class="fu">div</span><span class="op">(</span>class <span class="op">=</span> <span class="st">"myclass"</span>,</span>
-<span class="r-in">  <span class="va">tags</span><span class="op">$</span><span class="fu">h3</span><span class="op">(</span><span class="st">"header"</span><span class="op">)</span>,</span>
-<span class="r-in">  <span class="va">tags</span><span class="op">$</span><span class="fu">p</span><span class="op">(</span><span class="st">"text"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Using tags$ each time</span></span></span>
+<span class="r-in"><span><span class="va">tags</span><span class="op">$</span><span class="fu">div</span><span class="op">(</span>class <span class="op">=</span> <span class="st">"myclass"</span>,</span></span>
+<span class="r-in"><span>  <span class="va">tags</span><span class="op">$</span><span class="fu">h3</span><span class="op">(</span><span class="st">"header"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="va">tags</span><span class="op">$</span><span class="fu">p</span><span class="op">(</span><span class="st">"text"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;div class="myclass"&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   &lt;h3&gt;header&lt;/h3&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   &lt;p&gt;text&lt;/p&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;/div&gt;</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Equivalent to above, but using withTags</span></span>
-<span class="r-in"><span class="fu">withTags</span><span class="op">(</span></span>
-<span class="r-in">  <span class="fu"><a href="builder.html">div</a></span><span class="op">(</span>class <span class="op">=</span> <span class="st">"myclass"</span>,</span>
-<span class="r-in">    <span class="fu"><a href="builder.html">h3</a></span><span class="op">(</span><span class="st">"header"</span><span class="op">)</span>,</span>
-<span class="r-in">    <span class="fu"><a href="builder.html">p</a></span><span class="op">(</span><span class="st">"text"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Equivalent to above, but using withTags</span></span></span>
+<span class="r-in"><span><span class="fu">withTags</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="builder.html">div</a></span><span class="op">(</span>class <span class="op">=</span> <span class="st">"myclass"</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="builder.html">h3</a></span><span class="op">(</span><span class="st">"header"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="builder.html">p</a></span><span class="op">(</span><span class="st">"text"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;div class="myclass"&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   &lt;h3&gt;header&lt;/h3&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   &lt;p&gt;text&lt;/p&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;/div&gt;</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Setting .noWS for all tags in withTags()</span></span>
-<span class="r-in"><span class="fu">withTags</span><span class="op">(</span></span>
-<span class="r-in">  <span class="fu"><a href="builder.html">div</a></span><span class="op">(</span></span>
-<span class="r-in">    class <span class="op">=</span> <span class="st">"myclass"</span>,</span>
-<span class="r-in">    <span class="fu"><a href="builder.html">h3</a></span><span class="op">(</span><span class="st">"header"</span><span class="op">)</span>,</span>
-<span class="r-in">    <span class="fu"><a href="builder.html">p</a></span><span class="op">(</span><span class="st">"One"</span>, <span class="fu"><a href="builder.html">strong</a></span><span class="op">(</span><span class="fu"><a href="builder.html">span</a></span><span class="op">(</span><span class="st">"two"</span><span class="op">)</span><span class="op">)</span>, <span class="st">"three"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">)</span>,</span>
-<span class="r-in">  .noWS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"outside"</span>, <span class="st">"inside"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Setting .noWS for all tags in withTags()</span></span></span>
+<span class="r-in"><span><span class="fu">withTags</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="builder.html">div</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    class <span class="op">=</span> <span class="st">"myclass"</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="builder.html">h3</a></span><span class="op">(</span><span class="st">"header"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="builder.html">p</a></span><span class="op">(</span><span class="st">"One"</span>, <span class="fu"><a href="builder.html">strong</a></span><span class="op">(</span><span class="fu"><a href="builder.html">span</a></span><span class="op">(</span><span class="st">"two"</span><span class="op">)</span><span class="op">)</span>, <span class="st">"three"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  .noWS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"outside"</span>, <span class="st">"inside"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;div class="myclass"&gt;&lt;h3&gt;header&lt;/h3&gt;&lt;p&gt;One&lt;strong&gt;&lt;span&gt;two&lt;/span&gt;&lt;/strong&gt;three&lt;/p&gt;&lt;/div&gt;</span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -167,7 +167,7 @@ namespace, as in <code><a href="https://rdrr.io/r/base/source.html" class="exter
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

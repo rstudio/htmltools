@@ -86,7 +86,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">tagFunction</span><span class="op">(</span><span class="va">func</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tagFunction</span><span class="op">(</span><span class="va">func</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -108,16 +108,16 @@ structure and utilize a render function.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">myDivDep</span> <span class="op">&lt;-</span> <span class="fu">tagFunction</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"useDep"</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="fu"><a href="htmlDependency.html">htmlDependency</a></span><span class="op">(</span></span>
-<span class="r-in">      name <span class="op">=</span> <span class="st">"lazy-dependency"</span>,</span>
-<span class="r-in">      version <span class="op">=</span> <span class="st">"1.0"</span>, src <span class="op">=</span> <span class="st">""</span></span>
-<span class="r-in">    <span class="op">)</span></span>
-<span class="r-in">  <span class="op">}</span></span>
-<span class="r-in"><span class="op">}</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">myDiv</span> <span class="op">&lt;-</span> <span class="fu"><a href="htmlDependencies.html">attachDependencies</a></span><span class="op">(</span><span class="fu"><a href="builder.html">div</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">myDivDep</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="renderTags.html">renderTags</a></span><span class="op">(</span><span class="va">myDiv</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">myDivDep</span> <span class="op">&lt;-</span> <span class="fu">tagFunction</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"useDep"</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="htmlDependency.html">htmlDependency</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      name <span class="op">=</span> <span class="st">"lazy-dependency"</span>,</span></span>
+<span class="r-in"><span>      version <span class="op">=</span> <span class="st">"1.0"</span>, src <span class="op">=</span> <span class="st">""</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">myDiv</span> <span class="op">&lt;-</span> <span class="fu"><a href="htmlDependencies.html">attachDependencies</a></span><span class="op">(</span><span class="fu"><a href="builder.html">div</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">myDivDep</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="renderTags.html">renderTags</a></span><span class="op">(</span><span class="va">myDiv</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $head</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -144,7 +144,7 @@ structure and utilize a render function.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $html</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;div&gt;&lt;/div&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>useDep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="renderTags.html">renderTags</a></span><span class="op">(</span><span class="va">myDiv</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>useDep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="renderTags.html">renderTags</a></span><span class="op">(</span><span class="va">myDiv</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $head</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -157,7 +157,7 @@ structure and utilize a render function.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $html</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;div&gt;&lt;/div&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -172,7 +172,7 @@ structure and utilize a render function.</p>
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

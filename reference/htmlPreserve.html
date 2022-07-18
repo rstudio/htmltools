@@ -88,11 +88,11 @@ text processing tools.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">htmlPreserve</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
-
-<span class="fu">extractPreserveChunks</span><span class="op">(</span><span class="va">strval</span><span class="op">)</span>
-
-<span class="fu">restorePreserveChunks</span><span class="op">(</span><span class="va">strval</span>, <span class="va">chunks</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">htmlPreserve</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">extractPreserveChunks</span><span class="op">(</span><span class="va">strval</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">restorePreserveChunks</span><span class="op">(</span><span class="va">strval</span>, <span class="va">chunks</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -142,21 +142,21 @@ substitutions after processing.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># htmlPreserve will prevent "&lt;script&gt;alert(10*2*3);&lt;/script&gt;"</span></span>
-<span class="r-in"><span class="co"># from getting an &lt;em&gt; tag inserted in the middle</span></span>
-<span class="r-in"><span class="va">markup</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span>sep <span class="op">=</span> <span class="st">"\n"</span>,</span>
-<span class="r-in">  <span class="st">"This is *emphasized* text in markdown."</span>,</span>
-<span class="r-in">  <span class="fu">htmlPreserve</span><span class="op">(</span><span class="st">"&lt;script&gt;alert(10*2*3);&lt;/script&gt;"</span><span class="op">)</span>,</span>
-<span class="r-in">  <span class="st">"Here is some more *emphasized text*."</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">extracted</span> <span class="op">&lt;-</span> <span class="fu">extractPreserveChunks</span><span class="op">(</span><span class="va">markup</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">markup</span> <span class="op">&lt;-</span> <span class="va">extracted</span><span class="op">$</span><span class="va">value</span></span>
-<span class="r-in"><span class="co"># Just think of this next line as Markdown processing</span></span>
-<span class="r-in"><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\*(.*?)\\*"</span>, <span class="st">"&lt;em&gt;\\1&lt;/em&gt;"</span>, <span class="va">markup</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">restorePreserveChunks</span><span class="op">(</span><span class="va">output</span>, <span class="va">extracted</span><span class="op">$</span><span class="va">chunks</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">output</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># htmlPreserve will prevent "&lt;script&gt;alert(10*2*3);&lt;/script&gt;"</span></span></span>
+<span class="r-in"><span><span class="co"># from getting an &lt;em&gt; tag inserted in the middle</span></span></span>
+<span class="r-in"><span><span class="va">markup</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span>sep <span class="op">=</span> <span class="st">"\n"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"This is *emphasized* text in markdown."</span>,</span></span>
+<span class="r-in"><span>  <span class="fu">htmlPreserve</span><span class="op">(</span><span class="st">"&lt;script&gt;alert(10*2*3);&lt;/script&gt;"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"Here is some more *emphasized text*."</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">extracted</span> <span class="op">&lt;-</span> <span class="fu">extractPreserveChunks</span><span class="op">(</span><span class="va">markup</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">markup</span> <span class="op">&lt;-</span> <span class="va">extracted</span><span class="op">$</span><span class="va">value</span></span></span>
+<span class="r-in"><span><span class="co"># Just think of this next line as Markdown processing</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\*(.*?)\\*"</span>, <span class="st">"&lt;em&gt;\\1&lt;/em&gt;"</span>, <span class="va">markup</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">restorePreserveChunks</span><span class="op">(</span><span class="va">output</span>, <span class="va">extracted</span><span class="op">$</span><span class="va">chunks</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">output</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "This is &lt;em&gt;emphasized&lt;/em&gt; text in markdown.\n&lt;script&gt;alert(10*2*3);&lt;/script&gt;\nHere is some more &lt;em&gt;emphasized text&lt;/em&gt;."</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -171,7 +171,7 @@ substitutions after processing.</p>
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

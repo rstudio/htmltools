@@ -125,14 +125,14 @@
 <p><code><a href="../reference/tagQuery.html">tagQuery()</a></code> provides a <a href="https://jquery.com" class="external-link">jQuery</a> inspired interface to query and modify HTML fragments in R. Learning how to use <code><a href="../reference/tagQuery.html">tagQuery()</a></code> directly gives you a very fast and flexible way to extract and modify HTML tags. Some other <a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> functions like <code><a href="../reference/tagAppendAttributes.html">tagAppendAttributes()</a></code> actually use <code><a href="../reference/tagQuery.html">tagQuery()</a></code> when <code>.cssSelector</code> is supplied, but only offer a subset of the functionality the <code><a href="../reference/tagQuery.html">tagQuery()</a></code> API provides, and can be significantly slower when multiple modifications are needed (for details, see <a href="#performance">performance</a>).</p>
 <p>To create a <code><a href="../reference/tagQuery.html">tagQuery()</a></code> object, pass it either a <code><a href="../reference/builder.html">tag()</a></code> (e.g., <code><a href="../reference/builder.html">div()</a></code>) or <code><a href="../reference/tagList.html">tagList()</a></code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a></span><span class="op">)</span>
-<span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; `$allTags()`:</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; `$selectedTags()`: `$allTags()`</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `$allTags()`:</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; `$selectedTags()`: `$allTags()`</span></span></code></pre></div>
 <p>Notice how <code><a href="../reference/tagQuery.html">tagQuery()</a></code> tracks two essential pieces: the input tag(s) as well as <em>selected</em> tags (by default the input tag(s) are selected). This data structure allows us to <a href="#performance">efficiently</a> <a href="#query">query</a>, <a href="#modify">modify</a>, and <a href="#replace">replace</a> particular fragments of the root HTML tag.</p>
 <p>Since <code><a href="../reference/tagQuery.html">tagQuery()</a></code> isn’t itself a <code><a href="../reference/builder.html">tag()</a></code> object, it can’t be passed directly to <code><a href="../reference/builder.html">tag()</a></code> or tag rendering functions, but at any given time you can extract <code>$allTags()</code> or the <code>$selectedTags()</code>.</p>
 <div class="section level2">
@@ -144,148 +144,148 @@
 </h3>
 <p>To begin querying tags, start with either <code>$find()</code> or <code>$children()</code>. The former traverses <em>all</em> descendants whereas the latter only considers <em>direct</em> descendants.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="st">"foo"</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;span&gt;foo&lt;/span&gt;</span>
-<span class="co">#&gt;   &lt;div&gt;</span>
-<span class="co">#&gt;     &lt;span&gt;bar&lt;/span&gt;</span>
-<span class="co">#&gt;   &lt;/div&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="st">"foo"</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;span&gt;foo&lt;/span&gt;</span></span>
+<span><span class="co">#&gt;   &lt;div&gt;</span></span>
+<span><span class="co">#&gt;     &lt;span&gt;bar&lt;/span&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/div&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;span&gt;foo&lt;/span&gt;</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; [[2]]</span>
-<span class="co">#&gt; &lt;span&gt;bar&lt;/span&gt;</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">length</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 2</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">children</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;span&gt;foo&lt;/span&gt;</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">children</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">length</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 1</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;span&gt;foo&lt;/span&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; &lt;span&gt;bar&lt;/span&gt;</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">length</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">children</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;span&gt;foo&lt;/span&gt;</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">children</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">length</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
 <p>And since <code>$find()</code> considers all descendants, it allows for <a href="https://www.w3.org/TR/CSS22/selector.html#descendant-selectors" class="external-link">descendant selectors</a> (space) and direct <a href="https://www.w3.org/TR/CSS22/selector.html#child-selectors" class="external-link">child selectors</a> (&gt;).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;div&gt;</span>
-<span class="co">#&gt;     &lt;span&gt;</span>
-<span class="co">#&gt;       &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;     &lt;/span&gt;</span>
-<span class="co">#&gt;   &lt;/div&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;div&gt;</span></span>
+<span><span class="co">#&gt;     &lt;span&gt;</span></span>
+<span><span class="co">#&gt;       &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;     &lt;/span&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/div&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"div a"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;a&gt;&lt;/a&gt;</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"div &gt; a"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; named list()</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"div &gt; span &gt; a"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;a&gt;&lt;/a&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"div a"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"div &gt; a"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; named list()</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"div &gt; span &gt; a"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;a&gt;&lt;/a&gt;</span></span></code></pre></div>
 <p>Since <code><a href="../reference/tagQuery.html">tagQuery()</a></code> methods may be chained together, you could also implement <code>tagQ$find("div &gt; span &gt; a")</code> as:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"div"</span><span class="op">)</span><span class="op">$</span><span class="fu">children</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">children</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;a&gt;&lt;/a&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"div"</span><span class="op">)</span><span class="op">$</span><span class="fu">children</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">children</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;a&gt;&lt;/a&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="siblings">Siblings<a class="anchor" aria-label="anchor" href="#siblings"></a>
 </h3>
 <p>Although <code><a href="../reference/tagQuery.html">tagQuery()</a></code> doesn’t (currently) support <a href="https://www.w3schools.com/css/css_combinators.asp" class="external-link">sibling selectors</a> (<code>+</code> and <code>~</code>), it does provide a <code>$sibling()</code> method, which provides essentially the same functionality:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;   &lt;span&gt;&lt;/span&gt;</span>
-<span class="co">#&gt;   &lt;p&gt;&lt;/p&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;   &lt;span&gt;&lt;/span&gt;</span></span>
+<span><span class="co">#&gt;   &lt;p&gt;&lt;/p&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="co"># The moral equivalent to `tagQ$find("a ~ span")`</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span><span class="fu">siblings</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;span&gt;&lt;/span&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="co"># The moral equivalent to `tagQ$find("a ~ span")`</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span><span class="fu">siblings</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;span&gt;&lt;/span&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="parents">Parents<a class="anchor" aria-label="anchor" href="#parents"></a>
 </h3>
 <p>In some cases, after finding children, it can be useful to traverse back up the tag tree to find particular ancestors of a selection. Similar to the difference in <code>$find()</code> and <code>$children()</code>, <code>$parents()</code> traverses <em>all</em> ancestors whereas <code>$parent()</code> considers just <em>direct</em> ancestors.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span>class <span class="op">=</span> <span class="st">"foo"</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;div&gt;</span>
-<span class="co">#&gt;     &lt;a class="foo"&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;   &lt;/div&gt;</span>
-<span class="co">#&gt;   &lt;span&gt;</span>
-<span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;   &lt;/span&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span>class <span class="op">=</span> <span class="st">"foo"</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;div&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a class="foo"&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;span&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/span&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"a.foo"</span><span class="op">)</span><span class="op">$</span><span class="fu">parent</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;a class="foo"&gt;&lt;/a&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"a.foo"</span><span class="op">)</span><span class="op">$</span><span class="fu">parents</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;a class="foo"&gt;&lt;/a&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; [[2]]</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;div&gt;</span>
-<span class="co">#&gt;     &lt;a class="foo"&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;   &lt;/div&gt;</span>
-<span class="co">#&gt;   &lt;span&gt;</span>
-<span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;   &lt;/span&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"a.foo"</span><span class="op">)</span><span class="op">$</span><span class="fu">parent</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;a class="foo"&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"a.foo"</span><span class="op">)</span><span class="op">$</span><span class="fu">parents</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;a class="foo"&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;div&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a class="foo"&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;span&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/span&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="filter">Filter<a class="anchor" aria-label="anchor" href="#filter"></a>
 </h3>
 <p>The <code>$filter()</code> method can be used to subset selected tags using an R function or CSS selector. When combined with the universal selector (<code>*</code>), <code>$filter()</code> is particularly useful as a workaround for the fact that <code><a href="../reference/tagQuery.html">tagQuery()</a></code> doesn’t fully support the entire CSS selector specification. For example, here’s a workaround for <code><a href="../reference/tagQuery.html">tagQuery()</a></code>’s current lack of support for <a href="https://www.w3.org/TR/CSS22/selector.html#attribute-selectors" class="external-link">attribute selectors</a>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="st">"data-foo"</span> <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;div&gt;&lt;/div&gt;</span>
-<span class="co">#&gt;   &lt;div data-foo="bar"&gt;&lt;/div&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="st">"data-foo"</span> <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;div&gt;&lt;/div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;div data-foo="bar"&gt;&lt;/div&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="co"># The moral equivalent to `tagQ$find("[data-foo]")`</span>
-<span class="va">tagQ</span><span class="op">$</span>
-  <span class="fu">find</span><span class="op">(</span><span class="st">"*"</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">filter</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="fu"><a href="../reference/tagAppendAttributes.html">tagHasAttribute</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"data-foo"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;div data-foo="bar"&gt;&lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="co"># The moral equivalent to `tagQ$find("[data-foo]")`</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span></span>
+<span>  <span class="fu">find</span><span class="op">(</span><span class="st">"*"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">filter</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="fu"><a href="../reference/tagAppendAttributes.html">tagHasAttribute</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"data-foo"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;div data-foo="bar"&gt;&lt;/div&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="reset">Reset<a class="anchor" aria-label="anchor" href="#reset"></a>
 </h3>
 <p>To reset the set of selected tags to the root tag, use <code>$resetSelected()</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;a&gt;&lt;/a&gt;</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">resetSelected</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">resetSelected</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">selectedTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -293,76 +293,76 @@
 </h2>
 <p><code><a href="../reference/tagQuery.html">tagQuery()</a></code> provides numerous functions for modifying HTML <a href="#modify-attrs">attributes</a>, <a href="#modify-child">children</a>, or <a href="#modify-sibling">sibling</a> tags of the current query selection. Unlike query methods, modifier methods <em>modify their input</em> (both the root and the selection). For example, note how the <code>$addClass()</code> call here modifies <code>tagQ</code> (but <code>$find()</code> doesn’t):</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="va">tagQ</span><span class="op">$</span>
-  <span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">addClass</span><span class="op">(</span><span class="st">"foo"</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;a class="foo"&gt;&lt;/a&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span></span>
+<span>  <span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">addClass</span><span class="op">(</span><span class="st">"foo"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;a class="foo"&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <p>The <a href="https://en.wikipedia.org/wiki/Immutable_object" class="external-link">mutable</a> behavior of modifier methods not only allows us to modify child tags without losing a reference to the root tag, but it also makes modifications more <a href="#performance">performant</a> than they’d otherwise be.</p>
 <div class="section level3">
 <h3 id="modify-attrs">Attributes<a class="anchor" aria-label="anchor" href="#modify-attrs"></a>
 </h3>
 <p>Use <code>$addAttrs()</code> to add and <code>$removeAttrs()</code> to remove any HTML attribute from each selected tag. If you’re just working with <code>class</code> attributes, consider using the more convenient <code>$addClass()</code>, <code>$removeClass()</code>, or <code>$toggleClass()</code></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;span&gt;</span>
-<span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;   &lt;/span&gt;</span>
-<span class="co">#&gt;   &lt;span&gt;&lt;/span&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;span&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/span&gt;</span></span>
+<span><span class="co">#&gt;   &lt;span&gt;&lt;/span&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="co"># Equivalent to tagAppendAttributes(html, .cssSelector = "span", "data-bar" = "foo")</span>
-<span class="va">tagQ</span><span class="op">$</span>
-  <span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">addAttrs</span><span class="op">(</span><span class="st">"data-bar"</span> <span class="op">=</span> <span class="st">"foo"</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;span data-bar="foo"&gt;</span>
-<span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;   &lt;/span&gt;</span>
-<span class="co">#&gt;   &lt;span data-bar="foo"&gt;&lt;/span&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="co"># Equivalent to tagAppendAttributes(html, .cssSelector = "span", "data-bar" = "foo")</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span></span>
+<span>  <span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">addAttrs</span><span class="op">(</span><span class="st">"data-bar"</span> <span class="op">=</span> <span class="st">"foo"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;span data-bar="foo"&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/span&gt;</span></span>
+<span><span class="co">#&gt;   &lt;span data-bar="foo"&gt;&lt;/span&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <p>Also, to check whether each selected tag has a certain attribute, use <code>$hasAttrs()</code> (or <code>$hasClass()</code>)</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">hasAttrs</span><span class="op">(</span><span class="st">"data-bar"</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE TRUE</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">hasAttrs</span><span class="op">(</span><span class="st">"data-bar"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE TRUE</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="modify-child">Children<a class="anchor" aria-label="anchor" href="#modify-child"></a>
 </h3>
 <p>Use <code>$prepend()</code> to insert content before the children of each selected tag and <code>$append()</code> to insert content after:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;p&gt;</span>
-<span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;   &lt;/p&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;p&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/p&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="co"># Equivalent to html %&gt;% tagInsertChildren(.cssSelector = "p", after = 0, span()) %&gt;% tagAppendChildren(.cssSelector = "p", tags$table())</span>
-<span class="va">tagQ</span><span class="op">$</span>
-  <span class="fu">find</span><span class="op">(</span><span class="st">"p"</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">prepend</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">append</span><span class="op">(</span><span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;p&gt;</span>
-<span class="co">#&gt;     &lt;span&gt;&lt;/span&gt;</span>
-<span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;     &lt;table&gt;&lt;/table&gt;</span>
-<span class="co">#&gt;   &lt;/p&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="co"># Equivalent to html %&gt;% tagInsertChildren(.cssSelector = "p", after = 0, span()) %&gt;% tagAppendChildren(.cssSelector = "p", tags$table())</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span></span>
+<span>  <span class="fu">find</span><span class="op">(</span><span class="st">"p"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">prepend</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">append</span><span class="op">(</span><span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;p&gt;</span></span>
+<span><span class="co">#&gt;     &lt;span&gt;&lt;/span&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;     &lt;table&gt;&lt;/table&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/p&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <p>If you’d like to replace all the children, then you can first call <code>$empty()</code> before <code>$append()</code>. If you like to just remove particular child tags, then you should call <code>$children()</code> + the <code>$remove()</code> sibling method.</p>
 </div>
 <div class="section level3">
@@ -370,26 +370,26 @@
 </h3>
 <p>Use <code>$before()</code> to insert content before each selected tag and <code>$after()</code> to insert content after:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;p&gt;</span>
-<span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;   &lt;/p&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;p&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/p&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="va">tagQ</span><span class="op">$</span>
-  <span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">before</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">after</span><span class="op">(</span><span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;p&gt;</span>
-<span class="co">#&gt;     &lt;span&gt;&lt;/span&gt;</span>
-<span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;     &lt;table&gt;&lt;/table&gt;</span>
-<span class="co">#&gt;   &lt;/p&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span></span>
+<span>  <span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">before</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">after</span><span class="op">(</span><span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;p&gt;</span></span>
+<span><span class="co">#&gt;     &lt;span&gt;&lt;/span&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;     &lt;table&gt;&lt;/table&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/p&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -398,38 +398,38 @@
 <p>As with <code><a href="../reference/tagQuery.html">tagQuery()</a></code>’s modifier methods, its replace methods also modify their input. They also empty selected tags, so you may want to <code>$resetSelection()</code> if you want to make more queries or modifications after-the-fact.</p>
 <p>Use <code>$replaceWith()</code> to replace selected tags with some other content.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="va">tagQ</span><span class="op">$</span>
-  <span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">replaceWith</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
-  <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;p&gt;&lt;/p&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span></span>
+<span>  <span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">replaceWith</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;p&gt;&lt;/p&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <p>Use <code>$remove()</code> to replace selected tags with nothing:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span><span class="fu">remove</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;&lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span><span class="op">$</span><span class="fu">remove</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">allTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;&lt;/div&gt;</span></span></code></pre></div>
 <p>And use <code>$empty()</code> to replace the <em>children</em> of the selected tags with nothing:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;span&gt;</span>
-<span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span>
-<span class="co">#&gt;   &lt;/span&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;span&gt;</span></span>
+<span><span class="co">#&gt;     &lt;a&gt;&lt;/a&gt;</span></span>
+<span><span class="co">#&gt;   &lt;/span&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span>
-<span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">empty</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; &lt;div&gt;</span>
-<span class="co">#&gt;   &lt;span&gt;&lt;/span&gt;</span>
-<span class="co">#&gt; &lt;/div&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tagQ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span>
+<span><span class="va">tagQ</span><span class="op">$</span><span class="fu">find</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span><span class="op">$</span><span class="fu">empty</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">allTags</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;div&gt;</span></span>
+<span><span class="co">#&gt;   &lt;span&gt;&lt;/span&gt;</span></span>
+<span><span class="co">#&gt; &lt;/div&gt;</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="performance">Performance<a class="anchor" aria-label="anchor" href="#performance"></a>
@@ -437,25 +437,25 @@
 <p>One main reason why <code><a href="../reference/tagQuery.html">tagQuery()</a></code> is fast is that it converts the underlying <code><a href="../reference/builder.html">tag()</a></code> list structure into a environment (i.e., <a href="https://en.wikipedia.org/wiki/Reference_(computer_science)" class="external-link">reference object</a>). As a result, <code><a href="../reference/tagQuery.html">tagQuery()</a></code> is able to keep a reference to selected tags and modify them without having to re-find tags for each modification. This is why, even if you can achieve multiple modifications via multiple calls to <code><a href="../reference/tagAppendAttributes.html">tagAppendAttributes()</a></code>, <code><a href="../reference/tagAppendChild.html">tagInsertChildren()</a></code>, etc. (with a <code>.cssSelector</code>), you should consider using <code><a href="../reference/tagQuery.html">tagQuery()</a></code> directly instead.</p>
 <p>For a basic example, since <code><a href="../reference/tagQuery.html">tagQuery()</a></code> can prepend and append in one shot, it’s twice as fast as using <code><a href="../reference/tagAppendChild.html">tagInsertChildren()</a></code> then <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code> (with the same <code>.cssSelector</code>). Internally, the latter approach calls <code>tagQuery(html)$find()</code> twice, which is why it’s 2 times slower.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span>
-<span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="http://bench.r-lib.org/reference/mark.html" class="external-link">mark</a></span><span class="op">(</span>
-  tagQuery <span class="op">=</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span><span class="op">$</span>
-    <span class="fu">find</span><span class="op">(</span><span class="st">"p"</span><span class="op">)</span><span class="op">$</span>
-    <span class="fu">prepend</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
-    <span class="fu">append</span><span class="op">(</span><span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span>
-    <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>,
-  tagAppend <span class="op">=</span> <span class="va">html</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-    <span class="fu"><a href="../reference/tagAppendChild.html">tagInsertChildren</a></span><span class="op">(</span>.cssSelector <span class="op">=</span> <span class="st">"p"</span>, after <span class="op">=</span> <span class="fl">0</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-    <span class="fu"><a href="../reference/tagAppendChild.html">tagAppendChildren</a></span><span class="op">(</span>.cssSelector <span class="op">=</span> <span class="st">"p"</span>, <span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,
-  check <span class="op">=</span> <span class="cn">FALSE</span>,
-  time_unit <span class="op">=</span> <span class="st">"us"</span>
-<span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span>
-<span class="co">#&gt;   expression   min median `itr/sec` mem_alloc `gc/sec`</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;bch:expr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> tagQuery    809.   838.     <span style="text-decoration: underline;">1</span>186.    11.4KB     14.6</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> tagAppend  <span style="text-decoration: underline;">1</span>493.  <span style="text-decoration: underline;">1</span>542.      647.    50.5KB     15.1</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
+<span><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/builder.html">div</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">p</a></span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">a</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="http://bench.r-lib.org/reference/mark.html" class="external-link">mark</a></span><span class="op">(</span></span>
+<span>  tagQuery <span class="op">=</span> <span class="fu"><a href="../reference/tagQuery.html">tagQuery</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span><span class="op">$</span></span>
+<span>    <span class="fu">find</span><span class="op">(</span><span class="st">"p"</span><span class="op">)</span><span class="op">$</span></span>
+<span>    <span class="fu">prepend</span><span class="op">(</span><span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span>
+<span>    <span class="fu">append</span><span class="op">(</span><span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span>
+<span>    <span class="fu">allTags</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  tagAppend <span class="op">=</span> <span class="va">html</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="../reference/tagAppendChild.html">tagInsertChildren</a></span><span class="op">(</span>.cssSelector <span class="op">=</span> <span class="st">"p"</span>, after <span class="op">=</span> <span class="fl">0</span>, <span class="fu"><a href="../reference/builder.html">span</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="../reference/tagAppendChild.html">tagAppendChildren</a></span><span class="op">(</span>.cssSelector <span class="op">=</span> <span class="st">"p"</span>, <span class="va">tags</span><span class="op">$</span><span class="fu">table</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  check <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  time_unit <span class="op">=</span> <span class="st">"us"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span></span>
+<span><span class="co">#&gt;   expression   min median `itr/sec` mem_alloc `gc/sec`</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;bch:expr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> tagQuery   <span style="text-decoration: underline;">1</span>195.  <span style="text-decoration: underline;">1</span>423.      695.    11.4KB     8.32</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> tagAppend  <span style="text-decoration: underline;">2</span>349.  <span style="text-decoration: underline;">2</span>640.      369.    50.5KB     8.45</span></span></code></pre></div>
 </div>
   </div>
 
@@ -475,7 +475,7 @@
 
 <div class="author">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

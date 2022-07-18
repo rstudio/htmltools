@@ -127,10 +127,10 @@
 </h2>
 <p>Install the stable release of <code>htmltools</code> on CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"htmltools"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"htmltools"</span><span class="op">)</span></span></code></pre></div>
 <p>Install the development version with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"rstudio/htmltools"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"rstudio/htmltools"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quick-overview">Quick overview<a class="anchor" aria-label="anchor" href="#quick-overview"></a>
@@ -139,11 +139,11 @@
 <p><a href="https://shiny.rstudio.com/articles/html-tags.html" class="external-link">This Shiny article</a> provides a great introduction to <a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> (even if you’re not interested in Shiny). As you’ll learn in that article, the general foundation that <a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> provides allows other R packages (e.g., <a href="http://www.htmlwidgets.org/" class="external-link"><code>{htmlwidgets}</code></a>, <a href="https://rstudio.github.io/crosstalk/" class="external-link"><code>{crosstalk}</code></a>, etc.) to provide “HTML components” in R that users can manipulate and combine in ways the component authors didn’t foresee.</p>
 <p>For example, as described in depth <a href="https://plotly-r.com/arranging-views.html#arranging-htmlwidgets" class="external-link">here</a>, <a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> makes it fairly easy to arrange numerous <a href="https://github.com/ramnathv/htmlwidgets" class="external-link">htmlwidgets</a> (e.g., <a href="https://plotly-r.com" class="external-link">plotly</a> graphs) into a single static HTML webpage:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a></span><span class="op">)</span>
-<span class="fu"><a href="reference/browsable.html">browsable</a></span><span class="op">(</span><span class="fu"><a href="reference/tagList.html">tagList</a></span><span class="op">(</span>
-  <span class="fu">plot_ly</span><span class="op">(</span><span class="va">diamonds</span>, x <span class="op">=</span> <span class="op">~</span><span class="va">carat</span>, height <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>,
-  <span class="fu">plot_ly</span><span class="op">(</span><span class="va">diamonds</span>, x <span class="op">=</span> <span class="op">~</span><span class="va">price</span>, height <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>
-<span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/browsable.html">browsable</a></span><span class="op">(</span><span class="fu"><a href="reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>  <span class="fu">plot_ly</span><span class="op">(</span><span class="va">diamonds</span>, x <span class="op">=</span> <span class="op">~</span><span class="va">carat</span>, height <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>,</span>
+<span>  <span class="fu">plot_ly</span><span class="op">(</span><span class="va">diamonds</span>, x <span class="op">=</span> <span class="op">~</span><span class="va">price</span>, height <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div align="center"><p><img src="reference/figures/plotly-taglist.png" width="60%"></p></div>
 <p>Also, thanks to <code><a href="reference/tagQuery.html">tagQuery()</a></code>, it is fairly easy to query and manipulate the underlying HTML structure of components. See the <a href="https://rstudio.github.io/htmltools//articles/tagQuery.html"><code>tagQuery()</code> article</a> to learn more.</p>
 </div>
@@ -226,7 +226,7 @@
 
 <div class="author">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

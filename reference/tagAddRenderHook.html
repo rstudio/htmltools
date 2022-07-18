@@ -88,7 +88,7 @@ for example, <code><a href="https://rdrr.io/r/base/print.html" class="external-l
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">tag</span>, <span class="va">func</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">tag</span>, <span class="va">func</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -133,56 +133,56 @@ until it's rendered.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Have a place holder div and return a span instead</span></span>
-<span class="r-in"><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="builder.html">div</a></span><span class="op">(</span><span class="st">"example"</span>, .renderHook <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">x</span><span class="op">$</span><span class="va">name</span> <span class="op">&lt;-</span> <span class="st">"span"</span></span>
-<span class="r-in">  <span class="va">x</span></span>
-<span class="r-in"><span class="op">}</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">obj</span><span class="op">$</span><span class="va">name</span> <span class="co"># "div"</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Have a place holder div and return a span instead</span></span></span>
+<span class="r-in"><span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="builder.html">div</a></span><span class="op">(</span><span class="st">"example"</span>, .renderHook <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span><span class="op">$</span><span class="va">name</span> <span class="op">&lt;-</span> <span class="st">"span"</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">obj</span><span class="op">$</span><span class="va">name</span> <span class="co"># "div"</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "div"</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span> <span class="co"># Prints as a `span`</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span> <span class="co"># Prints as a `span`</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;span&gt;example&lt;/span&gt;</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Add a class to the tag</span></span>
-<span class="r-in"><span class="co"># Should print a `span` with class `"extra"`</span></span>
-<span class="r-in"><span class="va">spanExtra</span> <span class="op">&lt;-</span> <span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">obj</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu"><a href="tagAppendAttributes.html">tagAppendAttributes</a></span><span class="op">(</span><span class="va">x</span>, class <span class="op">=</span> <span class="st">"extra"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">spanExtra</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add a class to the tag</span></span></span>
+<span class="r-in"><span><span class="co"># Should print a `span` with class `"extra"`</span></span></span>
+<span class="r-in"><span><span class="va">spanExtra</span> <span class="op">&lt;-</span> <span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">obj</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="tagAppendAttributes.html">tagAppendAttributes</a></span><span class="op">(</span><span class="va">x</span>, class <span class="op">=</span> <span class="st">"extra"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spanExtra</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;span class="extra"&gt;example&lt;/span&gt;</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Replace the previous render method</span></span>
-<span class="r-in"><span class="co"># Should print a `div` with class `"extra"`</span></span>
-<span class="r-in"><span class="va">divExtra</span> <span class="op">&lt;-</span> <span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">obj</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu"><a href="tagAppendAttributes.html">tagAppendAttributes</a></span><span class="op">(</span><span class="va">x</span>, class <span class="op">=</span> <span class="st">"extra"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">divExtra</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Replace the previous render method</span></span></span>
+<span class="r-in"><span><span class="co"># Should print a `div` with class `"extra"`</span></span></span>
+<span class="r-in"><span><span class="va">divExtra</span> <span class="op">&lt;-</span> <span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">obj</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="tagAppendAttributes.html">tagAppendAttributes</a></span><span class="op">(</span><span class="va">x</span>, class <span class="op">=</span> <span class="st">"extra"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">divExtra</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;div class="extra"&gt;example&lt;/div&gt;</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Add more child tags</span></span>
-<span class="r-in"><span class="va">spanExtended</span> <span class="op">&lt;-</span> <span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">obj</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu"><a href="tagAppendChild.html">tagAppendChildren</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">" "</span>, <span class="va">tags</span><span class="op">$</span><span class="fu">strong</span><span class="op">(</span><span class="st">"bold text"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">spanExtended</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add more child tags</span></span></span>
+<span class="r-in"><span><span class="va">spanExtended</span> <span class="op">&lt;-</span> <span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">obj</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="tagAppendChild.html">tagAppendChildren</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">" "</span>, <span class="va">tags</span><span class="op">$</span><span class="fu">strong</span><span class="op">(</span><span class="st">"bold text"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spanExtended</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;span&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   example</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   &lt;strong&gt;bold text&lt;/strong&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;/span&gt;</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Add a new html dependency</span></span>
-<span class="r-in"><span class="va">newDep</span> <span class="op">&lt;-</span> <span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">obj</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">fa</span> <span class="op">&lt;-</span> <span class="fu"><a href="htmlDependency.html">htmlDependency</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="st">"font-awesome"</span>, <span class="st">"4.5.0"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>href<span class="op">=</span><span class="st">"shared/font-awesome"</span><span class="op">)</span>,</span>
-<span class="r-in">    stylesheet <span class="op">=</span> <span class="st">"css/font-awesome.min.css"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="htmlDependencies.html">attachDependencies</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">fa</span>, append <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># Also add a jqueryui html dependency</span></span>
-<span class="r-in"><span class="fu"><a href="htmlDependencies.html">htmlDependencies</a></span><span class="op">(</span><span class="va">newDep</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="htmlDependency.html">htmlDependency</a></span><span class="op">(</span></span>
-<span class="r-in">  <span class="st">"jqueryui"</span>, <span class="st">"1.11.4"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>href<span class="op">=</span><span class="st">"shared/jqueryui"</span><span class="op">)</span>,</span>
-<span class="r-in">  script <span class="op">=</span> <span class="st">"jquery-ui.min.js"</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># At render time, both dependencies will be found</span></span>
-<span class="r-in"><span class="fu"><a href="renderTags.html">renderTags</a></span><span class="op">(</span><span class="va">newDep</span><span class="op">)</span><span class="op">$</span><span class="va">dependencies</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add a new html dependency</span></span></span>
+<span class="r-in"><span><span class="va">newDep</span> <span class="op">&lt;-</span> <span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">obj</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">fa</span> <span class="op">&lt;-</span> <span class="fu"><a href="htmlDependency.html">htmlDependency</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"font-awesome"</span>, <span class="st">"4.5.0"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>href<span class="op">=</span><span class="st">"shared/font-awesome"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    stylesheet <span class="op">=</span> <span class="st">"css/font-awesome.min.css"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="htmlDependencies.html">attachDependencies</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">fa</span>, append <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Also add a jqueryui html dependency</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="htmlDependencies.html">htmlDependencies</a></span><span class="op">(</span><span class="va">newDep</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="htmlDependency.html">htmlDependency</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"jqueryui"</span>, <span class="st">"1.11.4"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>href<span class="op">=</span><span class="st">"shared/jqueryui"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  script <span class="op">=</span> <span class="st">"jquery-ui.min.js"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># At render time, both dependencies will be found</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="renderTags.html">renderTags</a></span><span class="op">(</span><span class="va">newDep</span><span class="op">)</span><span class="op">$</span><span class="va">dependencies</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ name      : chr "jqueryui"</span>
@@ -213,12 +213,12 @@ until it's rendered.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ all_files : logi TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  - attr(*, "class")= chr "html_dependency"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Ignore the original tag and return something completely new.</span></span>
-<span class="r-in"><span class="va">newObj</span> <span class="op">&lt;-</span> <span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">obj</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">tags</span><span class="op">$</span><span class="fu">p</span><span class="op">(</span><span class="st">"Something else"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">newObj</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Ignore the original tag and return something completely new.</span></span></span>
+<span class="r-in"><span><span class="va">newObj</span> <span class="op">&lt;-</span> <span class="fu">tagAddRenderHook</span><span class="op">(</span><span class="va">obj</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">tags</span><span class="op">$</span><span class="fu">p</span><span class="op">(</span><span class="st">"Something else"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">newObj</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;p&gt;Something else&lt;/p&gt;</span>
 </code></pre></div>
     </div>
@@ -234,7 +234,7 @@ until it's rendered.</p>
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
