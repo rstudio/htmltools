@@ -3,9 +3,6 @@
 status](https://github.com/rstudio/htmltools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rstudio/htmltools)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/htmltools)](https://CRAN.R-project.org/package=htmltools)
-[![CRAN
-Downloads](https://cranlogs.r-pkg.org/badges/grand-total/htmltools)](https://www.rpackages.io/package/htmltools)
-[![monthly](https://cranlogs.r-pkg.org/badges/htmltools)](https://www.rpackages.io/package/htmltools)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 <!-- badges: end -->
