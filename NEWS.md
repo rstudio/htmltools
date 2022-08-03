@@ -85,7 +85,7 @@
   documented in [MDN Web Docs](https://developer.mozilla.org).  This feature
   only appends to the existing set of `tags` (#159)
 
-* Removed the Rcpp depedency and the compiled code now uses C rather than C++ (#158)
+* Removed the Rcpp dependency and the compiled code now uses C rather than C++ (#158)
 
 * BREAKING CHANGE: Fixed #57, #153: `htmlTemplate` output no longer inserts
   extra whitespace around {{...}} replacement values. (#154)
@@ -100,7 +100,7 @@
   written to the .html file. (Note that `save_html(tags$html(...))` is not
   supported at this time.) (#145)
 
-* Trailing commas now permited in `...` arguments to `css()`, `tagList()`, and
+* Trailing commas now permitted in `...` arguments to `css()`, `tagList()`, and
   the var-arg mutation functions: `tagAppendAttributes()`, `tagSetChildren()`,
   and `tagAppendChildren()`. (#145)
 
