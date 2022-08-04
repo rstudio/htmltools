@@ -30,9 +30,9 @@ Suggests:
     shiny
 Enhances: knitr
 License: GPL (>= 2)
-URL: https://github.com/rstudio/htmltools
+URL: https://github.com/rstudio/htmltools, https://rstudio.github.io/htmltools/
 BugReports: https://github.com/rstudio/htmltools/issues
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Encoding: UTF-8
 Collate:
     'colors.R'
