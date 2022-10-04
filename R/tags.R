@@ -242,11 +242,15 @@ as.character.shiny.tag.list <- as.character.shiny.tag
 #'   browser (or possibly another HTML viewer supplied by the environment via
 #'   the `viewer` option). If `FALSE` then the HTML object's markup
 #'   will be rendered at the console.
+#' @param console If `TRUE`, the HTML will be rendered and displayed in the
+#'   console if possible.
 #' @param ... Additional arguments passed to print.
 #'
 #' @export
-print.html <- function(x, ..., browse = is.browsable(x)) {
-  if (browse)
+print.html <- function(x, ..., browse = is.browsable(x), console = FALSE) {
+  if (console)
+    console_print(x, ...)
+  else if (browse)
     html_print(x)
   else
     cat(x, "\n", sep = "")

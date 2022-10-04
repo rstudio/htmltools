@@ -7,7 +7,7 @@
 \usage{
 \method{print}{shiny.tag}(x, browse = is.browsable(x), ...)
 
-\method{print}{html}(x, ..., browse = is.browsable(x))
+\method{print}{html}(x, ..., browse = is.browsable(x), console = FALSE)
 }
 \arguments{
 \item{x}{The value to print.}
@@ -18,6 +18,9 @@ the \code{viewer} option). If \code{FALSE} then the HTML object's markup
 will be rendered at the console.}
 
 \item{...}{Additional arguments passed to print.}
+
+\item{console}{If \code{TRUE}, the HTML will be rendered and displayed in the
+console if possible.}
 }
 \description{
 S3 method for printing HTML that prints markup or renders HTML in a web
