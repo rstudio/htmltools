@@ -57,6 +57,41 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
   invisible(index_html)
 }
 
+get_console_viewer <- function() {
+  getOption("console_viewer", getOption("viewer", utils::browseURL))
+}
+
+#' Print the HTML in the console
+#'
+#' @param html HTML content to print
+#' @param background Background color for web page
+#' @param viewer A function to be called with the URL or path to the generated
+#'   HTML page. Can be `NULL`, in which case no viewer will be invoked.
+#'
+#' @return Invisibly returns the URL or path of the generated HTML page.
+#'
+#' @export
+console_print <- function(html,
+                          ...,
+                          background = "white",
+                          viewer = get_console_viewer()) {
+  # define temporary directory for output
+  www_dir <- tempfile("viewhtml")
+  dir.create(www_dir)
+
+  # define output file
+  index_html <- file.path(www_dir, "index.html")
+
+  # save file
+  save_html(html, file = index_html, background = background, libdir = "lib")
+
+  # show it
+  if (!is.null(viewer))
+    viewer(index_html, ...)
+
+  invisible(index_html)
+}
+
 #' Save an HTML object to a file
 #'
 #' Save the specified HTML object to a file, copying all of it's
