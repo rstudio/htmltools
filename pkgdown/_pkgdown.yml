@@ -69,6 +69,7 @@ reference:
   - '`renderTags`'
   - '`save_html`'
   - '`html_print`'
+  - '`console_print`'
 
 - title: Singleton tag
   contents:
