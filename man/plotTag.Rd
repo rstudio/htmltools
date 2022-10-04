@@ -26,7 +26,7 @@ of the image. This is used by accessibility tools, such as screen readers
 for vision impaired users.}
 
 \item{device}{A graphics device function; by default, this will be either
-\code{\link[grDevices:png]{grDevices::png()}}, \code{\link[ragg:agg_png]{ragg::agg_png()}}, or \code{\link[Cairo:CairoPNG]{Cairo::CairoPNG()}}, depending on
+\code{\link[grDevices:png]{grDevices::png()}}, \code{\link[ragg:agg_png]{ragg::agg_png()}}, or \code{\link[Cairo:Cairo]{Cairo::CairoPNG()}}, depending on
 your system and configuration. See \code{\link[=defaultPngDevice]{defaultPngDevice()}}.}
 
 \item{width, height}{The width/height that the generated tag should be
