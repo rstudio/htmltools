@@ -67,6 +67,7 @@ get_console_viewer <- function() {
 #' @param background Background color for web page
 #' @param viewer A function to be called with the URL or path to the generated
 #'   HTML page. Can be `NULL`, in which case no viewer will be invoked.
+#' @param ... Additional arguments for `viewer`
 #'
 #' @return Invisibly returns the URL or path of the generated HTML page.
 #'

@@ -9,6 +9,8 @@ console_print(html, ..., background = "white", viewer = get_console_viewer())
 \arguments{
 \item{html}{HTML content to print}
 
+\item{...}{Additional arguments for \code{viewer}}
+
 \item{background}{Background color for web page}
 
 \item{viewer}{A function to be called with the URL or path to the generated
