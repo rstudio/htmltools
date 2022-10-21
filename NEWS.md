@@ -1,5 +1,8 @@
 # htmltools 0.5.3.9000
 
+## Bug fixes
+
+* Closed #331: `copyDependencyToDir()` creates `outputDir` recursively, which happens in Quarto or when `lib_dir` points to a nested directory. (@gadenbuie, #332)
 
 
 # htmltools 0.5.3
