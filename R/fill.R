@@ -10,7 +10,7 @@
 #'   to rely on other `display` behavior.
 #'
 #' @param x a [tag()] object.
-#' @param ... arguments passed along to [tagAppendAttributes()].
+#' @param ... currently unused.
 #' @param height,width Any valid [CSS unit][htmltools::validateCssUnit] (e.g.,
 #'   height="200px").
 #' @param asItem whether or not to also treat the container as an item. This is
@@ -43,10 +43,12 @@
 #' # Inner does fill outer
 #' if (interactive()) browsable(tagz)
 #'
-asFillContainer <- function(x, ..., height = NULL, width = NULL, asItem = FALSE) {
+asFillContainer <- function(x, ..., height = NULL, width = NULL, asItem = FALSE, .cssSelector = NULL) {
   if (!inherits(x, "shiny.tag")) {
     return(throwFillWarning(x))
   }
+
+  ellipsis::check_dots_empty()
 
   x <- tagAppendAttributes(
     x, class = "html-fill-container",
@@ -55,19 +57,20 @@ asFillContainer <- function(x, ..., height = NULL, width = NULL, asItem = FALSE)
       height = validateCssUnit(height),
       width = validateCssUnit(width)
     ),
-    ...
+    .cssSelector = .cssSelector
   )
 
   attachDependencies(x, fillDependencies(), append = TRUE)
 }
 
-
 #' @export
 #' @rdname asFillContainer
-asFillItem <- function(x, ..., height = NULL, width = NULL) {
+asFillItem <- function(x, ..., height = NULL, width = NULL, .cssSelector = NULL) {
   if (!inherits(x, "shiny.tag")) {
     return(throwFillWarning(x, "item"))
   }
+
+  ellipsis::check_dots_empty()
 
   tagAppendAttributes(
     x, class = "html-fill-item",
@@ -75,10 +78,9 @@ asFillItem <- function(x, ..., height = NULL, width = NULL) {
       height = validateCssUnit(height),
       width = validateCssUnit(width)
     ),
-    ...
+    .cssSelector = .cssSelector
   )
 }
-
 
 fillDependencies <- function() {
   htmlDependency(
@@ -101,4 +103,3 @@ throwFillWarning <- function(x, type = "container") {
   )
   x
 }
-
