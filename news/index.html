@@ -24,14 +24,14 @@
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3.9001</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3.9001</span>
         </div>
       </div>-->
     </div>
@@ -82,6 +82,9 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.3.9000" id="htmltools-0539000">htmltools 0.5.3.9000<a class="anchor" aria-label="anchor" href="#htmltools-0539000"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-5-3-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-5-3-9000"></a></h3>
+<ul><li>Added new <code><a href="../reference/asFillContainer.html">asFillContainer()</a></code> and <code><a href="../reference/asFillContainer.html">asFillItem()</a></code> functions for modifying <code><a href="../reference/builder.html">tag()</a></code> object(s) into tags that are allowed to grow and shrink when their parent is opinionated about their height. See <code><a href="../reference/asFillContainer.html">help(asFillContainer)</a></code> for documentation and examples. Note the primary motivation for adding these functions is to power <a href="https://rstudio.github.io/bslib/" class="external-link">bslib</a>’s new <code>card()</code> API (in particular, <a href="https://rstudio.github.io/bslib/articles/cards.html#responsive-sizing" class="external-link">responsive sizing</a>) as well as the new <code>fill</code> arguments in <code><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html" class="external-link">shiny::plotOutput()</a></code>, <code><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html" class="external-link">shiny::imageOutput()</a></code>, <code><a href="https://rdrr.io/pkg/shiny/man/htmlOutput.html" class="external-link">shiny::uiOutput()</a></code>, <code>htmlwidgets::sizingPolicy()</code>, and <code>htmlwidgets::shinyWidgetOutput()</code>. (<a href="https://github.com/rstudio/htmltools/issues/343" class="external-link">#343</a>)</li></ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-5-3-9000">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-3-9000"></a></h3>
 <ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/331" class="external-link">#331</a>: <code><a href="../reference/copyDependencyToDir.html">copyDependencyToDir()</a></code> creates <code>outputDir</code> recursively, which happens in Quarto or when <code>lib_dir</code> points to a nested directory. (<a href="https://github.com/gadenbuie" class="external-link">@gadenbuie</a>, <a href="https://github.com/rstudio/htmltools/issues/332" class="external-link">#332</a>)</li></ul></div>
