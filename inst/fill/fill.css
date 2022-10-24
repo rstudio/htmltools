@@ -6,7 +6,7 @@
 }
 
 .html-fill-container > .html-fill-item {
-  flex: var(--html-fill-flex, 1 1 auto);
+  flex: 1 1 auto;
   overflow: auto;
   width: 100%;
 }
