@@ -358,6 +358,36 @@ test_that("copyDependencyToDir() doesn't create an empty directory", {
   expect_match(copied_dep$src$file, normalizePath(tmp_rmd, "/", TRUE), fixed = TRUE)
 })
 
+test_that("copyDependencyToDir() creates recursive output directories", {
+  tmp_dep <- tempfile("dep")
+  dir.create(tmp_dep)
+  on.exit(unlink(tmp_dep, recursive = TRUE))
+
+  writeLines(
+    c("alert('boo')"),
+    file.path(tmp_dep, "script.js")
+  )
+
+  dep <- htmltools::htmlDependency(
+    name = "simple",
+    version = "9.9.9",
+    src = tmp_dep,
+    script = "script.js",
+    all_files = FALSE
+  )
+
+  tmp_outputDir <- file.path(tempfile("outputDir"), "subdir")
+  on.exit(unlink(tmp_outputDir, recursive = TRUE), add = TRUE)
+
+  expect_silent(copyDependencyToDir(dep, tmp_outputDir))
+
+  # copyDependencyToDir() creates the nested outputDir
+  expect_true(dir_exists(file.path(tmp_outputDir)))
+  # it moves the dependency into this dir
+  expect_true(dir_exists(file.path(tmp_outputDir, "simple-9.9.9")))
+  expect_true(file.exists(file.path(tmp_outputDir, "simple-9.9.9", "script.js")))
+})
+
 test_that("copyDependencyToDir() handles attributes", {
   tmp_dep <- tempfile("dep")
   dir.create(tmp_dep)

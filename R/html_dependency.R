@@ -336,7 +336,7 @@ copyDependencyToDir <- function(dependency, outputDir, mustWork = TRUE) {
     stop('outputDir must be of length 1 and cannot be "" or "/"')
 
   if (!dir_exists(outputDir))
-    dir.create(outputDir)
+    dir.create(outputDir, recursive = TRUE)
 
   target_dir <- if (getOption('htmltools.dir.version', TRUE)) {
     paste(dependency$name, dependency$version, sep = "-")
