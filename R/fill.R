@@ -16,6 +16,13 @@
 #' @param asItem whether or not to also treat the container as an item. This is
 #'   useful if the tag wants to both be a direct child of a fill container and a
 #'   direct parent of a fill item.
+#' @param .cssSelector A character string containing a CSS selector for
+#'   targeting particular (inner) tag(s) of interest. For more details on what
+#'   selector(s) are supported, see [tagAppendAttributes()]
+#'
+#' @returns The original tag object (`x`) with additional attributes (and a
+#'   [htmlDependency()]).
+#'
 #' @export
 #' @examples
 #'
@@ -99,7 +106,7 @@ throwFillWarning <- function(x, type = "container") {
       class(x)[1], "' as a fill ", type, ". ",
       "Only a htmltools::tag() object may be treated as a fill ", type
     ),
-    class = "htmltools-fill-input"
+    class = "htmltools_fill_input_type"
   )
   x
 }

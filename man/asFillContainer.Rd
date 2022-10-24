@@ -27,6 +27,14 @@ height="200px").}
 \item{asItem}{whether or not to also treat the container as an item. This is
 useful if the tag wants to both be a direct child of a fill container and a
 direct parent of a fill item.}
+
+\item{.cssSelector}{A character string containing a CSS selector for
+targeting particular (inner) tag(s) of interest. For more details on what
+selector(s) are supported, see \code{\link[=tagAppendAttributes]{tagAppendAttributes()}}}
+}
+\value{
+The original tag object (\code{x}) with additional attributes (and a
+\code{\link[=htmlDependency]{htmlDependency()}}).
 }
 \description{
 Create fill containers and items. If a fill item is a direct child of a fill
