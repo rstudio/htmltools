@@ -5,14 +5,21 @@
 \alias{asFillItem}
 \title{Allow tags to intelligently fill their container}
 \usage{
-asFillContainer(x, ..., height = NULL, width = NULL, asItem = FALSE)
+asFillContainer(
+  x,
+  ...,
+  height = NULL,
+  width = NULL,
+  asItem = FALSE,
+  .cssSelector = NULL
+)
 
-asFillItem(x, ..., height = NULL, width = NULL)
+asFillItem(x, ..., height = NULL, width = NULL, .cssSelector = NULL)
 }
 \arguments{
 \item{x}{a \code{\link[=tag]{tag()}} object.}
 
-\item{...}{arguments passed along to \code{\link[=tagAppendAttributes]{tagAppendAttributes()}}.}
+\item{...}{currently unused.}
 
 \item{height, width}{Any valid \link[=validateCssUnit]{CSS unit} (e.g.,
 height="200px").}
