@@ -4,29 +4,52 @@
 # (those will also be testing the client-side CSS)
 test_that("asFillContainer() and asFillItem()", {
 
-  container <- asFillContainer(div())
-  item <- asFillItem(div())
-  expect_equal(tagGetAttribute(container, "class"), "html-fill-container")
-  expect_equal(tagGetAttribute(item, "class"), "html-fill-item")
+  x <- bindFillRole(div(), container = TRUE)
+  expect_true(
+    doRenderTags(x) == "<div class=\"html-fill-container\"></div>"
+  )
 
-  container <- asFillContainer(
-    div(span()), asItem = TRUE, .cssSelector = "span", height = 300
+  x <- bindFillRole(div(), item = TRUE)
+  expect_true(
+    doRenderTags(x) == "<div class=\"html-fill-item\"></div>"
   )
-  expect_equal(
-    tagGetAttribute(container$children[[1]], "class"),
-    "html-fill-container html-fill-item"
+
+  x <- bindFillRole(x, container = TRUE, overwrite = TRUE)
+  expect_true(
+    doRenderTags(x) == "<div class=\"html-fill-container\"></div>"
   )
-  expect_equal(
-    tagGetAttribute(container$children[[1]], "style"),
-    "height:300px;"
+
+  x <- bindFillRole(
+    div(span()), .cssSelector = "span", container = TRUE, item = TRUE
+  )
+  expect_true(
+    doRenderTags(x) == "<div>\n  <span class=\"html-fill-item html-fill-container\"></span>\n</div>"
+  )
+
+  x <- bindFillRole(x, .cssSelector = "span", container = FALSE, item = FALSE, overwrite = TRUE)
+
+  expect_true(
+    doRenderTags(x) == "<div>\n  <span></span>\n</div>"
+  )
+
+  x <- bindFillRole(
+    tagList(div(span())), .cssSelector = "span", container = TRUE
+  )
+  expect_true(
+    doRenderTags(x) == "<div>\n  <span class=\"html-fill-container\"></span>\n</div>"
   )
 
   expect_warning(
-    asFillContainer(tagList()),
-    "Don't know how to treat an object of type"
+    bindFillRole(tagList()),
+    "htmltools::tag"
   )
   expect_warning(
-    asFillItem(tagList()),
-    "Don't know how to treat an object of type"
+    bindFillRole(tagList()),
+    "htmltools::tag"
+  )
+
+  expect_warning(
+    bindFillRole(div(span()), .cssSelector = "foo"),
+    "cssSelector"
   )
 })
