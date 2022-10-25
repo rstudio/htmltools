@@ -4,21 +4,19 @@
 #' container with a fixed height, then the item is allowed to grow and shrink to
 #' its container's size.
 #'
-#' @details `asFillContainer()` changes the CSS `display` property on the tag to
-#'   `flex`, which changes the way it does layout of it's direct children. Thus,
-#'   one should be careful not to mark a tag as a fill container when it needs
-#'   to rely on other `display` behavior.
-#'
-#' @param x a [tag()] object.
+#' @param x a [tag()] object. Can also be a valid [tagQuery()] input if `.cssSelector` is specified.
 #' @param ... currently unused.
-#' @param height,width Any valid [CSS unit][htmltools::validateCssUnit] (e.g.,
-#'   height="200px").
-#' @param asItem whether or not to also treat the container as an item. This is
-#'   useful if the tag wants to both be a direct child of a fill container and a
-#'   direct parent of a fill item.
+#' @param item whether or not to treat `x` as a fill item.
+#' @param container whether or not to treat `x` as a fill container. Note this
+#'   will the CSS `display` property on the tag to `flex`, which changes the way
+#'   it does layout of it's direct children. Thus, one should be careful not to
+#'   mark a tag as a fill container when it needs to rely on other `display`
+#'   behavior.
+#' @param overwrite whether or not to override previous calls to
+#'   `bindFillRole()` (e.g., to remove the item/container role from a tag).
 #' @param .cssSelector A character string containing a CSS selector for
 #'   targeting particular (inner) tag(s) of interest. For more details on what
-#'   selector(s) are supported, see [tagAppendAttributes()]
+#'   selector(s) are supported, see [tagAppendAttributes()].
 #'
 #' @returns The original tag object (`x`) with additional attributes (and a
 #'   [htmlDependency()]).
@@ -44,50 +42,75 @@
 #' # Inner doesn't fill outer
 #' if (interactive()) browsable(tagz)
 #'
-#' tagz <- asFillContainer(tagz)
-#' tagz <- asFillItem(tagz, .cssSelector = "#inner")
+#' tagz <- bindFillRole(tagz, container = TRUE)
+#' tagz <- bindFillRole(tagz, item = FALSE, .cssSelector = "#inner")
 #'
 #' # Inner does fill outer
 #' if (interactive()) browsable(tagz)
 #'
-asFillContainer <- function(x, ..., height = NULL, width = NULL, asItem = FALSE, .cssSelector = NULL) {
-  if (!inherits(x, "shiny.tag")) {
-    return(throwFillWarning(x))
-  }
+bindFillRole <- function(x, ..., item = FALSE, container = FALSE, overwrite = FALSE, .cssSelector = NULL) {
 
   ellipsis::check_dots_empty()
+
+  hasSelection <- FALSE
+  query <- NULL
+  if (!is.null(.cssSelector)) {
+
+    try(silent = TRUE, {
+      query <- tagQuery(x)$find(.cssSelector)
+      hasSelection <- length(query$selectedTags()) > 0
+    })
+
+    if (!hasSelection) {
+      rlang::warn(
+        paste0(
+          "`bindFillRole()` didn't find any tags matching the .cssSelector: '", .cssSelector, "'. ",
+          "Thus, it won't apply any fill roles."
+        ),
+        class = "htmltools_fill_role_selector"
+      )
+      return(x)
+    }
+  }
+
+  if (!(inherits(x, "shiny.tag") || hasSelection)) {
+    rlang::warn(
+      paste0(
+        "`bindFillRole()` only works on htmltools::tag() objects (e.g., div(), p(), etc.), ",
+        "not objects of type '", class(x)[1], "'. "
+      ),
+      class = "htmltools_fill_role_object"
+    )
+    return(x)
+  }
 
   x <- tagAppendAttributes(
-    x, class = "html-fill-container",
-    class = if (asItem) "html-fill-item",
-    style = css(
-      height = validateCssUnit(height),
-      width = validateCssUnit(width)
-    ),
-    .cssSelector = .cssSelector
+    x, .cssSelector = .cssSelector,
+    class = if (item) "html-fill-item",
+    class = if (container) "html-fill-container"
   )
 
-  attachDependencies(x, fillDependencies(), append = TRUE)
-}
-
-#' @export
-#' @rdname asFillContainer
-asFillItem <- function(x, ..., height = NULL, width = NULL, .cssSelector = NULL) {
-  if (!inherits(x, "shiny.tag")) {
-    return(throwFillWarning(x, "item"))
+  if (container) {
+    x <- attachDependencies(x, fillDependencies(), append = TRUE)
   }
 
-  ellipsis::check_dots_empty()
+  if (!overwrite) {
+    return(x)
+  }
 
-  tagAppendAttributes(
-    x, class = "html-fill-item",
-    style = css(
-      height = validateCssUnit(height),
-      width = validateCssUnit(width)
-    ),
-    .cssSelector = .cssSelector
-  )
+  query <- query %||% tagQuery(x)
+
+  # removeClass() removes all occurrences of a given class
+  if (!item) {
+    query <- query$removeClass("html-fill-item")
+  }
+  if (!container) {
+    query <- query$removeClass("html-fill-container")
+  }
+
+  query$allTags()
 }
+
 
 fillDependencies <- function() {
   htmlDependency(
@@ -97,16 +120,4 @@ fillDependencies <- function() {
     src = "fill",
     stylesheet = "fill.css"
   )
-}
-
-throwFillWarning <- function(x, type = "container") {
-  rlang::warn(
-    paste0(
-      "Don't know how to treat an object of type '",
-      class(x)[1], "' as a fill ", type, ". ",
-      "Only a htmltools::tag() object may be treated as a fill ", type
-    ),
-    class = "htmltools_fill_input_type"
-  )
-  x
 }

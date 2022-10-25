@@ -97,10 +97,9 @@ reference:
   - '`capturePlot`'
   - '`defaultPngDevice`'
 
-- title: Fill containers
+- title: Fill items and containers
   contents:
-  - '`asFillContainer`'
-  - '`asFillItem`'
+  - '`bindFillRole`'
 
 - title: Utilities
   contents:
