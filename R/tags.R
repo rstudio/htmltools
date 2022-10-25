@@ -1761,7 +1761,7 @@ includeMarkdown <- function(path) {
   html <- if ("fragment.only" %in% names(formals(markdown::markdownToHTML))) {
     markdown::markdownToHTML(path, fragment.only = TRUE)
   } else {
-    markdown::markdownToHTML(path, options = 'fragment_only')
+    markdown::markdownToHTML(path, options = '-standalone')
   }
   Encoding(html) <- 'UTF-8'
   return(HTML(html))
