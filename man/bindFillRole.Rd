@@ -14,7 +14,8 @@ bindFillRole(
 )
 }
 \arguments{
-\item{x}{a \code{\link[=tag]{tag()}} object. Can also be a valid \code{\link[=tagQuery]{tagQuery()}} input if \code{.cssSelector} is specified.}
+\item{x}{a \code{\link[=tag]{tag()}} object. Can also be a valid \code{\link[=tagQuery]{tagQuery()}} input if
+\code{.cssSelector} is specified.}
 
 \item{...}{currently unused.}
 
@@ -39,8 +40,8 @@ The original tag object (\code{x}) with additional attributes (and a
 }
 \description{
 Create fill containers and items. If a fill item is a direct child of a fill
-container with a fixed height, then the item is allowed to grow and shrink to
-its container's size.
+container, and that container has an opinionated height, then the item is
+allowed to grow and shrink to its container's size.
 }
 \examples{
 

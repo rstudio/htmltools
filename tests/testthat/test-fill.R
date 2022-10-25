@@ -14,6 +14,11 @@ test_that("asFillContainer() and asFillItem()", {
     doRenderTags(x) == "<div class=\"html-fill-item\"></div>"
   )
 
+  x <- bindFillRole(x, container = TRUE, overwrite = TRUE)
+  expect_true(
+    doRenderTags(x) == "<div class=\"html-fill-container\"></div>"
+  )
+
   x <- bindFillRole(
     div(span()), .cssSelector = "span", container = TRUE, item = TRUE
   )

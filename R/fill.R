@@ -1,10 +1,11 @@
 #' Allow tags to intelligently fill their container
 #'
 #' Create fill containers and items. If a fill item is a direct child of a fill
-#' container with a fixed height, then the item is allowed to grow and shrink to
-#' its container's size.
+#' container, and that container has an opinionated height, then the item is
+#' allowed to grow and shrink to its container's size.
 #'
-#' @param x a [tag()] object. Can also be a valid [tagQuery()] input if `.cssSelector` is specified.
+#' @param x a [tag()] object. Can also be a valid [tagQuery()] input if
+#'   `.cssSelector` is specified.
 #' @param ... currently unused.
 #' @param item whether or not to treat `x` as a fill item.
 #' @param container whether or not to treat `x` as a fill container. Note this
