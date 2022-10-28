@@ -6,7 +6,13 @@
 }
 
 .html-fill-container > .html-fill-item {
-  flex: var(--html-fill-item-flex, 1 1 auto);
-  overflow: var(--html-fill-item-overflow, auto);
+  flex: 1 1 auto;
+  overflow: auto;
   width: 100%;
 }
+
+.html-fill-container > .html-fill-item.html-fill-item-overflow-hidden {
+  overflow: hidden;
+}
+
+
