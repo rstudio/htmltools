@@ -548,6 +548,25 @@ test_that("tagQuery()$remove()", {
     x$allTags(),
     div()
   )
+
+  # https://github.com/rstudio/htmltools/issues/346
+  skip_if_not_installed("shiny")
+  html <- shiny::selectInput("select_id", "label", letters)
+  # Remove the label
+  final_html <- tagQuery(html)$
+    find("label")$
+    remove()$
+    allTags()
+
+  html_ex <- shiny::selectInput("select_id", "label", letters)
+  # Remove label
+  label_pos <- which(vapply(html_ex$children, `[[`, character(1), "name") == "label")
+  expect_equal(length(label_pos), 1)
+  html_ex$children[label_pos] <- NULL
+  # Relocate html deps (due to `flattenTagsRaw()`)
+  html_expected <- tagQuery(html_ex)$allTags()
+
+  expect_equal_tags(final_html, html_expected)
 })
 
 
