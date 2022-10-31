@@ -1006,7 +1006,7 @@ tagQueryMatchChildRev <- function(els, func) {
     elParent <- el$parent
     # Walk in reverse to be able to remove all matches in a single pass
     selectedWalkIRev(elParent$children, function(child, childPos) {
-      if (!isTagEnv(el)) return()
+      if (!isTagEnv(child)) return()
       childKey <- child$envKey
       if (elKey == childKey) {
         func(elParent, el, childPos)
