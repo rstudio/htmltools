@@ -631,14 +631,21 @@ tagQuery_ <- function(
             tagQueryFindClosest(selected_, cssSelector)
           )
         },
-        #' ### Custom filter
+        #' ### Filter
         #'
+        #' * `$matches(fn)`: For each for the selected tags, return `TRUE` if
+        #'  `fn(el)` returns `TRUE`. In addition to an R function with two
+        #'   arguments (the selected tag `x` and the index `i`), `fn` may also
+        #'   be a valid CSS selector.
+        matches = function(fn) {
+          tagQueryMatches(selected_, fn)
+        },
         #' * `$filter(fn)`: Filter the selected tags to those for which `fn(x,
         #' i)` returns `TRUE`. In addition to an R function with two arguments
         #' (the selected tag `x` and the index `i`), `fn` may also be a valid
         #' CSS selector.
         filter = function(fn) {
-          newSelected <- tagQueryFindFilter(selected_, fn)
+          newSelected <- tagQueryFilter(selected_, fn)
           rebuild_()
           newTagQuery(newSelected)
         },
@@ -953,6 +960,11 @@ walkIRev <- function(.x, .f, ...) {
   NULL
 }
 
+# Actually return the iterated results
+MapI <- function(.x, .f, ..., USE.NAMES = FALSE) {
+  Map(.x, seq_along(.x), f = .f, ..., USE.NAMES = USE.NAMES)
+}
+
 
 # Return function that will verify elements before performing `func(els, fn)`
 selectedWalkGen <- function(func) {
@@ -986,6 +998,7 @@ tagQueryWalk <- selectedWalkGen(walk)
 # selectedWalkRev <- selectedWalkGen(walkRev)
 selectedWalkI <- selectedWalkGen(walkI)
 selectedWalkIRev <- selectedWalkGen(walkIRev)
+selectedMapI <- selectedWalkGen(MapI)
 tagQueryLapply <- selectedWalkGen(lapply)
 
 
@@ -1388,7 +1401,19 @@ tagQueryFindSiblings <- function(els, cssSelector = NULL) {
 
 # Filter the selected elements using a function
 # The answer of `fn(el, i)` should work in an `if` block
-tagQueryFindFilter <- function(els, fn) {
+tagQueryMatches <- function(els, fn) {
+  if (is.character(fn)) {
+    selector <- cssSelectorToSelector(fn)
+    fn <- function(el, i) {
+      elMatchesSelector(el, selector)
+    }
+  }
+  validateFnCanIterate(fn)
+  unlist(selectedMapI(els, fn))
+}
+# Filter the selected elements using a function
+# The answer of `fn(el, i)` should work in an `if` block
+tagQueryFilter <- function(els, fn) {
   if (is.character(fn)) {
     selector <- cssSelectorToSelector(fn)
     fn <- function(el, i) {
