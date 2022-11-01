@@ -183,8 +183,50 @@ test_that("tagQuery()$find()", {
   expect_equal_tags(x$selectedTags(), tagListPrintAsList(p("text2")))
 })
 
+test_that("tagQuery()$matches()", {
+  x <- tagQuery(
+    div(
+      span(1, class = "first"),
+      span(2, class = "second"),
+      span(3, class = "third"),
+      span(4, class = "fourth"),
+      span(5, class = "fifth")
+    )
+  )
+
+  x <- x$find("span")
+  expect_length(x$selectedTags(), 5)
+
+  expect_equal(x$matches("span"), rep(TRUE, 5))
+  expect_equal(x$matches(".second"), c(FALSE, TRUE, FALSE, FALSE, FALSE))
+  expect_equal(x$matches(function(el, i) {
+    grepl("second", tagGetAttribute(el, "class"))
+  }), c(FALSE, TRUE, FALSE, FALSE, FALSE))
+
+  expect_error(x$matches("span div"), "using a simple CSS selector")
+
+  # Make sure selected tags were not altered
+  expect_length(x$selectedTags(), 5)
+
+  # Vignette example
+  (html <- tagList(div(), span()))
+  tagQ <- tagQuery(html)
+  expect_equal(tagQ$matches("span"), c(FALSE, TRUE))
+  expect_equal(
+    tagQ$matches(function(el, i) {
+      el$name == "span"
+    }),
+    c(FALSE, TRUE)
+  )
+
+})
+
 test_that("tagQuery()$filter()", {
-  x <- tagQuery(div(span(1), span(2), span(3), span(4), span(5)))
+  x <- tagQuery(div(span(1), span(2, class = "second"), span(3), span(4), span(5)))
+
+  y <- x$find("span")
+  y <- y$filter(".second")
+  expect_equal_tags(y$selectedTags(), tagListPrintAsList(span(2, class = "second")))
 
   x <- x$find("span")
   expect_length(x$selectedTags(), 5)
