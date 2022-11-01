@@ -1023,8 +1023,7 @@ tagQuerySiblingRemove <- function(els) {
   tagQueryMatchChildRev(els, function(elParent, el, childPos) {
     # remove parent / child relationship
     el$parent <- NULL
-    # Remove the child entry completely
-    elParent$children[childPos] <- NULL
+    elParent$children[[childPos]] <- NULL
   })
 }
 # Add siblings after each el
