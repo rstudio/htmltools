@@ -85,7 +85,7 @@ ancestor tag (including itself) satisfying a \code{cssSelector}. If
 
 \subsection{Filter}{
 \itemize{
-\item \verb{$matches(fn)}: For each for the selected tags, return \code{TRUE} if
+\item \verb{$matches(fn)}: For each of the selected tags, return \code{TRUE} if
 \code{fn(el)} returns \code{TRUE}. In addition to an R function with two
 arguments (the selected tag \code{x} and the index \code{i}), \code{fn} may also
 be a valid CSS selector.

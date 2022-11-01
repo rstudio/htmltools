@@ -633,7 +633,7 @@ tagQuery_ <- function(
         },
         #' ### Filter
         #'
-        #' * `$matches(fn)`: For each for the selected tags, return `TRUE` if
+        #' * `$matches(fn)`: For each of the selected tags, return `TRUE` if
         #'  `fn(el)` returns `TRUE`. In addition to an R function with two
         #'   arguments (the selected tag `x` and the index `i`), `fn` may also
         #'   be a valid CSS selector.
