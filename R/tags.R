@@ -1757,7 +1757,12 @@ includeText <- function(path) {
 #' @rdname include
 #' @export
 includeMarkdown <- function(path) {
-  html <- markdown::markdownToHTML(path, fragment.only=TRUE)
+  # markdown > v1.2 has removed the fragment.only argument
+  html <- if ("fragment.only" %in% names(formals(markdown::markdownToHTML))) {
+    markdown::markdownToHTML(path, fragment.only = TRUE)
+  } else {
+    markdown::markdownToHTML(path, options = '-standalone')
+  }
   Encoding(html) <- 'UTF-8'
   return(HTML(html))
 }
