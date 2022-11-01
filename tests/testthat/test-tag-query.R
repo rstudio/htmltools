@@ -548,6 +548,13 @@ test_that("tagQuery()$remove()", {
     x$allTags(),
     div()
   )
+
+  # https://github.com/rstudio/htmltools/issues/346
+  # `isTagEnv("Barret")` is `FALSE`
+  html <- div(tags$label("Carson"), "Barret")
+  # Remove the label
+  x <- tagQuery(html)$find("label")$remove()
+  expect_equal_tags(x$allTags(), div("Barret"))
 })
 
 

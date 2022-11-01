@@ -8,6 +8,9 @@
 
 * Closed #331: `copyDependencyToDir()` creates `outputDir` recursively, which happens in Quarto or when `lib_dir` points to a nested directory. (@gadenbuie, #332)
 
+* Closed #346: `tagQuery()`'s `$remove()`, `$after()`, `$before()`, `$replaceWith()` had a bug that prevented expected behavior when sibling children values where not tag elements. (#348)
+
+
 # htmltools 0.5.3
 
 ## Breaking changes
@@ -23,6 +26,7 @@
 * `copyDependencyToDir()` no longer creates empty directories for dependencies that do not have any files. (@gadenbuie, #276)
 
 * Closed #320: `copyDependencyToDir()` now works with dependencies with specified attributes. (@dmurdoch, #321)
+
 
 # htmltools 0.5.2
 
