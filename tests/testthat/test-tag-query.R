@@ -219,6 +219,14 @@ test_that("tagQuery()$matches()", {
     c(FALSE, TRUE)
   )
 
+  # If the value is not `TRUE`, then it is `FALSE`
+  expect_equal(
+    tagQ$matches(function(el, i) {
+      c(TRUE, TRUE)
+    }),
+    c(FALSE, FALSE)
+  )
+
 })
 
 test_that("tagQuery()$filter()", {

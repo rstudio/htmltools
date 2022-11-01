@@ -1409,7 +1409,7 @@ tagQueryMatches <- function(els, fn) {
     }
   }
   validateFnCanIterate(fn)
-  unlist(selectedMapI(els, fn))
+  vapply(selectedMapI(els, fn), isTRUE, logical(1))
 }
 # Filter the selected elements using a function
 # The answer of `fn(el, i)` should work in an `if` block
@@ -1424,7 +1424,7 @@ tagQueryFilter <- function(els, fn) {
 
   filterStack <- envirStackUnique()
   selectedWalkI(els, function(el, i) {
-    if (fn(el, i)) {
+    if (isTRUE(fn(el, i))) {
       filterStack$push(el)
     }
   })
