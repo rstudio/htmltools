@@ -116,31 +116,43 @@ asSelector <- function(selector) {
     #   }
     # }
 
-    elementRegex <- "^[a-zA-Z0-9]+"
-    element <- txt_match_first(selector, elementRegex)
+    ## https://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
+    ##  identifiers (including element names, classes, and IDs in selectors) can
+    ##  contain only the characters [a-zA-Z0-9] and ISO 10646 characters U+00A0
+    ##  and higher, plus the hyphen (-) and the underscore (_); they cannot
+    ##  start with a digit, two hyphens, or a hyphen followed by a digit.
+    ##  Identifiers can also contain escaped characters and any ISO 10646
+    ##  character as a numeric code (see next item). For instance, the
+    ##  identifier "B&W?" may be written as "B\&W\?" or "B\26 W\3F".
+    # Here we use simpler (maybe not accurate) regexes:
+    
+    # start with a normal letter, an underscore, or a hyphen 
+    # end when we hit the start for either:
+    #  . a class selector
+    #  : a pseudo-class selector 
+    #  [ an attribute selector
+    #  # an i selector
+    valid_name_regex <- "[a-zA-Z_-][^.:[#]+" 
+    
+    element_regex <- paste0("^", valid_name_regex)
+    id_regex      <- paste0("^#", valid_name_regex)
+    classes_regex <- paste0("\\.", valid_name_regex)
+    
+    element <- txt_match_first(selector, element_regex)
     if (!is.null(element)) {
-      selector <- txt_remove(selector, elementRegex)
+      selector <- txt_remove(selector, element_regex)
     }
 
-    ## https://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
-    ##  In CSS, identifiers (including element names, classes, and IDs in selectors) can contain only the characters [a-zA-Z0-9] and ISO 10646 characters U+00A0 and higher, plus the hyphen (-) and the underscore (_); they cannot start with a digit, two hyphens, or a hyphen followed by a digit. Identifiers can also contain escaped characters and any ISO 10646 character as a numeric code (see next item). For instance, the identifier "B&W?" may be written as "B\&W\?" or "B\26 W\3F".
-    # # define simpler (maybe not accurate) regex
-    # id_regex <- "^#[^#.:[\\s]+" # `#` then everything that isn't a `#`, `.`, `:`, or white space
-    # class_regex <- "^\\.[^#.:[\\s]+" # `.` then everything that isn't a `.`, `:`, or white space
-
-    tmpId <- txt_match_first(selector, "#[^.:[]+")
+    tmpId <- txt_match_first(selector, id_regex)
     if (!is.null(tmpId)) {
       id <- txt_remove(tmpId, "^#")
       selector <- txt_remove(selector, tmpId, fixed = TRUE)
     }
 
-    classes <- txt_remove(txt_match_all(selector, "\\.[^.:[]+"), "^\\.")
+    classes <- txt_remove(txt_match_all(selector, classes_regex), "^\\.")
     if (length(classes) == 0) {
       classes <- NULL
     }
-    # if (!is.null(classes)) {
-    #   selector <- txt_remove(selector, "\\.[^.:[]+")
-    # }
   }
 
   structure(class = selectorClass, list(
