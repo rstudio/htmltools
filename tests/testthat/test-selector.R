@@ -27,11 +27,90 @@ test_that("error checks", {
 
 test_that("selector parses string", {
   selector <- asSelector("h1#myId-value.class-name .child-class#child-id_value")
-
   expect_equal(
     format(selector),
     "h1#myId-value.class-name #child-id_value.child-class"
   )
+})
+
+test_that("selector parses valid names", {
+  verbose <- FALSE
+  wrapped_expect_equal <- function (object, expected, label) {
+    if (verbose) message(label)
+    expect_equal(object, expected, label = label)
+  }
+  valid_names <- list(
+    single_character               = "a",
+    single_CHARACTER               = "A",
+    multiple_characters            = "abc",
+    multiple_cHaRaCtErS            = "aBcD",
+    just_an_underscore             = "_",
+    starts_with_an_underscore      = "_abc",
+    contains_underscore            = "a_abc",
+    contains_hyphen_and_underscore = "a_abc-def"
+  )
+
+  # check elements parse
+  for (key in names(valid_names)) {
+    this_time <- valid_names[[key]]
+    wrapped_expect_equal(
+      format(asSelector(this_time)),
+      this_time,
+      label = paste0("checking element ", key, " with content ", this_time)
+    )
+  }
+
+  # check ids parse
+  for (key in names(valid_names)) {
+    this_time <- paste0("#", valid_names[[key]])
+    wrapped_expect_equal(
+      format(asSelector(this_time)),
+      this_time,
+      label = paste0("checking id ", key, " with content ", this_time)
+    )
+  }
+
+  # check classes parse
+  for (key in names(valid_names)) {
+    this_time <- paste0(".", valid_names[[key]])
+    wrapped_expect_equal(
+      format(asSelector(this_time)),
+      this_time,
+      label = paste0("checking class name ", key, " with content ", this_time)
+    )
+  }
+
+  # check compounds parse
+  for (element_key in names(valid_names)) {
+    for (id_key in names(valid_names)) {
+      for (class_key_1 in names(valid_names)) {
+        for (class_key_2 in names(valid_names)) {
+          this_time <- paste0(
+            valid_names[[element_key]],
+            "#", valid_names[[id_key]],
+            ".", valid_names[[class_key_1]],
+            ".", valid_names[[class_key_2]]
+          )
+          wrapped_expect_equal(
+            format(asSelector(this_time)),
+            this_time,
+            label = paste0("checking compound element ", paste(element_key, id_key, class_key_1, class_key_2, sep="|"), " with content ", this_time)
+          )
+          reordered_this_time <- paste0(
+            valid_names[[element_key]],
+            ".", valid_names[[class_key_1]],
+            "#", valid_names[[id_key]],
+            ".", valid_names[[class_key_2]]
+          )
+          wrapped_expect_equal(
+            format(asSelector(reordered_this_time)),
+            this_time,
+            label = paste0("checking reordered compound element ", paste(element_key, id_key, class_key_1, class_key_2, sep="|"), " with content ", reordered_this_time)
+          )
+        }
+      }
+    }
+  }
 })
 
 test_that("* checks", {
