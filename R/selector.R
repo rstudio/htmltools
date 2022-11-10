@@ -125,19 +125,27 @@ asSelector <- function(selector) {
     ##  character as a numeric code (see next item). For instance, the
     ##  identifier "B&W?" may be written as "B\&W\?" or "B\26 W\3F".
     # Here we use simpler (maybe not accurate) regexes:
-    
-    # start with a normal letter, an underscore, or a hyphen 
+
+    # start with a normal letter, an underscore, or a hyphen
     # end when we hit the start for either:
     #  . a class selector
-    #  : a pseudo-class selector 
+    #  : a pseudo-class selector
     #  [ an attribute selector
-    #  # an i selector
-    valid_name_regex <- "[a-zA-Z_-][^.:[#]*" 
-    
+    #  # an id selector
+    valid_name_regex <- "[a-zA-Z_-][^.:[#]*"
+
+    ## from https://www.w3.org/TR/CSS2/selector.html#selector-syntax
+    ## A simple selector is either a type selector (or universal selector)
+    ## followed immediately by zero or more attribute selectors, ID selectors,
+    ## or pseudo-classes, in any order
+
+    # elements always come at the start of the selector
     element_regex <- paste0("^", valid_name_regex)
-    id_regex      <- paste0("^#", valid_name_regex)
+    # id starts with a #
+    id_regex      <- paste0("#", valid_name_regex)
+    # class starts with a period (escaped for regex)
     classes_regex <- paste0("\\.", valid_name_regex)
-    
+
     element <- txt_match_first(selector, element_regex)
     if (!is.null(element)) {
       selector <- txt_remove(selector, element_regex)
