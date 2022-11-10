@@ -132,7 +132,7 @@ asSelector <- function(selector) {
     #  : a pseudo-class selector 
     #  [ an attribute selector
     #  # an i selector
-    valid_name_regex <- "[a-zA-Z_-][^.:[#]+" 
+    valid_name_regex <- "[a-zA-Z_-][^.:[#]*" 
     
     element_regex <- paste0("^", valid_name_regex)
     id_regex      <- paste0("^#", valid_name_regex)
