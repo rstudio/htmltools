@@ -19,7 +19,8 @@
 
 ## Bug fixes
 
-* Closed #355: `tagQuery()` was failing to select elements with tag names that contained hyphens. (#302)
+* Closed #355: `tagQuery()` was failing to select elements with tag names that contained hyphens. (@slodge, 
+*  #302)
 
 * Closed #301: `tagQuery()` was failing to copy all `tagList()` html dependencies within nest child tag lists. `tagQuery()` will now relocate html dependencies as child objects. (#302)
 
