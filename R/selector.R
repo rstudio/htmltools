@@ -134,7 +134,7 @@ asSelector <- function(selector) {
     ##  `#` - an id selector
     valid_name_regex <- "[a-zA-Z_-][^.:[#]*"
 
-    ## from https://www.w3.org/TR/CSS2/selector.html#selector-syntax
+    ## From https://www.w3.org/TR/CSS2/selector.html#selector-syntax
     ## A simple selector is either a type selector (or universal selector)
     ## followed immediately by zero or more attribute selectors, ID selectors,
     ## or pseudo-classes, in any order
