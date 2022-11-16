@@ -124,14 +124,14 @@ asSelector <- function(selector) {
     ##  Identifiers can also contain escaped characters and any ISO 10646
     ##  character as a numeric code (see next item). For instance, the
     ##  identifier "B&W?" may be written as "B\&W\?" or "B\26 W\3F".
-    # Here we use simpler (maybe not accurate) regexes:
+    ## Here we use simpler (maybe not accurate) regexes:
 
-    # start with a normal letter, an underscore, or a hyphen
-    # end when we hit the start for either:
-    #  . a class selector
-    #  : a pseudo-class selector
-    #  [ an attribute selector
-    #  # an id selector
+    ## Start with a normal letter, an underscore, or a hyphen
+    ## End when we hit the start for either:
+    ##  `.` - a class selector
+    ##  `:` - a pseudo-class selector
+    ##  `[` - an attribute selector
+    ##  `#` - an id selector
     valid_name_regex <- "[a-zA-Z_-][^.:[#]*"
 
     ## from https://www.w3.org/TR/CSS2/selector.html#selector-syntax
