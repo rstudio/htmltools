@@ -10,6 +10,9 @@
 
 * Closed #346: `tagQuery()`'s `$remove()`, `$after()`, `$before()`, `$replaceWith()` had a bug that prevented expected behavior when sibling children values where not tag elements. (#348)
 
+* Closed #355: `tagQuery()` was failing to select elements with tag names that contained hyphens. (@slodge, 
+*  #302)
+
 
 # htmltools 0.5.3
 
@@ -18,9 +21,6 @@
 * Closed #305: `htmlPreserve()` no longer uses _inline_ code blocks for Pandoc's raw attribute feature when used inside a _non_-inline knitr/rmarkdown code chunk, and as a result, in this case, an additional `<p>` tag is no longer wrapped around the HTML content. (#306)
 
 ## Bug fixes
-
-* Closed #355: `tagQuery()` was failing to select elements with tag names that contained hyphens. (@slodge, 
-*  #302)
 
 * Closed #301: `tagQuery()` was failing to copy all `tagList()` html dependencies within nest child tag lists. `tagQuery()` will now relocate html dependencies as child objects. (#302)
 
