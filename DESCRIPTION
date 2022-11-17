@@ -33,7 +33,7 @@ Enhances: knitr
 License: GPL (>= 2)
 URL: https://github.com/rstudio/htmltools, https://rstudio.github.io/htmltools/
 BugReports: https://github.com/rstudio/htmltools/issues
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 Encoding: UTF-8
 Collate:
     'colors.R'
