@@ -64,7 +64,7 @@ tagz <- div(
 if (interactive()) browsable(tagz)
 
 tagz <- bindFillRole(tagz, container = TRUE)
-tagz <- bindFillRole(tagz, item = FALSE, .cssSelector = "#inner")
+tagz <- bindFillRole(tagz, item = TRUE, .cssSelector = "#inner")
 
 # Inner does fill outer
 if (interactive()) browsable(tagz)
