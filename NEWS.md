@@ -1,4 +1,8 @@
-# htmltools 0.5.4.9000
+# htmltools (development version)
+
+## Bug fixes
+
+* Closed #355: `tagQuery()` was failing to select elements with tag names that contained hyphens. (@slodge, #302)
 
 
 
@@ -13,9 +17,6 @@
 * Closed #331: `copyDependencyToDir()` creates `outputDir` recursively, which happens in Quarto or when `lib_dir` points to a nested directory. (@gadenbuie, #332)
 
 * Closed #346: `tagQuery()`'s `$remove()`, `$after()`, `$before()`, `$replaceWith()` had a bug that prevented expected behavior when sibling children values where not tag elements. (#348)
-
-* Closed #355: `tagQuery()` was failing to select elements with tag names that contained hyphens. (@slodge, 
-*  #302)
 
 
 # htmltools 0.5.3
