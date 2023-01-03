@@ -1,4 +1,8 @@
-# htmltools 0.5.4.9000
+# htmltools (development version)
+
+## Bug fixes
+
+* Closed #355: `tagQuery()` was failing to select elements with tag names that contained hyphens. (@slodge, #302)
 
 
 
