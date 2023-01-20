@@ -20,4 +20,4 @@ jobs:
   R-CMD-check:
     uses: rstudio/shiny-workflows/.github/workflows/R-CMD-check.yaml@main
     with:
-      cache-version: barret2
+      cache-version: barret3
