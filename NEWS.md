@@ -1,6 +1,8 @@
 # htmltools 0.5.4.9000
 
+## Bug fixes
 
+* Closed #366: `tagQuery()`'s `find()` method no longer errors out when tags contain language objects. (#366)
 
 # htmltools 0.5.4
 
