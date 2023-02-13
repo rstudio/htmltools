@@ -34,6 +34,8 @@ Easily generates a .png file (or other graphics file) from a plotting
 expression.
 }
 \examples{
+
+\dontrun{
 # Default settings
 res <- capturePlot(plot(cars))
 
@@ -59,6 +61,7 @@ if (capabilities("cairo")) {
   )
   if (interactive()) browseURL(svgpath)
   unlink(svgpath)
+}
 }
 
 }

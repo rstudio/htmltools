@@ -18,6 +18,8 @@
 #'   tag.
 #'
 #' @examples
+#'
+#' \dontrun{
 #' # Default settings
 #' res <- capturePlot(plot(cars))
 #'
@@ -43,6 +45,7 @@
 #'   )
 #'   if (interactive()) browseURL(svgpath)
 #'   unlink(svgpath)
+#' }
 #' }
 #'
 #' @export
