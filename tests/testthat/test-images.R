@@ -2,6 +2,8 @@ context("images")
 
 test_that("capturePlot works with device functions with various signatures", {
 
+  # If these run without throwing, that's success
+
   capturePlot(plot(cars), device = grDevices::png)
 
   capturePlot(plot(cars), device = function(filename, width, height) {
