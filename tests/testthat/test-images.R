@@ -1,17 +1,6 @@
 context("images")
 
 test_that("capturePlot works with device functions with various signatures", {
-  expect_error(library(ragg), NA)
-
-  # If these run without throwing, that's success
-  capturePlot(plot(cars))
-
-  capturePlot(
-     plot(pressure),
-     tempfile(fileext = ".svg"),
-     grDevices::svg,
-     width = 8, height = 3.75
-  )
 
   capturePlot(plot(cars), device = grDevices::png)
 

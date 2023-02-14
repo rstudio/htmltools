@@ -18,7 +18,6 @@
 #'   tag.
 #'
 #' @examples
-#'
 #' # Default settings
 #' res <- capturePlot(plot(cars))
 #'
@@ -34,7 +33,6 @@
 #' if (interactive()) browseURL(pngpath)
 #' unlink(pngpath)
 #'
-#' \dontrun{
 #' # Use a custom graphics device (e.g., SVG)
 #' if (capabilities("cairo")) {
 #'   svgpath <- capturePlot(
@@ -45,7 +43,6 @@
 #'   )
 #'   if (interactive()) browseURL(svgpath)
 #'   unlink(svgpath)
-#' }
 #' }
 #'
 #' @export
