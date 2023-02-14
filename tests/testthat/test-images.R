@@ -4,6 +4,7 @@ test_that("capturePlot works with device functions with various signatures", {
   expect_error(library(ragg), NA)
 
   # If these run without throwing, that's success
+  capturePlot(plot(cars))
 
   capturePlot(plot(cars), device = grDevices::png)
 
