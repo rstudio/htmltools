@@ -6,6 +6,13 @@ test_that("capturePlot works with device functions with various signatures", {
   # If these run without throwing, that's success
   capturePlot(plot(cars))
 
+  capturePlot(
+     plot(pressure),
+     tempfile(fileext = ".svg"),
+     grDevices::svg,
+     width = 8, height = 3.75
+  )
+
   capturePlot(plot(cars), device = grDevices::png)
 
   capturePlot(plot(cars), device = function(filename, width, height) {
