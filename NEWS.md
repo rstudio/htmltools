@@ -1,8 +1,16 @@
-# htmltools 0.5.3.9000
+# htmltools (development version)
+
+## Bug fixes
+
+* Closed #355: `tagQuery()` was failing to select elements with tag names that contained hyphens. (@slodge, #302)
+
+
+
+# htmltools 0.5.4
 
 ## New Features
 
-* Added new `asFillContainer()` and `asFillItem()` functions for modifying `tag()` object(s) into tags that are allowed to grow and shrink when their parent is opinionated about their height. See `help(asFillContainer)` for documentation and examples. Note the primary motivation for adding these functions is to power `{bslib}`'s new `card()` API (in particular, [responsive sizing](https://rstudio.github.io/bslib/articles/cards.html#responsive-sizing)) as well as the new `fill` arguments in `shiny::plotOutput()`, `shiny::imageOutput()`, `shiny::uiOutput()`, `htmlwidgets::sizingPolicy()`, and `htmlwidgets::shinyWidgetOutput()`. (#343)
+* Added a new `bindFillRole()` function for modifying `tag()` object(s) into tags that are allowed to grow and shrink when their parent is opinionated about their height. See `help(bindFillRole, "htmltools")` for documentation and examples. Note the primary motivation for adding these functions is to power `{bslib}`'s new `card()` API (in particular, [responsive sizing](https://rstudio.github.io/bslib/articles/cards.html#responsive-sizing)) as well as the new `fill` arguments in `shiny::plotOutput()`, `shiny::imageOutput()`, `shiny::uiOutput()`, `htmlwidgets::sizingPolicy()`, and `htmlwidgets::shinyWidgetOutput()`. (#343)
 
 * Added new `tagQuery()` method `$matches(fn)`. For each of the selected `tagQuery()` tags, return `TRUE` if `fn(el)` returns `TRUE`. In addition to an R function with two arguments (the selected tag `x` and the index `i`), `fn` may also be a valid CSS selector. (#351)
 
