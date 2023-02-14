@@ -35,7 +35,6 @@ expression.
 }
 \examples{
 
-\dontrun{
 # Default settings
 res <- capturePlot(plot(cars))
 
@@ -61,7 +60,6 @@ if (capabilities("cairo")) {
   )
   if (interactive()) browseURL(svgpath)
   unlink(svgpath)
-}
 }
 
 }
