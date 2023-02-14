@@ -50,6 +50,7 @@ capturePlot(plot(pressure), pngpath, width = 800, height = 375)
 if (interactive()) browseURL(pngpath)
 unlink(pngpath)
 
+\dontrun{
 # Use a custom graphics device (e.g., SVG)
 if (capabilities("cairo")) {
   svgpath <- capturePlot(
@@ -60,6 +61,7 @@ if (capabilities("cairo")) {
   )
   if (interactive()) browseURL(svgpath)
   unlink(svgpath)
+}
 }
 
 }
