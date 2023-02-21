@@ -25,10 +25,14 @@ test_that("Basic tag writing works", {
 test_that("Hanging commas don't break things", {
   expect_equal(as.character(tagList("hi",)), "hi")
   expect_equal(as.character(div("one",)), "<div>one</div>")
-  # Multiple commas still throw
-  expect_error(as.character(div("one",,)), "is empty")
-  # Non-trailing commas still throw
-  expect_error(as.character(div(,"one",)), "is empty")
+
+  local_edition(3)
+  expect_snapshot({
+    # Multiple commas still throw
+    (expect_error(as.character(div("one",,))))
+    # Non-trailing commas still throw
+    (expect_error(as.character(div(,"one",))))
+  })
 })
 
 

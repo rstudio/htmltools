@@ -1,3 +1,18 @@
+# Hanging commas don't break things
+
+    Code
+      (expect_error(as.character(div("one", , ))))
+    Output
+      <error/rlang_error>
+      Error in `dots_list()`:
+      ! Argument 2 can't be empty.
+    Code
+      (expect_error(as.character(div(, "one", ))))
+    Output
+      <error/rlang_error>
+      Error in `dots_list()`:
+      ! Argument 1 can't be empty.
+
 # html render method
 
     Code
