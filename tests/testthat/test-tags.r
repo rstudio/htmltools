@@ -26,9 +26,9 @@ test_that("Hanging commas don't break things", {
   expect_equal(as.character(tagList("hi",)), "hi")
   expect_equal(as.character(div("one",)), "<div>one</div>")
   # Multiple commas still throw
-  expect_error(as.character(div("one",,)), "is empty")
+  expect_error(as.character(div("one",,)), "empty")
   # Non-trailing commas still throw
-  expect_error(as.character(div(,"one",)), "is empty")
+  expect_error(as.character(div(,"one",)), "empty")
 })
 
 
