@@ -26,9 +26,16 @@ test_that("Hanging commas don't break things", {
   expect_equal(as.character(tagList("hi",)), "hi")
   expect_equal(as.character(div("one",)), "<div>one</div>")
   # Multiple commas still throw
-  expect_error(as.character(div("one",,)), "empty")
+  err_comma_multiple <- expect_error(as.character(div("one",,)))
   # Non-trailing commas still throw
-  expect_error(as.character(div(,"one",)), "empty")
+  err_comma_leading <- expect_error(as.character(div(,"one",)))
+
+  # rlang > 1.0.6 changed the error message, so only run
+  # snapshot testing of the error message with the new version
+  skip_if_not_installed("rlang", "1.0.6.9000")
+  local_edition(3)
+  expect_snapshot(err_comma_multiple)
+  expect_snapshot(err_comma_leading)
 })
 
 
