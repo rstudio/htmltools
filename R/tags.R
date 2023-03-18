@@ -1761,7 +1761,7 @@ includeMarkdown <- function(path) {
   html <- if (packageVersion("markdown") < "1.3") {
     markdown::markdownToHTML(path, fragment.only = TRUE)
   } else {
-    markdown::mark(path)
+    markdown::mark(path, output = NULL)
   }
   Encoding(html) <- 'UTF-8'
   return(HTML(html))
