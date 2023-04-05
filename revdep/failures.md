@@ -1,3 +1,108 @@
+# NA
+
+<details>
+
+* Version: NA
+* GitHub: NA
+* Source code: https://github.com/cran/NA
+* Number of recursive dependencies: 0
+
+Run `revdepcheck::cloud_details(, "NA")` for more info
+
+</details>
+
+## Error before installation
+
+### Devel
+
+```
+
+
+
+
+
+
+```
+### CRAN
+
+```
+
+
+
+
+
+
+```
+# NA
+
+<details>
+
+* Version: NA
+* GitHub: NA
+* Source code: https://github.com/cran/NA
+* Number of recursive dependencies: 0
+
+Run `revdepcheck::cloud_details(, "NA")` for more info
+
+</details>
+
+## Error before installation
+
+### Devel
+
+```
+
+
+
+
+
+
+```
+### CRAN
+
+```
+
+
+
+
+
+
+```
+# NA
+
+<details>
+
+* Version: NA
+* GitHub: NA
+* Source code: https://github.com/cran/NA
+* Number of recursive dependencies: 0
+
+Run `revdepcheck::cloud_details(, "NA")` for more info
+
+</details>
+
+## Error before installation
+
+### Devel
+
+```
+
+
+
+
+
+
+```
+### CRAN
+
+```
+
+
+
+
+
+
+```
 # grandR
 
 <details>
@@ -8,7 +113,7 @@
 * Date/Publication: 2022-09-20 07:56:10 UTC
 * Number of recursive dependencies: 250
 
-Run `cloud_details(, "grandR")` for more info
+Run `revdepcheck::cloud_details(, "grandR")` for more info
 
 </details>
 
@@ -83,7 +188,7 @@ Status: 3 NOTEs
 * Source code: https://github.com/cran/NA
 * Number of recursive dependencies: 0
 
-Run `cloud_details(, "NA")` for more info
+Run `revdepcheck::cloud_details(, "NA")` for more info
 
 </details>
 
@@ -118,7 +223,112 @@ Run `cloud_details(, "NA")` for more info
 * Source code: https://github.com/cran/NA
 * Number of recursive dependencies: 0
 
-Run `cloud_details(, "NA")` for more info
+Run `revdepcheck::cloud_details(, "NA")` for more info
+
+</details>
+
+## Error before installation
+
+### Devel
+
+```
+
+
+
+
+
+
+```
+### CRAN
+
+```
+
+
+
+
+
+
+```
+# NA
+
+<details>
+
+* Version: NA
+* GitHub: NA
+* Source code: https://github.com/cran/NA
+* Number of recursive dependencies: 0
+
+Run `revdepcheck::cloud_details(, "NA")` for more info
+
+</details>
+
+## Error before installation
+
+### Devel
+
+```
+
+
+
+
+
+
+```
+### CRAN
+
+```
+
+
+
+
+
+
+```
+# NA
+
+<details>
+
+* Version: NA
+* GitHub: NA
+* Source code: https://github.com/cran/NA
+* Number of recursive dependencies: 0
+
+Run `revdepcheck::cloud_details(, "NA")` for more info
+
+</details>
+
+## Error before installation
+
+### Devel
+
+```
+
+
+
+
+
+
+```
+### CRAN
+
+```
+
+
+
+
+
+
+```
+# NA
+
+<details>
+
+* Version: NA
+* GitHub: NA
+* Source code: https://github.com/cran/NA
+* Number of recursive dependencies: 0
+
+Run `revdepcheck::cloud_details(, "NA")` for more info
 
 </details>
 
