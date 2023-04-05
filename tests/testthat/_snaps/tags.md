@@ -1,3 +1,21 @@
+# Hanging commas don't break things
+
+    Code
+      err_comma_multiple
+    Output
+      <error/rlang_error>
+      Error in `dots_list()`:
+      ! Argument 2 can't be empty.
+
+---
+
+    Code
+      err_comma_leading
+    Output
+      <error/rlang_error>
+      Error in `dots_list()`:
+      ! Argument 1 can't be empty.
+
 # html render method
 
     Code

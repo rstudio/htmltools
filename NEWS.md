@@ -1,10 +1,14 @@
-# htmltools (development version)
+# htmltools 0.5.5.9000
+
+
+
+# htmltools 0.5.5
 
 ## Bug fixes
 
 * Closed #355: `tagQuery()` was failing to select elements with tag names that contained hyphens. (@slodge, #302)
 
-
+* Closed #366: `tagQuery()`'s `find()` method no longer errors out when tags contain language objects. (#366)
 
 # htmltools 0.5.4
 
