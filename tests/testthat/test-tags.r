@@ -1162,6 +1162,8 @@ test_that("flattenTagAttribs", {
 })
 
 test_that("htmlDependency() can be included in rmarkdown via knit_print", {
+  skip_if_not_installed("knitr")
+
   dep <- htmlDependency(
     "dummytestdep",
     "1.0",
