@@ -5,6 +5,7 @@
 \alias{knit_print.shiny.tag}
 \alias{knit_print.html}
 \alias{knit_print.shiny.tag.list}
+\alias{knit_print.html_dependency}
 \title{Knitr S3 methods}
 \usage{
 knit_print.shiny.tag(x, ..., inline = FALSE)
@@ -12,6 +13,8 @@ knit_print.shiny.tag(x, ..., inline = FALSE)
 knit_print.html(x, ..., inline = FALSE)
 
 knit_print.shiny.tag.list(x, ..., inline = FALSE)
+
+knit_print.html_dependency(x, ..., inline = FALSE)
 }
 \arguments{
 \item{x}{Object to knit_print}
