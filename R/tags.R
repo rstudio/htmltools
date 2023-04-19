@@ -52,7 +52,8 @@ registerMethods <- function(methods) {
     # c(package, genname, class)
     c("knitr", "knit_print", "html"),
     c("knitr", "knit_print", "shiny.tag"),
-    c("knitr", "knit_print", "shiny.tag.list")
+    c("knitr", "knit_print", "shiny.tag.list"),
+    c("knitr", "knit_print", "html_dependency")
   ))
 
   # TODO: After rlang >= 0.4.12 hits CRAN, remove this and replace
@@ -1717,6 +1718,9 @@ knit_print.html <- function(x, ..., inline = FALSE) {
 #' @export
 knit_print.shiny.tag.list <- knit_print.shiny.tag
 
+#' @rdname knitr_methods
+#' @export
+knit_print.html_dependency <- knit_print.shiny.tag
 
 #' Include Content From a File
 #'
