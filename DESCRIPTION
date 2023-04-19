@@ -50,6 +50,7 @@ Collate:
     'tags.R'
     'template.R'
 Roxygen: list(markdown = TRUE)
+Config/Needs/check: knitr
 Config/Needs/website:
     rstudio/quillt,
     bench
