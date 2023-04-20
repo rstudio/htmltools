@@ -631,7 +631,18 @@ tagQuery_ <- function(
             tagQueryFindClosest(selected_, cssSelector)
           )
         },
-        #' ### Filter
+        #' ### Custom filter
+        #'
+        #' * `$filter(fn)`: Filter the selected tags to those for which
+        #'   `fn(x, i)` returns `TRUE`. In addition to an R function with two
+        #'   arguments (the selected tag `x` and the index `i`), `fn` may also
+        #'   be a valid CSS selector.
+        filter = function(fn) {
+          newSelected <- tagQueryFilter(selected_, fn)
+          rebuild_()
+          newTagQuery(newSelected)
+        },
+        #' ### Matching
         #'
         #' * `$matches(fn)`: For each of the selected tags, return `TRUE` if
         #'  `fn(el)` returns `TRUE`. In addition to an R function with two
@@ -639,15 +650,6 @@ tagQuery_ <- function(
         #'   be a valid CSS selector.
         matches = function(fn) {
           tagQueryMatches(selected_, fn)
-        },
-        #' * `$filter(fn)`: Filter the selected tags to those for which `fn(x,
-        #' i)` returns `TRUE`. In addition to an R function with two arguments
-        #' (the selected tag `x` and the index `i`), `fn` may also be a valid
-        #' CSS selector.
-        filter = function(fn) {
-          newSelected <- tagQueryFilter(selected_, fn)
-          rebuild_()
-          newTagQuery(newSelected)
         },
         #' ### Length
         #'
