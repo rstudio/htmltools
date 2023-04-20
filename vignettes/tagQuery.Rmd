@@ -120,6 +120,15 @@ tagQ$
   selectedTags()
 ```
 
+To test your selected tags against a CSS selector, you can use `$matches()` with a CSS selector string:
+
+```{r}
+(html <- tagList(div(), span()))
+tagQ <- tagQuery(html)
+tagQ$matches("span")
+tagQ$matches(function(el, i) { el$name == "span" })
+```
+
 ### Reset
 
 To reset the set of selected tags to the root tag, use `$resetSelected()`:

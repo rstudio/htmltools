@@ -1,6 +1,8 @@
 # htmltools 0.5.5.9000
 
+## New Features
 
+* Added new `tagQuery()` method `$matches(fn)`. For each of the selected `tagQuery()` tags, return `TRUE` if `fn(el)` returns `TRUE`. In addition to an R function with two arguments (the selected tag `x` and the index `i`), `fn` may also be a valid CSS selector. (#351)
 
 # htmltools 0.5.5
 

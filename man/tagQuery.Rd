@@ -85,9 +85,19 @@ ancestor tag (including itself) satisfying a \code{cssSelector}. If
 
 \subsection{Custom filter}{
 \itemize{
-\item \verb{$filter(fn)}: Filter the selected tags to those for which \code{fn(x, i)} returns \code{TRUE}. In addition to an R function with two arguments
-(the selected tag \code{x} and the index \code{i}), \code{fn} may also be a valid
-CSS selector.
+\item \verb{$filter(fn)}: Filter the selected tags to those for which
+\code{fn(x, i)} returns \code{TRUE}. In addition to an R function with two
+arguments (the selected tag \code{x} and the index \code{i}), \code{fn} may also
+be a valid CSS selector.
+}
+}
+
+\subsection{Matching}{
+\itemize{
+\item \verb{$matches(fn)}: For each of the selected tags, return \code{TRUE} if
+\code{fn(el)} returns \code{TRUE}. In addition to an R function with two
+arguments (the selected tag \code{x} and the index \code{i}), \code{fn} may also
+be a valid CSS selector.
 }
 }
 
