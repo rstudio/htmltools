@@ -1160,3 +1160,19 @@ test_that("flattenTagAttribs", {
   # b values are collected
   expect_equal(flatAttribs, list(a = "2", b = c("1", "3")))
 })
+
+test_that("htmlDependency() can be included in rmarkdown via knit_print", {
+  skip_if_not_installed("knitr")
+
+  dep <- htmlDependency(
+    "dummytestdep",
+    "1.0",
+    c(href = "http://example.com/"),
+    script = "test.js"
+  )
+
+  dep_knitr <- knit_print.html_dependency(dep)
+
+  expect_s3_class(dep_knitr, "knit_asis")
+  expect_equal(attr(dep_knitr, "knit_meta")[[1]], dep)
+})

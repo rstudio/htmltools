@@ -1,6 +1,6 @@
 # htmltools 0.5.5.9000
 
-
+* Closed #375: calling `htmlDependency()` or a function that returns an `htmlDependency()` object (e.g., `fontawesome::fa_html_dependency()`) in an R chunk in an R Markdown or knitr-powered Quarto document will now include the dependency rather than printing the object structure. If you want to print the object structure, you can use `print()` or `str()`. (#376)
 
 # htmltools 0.5.5
 
