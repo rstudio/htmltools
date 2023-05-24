@@ -9,8 +9,8 @@
 #' @param ... currently unused.
 #' @param item whether or not to treat `x` as a fill item.
 #' @param container whether or not to treat `x` as a fill container. Note, this
-#'   will set the CSS `display` property on the tag to `flex` which changes how
-#'   its direct children are organized. Thus, one should be careful not to
+#'   will set the CSS `display` property on the tag to `flex` which can change how
+#'   its direct children are rendered. Thus, one should be careful not to
 #'   mark a tag as a fill container when it needs to rely on other `display`
 #'   behavior.
 #' @param overwrite whether or not to override previous calls to
