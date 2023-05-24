@@ -22,8 +22,8 @@ bindFillRole(
 \item{item}{whether or not to treat \code{x} as a fill item.}
 
 \item{container}{whether or not to treat \code{x} as a fill container. Note, this
-will set the CSS \code{display} property on the tag to \code{flex} which changes how
-its direct children are organized. Thus, one should be careful not to
+will set the CSS \code{display} property on the tag to \code{flex} which can change how
+its direct children are rendered. Thus, one should be careful not to
 mark a tag as a fill container when it needs to rely on other \code{display}
 behavior.}
 
