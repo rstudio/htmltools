@@ -9,7 +9,7 @@
 \alias{includeScript}
 \title{Include Content From a File}
 \usage{
-includeHTML(path)
+includeHTML(path, iframe_args = NULL)
 
 includeText(path)
 
@@ -23,6 +23,14 @@ includeScript(path, ...)
 \item{path}{The path of the file to be included. It is highly recommended to
 use a relative path (the base path being the Shiny application directory),
 not an absolute path.}
+
+\item{iframe_args}{If the HTML document at \code{path} is a complete HTML
+document, the document is included within an \verb{<iframe>}. In this case,
+\code{iframe_args} may include a list of arguments to be passed to
+\code{tags$iframe()}. The default arguments set \code{width}, \code{height},
+\code{frameBorder}, \code{seamless}, and \code{scrolling}. The values in \code{iframe_args}
+will be merged with or will override these defaults. You can unset any of
+the default values by setting them to \code{NULL} in \code{iframe_args}.}
 
 \item{...}{Any additional attributes to be applied to the generated tag.}
 }

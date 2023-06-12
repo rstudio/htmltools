@@ -1733,14 +1733,61 @@ knit_print.html_dependency <- knit_print.shiny.tag
 #' @param path The path of the file to be included. It is highly recommended to
 #'   use a relative path (the base path being the Shiny application directory),
 #'   not an absolute path.
+#' @param iframe_args If the HTML document at `path` is a complete HTML
+#'   document, the document is included within an `<iframe>`. In this case,
+#'   `iframe_args` may include a list of arguments to be passed to
+#'   `tags$iframe()`. The default arguments set `width`, `height`,
+#'   `frameBorder`, `seamless`, and `scrolling`. The values in `iframe_args`
+#'   will be merged with or will override these defaults. You can unset any of
+#'   the default values by setting them to `NULL` in `iframe_args`.
 #'
 #' @rdname include
 #' @name include
 #' @aliases includeHTML
 #' @export
-includeHTML <- function(path) {
+includeHTML <- function(path, iframe_args = NULL) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
-  return(HTML(paste8(lines, collapse='\n')))
+  lines <- paste0(lines, collapse='\n')
+
+  if (detect_html_document(lines)) {
+    if (is.null(iframe_args)) iframe_args <- list()
+    iframe_args <- utils::modifyList(iframe_default_args(), iframe_args)
+    iframe_args$srcdoc <- lines
+    return(tags$iframe(class = "html-fill-item", !!!iframe_args))
+  }
+
+  HTML(lines)
+}
+
+detect_html_document <- function(lines) {
+  if (length(lines) > 1) {
+    lines <- paste8(lines, collapse = "\n")
+  }
+  lines <- trimws(lines)
+
+  # A complete html document starts with doctype declaration
+  if (!grepl("^<!DOCTYPE html>", lines, ignore.case = TRUE)) {
+    return(FALSE)
+  }
+  # and ends by closing the `</html>` tag
+  if (!grepl("</html>$", lines, ignore.case = TRUE)) {
+    return(FALSE)
+  }
+
+  # There are more requirements for the HTML document to be technically complete
+  # and valid, but if the above conditions are met, it's unlikely that we want
+  # to treat this document like an HTML fragment.
+  TRUE
+}
+
+iframe_default_args <- function() {
+  list(
+    width = "100%",
+    height = "400px",
+    seamless = "seamless",
+    frameBorder = "0",
+    scrolling = "auto"
+  )
 }
 
 #' @note `includeText` escapes its contents, but does no other processing.
