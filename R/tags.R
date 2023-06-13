@@ -1736,10 +1736,10 @@ knit_print.html_dependency <- knit_print.shiny.tag
 #' @param iframe_args If the HTML document at `path` is a complete HTML
 #'   document, the document is included within an `<iframe>`. In this case,
 #'   `iframe_args` may include a list of arguments to be passed to
-#'   `tags$iframe()`. The default arguments set `width`, `height`,
-#'   `frameBorder`, `seamless`, and `scrolling`. The values in `iframe_args`
-#'   will be merged with or will override these defaults. You can unset any of
-#'   the default values by setting them to `NULL` in `iframe_args`.
+#'   `tags$iframe()`. The default arguments set `width`, `height`, and
+#'   `frameborder`. The values in `iframe_args` will be merged with or will
+#'   override these defaults. You can unset any of the default values by setting
+#'   them to `NULL` in `iframe_args`, e.g. `list(frameborder = NULL)`.
 #'
 #' @rdname include
 #' @name include
@@ -1750,8 +1750,15 @@ includeHTML <- function(path, iframe_args = NULL) {
   lines <- paste0(lines, collapse='\n')
 
   if (detect_html_document(lines)) {
+    iframe_args_default <- list(
+      width = "100%",
+      height = "400px",
+      frameborder = "0"
+    )
+
     if (is.null(iframe_args)) iframe_args <- list()
-    iframe_args <- utils::modifyList(iframe_default_args(), iframe_args)
+    iframe_args <- utils::modifyList(iframe_args_default, iframe_args)
+
     iframe_args$srcdoc <- lines
     return(tags$iframe(class = "html-fill-item", !!!iframe_args))
   }
@@ -1778,16 +1785,6 @@ detect_html_document <- function(lines) {
   # and valid, but if the above conditions are met, it's unlikely that we want
   # to treat this document like an HTML fragment.
   TRUE
-}
-
-iframe_default_args <- function() {
-  list(
-    width = "100%",
-    height = "400px",
-    seamless = "seamless",
-    frameBorder = "0",
-    scrolling = "auto"
-  )
 }
 
 #' @note `includeText` escapes its contents, but does no other processing.
