@@ -1176,3 +1176,57 @@ test_that("htmlDependency() can be included in rmarkdown via knit_print", {
   expect_s3_class(dep_knitr, "knit_asis")
   expect_equal(attr(dep_knitr, "knit_meta")[[1]], dep)
 })
+
+test_that("includeHTML() warns if full document is detected", {
+  tmp_html <- withr::local_tempfile(fileext = ".html")
+
+  writeLines("<html><body><p>test</p></body></html>", tmp_html)
+  expect_warning(includeHTML(tmp_html))
+
+  save_html(p("test"), tmp_html)
+  expect_warning(includeHTML(tmp_html))
+})
+
+test_that("includeHTMLDocument() adds local documents in <iframe>s using srcdoc", {
+  tmp_html <- withr::local_tempfile(fileext = ".html")
+  html <- "<html><body><p>test</p></body></html>"
+
+  writeLines(html, tmp_html)
+
+  expect_equal_tags(
+    includeHTMLDocument(tmp_html, width = "300px"),
+    tags$iframe(
+      class = "html-fill-item",
+      width = "300px",
+      height = "400px",
+      frameborder = "0",
+      srcdoc = html
+    )
+  )
+})
+
+test_that("includeHTMLDocument() adds remote URLs in <iframe>s using src", {
+  ex_url <- "https://example.com"
+
+  expect_equal_tags(
+    includeHTMLDocument(ex_url, height = "100%"),
+    tags$iframe(
+      class = "html-fill-item",
+      width = "100%",
+      height = "100%",
+      frameborder = "0",
+      src = ex_url
+    )
+  )
+})
+
+test_that("includeHTMLDocument() errors if provided length-1 `path`", {
+  tmp_html <- withr::local_tempfile(fileext = ".html")
+  tmp_html2 <- withr::local_tempfile(fileext = ".html")
+
+  html <- "<html><body><p>test</p></body></html>"
+  writeLines(html, tmp_html)
+  writeLines(html, tmp_html2)
+
+  expect_error(includeHTMLDocument(c(tmp_html, tmp_html2)))
+})
