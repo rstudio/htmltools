@@ -3,6 +3,7 @@
 \name{include}
 \alias{include}
 \alias{includeHTML}
+\alias{includeHTMLDocument}
 \alias{includeText}
 \alias{includeMarkdown}
 \alias{includeCSS}
@@ -10,6 +11,8 @@
 \title{Include Content From a File}
 \usage{
 includeHTML(path)
+
+includeHTMLDocument(path, ...)
 
 includeText(path)
 
@@ -35,6 +38,18 @@ HTML, textual, Markdown, CSS, or JavaScript content, rather than using a
 large literal R string.
 }
 \note{
+\code{includeHTML()} directly inlines the contents of the file, which is only
+suitable for fragments of HTML. To include a full HTML document, such as
+the generated output of an HTML R Markdown or Quarto document, use
+\code{includeHTMLDocument()}.
+
+\code{includeHTMLDocument()} embeds the contents of the file in an
+\verb{<iframe>} element. When \code{path} is detected to be a full URL starting with
+\verb{https://}, the \code{src} attribute of the \verb{<iframe>} will be set to the URL.
+When \code{path} is a local file, the contents of the file will be embedded in
+the \verb{<iframe>} using the \code{srcdoc} attribute, which embeds the complete HTML
+document directly in the page where \code{includeHTMLDocument()} was called.
+
 \code{includeText} escapes its contents, but does no other processing.
 This means that hard breaks and multiple spaces will be rendered as they
 usually are in HTML: as a single space character. If you are looking for

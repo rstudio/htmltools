@@ -1734,6 +1734,11 @@ knit_print.html_dependency <- knit_print.shiny.tag
 #'   use a relative path (the base path being the Shiny application directory),
 #'   not an absolute path.
 #'
+#' @note `includeHTML()` directly inlines the contents of the file, which is only
+#'   suitable for fragments of HTML. To include a full HTML document, such as
+#'   the generated output of an HTML R Markdown or Quarto document, use
+#'   `includeHTMLDocument()`.
+#'
 #' @rdname include
 #' @name include
 #' @aliases includeHTML
@@ -1741,6 +1746,36 @@ knit_print.html_dependency <- knit_print.shiny.tag
 includeHTML <- function(path) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
   return(HTML(paste8(lines, collapse='\n')))
+}
+
+#' @note `includeHTMLDocument()` embeds the contents of the file in an
+#'   `<iframe>` element. When `path` is detected to be a full URL starting with
+#'   `https://`, the `src` attribute of the `<iframe>` will be set to the URL.
+#'   When `path` is a local file, the contents of the file will be embedded in
+#'   the `<iframe>` using the `srcdoc` attribute, which embeds the complete HTML
+#'   document directly in the page where `includeHTMLDocument()` was called.
+#'
+#' @rdname include
+#' @export
+includeHTMLDocument <- function(path, ...) {
+  stopifnot(is.character(path), length(path) == 1)
+
+  iframe_args_default <- list(
+    width = "100%",
+    height = "400px",
+    frameborder = "0"
+  )
+
+  iframe_args <- utils::modifyList(iframe_args_default, dots_list(...))
+
+  if (grepl("^http?s://", path)) {
+    iframe_args$src <- path
+  } else {
+    lines <- readLines(path, warn=FALSE, encoding='UTF-8')
+    iframe_args$srcdoc <- paste8(lines, collapse='\n')
+  }
+
+  return(tags$iframe(class = "html-fill-item", !!!iframe_args))
 }
 
 #' @note `includeText` escapes its contents, but does no other processing.
