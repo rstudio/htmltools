@@ -1764,7 +1764,7 @@ detect_html_document <- function(lines) {
   lines <- trimws(lines)
 
   # A complete html document starts with doctype declaration or opening <html>
-  if (!grepl("^<!DOCTYPE html>|<html", lines, ignore.case = TRUE)) {
+  if (!grepl("^(<!DOCTYPE html>|<html)", lines, ignore.case = TRUE)) {
     return(FALSE)
   }
   # and ends by closing the `</html>` tag
