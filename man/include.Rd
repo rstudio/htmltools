@@ -44,11 +44,12 @@ the generated output of an HTML R Markdown or Quarto document, use
 \code{includeHTMLDocument()}.
 
 \code{includeHTMLDocument()} embeds the contents of the file in an
-\verb{<iframe>} element. When \code{path} is detected to be a full URL starting with
-\verb{https://}, the \code{src} attribute of the \verb{<iframe>} will be set to the URL.
-When \code{path} is a local file, the contents of the file will be embedded in
-the \verb{<iframe>} using the \code{srcdoc} attribute, which embeds the complete HTML
-document directly in the page where \code{includeHTMLDocument()} was called.
+\verb{<iframe>} element. When \code{path} is a local file, the contents of the file
+will be embedded in the \verb{<iframe>} using the \code{srcdoc} attribute, which
+embeds the complete HTML document directly in the page where
+\code{includeHTMLDocument()} was called. When \code{path} is detected to be a full
+URL starting with \verb{https://} or is wrapped in \code{I()}, the \code{src} attribute of
+the \verb{<iframe>} will be set to the URL.
 
 \code{includeText} escapes its contents, but does no other processing.
 This means that hard breaks and multiple spaces will be rendered as they
