@@ -1799,7 +1799,7 @@ includeHTMLDocument <- function(path, ...) {
 
   iframe_args <- utils::modifyList(iframe_args_default, dots_list(...))
 
-  if (inherits(path, "AsIs") || grepl("^http?s://", path)) {
+  if (inherits(path, "AsIs") || grepl("^https?://", path)) {
     iframe_args$src <- as.character(path)
   } else {
     lines <- readLines(path, warn=FALSE, encoding='UTF-8')
