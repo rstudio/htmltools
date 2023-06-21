@@ -1779,11 +1779,12 @@ detect_html_document <- function(lines) {
 }
 
 #' @note `includeHTMLDocument()` embeds the contents of the file in an
-#'   `<iframe>` element. When `path` is detected to be a full URL starting with
-#'   `https://`, the `src` attribute of the `<iframe>` will be set to the URL.
-#'   When `path` is a local file, the contents of the file will be embedded in
-#'   the `<iframe>` using the `srcdoc` attribute, which embeds the complete HTML
-#'   document directly in the page where `includeHTMLDocument()` was called.
+#'   `<iframe>` element. When `path` is a local file, the contents of the file
+#'   will be embedded in the `<iframe>` using the `srcdoc` attribute, which
+#'   embeds the complete HTML document directly in the page where
+#'   `includeHTMLDocument()` was called. When `path` is detected to be a full
+#'   URL starting with `https://` or is wrapped in `I()`, the `src` attribute of
+#'   the `<iframe>` will be set to the URL.
 #'
 #' @rdname include
 #' @export
@@ -1798,8 +1799,8 @@ includeHTMLDocument <- function(path, ...) {
 
   iframe_args <- utils::modifyList(iframe_args_default, dots_list(...))
 
-  if (grepl("^http?s://", path)) {
-    iframe_args$src <- path
+  if (inherits(path, "AsIs") || grepl("^http?s://", path)) {
+    iframe_args$src <- as.character(path)
   } else {
     lines <- readLines(path, warn=FALSE, encoding='UTF-8')
     iframe_args$srcdoc <- paste8(lines, collapse='\n')

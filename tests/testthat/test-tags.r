@@ -1218,6 +1218,17 @@ test_that("includeHTMLDocument() adds remote URLs in <iframe>s using src", {
       src = ex_url
     )
   )
+
+  expect_equal_tags(
+    includeHTMLDocument(I("foo.html"), height = "100%"),
+    tags$iframe(
+      class = "html-fill-item",
+      width = "100%",
+      height = "100%",
+      frameborder = "0",
+      src = "foo.html"
+    )
+  )
 })
 
 test_that("includeHTMLDocument() errors if provided length-1 `path`", {
