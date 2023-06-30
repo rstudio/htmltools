@@ -2,6 +2,8 @@
 
 * Closed #375: calling `htmlDependency()` or a function that returns an `htmlDependency()` object (e.g., `fontawesome::fa_html_dependency()`) in an R chunk in an R Markdown or knitr-powered Quarto document will now include the dependency rather than printing the object structure. If you want to print the object structure, you can use `print()` or `str()`. (#376)
 
+* Closed #124: `includeHTML()` will now issue a warning if it detects that the file passed to it contains a complete HTML document. `includeHTML()` is designed to include HTML fragments where the contents of the file can be written directly into the current app or document, but subtle errors can occur when the file contains a complete HTML document. In most cases, you should instead use `tags$iframe()` to embed external documents. (#382)
+
 # htmltools 0.5.5
 
 ## Bug fixes
