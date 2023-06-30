@@ -1176,3 +1176,13 @@ test_that("htmlDependency() can be included in rmarkdown via knit_print", {
   expect_s3_class(dep_knitr, "knit_asis")
   expect_equal(attr(dep_knitr, "knit_meta")[[1]], dep)
 })
+
+test_that("includeHTML() warns if full document is detected", {
+  tmp_html <- withr::local_tempfile(fileext = ".html")
+
+  writeLines("<html><body><p>test</p></body></html>", tmp_html)
+  expect_warning(includeHTML(tmp_html))
+
+  save_html(p("test"), tmp_html)
+  expect_warning(includeHTML(tmp_html))
+})

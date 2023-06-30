@@ -1740,9 +1740,44 @@ knit_print.html_dependency <- knit_print.shiny.tag
 #' @export
 includeHTML <- function(path) {
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
+
+  if (detect_html_document(lines)) {
+    rlang::warn(c(
+      "`includeHTML()` was provided a `path` that appears to be a complete HTML document.",
+      "x" = paste("Path:", path),
+      "i" = paste(
+        "Use `tags$iframe()` to include an HTML document.",
+        "You can either ensure `path` is accessible in your app or document",
+        "(see e.g. `shiny::addResourcePath()`) and pass the relative path to",
+        "the `src` argument. Or you can read the contents of `path` and pass",
+        "the contents to `srcdoc`."
+      )
+    ))
+  }
+
   return(HTML(paste8(lines, collapse='\n')))
 }
 
+detect_html_document <- function(lines) {
+  if (length(lines) > 1) {
+    lines <- paste8(lines, collapse = "\n")
+  }
+  lines <- trimws(lines)
+
+  # A complete html document starts with doctype declaration or opening <html>
+  if (!grepl("^<!DOCTYPE html>|<html", lines, ignore.case = TRUE)) {
+    return(FALSE)
+  }
+  # and ends by closing the `</html>` tag
+  if (!grepl("</html>$", lines, ignore.case = TRUE)) {
+    return(FALSE)
+  }
+
+  # There are more requirements for the HTML document to be technically complete
+  # and valid, but the above conditions are sufficient for us to warn that the
+  # document should not be treated as an HTML fragment.
+  TRUE
+}
 #' @note `includeText` escapes its contents, but does no other processing.
 #'   This means that hard breaks and multiple spaces will be rendered as they
 #'   usually are in HTML: as a single space character. If you are looking for
