@@ -82,7 +82,9 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.5.9000" id="htmltools-0559000">htmltools 0.5.5.9000<a class="anchor" aria-label="anchor" href="#htmltools-0559000"></a></h2>
-<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/375" class="external-link">#375</a>: calling <code><a href="../reference/htmlDependency.html">htmlDependency()</a></code> or a function that returns an <code><a href="../reference/htmlDependency.html">htmlDependency()</a></code> object (e.g., <code><a href="https://rstudio.github.io/fontawesome/reference/fa_html_dependency.html" class="external-link">fontawesome::fa_html_dependency()</a></code>) in an R chunk in an R Markdown or knitr-powered Quarto document will now include the dependency rather than printing the object structure. If you want to print the object structure, you can use <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> or <code><a href="https://rdrr.io/r/utils/str.html" class="external-link">str()</a></code>. (<a href="https://github.com/rstudio/htmltools/issues/376" class="external-link">#376</a>)</li></ul></div>
+<ul><li><p>Closed <a href="https://github.com/rstudio/htmltools/issues/375" class="external-link">#375</a>: calling <code><a href="../reference/htmlDependency.html">htmlDependency()</a></code> or a function that returns an <code><a href="../reference/htmlDependency.html">htmlDependency()</a></code> object (e.g., <code><a href="https://rstudio.github.io/fontawesome/reference/fa_html_dependency.html" class="external-link">fontawesome::fa_html_dependency()</a></code>) in an R chunk in an R Markdown or knitr-powered Quarto document will now include the dependency rather than printing the object structure. If you want to print the object structure, you can use <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> or <code><a href="https://rdrr.io/r/utils/str.html" class="external-link">str()</a></code>. (<a href="https://github.com/rstudio/htmltools/issues/376" class="external-link">#376</a>)</p></li>
+<li><p>Closed <a href="https://github.com/rstudio/htmltools/issues/124" class="external-link">#124</a>: <code><a href="../reference/include.html">includeHTML()</a></code> will now issue a warning if it detects that the file passed to it contains a complete HTML document. <code><a href="../reference/include.html">includeHTML()</a></code> is designed to include HTML fragments where the contents of the file can be written directly into the current app or document, but subtle errors can occur when the file contains a complete HTML document. In most cases, you should instead use <code>tags$iframe()</code> to embed external documents. (<a href="https://github.com/rstudio/htmltools/issues/382" class="external-link">#382</a>)</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.5" id="htmltools-055">htmltools 0.5.5<small>2023-03-23</small><a class="anchor" aria-label="anchor" href="#htmltools-055"></a></h2>
 <div class="section level3">
@@ -95,7 +97,8 @@
 <h2 class="page-header" data-toc-text="0.5.4" id="htmltools-054">htmltools 0.5.4<small>2022-12-07</small><a class="anchor" aria-label="anchor" href="#htmltools-054"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-5-4">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-5-4"></a></h3>
-<ul><li>Added a new <code><a href="../reference/bindFillRole.html">bindFillRole()</a></code> function for modifying <code><a href="../reference/builder.html">tag()</a></code> object(s) into tags that are allowed to grow and shrink when their parent is opinionated about their height. See <code><a href="../reference/bindFillRole.html">help(bindFillRole, "htmltools")</a></code> for documentation and examples. Note the primary motivation for adding these functions is to power <a href="https://rstudio.github.io/bslib/" class="external-link">bslib</a>’s new <code>card()</code> API (in particular, <a href="https://rstudio.github.io/bslib/articles/cards.html#responsive-sizing" class="external-link">responsive sizing</a>) as well as the new <code>fill</code> arguments in <code><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html" class="external-link">shiny::plotOutput()</a></code>, <code><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html" class="external-link">shiny::imageOutput()</a></code>, <code><a href="https://rdrr.io/pkg/shiny/man/htmlOutput.html" class="external-link">shiny::uiOutput()</a></code>, <code>htmlwidgets::sizingPolicy()</code>, and <code>htmlwidgets::shinyWidgetOutput()</code>. (<a href="https://github.com/rstudio/htmltools/issues/343" class="external-link">#343</a>)</li></ul></div>
+<ul><li>Added a new <code><a href="../reference/bindFillRole.html">bindFillRole()</a></code> function for modifying <code><a href="../reference/builder.html">tag()</a></code> object(s) into tags that are allowed to grow and shrink when their parent is opinionated about their height. See <code><a href="../reference/bindFillRole.html">help(bindFillRole, "htmltools")</a></code> for documentation and examples. Note the primary motivation for adding these functions is to power <a href="https://rstudio.github.io/bslib/" class="external-link">bslib</a>’s new <code>card()</code> API (in particular, <a href="https://rstudio.github.io/bslib/articles/cards.html#responsive-sizing" class="external-link">responsive sizing</a>) as well as the new <code>fill</code> arguments in <code><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html" class="external-link">shiny::plotOutput()</a></code>, <code><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html" class="external-link">shiny::imageOutput()</a></code>, <code><a href="https://rdrr.io/pkg/shiny/man/htmlOutput.html" class="external-link">shiny::uiOutput()</a></code>, <code>htmlwidgets::sizingPolicy()</code>, and <code>htmlwidgets::shinyWidgetOutput()</code>. (<a href="https://github.com/rstudio/htmltools/issues/343" class="external-link">#343</a>)</li>
+</ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-5-4">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-4"></a></h3>
 <ul><li><p>Closed <a href="https://github.com/rstudio/htmltools/issues/331" class="external-link">#331</a>: <code><a href="../reference/copyDependencyToDir.html">copyDependencyToDir()</a></code> creates <code>outputDir</code> recursively, which happens in Quarto or when <code>lib_dir</code> points to a nested directory. (<a href="https://github.com/gadenbuie" class="external-link">@gadenbuie</a>, <a href="https://github.com/rstudio/htmltools/issues/332" class="external-link">#332</a>)</p></li>
@@ -106,7 +109,8 @@
 <h2 class="page-header" data-toc-text="0.5.3" id="htmltools-053">htmltools 0.5.3<small>2022-07-18</small><a class="anchor" aria-label="anchor" href="#htmltools-053"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-5-3">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-3"></a></h3>
-<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/305" class="external-link">#305</a>: <code><a href="../reference/htmlPreserve.html">htmlPreserve()</a></code> no longer uses <em>inline</em> code blocks for Pandoc’s raw attribute feature when used inside a <em>non</em>-inline knitr/rmarkdown code chunk, and as a result, in this case, an additional <code>&lt;p&gt;</code> tag is no longer wrapped around the HTML content. (<a href="https://github.com/rstudio/htmltools/issues/306" class="external-link">#306</a>)</li></ul></div>
+<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/305" class="external-link">#305</a>: <code><a href="../reference/htmlPreserve.html">htmlPreserve()</a></code> no longer uses <em>inline</em> code blocks for Pandoc’s raw attribute feature when used inside a <em>non</em>-inline knitr/rmarkdown code chunk, and as a result, in this case, an additional <code>&lt;p&gt;</code> tag is no longer wrapped around the HTML content. (<a href="https://github.com/rstudio/htmltools/issues/306" class="external-link">#306</a>)</li>
+</ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-5-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-3"></a></h3>
 <ul><li><p>Closed <a href="https://github.com/rstudio/htmltools/issues/301" class="external-link">#301</a>: <code><a href="../reference/tagQuery.html">tagQuery()</a></code> was failing to copy all <code><a href="../reference/tagList.html">tagList()</a></code> html dependencies within nest child tag lists. <code><a href="../reference/tagQuery.html">tagQuery()</a></code> will now relocate html dependencies as child objects. (<a href="https://github.com/rstudio/htmltools/issues/302" class="external-link">#302</a>)</p></li>
@@ -119,7 +123,8 @@
 <h2 class="page-header" data-toc-text="0.5.2" id="htmltools-052">htmltools 0.5.2<small>2021-08-25</small><a class="anchor" aria-label="anchor" href="#htmltools-052"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-5-2">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-2"></a></h3>
-<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/205" class="external-link">#205</a>: When calling <code>tagGetAttribute(x)</code> on an object with a non-atomic attribute, a list of untouched values will be returned. It is still recommended to only store character values inside attributes. (<a href="https://github.com/rstudio/htmltools/issues/212" class="external-link">#212</a>)</li></ul></div>
+<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/205" class="external-link">#205</a>: When calling <code>tagGetAttribute(x)</code> on an object with a non-atomic attribute, a list of untouched values will be returned. It is still recommended to only store character values inside attributes. (<a href="https://github.com/rstudio/htmltools/issues/212" class="external-link">#212</a>)</li>
+</ul></div>
 <div class="section level3">
 <h3 id="new-features--improvements-0-5-2">New Features &amp; Improvements<a class="anchor" aria-label="anchor" href="#new-features--improvements-0-5-2"></a></h3>
 <ul><li><p><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> now has its own <a href="https://pkgdown.r-lib.org" class="external-link">pkgdown</a> site hosted at <a href="https://rstudio.github.io/htmltools/" class="uri">https://rstudio.github.io/htmltools/</a>.</p></li>
@@ -138,7 +143,8 @@
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.1.1" id="htmltools-0511">htmltools 0.5.1.1<small>2021-01-22</small><a class="anchor" aria-label="anchor" href="#htmltools-0511"></a></h2>
-<ul><li>Added shiny as a suggested package.</li></ul></div>
+<ul><li>Added shiny as a suggested package.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.1" id="htmltools-051">htmltools 0.5.1<small>2021-01-12</small><a class="anchor" aria-label="anchor" href="#htmltools-051"></a></h2>
 <div class="section level3">
@@ -152,11 +158,13 @@
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-0-5-1">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-1"></a></h3>
-<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/161" class="external-link">#161</a>: <code>parseCssColors(x)</code> now requires <code>x</code> to be a character vector (it no longer accepts a <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> of strings) and an error is no longer thrown when <code>mustWork = FALSE</code> and <code>x</code> contains <code>NA</code> value(s). (<a href="https://github.com/rstudio/htmltools/issues/194" class="external-link">#194</a>)</li></ul></div>
+<ul><li>Closed <a href="https://github.com/rstudio/htmltools/issues/161" class="external-link">#161</a>: <code>parseCssColors(x)</code> now requires <code>x</code> to be a character vector (it no longer accepts a <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> of strings) and an error is no longer thrown when <code>mustWork = FALSE</code> and <code>x</code> contains <code>NA</code> value(s). (<a href="https://github.com/rstudio/htmltools/issues/194" class="external-link">#194</a>)</li>
+</ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-5-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-1"></a></h3>
 <ul><li>
-<code>print(as.tags(x))</code> no longer results in error when <code>x</code> is a generic <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> of tag-like objects. (<a href="https://github.com/rstudio/htmltools/issues/181" class="external-link">#181</a>)</li></ul></div>
+<code>print(as.tags(x))</code> no longer results in error when <code>x</code> is a generic <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> of tag-like objects. (<a href="https://github.com/rstudio/htmltools/issues/181" class="external-link">#181</a>)</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.0" id="htmltools-050">htmltools 0.5.0<small>2020-06-16</small><a class="anchor" aria-label="anchor" href="#htmltools-050"></a></h2>
@@ -167,6 +175,7 @@
 <li><p><code><a href="../reference/css.html">css()</a></code> now returns <code>NULL</code> instead of <code>""</code> when no non-empty properties are specified. (<a href="https://github.com/rstudio/htmltools/issues/145" class="external-link">#145</a>)</p></li>
 <li>
 <p><code>save_html(tags$body(...))</code> no longer results in double</p>
+
 <p>tags being written to the .html file. (Note that <code>save_html(tags$html(...))</code> is not supported at this time.) (<a href="https://github.com/rstudio/htmltools/issues/145" class="external-link">#145</a>)</p>
 </li>
 <li><p>Trailing commas now permitted in <code>...</code> arguments to <code><a href="../reference/css.html">css()</a></code>, <code><a href="../reference/tagList.html">tagList()</a></code>, and the var-arg mutation functions: <code><a href="../reference/tagAppendAttributes.html">tagAppendAttributes()</a></code>, <code><a href="../reference/tagAppendChild.html">tagSetChildren()</a></code>, and <code><a href="../reference/tagAppendChild.html">tagAppendChildren()</a></code>. (<a href="https://github.com/rstudio/htmltools/issues/145" class="external-link">#145</a>)</p></li>
@@ -220,10 +229,12 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.7" id="htmltools-027">htmltools 0.2.7<a class="anchor" aria-label="anchor" href="#htmltools-027"></a></h2>
-<ul><li>Add “append” parameter to attachDependencies, to allow adding dependencies, instead of replacing them.</li></ul></div>
+<ul><li>Add “append” parameter to attachDependencies, to allow adding dependencies, instead of replacing them.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.6" id="htmltools-026">htmltools 0.2.6<small>2014-09-08</small><a class="anchor" aria-label="anchor" href="#htmltools-026"></a></h2>
-<ul><li>Add “attachment” parameter to htmlDependency, which can be used to allow any file in the dependency directory to be available via URL at runtime.</li></ul></div>
+<ul><li>Add “attachment” parameter to htmlDependency, which can be used to allow any file in the dependency directory to be available via URL at runtime.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.5" id="htmltools-025">htmltools 0.2.5<a class="anchor" aria-label="anchor" href="#htmltools-025"></a></h2>
 <ul><li><p>Explicit library(htmltools) is no longer required for tags to be rendered in knitr/rmarkdown documents.</p></li>
