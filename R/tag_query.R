@@ -336,10 +336,10 @@ isTagQuery <- function(x) {
 }
 assertNotTagEnvLike <- function(x, fnName) {
   if (isTagEnv(x)) {
-    stop("Tag environment objects (i.e., `tagQuery()`'s tag structure) are not allowed to be used as if they are regular `tag()` objects. Did you forget to call `$root()` or `$selected()`?", call. = FALSE)
+    stop("Tag environment objects (i.e., `tagQuery()`'s tag structure) are not allowed to be used as if they are regular `tag()` objects. Did you forget to call `$allTags()` or `$selectedTags()`?", call. = FALSE)
   }
   if (isTagQuery(x)) {
-    stop("`tagQuery()` objects are not allowed to be used as if they are regular `tag()` objects. Did you forget to call `$root()` or `$selected()`?", call. = FALSE)
+    stop("`tagQuery()` objects are not allowed to be used as if they are regular `tag()` objects. Did you forget to call `$allTags()` or `$selectedTags()`?", call. = FALSE)
   }
   invisible()
 }
@@ -650,7 +650,7 @@ tagQuery_ <- function(
         },
         #' ### Reset
         #'
-        #' * `$resetSelected()`: Reset selected tags to the `$root()` tag. Useful
+        #' * `$resetSelected()`: Reset selected tags to the `$allTags()` tag. Useful
         #' in combination with `$replaceWith()` since it empties the selection.
         resetSelected = function() {
           newTagQuery(
