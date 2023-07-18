@@ -99,7 +99,7 @@ CSS selector.
 
 \subsection{Reset}{
 \itemize{
-\item \verb{$resetSelected()}: Reset selected tags to the \verb{$root()} tag. Useful
+\item \verb{$resetSelected()}: Reset selected tags to the \verb{$allTags()} tag. Useful
 in combination with \verb{$replaceWith()} since it empties the selection.
 }
 }
