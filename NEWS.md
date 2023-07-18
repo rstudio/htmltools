@@ -4,6 +4,8 @@
 
 * Closed #124: `includeHTML()` will now issue a warning if it detects that the file passed to it contains a complete HTML document. `includeHTML()` is designed to include HTML fragments where the contents of the file can be written directly into the current app or document, but subtle errors can occur when the file contains a complete HTML document. In most cases, you should instead use `tags$iframe()` to embed external documents. (#382)
 
+* Closed #386: Fillable containers no longer set `overflow: auto` by default. Instead, they set `min-width` and `min-height` to `0` to ensure that fill items a constrained in the fillable container without clipping their direct children. (#387)
+
 # htmltools 0.5.5
 
 ## Bug fixes
