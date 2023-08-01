@@ -6,6 +6,8 @@
 
 * Closed #386: Fillable containers no longer set `overflow: auto` by default. Instead, they set `min-width` and `min-height` to `0` to ensure that fill items a constrained in the fillable container without clipping their direct children. (#387)
 
+* Closed #370: Non-fill items in fillable containers no longer grow or shrink and instead respect their intrinsic size. Use `height` to control the height of non-fill items in fillable containers and `min-height` and `max-height` on fill items to limit how much they are allowed to grow or shrink within a fillable container. (#391)
+
 # htmltools 0.5.5
 
 ## Bug fixes
