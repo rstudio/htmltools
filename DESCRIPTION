@@ -41,6 +41,7 @@ Collate:
     'html_dependency.R'
     'html_escape.R'
     'html_print.R'
+    'htmltools-package.R'
     'images.R'
     'known_tags.R'
     'selector.R'
