@@ -8,7 +8,7 @@ Authors@R: c(
   person("Barret", "Schloerke", role = "aut", email = "barret@posit.co", comment = c(ORCID = "0000-0001-9986-114X")),
   person("Winston", "Chang", role = "aut", email = "winston@posit.co", comment = c(ORCID = "0000-0002-1576-2126")),
   person("Yihui", "Xie", role = "aut", email = "yihui@posit.co"),
-  person("Jeff", "Allen", role = "aut", email = "contact@trestletech.com"),
+  person("Jeff", "Allen", role = "aut"),
   person("Posit Software, PBC", role = c("cph", "fnd"))
  )
 Description: Tools for HTML generation and output.
