@@ -1,6 +1,3 @@
-#' @importFrom fastmap fastmap faststack
-NULL
-
 # TODO-barret followup PR
 # * onRender(x, fn) - tagFunction(x, fn)
 

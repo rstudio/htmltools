@@ -19,7 +19,7 @@ Imports:
     digest,
     grDevices,
     base64enc,
-    rlang (>= 0.4.10),
+    rlang (>= 0.4.12),
     fastmap (>= 1.1.0),
     ellipsis
 Suggests:
