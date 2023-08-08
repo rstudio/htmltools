@@ -20,20 +20,20 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Carson Sievert \email{carson@rstudio.com} (\href{https://orcid.org/0000-0002-4958-2844}{ORCID})
+\strong{Maintainer}: Carson Sievert \email{carson@posit.co} (\href{https://orcid.org/0000-0002-4958-2844}{ORCID})
 
 Authors:
 \itemize{
-  \item Joe Cheng \email{joe@rstudio.com}
-  \item Barret Schloerke \email{barret@rstudio.com} (\href{https://orcid.org/0000-0001-9986-114X}{ORCID})
-  \item Winston Chang \email{winston@rstudio.com} (\href{https://orcid.org/0000-0002-1576-2126}{ORCID})
-  \item Yihui Xie \email{yihui@rstudio.com}
-  \item Jeff Allen \email{jeff@rstudio.com}
+  \item Joe Cheng \email{joe@posit.co}
+  \item Barret Schloerke \email{barret@posit.co} (\href{https://orcid.org/0000-0001-9986-114X}{ORCID})
+  \item Winston Chang \email{winston@posit.co} (\href{https://orcid.org/0000-0002-1576-2126}{ORCID})
+  \item Yihui Xie \email{yihui@posit.co}
+  \item Jeff Allen
 }
 
 Other contributors:
 \itemize{
-  \item  RStudio [copyright holder]
+  \item Posit Software, PBC [copyright holder, funder]
 }
 
 }
