@@ -27,9 +27,9 @@ remotes::install_github("rstudio/htmltools")
 
 ## Quick overview
 
-`{htmltools}` makes it easy to customize the user interface (UI) of any [Shiny](https://shiny.rstudio.com/) or [R Markdown](https://rmarkdown.rstudio.com/) project by using R code to generate custom HTML (including JavaScript and CSS).
+`{htmltools}` makes it easy to customize the user interface (UI) of any [Shiny](https://shiny.posit.co/) or [R Markdown](https://rmarkdown.rstudio.com/) project by using R code to generate custom HTML (including JavaScript and CSS).
 
-[This Shiny article](https://shiny.rstudio.com/articles/html-tags.html) provides a great introduction to `{htmltools}` (even if you're not interested in Shiny). As you'll learn in that article, the general foundation that `{htmltools}` provides allows other R packages (e.g., [`{htmlwidgets}`](http://www.htmlwidgets.org/), [`{crosstalk}`](https://rstudio.github.io/crosstalk/), etc.) to provide "HTML components" in R that users can manipulate and combine in ways the component authors didn't foresee.
+[This Shiny article](https://shiny.posit.co/articles/html-tags.html) provides a great introduction to `{htmltools}` (even if you're not interested in Shiny). As you'll learn in that article, the general foundation that `{htmltools}` provides allows other R packages (e.g., [`{htmlwidgets}`](http://www.htmlwidgets.org/), [`{crosstalk}`](https://rstudio.github.io/crosstalk/), etc.) to provide "HTML components" in R that users can manipulate and combine in ways the component authors didn't foresee.
 
 For example, as described in depth [here](https://plotly-r.com/arranging-views.html#arranging-htmlwidgets), `{htmltools}` makes it fairly easy to arrange numerous `{htmlwidgets}` (e.g., `{plotly}` graphs) into a single static HTML webpage:
 
@@ -52,6 +52,6 @@ Also, thanks to `tagQuery()`, it is fairly easy to query and manipulate the unde
 
 If you're looking to learn how to build more custom user interfaces by  writing custom HTML/JavaScript/CSS, we recommend the following resource:
 
-* Shiny's [UI](https://shiny.rstudio.com/articles/#user-interface) and [extensions](https://shiny.rstudio.com/articles/#extensions) articles
+* Shiny's [UI](https://shiny.posit.co/articles/#user-interface) and [extensions](https://shiny.posit.co/articles/#extensions) articles
 * [Outstanding UI with Shiny](https://unleash-shiny.rinterface.com/) by David Granjon
 * [JavaScript for R](https://book.javascript-for-r.com/) by John Coene
