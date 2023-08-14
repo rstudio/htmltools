@@ -8,3 +8,12 @@
 #' @importFrom rlang obj_address
 ## usethis namespace: end
 NULL
+
+
+# For usethis::use_release_issue()
+release_bullets <- function() {
+  c(
+    "Update static imports: `staticimports::import()`"
+  )
+}
+
