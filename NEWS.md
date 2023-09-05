@@ -1,5 +1,9 @@
 # htmltools (development version)
 
+## Improvements
+
+* Fill items no longer set `overflow: auto` or `width: 100%` by default. (#401)
+
 # htmltools 0.5.6
 
 ## Possibly breaking changes
