@@ -1,6 +1,8 @@
 .html-fill-container {
   display: flex;
   flex-direction: column;
+  /* Prevent the container from expanding vertically or horizontally beyond its
+     parent's constraints. */
   min-height: 0;
   min-width: 0;
 }
@@ -14,7 +16,4 @@
 .html-fill-container > :not(.html-fill-item) {
   /* Prevent shrinking or growing of non-fill items */
   flex: 0 0 auto;
-}
-.html-fill-container > .html-fill-item.html-fill-item-overflow-hidden {
-  overflow: hidden;
 }
