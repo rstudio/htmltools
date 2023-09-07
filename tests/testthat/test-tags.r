@@ -881,6 +881,12 @@ test_that("cssList tests", {
     "--_foo:bar;-foo:bar;--foo_bar:baz;foo-bar:baz;--fooBar:baz;foo-bar:baz;"
   )
 
+  # Lists can be spliced
+  expect_identical(css(!!!list(a = 1, b = 2)), "a:1;b:2;")
+
+  # Factors are coerced to strings
+  expect_identical(css(a = factor('a')), "a:a;")
+
   # Unnamed args not allowed
   expect_error(css("10"))
   expect_error(css(1, b=2))
