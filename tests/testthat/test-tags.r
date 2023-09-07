@@ -847,6 +847,28 @@ test_that("cssList tests", {
     "font-family:Helvetica, \"Segoe UI\";font-size:12px;font-style:italic;font-weight:bold !important;padding:10px 9px 8px;"
   )
 
+  # CSS variables
+  expect_identical(css("--_foo" = "bar"), "--_foo:bar;")
+  expect_identical(css("--fooBar" = "baz"), "--fooBar:baz;")
+  expect_identical(css("--foo_bar" = "baz"), "--foo_bar:baz;")
+  expect_identical(css("--_foo!" = "bar"), "--_foo:bar !important;")
+  expect_identical(css("--fooBar!" = "baz"), "--fooBar:baz !important;")
+  expect_identical(css("--foo_bar!" = "baz"), "--foo_bar:baz !important;")
+
+  # Mix of CSS variables and regular CSS properties
+  expect_identical(
+    css(
+      "--empty" = NULL,
+      "--_foo" = "bar",
+      `_foo` = "bar",
+      "--foo_bar" = "baz",
+      foo_bar = "baz",
+      "--fooBar" = "baz",
+      fooBar = "baz",
+    ),
+    "--_foo:bar;-foo:bar;--foo_bar:baz;foo-bar:baz;--fooBar:baz;foo-bar:baz;"
+  )
+
   # Unnamed args not allowed
   expect_error(css("10"))
   expect_error(css(1, b=2))
