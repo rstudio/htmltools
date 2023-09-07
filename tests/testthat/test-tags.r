@@ -835,16 +835,28 @@ test_that("Indenting can be controlled/suppressed", {
 test_that("cssList tests", {
   expect_identical(NULL, css())
   expect_identical(NULL, css())
+
+  # Regular CSS properties with conveniences
+  expect_identical(css(font.size = "12px"), "font-size:12px;")
+  expect_identical(css(font_size = "12px"), "font-size:12px;")
+  expect_identical(css(fontSize = "12px"), "font-size:12px;")
+  expect_identical(css(`font-style` = "italic"), "font-style:italic;")
+  expect_null(css(font.variant = NULL))
   expect_identical(
-    css(
-      font.family = 'Helvetica, "Segoe UI"',
-      font_size = "12px",
-      `font-style` = "italic",
-      font.variant = NULL,
-      "font-weight!" = factor("bold"),
-      padding = c("10px", "9px", "8px")
-    ),
-    "font-family:Helvetica, \"Segoe UI\";font-size:12px;font-style:italic;font-weight:bold !important;padding:10px 9px 8px;"
+    css(.webkit.animation = "fade-in 1s"),
+    "-webkit-animation:fade-in 1s;"
+  )
+  expect_identical(
+    css(font.family = 'Helvetica, "Segoe UI"'),
+    "font-family:Helvetica, \"Segoe UI\";"
+  )
+  expect_identical(
+    css("font-weight!" = factor("bold")),
+    "font-weight:bold !important;"
+  )
+  expect_identical(
+    css(padding = c("10px", "9px", "8px")),
+    "padding:10px 9px 8px;"
   )
 
   # CSS variables
