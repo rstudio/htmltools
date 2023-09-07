@@ -835,17 +835,57 @@ test_that("Indenting can be controlled/suppressed", {
 test_that("cssList tests", {
   expect_identical(NULL, css())
   expect_identical(NULL, css())
+
+  # Regular CSS properties with conveniences
+  expect_identical(css(font.size = "12px"), "font-size:12px;")
+  expect_identical(css(font_size = "12px"), "font-size:12px;")
+  expect_identical(css(fontSize = "12px"), "font-size:12px;")
+  expect_identical(css(`font-style` = "italic"), "font-style:italic;")
+  expect_null(css(font.variant = NULL))
+  expect_identical(
+    css(.webkit.animation = "fade-in 1s"),
+    "-webkit-animation:fade-in 1s;"
+  )
+  expect_identical(
+    css(font.family = 'Helvetica, "Segoe UI"'),
+    "font-family:Helvetica, \"Segoe UI\";"
+  )
+  expect_identical(
+    css("font-weight!" = factor("bold")),
+    "font-weight:bold !important;"
+  )
+  expect_identical(
+    css(padding = c("10px", "9px", "8px")),
+    "padding:10px 9px 8px;"
+  )
+
+  # CSS variables
+  expect_identical(css("--_foo" = "bar"), "--_foo:bar;")
+  expect_identical(css("--fooBar" = "baz"), "--fooBar:baz;")
+  expect_identical(css("--foo_bar" = "baz"), "--foo_bar:baz;")
+  expect_identical(css("--_foo!" = "bar"), "--_foo:bar !important;")
+  expect_identical(css("--fooBar!" = "baz"), "--fooBar:baz !important;")
+  expect_identical(css("--foo_bar!" = "baz"), "--foo_bar:baz !important;")
+
+  # Mix of CSS variables and regular CSS properties
   expect_identical(
     css(
-      font.family = 'Helvetica, "Segoe UI"',
-      font_size = "12px",
-      `font-style` = "italic",
-      font.variant = NULL,
-      "font-weight!" = factor("bold"),
-      padding = c("10px", "9px", "8px")
+      "--empty" = NULL,
+      "--_foo" = "bar",
+      `_foo` = "bar",
+      "--foo_bar" = "baz",
+      foo_bar = "baz",
+      "--fooBar" = "baz",
+      fooBar = "baz",
     ),
-    "font-family:Helvetica, \"Segoe UI\";font-size:12px;font-style:italic;font-weight:bold !important;padding:10px 9px 8px;"
+    "--_foo:bar;-foo:bar;--foo_bar:baz;foo-bar:baz;--fooBar:baz;foo-bar:baz;"
   )
+
+  # Lists can be spliced
+  expect_identical(css(!!!list(a = 1, b = 2)), "a:1;b:2;")
+
+  # Factors are coerced to strings
+  expect_identical(css(a = factor('a')), "a:a;")
 
   # Unnamed args not allowed
   expect_error(css("10"))

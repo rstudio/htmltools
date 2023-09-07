@@ -4,6 +4,8 @@
 
 * Fill items no longer set `overflow: auto` or `width: 100%` by default. (#401)
 
+* `css()` now fully supports setting custom CSS properties (or CSS variables) via inline styles. When the name of a value passed to `css()` starts with `--`, it will be treated as a custom CSS property and absolutely no changes will be made to the variable. For example, `css("--font_size" = "3em")` returns `--font_size:3em;` while `css(font_size = "3em")` will return `font-size:3em`. (#402)
+
 # htmltools 0.5.6
 
 ## Possibly breaking changes
