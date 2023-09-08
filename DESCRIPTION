@@ -27,7 +27,7 @@ Imports:
     ellipsis,
     fastmap (>= 1.1.0),
     grDevices,
-    rlang (>= 0.4.12),
+    rlang (>= 1.0.0),
     utils
 Suggests:
     Cairo,
@@ -39,7 +39,7 @@ Suggests:
 Enhances: 
     knitr
 Config/Needs/check: knitr
-Config/Needs/website:rstudio/quillt, bench
+Config/Needs/website: rstudio/quillt, bench
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
