@@ -87,6 +87,11 @@
 <ul><li><p>Fill items no longer set <code>overflow: auto</code> or <code>width: 100%</code> by default. (<a href="https://github.com/rstudio/htmltools/issues/401" class="external-link">#401</a>)</p></li>
 <li><p><code><a href="../reference/css.html">css()</a></code> now fully supports setting custom CSS properties (or CSS variables) via inline styles. When the name of a value passed to <code><a href="../reference/css.html">css()</a></code> starts with <code>--</code>, it will be treated as a custom CSS property and absolutely no changes will be made to the variable. For example, <code>css("--font_size" = "3em")</code> returns <code>--font_size:3em;</code> while <code>css(font_size = "3em")</code> will return <code>font-size:3em</code>. (<a href="https://github.com/rstudio/htmltools/issues/402" class="external-link">#402</a>)</p></li>
 </ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<ul><li>
+<a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> now requires <a href="https://rlang.r-lib.org" class="external-link">rlang</a> version 1.0.0 or higher. (<a href="https://github.com/rstudio/htmltools/issues/403" class="external-link">#403</a>)</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.6" id="htmltools-056">htmltools 0.5.6<small>2023-08-10</small><a class="anchor" aria-label="anchor" href="#htmltools-056"></a></h2>
