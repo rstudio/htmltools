@@ -1532,7 +1532,7 @@ tagQueryFindDescendants_ <- function(el, selector, fn) {
   } else if (is.list(el)) {
     # For each item in the list like object, recurse through
     walk(el, tagQueryFindDescendants_, fn = fn, selector = selector)
-  } else if (is.atomic(el) || is.function(el) || is.language(el)) {
+  } else if (is.null(el) || is.atomic(el) || is.function(el) || is.language(el)) {
     # Can not match on atomics or functions
     return()
   } else {
