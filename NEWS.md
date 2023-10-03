@@ -1,3 +1,9 @@
+# htmltools 0.5.6.1
+
+## Improvements
+
+* `tagQuery()` no longer throws an error when attempting to traverse a NULL value with r-devel. (#407)
+
 # htmltools 0.5.6
 
 ## Possibly breaking changes

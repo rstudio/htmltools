@@ -1,7 +1,7 @@
 Package: htmltools
 Type: Package
 Title: Tools for HTML
-Version: 0.5.6
+Version: 0.5.6.1
 Authors@R: c(
   person("Joe", "Cheng", role = "aut", email = "joe@posit.co"),
   person("Carson", "Sievert", role = c("aut", "cre"), email = "carson@posit.co", comment = c(ORCID = "0000-0002-4958-2844")),
