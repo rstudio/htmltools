@@ -71,6 +71,11 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
 #'
 #' @export
 save_html <- function(html, file, background = "white", libdir = "lib", lang = "en") {
+  UseMethod("save_html")
+}
+
+#' @export
+save_html.default <- function(html, file, background = "white", libdir = "lib", lang = "en") {
   force(html)
   force(background)
   force(libdir)
