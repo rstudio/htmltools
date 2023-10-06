@@ -99,3 +99,13 @@ test_that("save_html() can write to a file connection", {
     grepl("<h2>Howdy</h2>", paste(readLines(f), collapse = " "))
   )
 })
+
+test_that("save_html.default() throws when undefined arguments are provided", {
+  expect_error(
+    save_html(div(), tempfile(), foo = "bar")
+  )
+
+  expect_error(
+    save_html(div(), tempfile(), background = "white", libdir = "lib", lang = "en", "bar")
+  )
+})
