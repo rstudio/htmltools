@@ -1,40 +1,48 @@
-Package: htmltools
 Type: Package
+Package: htmltools
 Title: Tools for HTML
-Version: 0.5.6.1
+Version: 0.5.6.9001
 Authors@R: c(
-  person("Joe", "Cheng", role = "aut", email = "joe@posit.co"),
-  person("Carson", "Sievert", role = c("aut", "cre"), email = "carson@posit.co", comment = c(ORCID = "0000-0002-4958-2844")),
-  person("Barret", "Schloerke", role = "aut", email = "barret@posit.co", comment = c(ORCID = "0000-0001-9986-114X")),
-  person("Winston", "Chang", role = "aut", email = "winston@posit.co", comment = c(ORCID = "0000-0002-1576-2126")),
-  person("Yihui", "Xie", role = "aut", email = "yihui@posit.co"),
-  person("Jeff", "Allen", role = "aut"),
-  person("Posit Software, PBC", role = c("cph", "fnd"))
- )
+    person("Joe", "Cheng", , "joe@posit.co", role = "aut"),
+    person("Carson", "Sievert", , "carson@posit.co", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-4958-2844")),
+    person("Barret", "Schloerke", , "barret@posit.co", role = "aut",
+           comment = c(ORCID = "0000-0001-9986-114X")),
+    person("Winston", "Chang", , "winston@posit.co", role = "aut",
+           comment = c(ORCID = "0000-0002-1576-2126")),
+    person("Yihui", "Xie", , "yihui@posit.co", role = "aut"),
+    person("Jeff", "Allen", role = "aut"),
+    person("Posit Software, PBC", role = c("cph", "fnd"))
+  )
 Description: Tools for HTML generation and output.
+License: GPL (>= 2)
+URL: https://github.com/rstudio/htmltools,
+    https://rstudio.github.io/htmltools/
+BugReports: https://github.com/rstudio/htmltools/issues
 Depends:
     R (>= 2.14.1)
 Imports:
-    utils,
-    digest,
-    grDevices,
     base64enc,
-    rlang (>= 0.4.12),
+    digest,
+    ellipsis,
     fastmap (>= 1.1.0),
-    ellipsis
+    grDevices,
+    rlang (>= 1.0.0),
+    utils
 Suggests:
-    markdown,
-    testthat,
-    withr,
     Cairo,
+    markdown,
     ragg,
-    shiny
-Enhances: knitr
-License: GPL (>= 2)
-URL: https://github.com/rstudio/htmltools, https://rstudio.github.io/htmltools/
-BugReports: https://github.com/rstudio/htmltools/issues
-RoxygenNote: 7.2.3
+    shiny,
+    testthat,
+    withr
+Enhances: 
+    knitr
+Config/Needs/check: knitr
+Config/Needs/website: rstudio/quillt, bench
 Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
 Collate:
     'colors.R'
     'fill.R'
@@ -50,8 +58,3 @@ Collate:
     'utils.R'
     'tags.R'
     'template.R'
-Roxygen: list(markdown = TRUE)
-Config/Needs/check: knitr
-Config/Needs/website:
-    rstudio/quillt,
-    bench

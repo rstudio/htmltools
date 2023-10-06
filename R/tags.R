@@ -1947,8 +1947,10 @@ css <- function(..., collapse_ = "") {
     return(NULL)
   }
 
-  # Replace all '.' and '_' in property names to '-'
-  names(props) <- gsub("[._]", "-", tolower(gsub("([A-Z])", "-\\1", names(props))))
+  # Translate camelCase, snake_case, and dot.case to kebab-case
+  # For standard CSS properties only, not CSS variables
+  is_css_var <- grepl("^--", names(props))
+  names(props)[!is_css_var] <- standardize_property_names(names(props)[!is_css_var])
 
   # Create "!important" suffix for each property whose name ends with !, then
   # remove the ! from the property name
@@ -1960,4 +1962,12 @@ css <- function(..., collapse_ = "") {
 
 empty <- function(x) {
   length(x) == 0 || (is.character(x) && !any(nzchar(x)))
+}
+
+standardize_property_names <- function(x) {
+  # camelCase to kebab-case
+  x <- gsub("([A-Z])", "-\\1", x)
+  x <- tolower(x)
+  # snake_case and dot.case to kebab-case
+  gsub("[._]", "-", x)
 }

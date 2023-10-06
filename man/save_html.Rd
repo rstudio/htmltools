@@ -2,23 +2,28 @@
 % Please edit documentation in R/html_print.R
 \name{save_html}
 \alias{save_html}
+\alias{save_html.default}
 \title{Save an HTML object to a file}
 \usage{
-save_html(html, file, background = "white", libdir = "lib", lang = "en")
+save_html(html, file, ...)
+
+\method{save_html}{default}(html, file, background = "white", libdir = "lib", lang = "en", ...)
 }
 \arguments{
-\item{html}{HTML content to print}
+\item{html}{HTML content to print.}
 
 \item{file}{File path or connection. If a file path containing a
 sub-directory, the sub-directory must already exist.}
 
-\item{background}{Background color for web page}
+\item{...}{Further arguments passed to other methods.}
 
-\item{libdir}{Directory to copy dependencies to}
+\item{background}{Background color for web page.}
 
-\item{lang}{Value of the \verb{<html>} \code{lang} attribute}
+\item{libdir}{Directory to copy dependencies to.}
+
+\item{lang}{Value of the \verb{<html>} \code{lang} attribute.}
 }
 \description{
-Save the specified HTML object to a file, copying all of it's
-dependencies to the directory specified via \code{libdir}.
+An S3 generic method for saving an HTML-like object to a file. The default
+method copies dependency files to the directory specified via \code{libdir}.
 }
