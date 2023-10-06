@@ -10,16 +10,18 @@ save_html(html, file, ...)
 \method{save_html}{default}(html, file, background = "white", libdir = "lib", lang = "en", ...)
 }
 \arguments{
-\item{html}{HTML content to print}
+\item{html}{HTML content to print.}
 
 \item{file}{File path or connection. If a file path containing a
 sub-directory, the sub-directory must already exist.}
 
-\item{background}{Background color for web page}
+\item{...}{Further arguments passed to other methods.}
 
-\item{libdir}{Directory to copy dependencies to}
+\item{background}{Background color for web page.}
 
-\item{lang}{Value of the \verb{<html>} \code{lang} attribute}
+\item{libdir}{Directory to copy dependencies to.}
+
+\item{lang}{Value of the \verb{<html>} \code{lang} attribute.}
 }
 \description{
 An S3 generic method for saving an HTML-like object to a file. The default

@@ -62,12 +62,10 @@ html_print <- function(html, background = "white", viewer = getOption("viewer", 
 #' An S3 generic method for saving an HTML-like object to a file. The default
 #' method copies dependency files to the directory specified via `libdir`.
 #'
-#' @param html HTML content to print
+#' @param html HTML content to print.
 #' @param file File path or connection. If a file path containing a
 #'   sub-directory, the sub-directory must already exist.
-#' @param background Background color for web page
-#' @param libdir Directory to copy dependencies to
-#' @param lang Value of the `<html>` `lang` attribute
+#' @param ... Further arguments passed to other methods.
 #'
 #' @export
 save_html <- function(html, file, ...) {
@@ -75,6 +73,9 @@ save_html <- function(html, file, ...) {
 }
 
 #' @rdname save_html
+#' @param background Background color for web page.
+#' @param libdir Directory to copy dependencies to.
+#' @param lang Value of the `<html>` `lang` attribute.
 #' @export
 save_html.default <- function(html, file, background = "white", libdir = "lib", lang = "en", ...) {
   rlang::check_dots_empty()
