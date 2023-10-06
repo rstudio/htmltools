@@ -1,5 +1,9 @@
 # htmltools (development version)
 
+## New Features
+
+* `save_html()` is now an S3 generic, allowing for HTML-like objects to be saved as an HTML file. (#411)
+
 ## Improvements
 
 * Fill items no longer set `overflow: auto` or `width: 100%` by default. (#401)
