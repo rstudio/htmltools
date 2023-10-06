@@ -22,6 +22,6 @@ sub-directory, the sub-directory must already exist.}
 \item{lang}{Value of the \verb{<html>} \code{lang} attribute}
 }
 \description{
-Save the specified HTML object to a file, copying all of it's
-dependencies to the directory specified via \code{libdir}.
+An S3 generic method for saving an HTML-like object to a file. The default
+method copies dependency files to the directory specified via \code{libdir}.
 }
