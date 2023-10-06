@@ -76,7 +76,9 @@ save_html <- function(html, file, ...) {
 
 #' @rdname save_html
 #' @export
-save_html.default <- function(html, file, background = "white", libdir = "lib", lang = "en") {
+save_html.default <- function(html, file, background = "white", libdir = "lib", lang = "en", ...) {
+  rlang::check_dots_empty()
+
   force(html)
   force(background)
   force(libdir)
