@@ -33,6 +33,64 @@ Run `revdepcheck::cloud_details(, "NA")` for more info
 
 
 ```
+# checkdown
+
+<details>
+
+* Version: 0.0.10
+* GitHub: https://github.com/agricolamz/checkdown
+* Source code: https://github.com/cran/checkdown
+* Date/Publication: 2023-09-24 07:10:02 UTC
+* Number of recursive dependencies: 33
+
+Run `revdepcheck::cloud_details(, "checkdown")` for more info
+
+</details>
+
+## In both
+
+*   checking whether package ‘checkdown’ can be installed ... ERROR
+    ```
+    Installation failed.
+    See ‘/tmp/workdir/checkdown/new/checkdown.Rcheck/00install.out’ for details.
+    ```
+
+## Installation
+
+### Devel
+
+```
+* installing *source* package ‘checkdown’ ...
+** package ‘checkdown’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+Error in parse(outFile) : 
+  /tmp/workdir/checkdown/new/checkdown.Rcheck/00_pkg_src/checkdown/R/check_hint.R:38:39: unexpected input
+37:   hint_text <- hint_text |>
+38:       markdown::markdownToHTML(text = _
+                                          ^
+ERROR: unable to collate and parse R files for package ‘checkdown’
+* removing ‘/tmp/workdir/checkdown/new/checkdown.Rcheck/checkdown’
+
+
+```
+### CRAN
+
+```
+* installing *source* package ‘checkdown’ ...
+** package ‘checkdown’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+Error in parse(outFile) : 
+  /tmp/workdir/checkdown/old/checkdown.Rcheck/00_pkg_src/checkdown/R/check_hint.R:38:39: unexpected input
+37:   hint_text <- hint_text |>
+38:       markdown::markdownToHTML(text = _
+                                          ^
+ERROR: unable to collate and parse R files for package ‘checkdown’
+* removing ‘/tmp/workdir/checkdown/old/checkdown.Rcheck/checkdown’
+
+
+```
 # NA
 
 <details>
@@ -173,6 +231,41 @@ Status: 2 NOTEs
 * checking re-building of vignette outputs ... OK
 * DONE
 Status: 2 NOTEs
+
+
+
+
+
+```
+# NA
+
+<details>
+
+* Version: NA
+* GitHub: NA
+* Source code: https://github.com/cran/NA
+* Number of recursive dependencies: 0
+
+Run `revdepcheck::cloud_details(, "NA")` for more info
+
+</details>
+
+## Error before installation
+
+### Devel
+
+```
+
+
+
+
+
+
+```
+### CRAN
+
+```
+
 
 
 

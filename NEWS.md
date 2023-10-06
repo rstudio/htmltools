@@ -10,11 +10,15 @@
 
 * `css()` now fully supports setting custom CSS properties (or CSS variables) via inline styles. When the name of a value passed to `css()` starts with `--`, it will be treated as a custom CSS property and absolutely no changes will be made to the variable. For example, `css("--font_size" = "3em")` returns `--font_size:3em;` while `css(font_size = "3em")` will return `font-size:3em`. (#402)
 
-* `tagQuery()` no longer throws an error when attempting to traverse a NULL value with r-devel. (#407)
-
 ## Bug fixes
 
 * `{htmltools}` now requires `{rlang}` version 1.0.0 or higher. (#403)
+
+# htmltools 0.5.6.1
+
+## Improvements
+
+* `tagQuery()` no longer throws an error when attempting to traverse a NULL value with r-devel. (#407)
 
 # htmltools 0.5.6
 
