@@ -7,7 +7,7 @@
 \usage{
 save_html(html, file, ...)
 
-\method{save_html}{default}(html, file, background = "white", libdir = "lib", lang = "en")
+\method{save_html}{default}(html, file, background = "white", libdir = "lib", lang = "en", ...)
 }
 \arguments{
 \item{html}{HTML content to print}
