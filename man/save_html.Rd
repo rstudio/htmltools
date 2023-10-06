@@ -2,9 +2,12 @@
 % Please edit documentation in R/html_print.R
 \name{save_html}
 \alias{save_html}
+\alias{save_html.default}
 \title{Save an HTML object to a file}
 \usage{
-save_html(html, file, background = "white", libdir = "lib", lang = "en")
+save_html(html, file, ...)
+
+\method{save_html}{default}(html, file, background = "white", libdir = "lib", lang = "en")
 }
 \arguments{
 \item{html}{HTML content to print}
