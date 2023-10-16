@@ -170,7 +170,12 @@ nullOrEmpty <- function(x) {
 
 # Given a vector or list, drop all the NULL or length-0 items in it
 dropNullsOrEmpty <- function(x) {
-  x[!vapply(x, nullOrEmpty, FUN.VALUE=logical(1))]
+  ns <- lengths(x) == 0
+  if (any(ns)) {
+    x <- x[!ns]
+  }
+
+  x
 }
 
 isResolvedTag <- function(x) {
@@ -674,7 +679,6 @@ tags <- lapply(known_tags, function(tagname) {
   new_function(
     args = exprs(... = , .noWS = NULL, .renderHook = NULL),
     expr({
-      validateNoWS(.noWS)
       contents <- dots_list(...)
       tag(!!tagname, contents, .noWS = .noWS, .renderHook = .renderHook)
     }),
@@ -800,7 +804,8 @@ tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL) {
   }
 
   # Return tag data structure
-  structure(st, class = "shiny.tag")
+  class(st) <- "shiny.tag"
+  st
 }
 
 isTagList <- function(x) {
