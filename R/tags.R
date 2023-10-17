@@ -164,10 +164,6 @@ dropNulls <- function(x) {
   x[!vapply(x, is.null, FUN.VALUE=logical(1))]
 }
 
-nullOrEmpty <- function(x) {
-  length(x) == 0
-}
-
 # Given a vector or list, drop all the NULL or length-0 items in it
 dropNullsOrEmpty <- function(x) {
   ns <- lengths(x) == 0
