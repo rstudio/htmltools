@@ -52,6 +52,9 @@ registerMethods <- function(methods) {
     c("knitr", "knit_print", "shiny.tag.list"),
     c("knitr", "knit_print", "html_dependency")
   ))
+
+  # Initialize htmltools C globals
+  .Call(htmltools_initialize, ns_env("htmltools"))
 }
 
 depListToNamedDepList <- function(dependencies) {
@@ -674,7 +677,6 @@ tags <- lapply(known_tags, function(tagname) {
   new_function(
     args = exprs(... = , .noWS = NULL, .renderHook = NULL),
     expr({
-      validateNoWS(.noWS)
       contents <- dots_list(...)
       tag(!!tagname, contents, .noWS = .noWS, .renderHook = .renderHook)
     }),
@@ -768,51 +770,15 @@ hr <- tags$hr
 #'   added to a particular `tag` via [tagAddRenderHook()].
 #' @export
 tag <- function(`_tag_name`, varArgs, .noWS = NULL, .renderHook = NULL) {
-  validateNoWS(.noWS)
-  # Get arg names; if not a named list, use vector of empty strings
-  varArgsNames <- names2(varArgs)
-
-  # Named arguments become attribs, dropping NULL and length-0 values
-  named_idx <- nzchar(varArgsNames)
-  attribs <- dropNullsOrEmpty(varArgs[named_idx])
-
-  # Unnamed arguments are flattened and added as children.
-  # Use unname() to remove the names attribute from the list, which would
-  # consist of empty strings anyway.
-  children <- unname(varArgs[!named_idx])
-
-  st <- list(name = `_tag_name`,
-      attribs = attribs,
-      children = children)
-
-  # Conditionally include the `.noWS` field.
-  # We do this to avoid breaking the hashes of existing tags that weren't leveraging .noWS.
   if (!is.null(.noWS)) {
-    st$.noWS <- .noWS
+    noWSOptions <- c("before", "after", "after-begin", "before-end", "outside", "inside")
+    arg_match(.noWS, noWSOptions, multiple = TRUE)
   }
-  # Conditionally include the `.renderHooks` field.
-  # We do this to avoid breaking the hashes of existing tags that weren't leveraging .renderHooks.
-  if (!is.null(.renderHook)) {
-    if (!is.list(.renderHook)) {
-      .renderHook <- list(.renderHook)
-    }
-    st$.renderHooks <- .renderHook
-  }
-
-  # Return tag data structure
-  structure(st, class = "shiny.tag")
+  .Call(new_tag, `_tag_name`, varArgs, .noWS, .renderHook);
 }
 
 isTagList <- function(x) {
   is.list(x) && (inherits(x, "shiny.tag.list") || identical(class(x), "list"))
-}
-
-noWSOptions <- c("before", "after", "after-begin", "before-end", "outside", "inside")
-# Ensure that the provided `.noWS` string contains only valid options
-validateNoWS <- function(.noWS) {
-  if (!all(.noWS %in% noWSOptions)) {
-    stop("Invalid .noWS option(s) '", paste(.noWS, collapse="', '") ,"' specified.")
-  }
 }
 
 #' @include utils.R
