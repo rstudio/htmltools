@@ -15,10 +15,6 @@
 #
 # Text is automatically converted to UTF-8 before being written.
 #' @param bufferSize The initial size of the buffer in which writes are stored.
-#'   The buffer will be periodically cleared, if possible, to cache the writes
-#'   as a string. If the buffer cannot be cleared (because of the need to be
-#'   able to backtrack to fulfill an `eatWS()` call), then the buffer size will
-#'   be doubled.
 #' @noRd
 WSTextWriter <- function(bufferSize=1024) {
   if (bufferSize < 3) {
@@ -37,31 +33,6 @@ WSTextWriter <- function(bufferSize=1024) {
   # TRUE if we're eating whitespace right now, in which case calls to writeWS are no-ops.
   suppressing <- FALSE
 
-  # Collapses the text in the buffer to create space for more writes. The first
-  # element in the buffer will be the concatenation of any writes up to the
-  # current marker. The second element in the buffer will be the concatenation
-  # of all writes after the marker.
-  collapseBuffer <- function() {
-    # Collapse the writes in the buffer up to the marked position into the first buffer entry
-    nonWS <- ""
-    if (marked > 0) {
-      nonWS <- paste(buffer[seq_len(marked)], collapse="")
-    }
-
-    # Collapse any remaining whitespace
-    ws <- ""
-    remaining <- position - marked
-    if (remaining > 0) {
-      # We have some whitespace to collapse. Collapse it into the second buffer entry.
-      ws <- paste(buffer[seq(from=marked+1,to=marked+remaining)], collapse="")
-    }
-
-    buffer[1] <<- nonWS
-    buffer[2] <<- ws
-    position <<- 2
-    marked <<- 1
-  }
-
   # Logic to do the actual write
   writeImpl <- function(text) {
     # force `text` to evaluate and check that it's the right shape
@@ -70,11 +41,6 @@ WSTextWriter <- function(bufferSize=1024) {
     #   https://github.com/rstudio/htmltools/pull/132#discussion_r302280588
     if (length(text) != 1 || !is.character(text)) {
       stop("Text to be written must be a length-one character vector")
-    }
-
-    # Are we at the end of our buffer?
-    if (position == length(buffer)) {
-      collapseBuffer()
     }
 
     # The text that is written to this writer will be converted to
