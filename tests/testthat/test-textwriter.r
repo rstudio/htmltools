@@ -18,9 +18,11 @@ describe("WSTextWriter", {
     wsw$write("more content")
     expect_identical(wsw$readAll(), "line one\nanother linemore content")
 
+    wsw$write(c("\n", "write", "three", "elements"))
+    expect_identical(wsw$readAll(), "line one\nanother linemore content\nwritethreeelements")
+
     # Non-character writes
     expect_error(wsw$write(1))
-    expect_error(wsw$write(letters[1:2]))
 
     expect_error(WSTextWriter(bufferSize=2))
   })

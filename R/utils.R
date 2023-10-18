@@ -36,10 +36,7 @@ WSTextWriter <- function(bufferSize=1024) {
   # Logic to do the actual write
   writeImpl <- function(text) {
     # force `text` to evaluate and check that it's the right shape
-    # TODO: We could support vectors with multiple elements here and perhaps
-    #   find some way to combine with `paste8()`. See
-    #   https://github.com/rstudio/htmltools/pull/132#discussion_r302280588
-    if (length(text) != 1 || !is.character(text)) {
+    if (!is.character(text)) {
       stop("Text to be written must be a length-one character vector")
     }
 
@@ -49,8 +46,11 @@ WSTextWriter <- function(bufferSize=1024) {
     enc <- enc2utf8(text)
 
     # Move the position pointer and store the (encoded) write
-    position <<- position + 1
-    buffer[position] <<- enc
+    n <- length(text)
+    # TODO is it faster if we special case for n = 1?
+    new_position <- position + n
+    buffer[(position + 1):new_position] <<- enc
+    position <<- new_position
   }
 
   # The actual object returned
