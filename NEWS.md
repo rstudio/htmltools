@@ -1,4 +1,4 @@
-# htmltools (development version)
+# htmltools 0.5.7
 
 ## New Features
 
