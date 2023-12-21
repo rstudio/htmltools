@@ -35,6 +35,7 @@ For example, as described in depth [here](https://plotly-r.com/arranging-views.h
 
 ```r
 library(htmltools)
+library(plotly)
 browsable(tagList(
   plot_ly(diamonds, x = ~carat, height = 200),
   plot_ly(diamonds, x = ~price, height = 200)
