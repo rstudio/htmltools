@@ -1,5 +1,10 @@
 # htmltools (development version)
 
+## Bug fixes
+
+* `bindFillRole()` now attaches its `HTMLDependency()` to fill items, thus reducing the possibility of filling layout breaking due to missing CSS. (#421) 
+
+
 # htmltools 0.5.7
 
 ## New Features
