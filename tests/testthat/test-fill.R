@@ -8,11 +8,13 @@ test_that("asFillContainer() and asFillItem()", {
   expect_true(
     doRenderTags(x) == "<div class=\"html-fill-container\"></div>"
   )
+  expect_equal(htmlDependencies(x), list(fillDependencies()))
 
   x <- bindFillRole(div(), item = TRUE)
   expect_true(
     doRenderTags(x) == "<div class=\"html-fill-item\"></div>"
   )
+  expect_equal(htmlDependencies(x), list(fillDependencies()))
 
   x <- bindFillRole(x, container = TRUE, overwrite = TRUE)
   expect_true(

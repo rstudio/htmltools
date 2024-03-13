@@ -91,7 +91,7 @@ bindFillRole <- function(x, ..., item = FALSE, container = FALSE, overwrite = FA
     class = if (container) "html-fill-container"
   )
 
-  if (container) {
+  if (container || item) {
     x <- attachDependencies(x, fillDependencies(), append = TRUE)
   }
 
