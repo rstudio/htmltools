@@ -24,7 +24,6 @@ Depends:
 Imports:
     base64enc,
     digest,
-    ellipsis,
     fastmap (>= 1.1.0),
     grDevices,
     rlang (>= 1.0.0),

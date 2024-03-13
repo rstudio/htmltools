@@ -51,7 +51,7 @@
 #'
 bindFillRole <- function(x, ..., item = FALSE, container = FALSE, overwrite = FALSE, .cssSelector = NULL) {
 
-  ellipsis::check_dots_empty()
+  check_dots_empty()
 
   hasSelection <- FALSE
   query <- NULL
