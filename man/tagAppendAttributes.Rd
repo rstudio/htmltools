@@ -15,7 +15,9 @@ tagGetAttribute(tag, attr)
 \arguments{
 \item{tag}{a \link{tag} object.}
 
-\item{...}{a collection of attributes.}
+\item{...}{Attributes to append as named argument-value pairs. A named
+argument with an \code{NA} value is rendered as a boolean attribute (see
+example).}
 
 \item{.cssSelector}{A character string containing a \href{https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors}{CSS selector}
 for targeting particular (inner) tags of interest. At the moment, only a
@@ -40,6 +42,7 @@ and obtain the value (\code{tagGetAttribute()}) of HTML attribute(s).
 html <- div(a())
 tagAppendAttributes(html, class = "foo")
 tagAppendAttributes(html, .cssSelector = "a", class = "bar")
+tagAppendAttributes(html, contenteditable = NA)
 
 tagHasAttribute(div(foo = "bar"), "foo")
 tagGetAttribute(div(foo = "bar"), "foo")
