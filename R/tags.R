@@ -403,7 +403,9 @@ tagAddRenderHook <- function(tag, func, replace = FALSE) {
 #'
 #' @export
 #' @param tag a [tag] object.
-#' @param ... a collection of attributes.
+#' @param ... Attributes to append as named argument-value pairs. A named
+#'   argument with an `NA` value is rendered as a boolean attribute (see
+#'   example).
 #' @param .cssSelector A character string containing a [CSS
 #'   selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors)
 #'   for targeting particular (inner) tags of interest. At the moment, only a
@@ -423,6 +425,7 @@ tagAddRenderHook <- function(tag, func, replace = FALSE) {
 #' html <- div(a())
 #' tagAppendAttributes(html, class = "foo")
 #' tagAppendAttributes(html, .cssSelector = "a", class = "bar")
+#' tagAppendAttributes(html, contenteditable = NA)
 #'
 #' tagHasAttribute(div(foo = "bar"), "foo")
 #' tagGetAttribute(div(foo = "bar"), "foo")
