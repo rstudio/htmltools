@@ -83,6 +83,10 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="development version" id="htmltools-development-version">htmltools (development version)<a class="anchor" aria-label="anchor" href="#htmltools-development-version"></a></h2>
 <div class="section level3">
+<h3 id="improvements-development-version">Improvements<a class="anchor" aria-label="anchor" href="#improvements-development-version"></a></h3>
+<ul><li>The fill CSS attached to fillable containers and fill items with <code><a href="../reference/bindFillRole.html">bindFillRole()</a></code> now uses a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Cascade_layers" class="external-link">CSS cascade layer</a> named <code>htmltools</code> to reduce the precedence order of the fill CSS. (<a href="https://github.com/rstudio/htmltools/issues/425" class="external-link">#425</a>)</li>
+</ul></div>
+<div class="section level3">
 <h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
 <ul><li>
 <code><a href="../reference/bindFillRole.html">bindFillRole()</a></code> now attaches its <code>HTMLDependency()</code> to fill items, thus reducing the possibility of filling layout breaking due to missing CSS. (<a href="https://github.com/rstudio/htmltools/issues/421" class="external-link">#421</a>)</li>
