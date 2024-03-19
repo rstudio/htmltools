@@ -4,6 +4,8 @@
 
 * The fill CSS attached to fillable containers and fill items with `bindFillRole()` now uses a [CSS cascade layer](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Cascade_layers) named `htmltools` to reduce the precedence order of the fill CSS. (#425)
 
+* Improved documentation for boolean attributes in `tagAppendAttributes()` to note that they can set via an `NA` value, e.g. `tagAppendAttributes(div(), contenteditable = NA)` creates `<div contenteditable></div>`. (thanks @russHyde, #427)
+
 ## Bug fixes
 
 * `bindFillRole()` now attaches its `HTMLDependency()` to fill items, thus reducing the possibility of filling layout breaking due to missing CSS. (#421)
