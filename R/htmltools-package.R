@@ -6,6 +6,7 @@
 #' @import utils digest
 #' @importFrom fastmap fastmap faststack
 #' @importFrom rlang obj_address
+#' @useDynLib htmltools, .registration = TRUE
 ## usethis namespace: end
 NULL
 
