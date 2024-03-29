@@ -34,11 +34,12 @@ Easily generates a .png file (or other graphics file) from a plotting
 expression.
 }
 \examples{
+\dontshow{if (rlang::is_interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Default settings
 res <- capturePlot(plot(cars))
 
 # View result
-if (interactive()) browseURL(res)
+browseURL(res)
 
 # Clean up
 unlink(res)
@@ -46,7 +47,7 @@ unlink(res)
 # Custom width/height
 pngpath <- tempfile(fileext = ".png")
 capturePlot(plot(pressure), pngpath, width = 800, height = 375)
-if (interactive()) browseURL(pngpath)
+browseURL(pngpath)
 unlink(pngpath)
 
 # Use a custom graphics device (e.g., SVG)
@@ -57,10 +58,10 @@ if (capabilities("cairo")) {
     grDevices::svg,
     width = 8, height = 3.75
   )
-  if (interactive()) browseURL(svgpath)
+  browseURL(svgpath)
   unlink(svgpath)
 }
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=plotTag]{plotTag()}} saves plots as a self-contained \verb{<img>}
