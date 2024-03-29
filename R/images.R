@@ -17,7 +17,7 @@
 #' @seealso [plotTag()] saves plots as a self-contained `<img>`
 #'   tag.
 #'
-#' @examplesIf interactive()
+#' @examplesIf rlang::is_interactive()
 #' # Default settings
 #' res <- capturePlot(plot(cars))
 #'
