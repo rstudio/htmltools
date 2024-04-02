@@ -61,20 +61,21 @@ source.
 Capture a plot as a self-contained \verb{<img>} tag
 }
 \examples{
+\dontshow{if (rlang::is_interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 img <- plotTag({
   plot(cars)
 }, "A plot of the 'cars' dataset", width = 375, height = 275)
 
-if (interactive()) img
+img
 
-if (interactive() && capabilities("cairo")) {
+if (capabilities("cairo")) {
   plotTag(
     plot(pressure), "A plot of the 'pressure' dataset",
     device = grDevices::svg, width = 375, height = 275, pixelratio = 1/72,
     mimeType = "image/svg+xml"
   )
 }
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=capturePlot]{capturePlot()}} saves plots as an image file.

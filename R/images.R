@@ -131,14 +131,14 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
 #'
 #' @seealso [capturePlot()] saves plots as an image file.
 #'
-#' @examples
+#' @examplesIf rlang::is_interactive()
 #' img <- plotTag({
 #'   plot(cars)
 #' }, "A plot of the 'cars' dataset", width = 375, height = 275)
 #'
-#' if (interactive()) img
+#' img
 #'
-#' if (interactive() && capabilities("cairo")) {
+#' if (capabilities("cairo")) {
 #'   plotTag(
 #'     plot(pressure), "A plot of the 'pressure' dataset",
 #'     device = grDevices::svg, width = 375, height = 275, pixelratio = 1/72,
