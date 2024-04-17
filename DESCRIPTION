@@ -20,7 +20,7 @@ URL: https://github.com/rstudio/htmltools,
     https://rstudio.github.io/htmltools/
 BugReports: https://github.com/rstudio/htmltools/issues
 Depends:
-    R (>= 2.14.1)
+    R (>= 3.2.0)
 Imports:
     base64enc,
     digest,
