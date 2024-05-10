@@ -17,12 +17,12 @@
 #' @seealso [plotTag()] saves plots as a self-contained `<img>`
 #'   tag.
 #'
-#' @examples
+#' @examplesIf rlang::is_interactive()
 #' # Default settings
 #' res <- capturePlot(plot(cars))
 #'
 #' # View result
-#' if (interactive()) browseURL(res)
+#' browseURL(res)
 #'
 #' # Clean up
 #' unlink(res)
@@ -30,7 +30,7 @@
 #' # Custom width/height
 #' pngpath <- tempfile(fileext = ".png")
 #' capturePlot(plot(pressure), pngpath, width = 800, height = 375)
-#' if (interactive()) browseURL(pngpath)
+#' browseURL(pngpath)
 #' unlink(pngpath)
 #'
 #' # Use a custom graphics device (e.g., SVG)
@@ -41,7 +41,7 @@
 #'     grDevices::svg,
 #'     width = 8, height = 3.75
 #'   )
-#'   if (interactive()) browseURL(svgpath)
+#'   browseURL(svgpath)
 #'   unlink(svgpath)
 #' }
 #'
@@ -131,14 +131,14 @@ capturePlot <- function(expr, filename = tempfile(fileext = ".png"),
 #'
 #' @seealso [capturePlot()] saves plots as an image file.
 #'
-#' @examples
+#' @examplesIf rlang::is_interactive()
 #' img <- plotTag({
 #'   plot(cars)
 #' }, "A plot of the 'cars' dataset", width = 375, height = 275)
 #'
-#' if (interactive()) img
+#' img
 #'
-#' if (interactive() && capabilities("cairo")) {
+#' if (capabilities("cairo")) {
 #'   plotTag(
 #'     plot(pressure), "A plot of the 'pressure' dataset",
 #'     device = grDevices::svg, width = 375, height = 275, pixelratio = 1/72,

@@ -1,4 +1,6 @@
-# htmltools (development version)
+# htmltools 0.5.8.1
+
+* `capturePlot()`s examples are now only run when `interactive()`. (#429)
 
 # htmltools 0.5.8
 
