@@ -268,7 +268,7 @@ normalizeText <- function(text) {
 #' @examples
 #' tagList(
 #'   h1("Title"),
-#'   h2("Header text"),
+#'   h2("Header text", style = "text-align: center;"),
 #'   p("Text here")
 #' )
 tagList <- function(...) {
