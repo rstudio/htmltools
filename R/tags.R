@@ -252,7 +252,7 @@ format.html <- function(x, ...) {
 }
 
 normalizeText <- function(text) {
-  if (!is.null(attr(text, "html", TRUE)))
+  if (inherits(text, "html"))
     text
   else
     htmlEscape(text, attribute=FALSE)
@@ -1149,9 +1149,8 @@ resolveFunctionalDependencies <- function(dependencies) {
 #' Marks the given text as HTML, which means the [tag] functions will know
 #' not to perform HTML escaping on it.
 #'
-#' @param text The text value to mark with HTML
-#' @param ... Any additional values to be converted to character and
-#'   concatenated together
+#' @param ... Text to mark with HTML. Any additional values after the first will
+#'   to be converted to character, and all will be concatenated together.
 #' @param .noWS Character vector used to omit some of the whitespace that would
 #'   normally be written around this HTML. Valid options include `before`,
 #'   `after`, and `outside` (equivalent to `before` and
@@ -1163,12 +1162,14 @@ resolveFunctionalDependencies <- function(dependencies) {
 #' cat(as.character(el))
 #'
 #' @export
-HTML <- function(text, ..., .noWS = NULL) {
-  htmlText <- c(text, as.character(dots_list(...)))
+HTML <- function(..., .noWS = NULL) {
+  htmlText <- as.character(dots_list(...))
+  if (length(htmlText) == 0) {
+    stop("HTML() requires at least one item")
+  }
   htmlText <- paste8(htmlText, collapse=" ")
-  attr(htmlText, "html") <- TRUE
   attr(htmlText, "noWS") <- .noWS
-  class(htmlText) <- c("html", "character")
+  class(htmlText) <- "html"
   htmlText
 }
 
