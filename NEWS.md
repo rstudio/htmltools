@@ -1,5 +1,7 @@
 # htmltools (development version)
 
+* Empty Shiny text and UI outputs are now hidden by default in fillable containers. (#435)
+
 # htmltools 0.5.8
 
 ## Improvements
