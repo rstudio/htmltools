@@ -2,14 +2,14 @@
   .html-fill-container {
     display: flex;
     flex-direction: column;
-    /* Prevent the container from expanding vertically or horizontally beyond its
-    parent's constraints. */
+    /* Prevent the container from expanding vertically or horizontally beyond
+     * its parent's constraints. */
     min-height: 0;
     min-width: 0;
   }
   .html-fill-container > .html-fill-item {
-    /* Fill items can grow and shrink freely within
-    available vertical space in fillable container */
+    /* Fill items can grow and shrink freely within available vertical space in
+     * fillable container */
     flex: 1 1 auto;
     min-height: 0;
     min-width: 0;
@@ -17,5 +17,11 @@
   .html-fill-container > :not(.html-fill-item) {
     /* Prevent shrinking or growing of non-fill items */
     flex: 0 0 auto;
+  }
+  .html-fill-container > .shiny-html-output:empty,
+  .html-fill-container > .shiny-text-output:empty {
+    /* Remove empty ui and text outputs from the document flow so that extra
+     * space in the flex container is not allocated for them. */
+    position: absolute
   }
 }
