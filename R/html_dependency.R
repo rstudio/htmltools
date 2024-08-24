@@ -499,7 +499,7 @@ renderDependencies <- function(dependencies,
     if (length(dep$meta) > 0) {
       html <- c(html, paste(
         "<meta name=\"", htmlEscape(names(dep$meta)), "\" content=\"",
-        htmlEscape(dep$meta), "\" />",
+        htmlEscape(dep$meta), "\" >",
         sep = ""
       ))
     }
@@ -509,7 +509,7 @@ renderDependencies <- function(dependencies,
       html <- c(html, paste(
         "<link href=\"",
         htmlEscape(hrefFilter(file.path(srcpath, encodeFunc(dep$stylesheet)))),
-        "\" rel=\"stylesheet\" />",
+        "\" rel=\"stylesheet\" >",
         sep = ""
       ))
     }
