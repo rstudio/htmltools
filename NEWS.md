@@ -1,5 +1,7 @@
 # htmltools (development version)
 
+* Trailing slashes have been removed from void elements. (#436)
+
 # htmltools 0.5.8
 
 ## Improvements

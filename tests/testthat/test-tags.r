@@ -19,7 +19,7 @@ test_that("Basic tag writing works", {
     "one")
   expect_equal(
     as.character(tagList(tags$br(), "one")),
-    "<br/>\none")
+    "<br>\none")
 })
 
 test_that("Hanging commas don't break things", {

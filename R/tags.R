@@ -914,12 +914,12 @@ tagWrite <- function(tag, textWriter, indent=0, eol = "\n") {
     }
   }
   else {
-    # only self-close void elements
+    # close void elements
     # (see: http://dev.w3.org/html5/spec/single-page.html#void-elements)
     if (tag$name %in% c("area", "base", "br", "col", "command", "embed", "hr",
       "img", "input", "keygen", "link", "meta", "param",
       "source", "track", "wbr")) {
-      textWriter$write("/>")
+      textWriter$write(">")
     }
     else {
       textWriter$write(concat8("></", tag$name, ">"))
