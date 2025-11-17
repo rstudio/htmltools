@@ -120,11 +120,12 @@ test_that("tagQuery()$find()", {
 
   # Make sure the found elements do not persist
   newX <- x$find("span")
-  expect_failure(
+  expect_condition(
     expect_equal_tags(
       x$selectedTags(),
       newX$selectedTags()
-    )
+    ),
+    class = "expectation_failure"
   )
 
   x <- x$find("span")
