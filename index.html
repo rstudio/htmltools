@@ -35,13 +35,15 @@
 
   gtag('config', 'UA-115082821-1');
 </script><!-- javascript assets for rmarkdown --><script src="ace-1.2.3/ace.js" type="text/javascript" charset="utf-8"></script><script src="holder-2.9.0/holder.min.js" type="text/javascript" charset="utf-8"></script><script src="snippets/snippets.js" type="text/javascript" charset="utf-8"></script><!-- from quillt: JS redirect for homepage --><script>
-  if (!/(\/|html?)$/.test(window.location.href)){
-    window.location.replace(window.location.href + '/');
+  if (!/(\/|html?)$/.test(window.location.pathname)) {
+    const newHome = new URL(window.location.href);
+    newHome.pathname = newHome.pathname + '/';
+    window.location.replace(newHome.toString())
   }
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -56,14 +58,14 @@
 
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
         </div>
       </div>-->
     </div>
@@ -76,7 +78,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -94,7 +96,7 @@
 <li>
   <a href="https://github.com/rstudio/htmltools" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -103,7 +105,7 @@
           <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
 </div>
       </form>
-      
+
     </div>
 <!--/.nav-collapse -->
   </div>
@@ -111,7 +113,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="contents col-md-9">
@@ -200,13 +202,13 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Joe Cheng <br><small class="roles"> Author </small>  </li>
-<li>Carson Sievert <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-4958-2844" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Barret Schloerke <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-9986-114X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Winston Chang <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1576-2126" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Yihui Xie <br><small class="roles"> Author </small>  </li>
-<li>Jeff Allen <br><small class="roles"> Author </small>  </li>
-<li>Posit Software, PBC <br><small class="roles"> Copyright holder, funder </small>  </li>
+<li>Joe Cheng <br><small class="roles"> Author </small>   </li>
+<li>Carson Sievert <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-4958-2844" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Barret Schloerke <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-9986-114X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Winston Chang <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1576-2126" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Yihui Xie <br><small class="roles"> Author </small>   </li>
+<li>Jeff Allen <br><small class="roles"> Author </small>   </li>
+<li>Posit Software, PBC <br><small class="roles"> Copyright holder, funder </small>   </li>
 </ul>
 </div>
 
@@ -229,17 +231,17 @@
 
 <div class="author">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
 </div>
 
-  
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
   docsearch({
-    
-    
+
+
     apiKey: 'd2cd688ec4b36006092a3a6a5ad8c7cd',
     indexName: 'htmltools',
     inputSelector: 'input#search-input.form-control',

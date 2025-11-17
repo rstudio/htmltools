@@ -9,7 +9,7 @@
 
   gtag('config', 'UA-115082821-1');
 </script><!-- javascript assets for rmarkdown --><script src="../ace-1.2.3/ace.js" type="text/javascript" charset="utf-8"></script><script src="../holder-2.9.0/holder.min.js" type="text/javascript" charset="utf-8"></script><script src="../snippets/snippets.js" type="text/javascript" charset="utf-8"></script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-news">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -24,14 +24,14 @@
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
         </div>
       </div>-->
     </div>
@@ -43,7 +43,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -59,30 +59,32 @@
 <li>
   <a href="https://github.com/rstudio/htmltools" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul><form class="navbar-form navbar-right" role="search">
         <div class="form-group">
           <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off"></div>
       </form>
-      
+
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
       <h1 data-toc-skip>Changelog <small></small></h1>
-      <small>Source: <a href="https://github.com/rstudio/htmltools/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/rstudio/htmltools/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="development version" id="htmltools-development-version">htmltools (development version)<a class="anchor" aria-label="anchor" href="#htmltools-development-version"></a></h2>
-</div>
+<h2 class="page-header" data-toc-text="0.5.8.1" id="htmltools-0581">htmltools 0.5.8.1<small>2024-04-04</small><a class="anchor" aria-label="anchor" href="#htmltools-0581"></a></h2>
+<ul><li>
+<code><a href="../reference/capturePlot.html">capturePlot()</a></code>s examples are now only run when <code><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive()</a></code>. (<a href="https://github.com/rstudio/htmltools/issues/429" class="external-link">#429</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.8" id="htmltools-058">htmltools 0.5.8<small>2024-03-25</small><a class="anchor" aria-label="anchor" href="#htmltools-058"></a></h2>
 <div class="section level3">
@@ -177,7 +179,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="new-features--improvements-0-5-2">New Features &amp; Improvements<a class="anchor" aria-label="anchor" href="#new-features--improvements-0-5-2"></a></h3>
-<ul><li><p><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> now has its own <a href="https://pkgdown.r-lib.org" class="external-link">pkgdown</a> site hosted at <a href="https://rstudio.github.io/htmltools/" class="uri">https://rstudio.github.io/htmltools/</a>.</p></li>
+<ul><li><p><a href="https://github.com/rstudio/htmltools" class="external-link">htmltools</a> now has its own <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> site hosted at <a href="https://rstudio.github.io/htmltools/" class="uri">https://rstudio.github.io/htmltools/</a>.</p></li>
 <li><p>The new <code><a href="../reference/tagQuery.html">tagQuery()</a></code> function provides a <a href="https://jquery.com/" class="external-link">jQuery</a> inspired interface to query and/or modify HTML <code><a href="../reference/builder.html">tag()</a></code> (e.g., <code><a href="../reference/builder.html">div()</a></code>) or <code><a href="../reference/tagList.html">tagList()</a></code> objects. To learn more, see the <a href="https://rstudio.github.io/htmltools/articles/tagQuery.html">{pkgdown} article</a>. (<a href="https://github.com/rstudio/htmltools/issues/208" class="external-link">#208</a>)</p></li>
 <li><p>Added <code><a href="../reference/tagAddRenderHook.html">tagAddRenderHook()</a></code> for delaying modification of a tag object until it is rendered. A list of render-time hooks may also be added via the new <code>.renderHook</code> argument added to all <code><a href="../reference/builder.html">tag()</a></code> functions. (<a href="https://github.com/rstudio/htmltools/issues/215" class="external-link">#215</a>)</p></li>
 <li><p>Closed <a href="https://github.com/rstudio/htmltools/issues/243" class="external-link">#243</a>: Added <code>withTags(.noWS)</code> to change the default whitespace behavior for all tags within the call to <code><a href="../reference/withTags.html">withTags()</a></code>. (<a href="https://github.com/rstudio/htmltools/issues/245" class="external-link">#245</a>)</p></li>
@@ -308,16 +310,16 @@
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>
 
-  
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
   docsearch({
-    
-    
+
+
     apiKey: 'd2cd688ec4b36006092a3a6a5ad8c7cd',
     indexName: 'htmltools',
     inputSelector: 'input#search-input.form-control',

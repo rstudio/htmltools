@@ -13,7 +13,7 @@ create other non HTML/SVG tags, use the lower-level tag() constructor."><meta pr
 
   gtag('config', 'UA-115082821-1');
 </script><!-- javascript assets for rmarkdown --><script src="../ace-1.2.3/ace.js" type="text/javascript" charset="utf-8"></script><script src="../holder-2.9.0/holder.min.js" type="text/javascript" charset="utf-8"></script><script src="../snippets/snippets.js" type="text/javascript" charset="utf-8"></script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -28,14 +28,14 @@ create other non HTML/SVG tags, use the lower-level tag() constructor."><meta pr
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
         </div>
       </div>-->
     </div>
@@ -47,7 +47,7 @@ create other non HTML/SVG tags, use the lower-level tag() constructor."><meta pr
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -63,25 +63,25 @@ create other non HTML/SVG tags, use the lower-level tag() constructor."><meta pr
 <li>
   <a href="https://github.com/rstudio/htmltools" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul><form class="navbar-form navbar-right" role="search">
         <div class="form-group">
           <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off"></div>
       </form>
-      
+
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create HTML tags</h1>
-    <small class="dont-index">Source: <a href="https://github.com/rstudio/htmltools/blob/HEAD/R/tags.R" class="external-link"><code>R/tags.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/rstudio/htmltools/blob/main/R/tags.R" class="external-link"><code>R/tags.R</code></a></small>
     <div class="hidden name"><code>builder.Rd</code></div>
     </div>
 
@@ -135,7 +135,9 @@ create other non HTML/SVG tags, use the lower-level <code>tag()</code> construct
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>...</dt>
+
+
+<dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Tag attributes (named arguments) and children (unnamed arguments).
 A named argument with an <code>NA</code> value is rendered as a boolean attributes
 (see example). Children may include any combination of:</p><ul><li><p>Other tags objects</p></li>
@@ -146,33 +148,31 @@ A named argument with an <code>NA</code> value is rendered as a boolean attribut
 </ul></dd>
 
 
-<dt>.noWS</dt>
+<dt id="arg--nows">.noWS<a class="anchor" aria-label="anchor" href="#arg--nows"></a></dt>
 <dd><p>Character vector used to omit some of the whitespace that would
 normally be written around this tag. Valid options include <code>before</code>,
 <code>after</code>, <code>outside</code>, <code>after-begin</code>, and <code>before-end</code>.
 Any number of these options can be specified.</p></dd>
 
 
-<dt>.renderHook</dt>
+<dt id="arg--renderhook">.renderHook<a class="anchor" aria-label="anchor" href="#arg--renderhook"></a></dt>
 <dd><p>A function (or list of functions) to call when the <code>tag</code> is rendered. This
 function should have at least one argument (the <code>tag</code>) and return anything
 that can be converted into tags via <code><a href="as.tags.html">as.tags()</a></code>. Additional hooks may also be
 added to a particular <code>tag</code> via <code><a href="tagAddRenderHook.html">tagAddRenderHook()</a></code>.</p></dd>
 
 
-<dt>_tag_name</dt>
+<dt id="arg--tag-name">_tag_name<a class="anchor" aria-label="anchor" href="#arg--tag-name"></a></dt>
 <dd><p>A character string to use for the tag name.</p></dd>
 
 
-<dt>varArgs</dt>
+<dt id="arg-varargs">varArgs<a class="anchor" aria-label="anchor" href="#arg-varargs"></a></dt>
 <dd><p>List of tag attributes and children.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> with a <code>shiny.tag</code> class that can be converted into an
+    <p>A <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> with a <code>shiny.tag</code> class that can be converted into an
 HTML string via <code><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character()</a></code> and saved to a file with <code><a href="save_html.html">save_html()</a></code>.</p>
     </div>
     <div id="see-also">
@@ -240,16 +240,16 @@ HTML string via <code><a href="https://rdrr.io/r/base/character.html" class="ext
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>
 
-  
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
   docsearch({
-    
-    
+
+
     apiKey: 'd2cd688ec4b36006092a3a6a5ad8c7cd',
     indexName: 'htmltools',
     inputSelector: 'input#search-input.form-control',

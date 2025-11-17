@@ -9,7 +9,7 @@
 
   gtag('config', 'UA-115082821-1');
 </script><!-- javascript assets for rmarkdown --><script src="../ace-1.2.3/ace.js" type="text/javascript" charset="utf-8"></script><script src="../holder-2.9.0/holder.min.js" type="text/javascript" charset="utf-8"></script><script src="../snippets/snippets.js" type="text/javascript" charset="utf-8"></script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -24,14 +24,14 @@
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
         </div>
       </div>-->
     </div>
@@ -43,7 +43,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -59,25 +59,25 @@
 <li>
   <a href="https://github.com/rstudio/htmltools" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul><form class="navbar-form navbar-right" role="search">
         <div class="form-group">
           <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off"></div>
       </form>
-      
+
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Capture a plot as a self-contained <code>&lt;img&gt;</code> tag</h1>
-    <small class="dont-index">Source: <a href="https://github.com/rstudio/htmltools/blob/HEAD/R/images.R" class="external-link"><code>R/images.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/rstudio/htmltools/blob/main/R/images.R" class="external-link"><code>R/images.R</code></a></small>
     <div class="hidden name"><code>plotTag.Rd</code></div>
     </div>
 
@@ -102,51 +102,53 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>expr</dt>
+
+
+<dl><dt id="arg-expr">expr<a class="anchor" aria-label="anchor" href="#arg-expr"></a></dt>
 <dd><p>A plotting expression that generates a plot (or yields an object
 that generates a plot when printed, like a ggplot2).</p></dd>
 
 
-<dt>alt</dt>
+<dt id="arg-alt">alt<a class="anchor" aria-label="anchor" href="#arg-alt"></a></dt>
 <dd><p>A single-element character vector that contains a text description
 of the image. This is used by accessibility tools, such as screen readers
 for vision impaired users.</p></dd>
 
 
-<dt>device</dt>
+<dt id="arg-device">device<a class="anchor" aria-label="anchor" href="#arg-device"></a></dt>
 <dd><p>A graphics device function; by default, this will be either
 <code><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">grDevices::png()</a></code>, <code><a href="https://ragg.r-lib.org/reference/agg_png.html" class="external-link">ragg::agg_png()</a></code>, or <code><a href="https://rdrr.io/pkg/Cairo/man/Cairo.html" class="external-link">Cairo::CairoPNG()</a></code>, depending on
 your system and configuration. See <code><a href="defaultPngDevice.html">defaultPngDevice()</a></code>.</p></dd>
 
 
-<dt>width, height</dt>
+<dt id="arg-width-height">width, height<a class="anchor" aria-label="anchor" href="#arg-width-height"></a></dt>
 <dd><p>The width/height that the generated tag should be
 displayed at, in logical (browser) pixels.</p></dd>
 
 
-<dt>pixelratio</dt>
+<dt id="arg-pixelratio">pixelratio<a class="anchor" aria-label="anchor" href="#arg-pixelratio"></a></dt>
 <dd><p>Indicates the ratio between physical and logical units of
 length. For PNGs that may be displayed on high-DPI screens, use <code>2</code>;
 for graphics devices that express width/height in inches (like
 <code><a href="https://rdrr.io/r/grDevices/cairo.html" class="external-link">grDevices::svg()</a></code>, try <code>1/72</code> or <code>1/96</code>.</p></dd>
 
 
-<dt>mimeType</dt>
+<dt id="arg-mimetype">mimeType<a class="anchor" aria-label="anchor" href="#arg-mimetype"></a></dt>
 <dd><p>The MIME type associated with the <code>device</code>. Examples are
 <code>image/png</code>, <code>image/tiff</code>, <code>image/svg+xml</code>.</p></dd>
 
 
-<dt>deviceArgs</dt>
+<dt id="arg-deviceargs">deviceArgs<a class="anchor" aria-label="anchor" href="#arg-deviceargs"></a></dt>
 <dd><p>A list of additional arguments that should be included when
 the <code>device</code> function is invoked.</p></dd>
 
 
-<dt>attribs</dt>
+<dt id="arg-attribs">attribs<a class="anchor" aria-label="anchor" href="#arg-attribs"></a></dt>
 <dd><p>A list of additional attributes that should be included on the
 generated <code>&lt;img&gt;</code> (e.g. <code>id</code>, <code>class</code>).</p></dd>
 
 
-<dt>suppressSize</dt>
+<dt id="arg-suppresssize">suppressSize<a class="anchor" aria-label="anchor" href="#arg-suppresssize"></a></dt>
 <dd><p>By default, <code>plotTag</code> will include a <code>style</code>
 attribute with <code>width</code> and <code>height</code> properties specified in
 pixels. If you'd rather specify the image size using other methods (like
@@ -156,9 +158,7 @@ responsive CSS rules) you can use this argument to suppress width
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A <code><a href="browsable.html">browsable()</a></code> HTML <code>&lt;img&gt;</code> tag object. Print it at
+    <p>A <code><a href="browsable.html">browsable()</a></code> HTML <code>&lt;img&gt;</code> tag object. Print it at
 the console to preview, or call <code><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character()</a></code> on it to view the HTML
 source.</p>
     </div>
@@ -169,20 +169,21 @@ source.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">img</span> <span class="op">&lt;-</span> <span class="fu">plotTag</span><span class="op">(</span><span class="op">{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># rlang::is_interactive()</span></span></span>
+<span class="r-in"><span><span class="va">img</span> <span class="op">&lt;-</span> <span class="fu">plotTag</span><span class="op">(</span><span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cars</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span>, <span class="st">"A plot of the 'cars' dataset"</span>, width <span class="op">=</span> <span class="fl">375</span>, height <span class="op">=</span> <span class="fl">275</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="va">img</span></span></span>
+<span class="r-in"><span><span class="va">img</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/capabilities.html" class="external-link">capabilities</a></span><span class="op">(</span><span class="st">"cairo"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/capabilities.html" class="external-link">capabilities</a></span><span class="op">(</span><span class="st">"cairo"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">plotTag</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pressure</span><span class="op">)</span>, <span class="st">"A plot of the 'pressure' dataset"</span>,</span></span>
 <span class="r-in"><span>    device <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/grDevices/cairo.html" class="external-link">svg</a></span>, width <span class="op">=</span> <span class="fl">375</span>, height <span class="op">=</span> <span class="fl">275</span>, pixelratio <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">72</span>,</span></span>
 <span class="r-in"><span>    mimeType <span class="op">=</span> <span class="st">"image/svg+xml"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -197,16 +198,16 @@ source.</p>
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>
 
-  
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
   docsearch({
-    
-    
+
+
     apiKey: 'd2cd688ec4b36006092a3a6a5ad8c7cd',
     indexName: 'htmltools',
     inputSelector: 'input#search-input.form-control',

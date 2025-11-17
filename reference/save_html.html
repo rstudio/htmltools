@@ -10,7 +10,7 @@ method copies dependency files to the directory specified via libdir."><meta pro
 
   gtag('config', 'UA-115082821-1');
 </script><!-- javascript assets for rmarkdown --><script src="../ace-1.2.3/ace.js" type="text/javascript" charset="utf-8"></script><script src="../holder-2.9.0/holder.min.js" type="text/javascript" charset="utf-8"></script><script src="../snippets/snippets.js" type="text/javascript" charset="utf-8"></script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -25,14 +25,14 @@ method copies dependency files to the directory specified via libdir."><meta pro
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
         </div>
       </div>-->
     </div>
@@ -44,7 +44,7 @@ method copies dependency files to the directory specified via libdir."><meta pro
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -60,25 +60,25 @@ method copies dependency files to the directory specified via libdir."><meta pro
 <li>
   <a href="https://github.com/rstudio/htmltools" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul><form class="navbar-form navbar-right" role="search">
         <div class="form-group">
           <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off"></div>
       </form>
-      
+
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Save an HTML object to a file</h1>
-    <small class="dont-index">Source: <a href="https://github.com/rstudio/htmltools/blob/HEAD/R/html_print.R" class="external-link"><code>R/html_print.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/rstudio/htmltools/blob/main/R/html_print.R" class="external-link"><code>R/html_print.R</code></a></small>
     <div class="hidden name"><code>save_html.Rd</code></div>
     </div>
 
@@ -90,34 +90,36 @@ method copies dependency files to the directory specified via <code>libdir</code
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">save_html</span><span class="op">(</span><span class="va">html</span>, <span class="va">file</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># S3 method for default</span></span>
+<span><span class="co"># Default S3 method</span></span>
 <span><span class="fu">save_html</span><span class="op">(</span><span class="va">html</span>, <span class="va">file</span>, background <span class="op">=</span> <span class="st">"white"</span>, libdir <span class="op">=</span> <span class="st">"lib"</span>, lang <span class="op">=</span> <span class="st">"en"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>html</dt>
+
+
+<dl><dt id="arg-html">html<a class="anchor" aria-label="anchor" href="#arg-html"></a></dt>
 <dd><p>HTML content to print.</p></dd>
 
 
-<dt>file</dt>
+<dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
 <dd><p>File path or connection. If a file path containing a
 sub-directory, the sub-directory must already exist.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further arguments passed to other methods.</p></dd>
 
 
-<dt>background</dt>
+<dt id="arg-background">background<a class="anchor" aria-label="anchor" href="#arg-background"></a></dt>
 <dd><p>Background color for web page.</p></dd>
 
 
-<dt>libdir</dt>
+<dt id="arg-libdir">libdir<a class="anchor" aria-label="anchor" href="#arg-libdir"></a></dt>
 <dd><p>Directory to copy dependencies to.</p></dd>
 
 
-<dt>lang</dt>
+<dt id="arg-lang">lang<a class="anchor" aria-label="anchor" href="#arg-lang"></a></dt>
 <dd><p>Value of the <code>&lt;html&gt;</code> <code>lang</code> attribute.</p></dd>
 
 </dl></div>
@@ -134,16 +136,16 @@ sub-directory, the sub-directory must already exist.</p></dd>
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>
 
-  
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
   docsearch({
-    
-    
+
+
     apiKey: 'd2cd688ec4b36006092a3a6a5ad8c7cd',
     indexName: 'htmltools',
     inputSelector: 'input#search-input.form-control',

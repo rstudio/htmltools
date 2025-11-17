@@ -13,7 +13,7 @@ that is causing the removal."><meta property="og:image" content="https://rstudio
 
   gtag('config', 'UA-115082821-1');
 </script><!-- javascript assets for rmarkdown --><script src="../ace-1.2.3/ace.js" type="text/javascript" charset="utf-8"></script><script src="../holder-2.9.0/holder.min.js" type="text/javascript" charset="utf-8"></script><script src="../snippets/snippets.js" type="text/javascript" charset="utf-8"></script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -28,14 +28,14 @@ that is causing the removal."><meta property="og:image" content="https://rstudio
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">htmltools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">htmltools</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8.1</span>
         </div>
       </div>-->
     </div>
@@ -47,7 +47,7 @@ that is causing the removal."><meta property="og:image" content="https://rstudio
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -63,25 +63,25 @@ that is causing the removal."><meta property="og:image" content="https://rstudio
 <li>
   <a href="https://github.com/rstudio/htmltools" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul><form class="navbar-form navbar-right" role="search">
         <div class="form-group">
           <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off"></div>
       </form>
-      
+
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Subtract dependencies</h1>
-    <small class="dont-index">Source: <a href="https://github.com/rstudio/htmltools/blob/HEAD/R/tags.R" class="external-link"><code>R/tags.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/rstudio/htmltools/blob/main/R/tags.R" class="external-link"><code>R/tags.R</code></a></small>
     <div class="hidden name"><code>subtractDependencies.Rd</code></div>
     </div>
 
@@ -99,18 +99,20 @@ that is causing the removal.</p>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>dependencies</dt>
+
+
+<dl><dt id="arg-dependencies">dependencies<a class="anchor" aria-label="anchor" href="#arg-dependencies"></a></dt>
 <dd><p>A list of <code><a href="htmlDependency.html">htmlDependency()</a></code> objects from which
 dependencies should be removed.</p></dd>
 
 
-<dt>remove</dt>
+<dt id="arg-remove">remove<a class="anchor" aria-label="anchor" href="#arg-remove"></a></dt>
 <dd><p>A list of <code><a href="htmlDependency.html">htmlDependency()</a></code> objects indicating which
 dependencies should be removed, or a character vector indicating dependency
 names.</p></dd>
 
 
-<dt>warnOnConflict</dt>
+<dt id="arg-warnonconflict">warnOnConflict<a class="anchor" aria-label="anchor" href="#arg-warnonconflict"></a></dt>
 <dd><p>If <code>TRUE</code>, a warning is emitted for each
 dependency that is removed if the corresponding dependency in <code>remove</code>
 has a lower version number. Has no effect if <code>remove</code> is provided as a
@@ -119,9 +121,7 @@ character vector.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A list of <code><a href="htmlDependency.html">htmlDependency()</a></code> objects that don't intersect
+    <p>A list of <code><a href="htmlDependency.html">htmlDependency()</a></code> objects that don't intersect
 with <code>remove</code>.</p>
     </div>
 
@@ -137,16 +137,16 @@ with <code>remove</code>.</p>
 </div>
 
 <div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>
 
-  
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
   docsearch({
-    
-    
+
+
     apiKey: 'd2cd688ec4b36006092a3a6a5ad8c7cd',
     indexName: 'htmltools',
     inputSelector: 'input#search-input.form-control',
