@@ -61,7 +61,7 @@ source.
 Capture a plot as a self-contained \verb{<img>} tag
 }
 \examples{
-\dontshow{if (rlang::is_interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (rlang::is_interactive()) withAutoprint(\{ # examplesIf}
 img <- plotTag({
   plot(cars)
 }, "A plot of the 'cars' dataset", width = 375, height = 275)

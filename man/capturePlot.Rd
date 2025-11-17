@@ -34,7 +34,7 @@ Easily generates a .png file (or other graphics file) from a plotting
 expression.
 }
 \examples{
-\dontshow{if (rlang::is_interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (rlang::is_interactive()) withAutoprint(\{ # examplesIf}
 # Default settings
 res <- capturePlot(plot(cars))
 
