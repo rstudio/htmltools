@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   htmltools: htmltools.html
   tagQuery: tagQuery.html
-last_built: 2025-12-08T17:19Z
+last_built: 2025-12-08T17:41Z
 urls:
   reference: https://rstudio.github.io/htmltools/reference
   article: https://rstudio.github.io/htmltools/articles
