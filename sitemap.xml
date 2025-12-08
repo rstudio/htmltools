@@ -1,6 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://rstudio.github.io/htmltools/404.html</loc></url>
 <url><loc>https://rstudio.github.io/htmltools/CONTRIBUTING.html</loc></url>
+<url><loc>https://rstudio.github.io/htmltools/LICENSE-text.html</loc></url>
 <url><loc>https://rstudio.github.io/htmltools/articles/htmltools.html</loc></url>
 <url><loc>https://rstudio.github.io/htmltools/articles/index.html</loc></url>
 <url><loc>https://rstudio.github.io/htmltools/articles/tagQuery.html</loc></url>
