@@ -199,10 +199,8 @@ SEXP template_dfa(SEXP x_sxp) {
   UNPROTECT(1);
 
   if (pieces_num < Rf_xlength(pieces)) {
-    // Using SETLENGTH and SET_TRUELENGTH in this way allows us to resize the
-    // vector without an extra copy.
-    SETLENGTH(pieces, pieces_num);
-    SET_TRUELENGTH(pieces, pieces_num);
+    // Resize the vector to the actual number of pieces
+    REPROTECT(pieces = Rf_xlengthgets(pieces, pieces_num), pieces_idx);
   }
 
   UNPROTECT(1);
