@@ -299,7 +299,9 @@ tagList <- function(...) {
 #' })
 #' myDiv <- attachDependencies(div(), myDivDep)
 #' renderTags(myDiv)
-#' withr::with_options(list(useDep = FALSE), renderTags(myDiv))
+#' if (requireNamespace("withr", quietly = TRUE)) {
+#'   withr::with_options(list(useDep = FALSE), renderTags(myDiv))
+#' }
 #'
 tagFunction <- function(func) {
   if (!is.function(func) || length(formals(func)) != 0) {
