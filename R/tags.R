@@ -1825,7 +1825,13 @@ includeScript <- function(path, ...) {
 }
 
 check_include_path <- function(path, what = "File", call = rlang::caller_env()) {
-  if (!file.exists(path)) {
+  if (!rlang::is_string(path) || !nzchar(path)) {
+    rlang::abort(
+      paste0(what, " path must be a single non-empty string."),
+      call = call
+    )
+  }
+  if (!file.exists(path) || dir.exists(path)) {
     rlang::abort(
       c(
         paste0(what, " does not exist."),

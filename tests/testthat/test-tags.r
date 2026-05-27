@@ -1248,3 +1248,17 @@ test_that("include*() missing-file error is attributed to the public helper", {
   err <- rlang::catch_cnd(includeCSS(missing))
   expect_match(rlang::expr_deparse(err$call), "includeCSS")
 })
+
+test_that("include*() helpers reject invalid path inputs", {
+  expect_error(includeCSS(NULL),         "must be a single non-empty string")
+  expect_error(includeCSS(character(0)), "must be a single non-empty string")
+  expect_error(includeCSS(c("a", "b")),  "must be a single non-empty string")
+  expect_error(includeCSS(""),           "must be a single non-empty string")
+  expect_error(includeCSS(NA_character_), "must be a single non-empty string")
+})
+
+test_that("include*() helpers reject a directory path", {
+  dir <- withr::local_tempdir()
+  expect_true(dir.exists(dir))
+  expect_error(includeCSS(dir), "CSS file does not exist")
+})
