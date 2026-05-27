@@ -19,6 +19,7 @@ test_that("print.html preserves dependencies for HTML()", {
 })
 
 test_that("CRLF is properly handled", {
+  skip_if_not_installed("markdown")
   txt <- paste(c("x", "y", ""), collapse = "\r\n")
 
   tmp <- tempfile(fileext = ".txt")
