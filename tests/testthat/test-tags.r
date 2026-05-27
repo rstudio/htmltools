@@ -1226,3 +1226,39 @@ test_that("includeHTML() warns if full document is detected", {
   save_html(p("test"), tmp_html)
   expect_warning(includeHTML(tmp_html))
 })
+
+test_that("include*() helpers raise a clear error when the file is missing", {
+  missing <- tempfile("does-not-exist-", fileext = ".txt")
+  expect_false(file.exists(missing))
+
+  expect_error(includeCSS(missing),    "CSS file does not exist")
+  expect_error(includeHTML(missing),   "HTML file does not exist")
+  expect_error(includeText(missing),   "Text file does not exist")
+  expect_error(includeScript(missing), "Script file does not exist")
+})
+
+test_that("includeMarkdown() raises a clear error when the file is missing", {
+  skip_if_not_installed("markdown")
+  missing <- tempfile("does-not-exist-", fileext = ".txt")
+  expect_error(includeMarkdown(missing), "Markdown file does not exist")
+})
+
+test_that("include*() missing-file error is attributed to the public helper", {
+  missing <- tempfile("does-not-exist-", fileext = ".txt")
+  err <- rlang::catch_cnd(includeCSS(missing))
+  expect_match(rlang::expr_deparse(err$call), "includeCSS")
+})
+
+test_that("include*() helpers reject invalid path inputs", {
+  expect_error(includeCSS(NULL),         "must be a single non-empty string")
+  expect_error(includeCSS(character(0)), "must be a single non-empty string")
+  expect_error(includeCSS(c("a", "b")),  "must be a single non-empty string")
+  expect_error(includeCSS(""),           "must be a single non-empty string")
+  expect_error(includeCSS(NA_character_), "must be a single non-empty string")
+})
+
+test_that("include*() helpers reject a directory path", {
+  dir <- withr::local_tempdir()
+  expect_true(dir.exists(dir))
+  expect_error(includeCSS(dir), "CSS file does not exist")
+})
