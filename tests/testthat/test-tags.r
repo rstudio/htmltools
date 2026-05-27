@@ -1226,3 +1226,20 @@ test_that("includeHTML() warns if full document is detected", {
   save_html(p("test"), tmp_html)
   expect_warning(includeHTML(tmp_html))
 })
+
+test_that("include*() helpers raise a clear error when the file is missing", {
+  missing <- tempfile("does-not-exist-", fileext = ".txt")
+  expect_false(file.exists(missing))
+
+  expect_error(includeCSS(missing),      "CSS file does not exist")
+  expect_error(includeHTML(missing),     "HTML file does not exist")
+  expect_error(includeText(missing),     "Text file does not exist")
+  expect_error(includeScript(missing),   "Script file does not exist")
+  skip_if_not_installed("markdown")
+  expect_error(includeMarkdown(missing), "Markdown file does not exist")
+})
+
+test_that("include*() error message names the missing path", {
+  missing <- tempfile("does-not-exist-", fileext = ".txt")
+  expect_error(includeCSS(missing), missing, fixed = TRUE)
+})
