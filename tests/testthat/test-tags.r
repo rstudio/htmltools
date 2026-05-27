@@ -1242,3 +1242,9 @@ test_that("includeMarkdown() raises a clear error when the file is missing", {
   missing <- tempfile("does-not-exist-", fileext = ".txt")
   expect_error(includeMarkdown(missing), "Markdown file does not exist")
 })
+
+test_that("include*() missing-file error is attributed to the public helper", {
+  missing <- tempfile("does-not-exist-", fileext = ".txt")
+  err <- rlang::catch_cnd(includeCSS(missing))
+  expect_match(rlang::expr_deparse(err$call), "includeCSS")
+})

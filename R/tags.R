@@ -1824,12 +1824,15 @@ includeScript <- function(path, ...) {
   return(tags$script(HTML(paste8(lines, collapse='\n')), ...))
 }
 
-check_include_path <- function(path, what = "File") {
+check_include_path <- function(path, what = "File", call = rlang::caller_env()) {
   if (!file.exists(path)) {
-    rlang::abort(c(
-      paste0(what, " does not exist."),
-      "x" = paste0("Path: ", path)
-    ))
+    rlang::abort(
+      c(
+        paste0(what, " does not exist."),
+        "x" = paste0("Path: ", path)
+      ),
+      call = call
+    )
   }
 }
 
