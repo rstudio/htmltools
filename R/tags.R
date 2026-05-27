@@ -1733,6 +1733,7 @@ knit_print.html_dependency <- knit_print.shiny.tag
 #' @aliases includeHTML
 #' @export
 includeHTML <- function(path) {
+  check_include_path(path, "HTML file")
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
 
   if (detect_html_document(lines)) {
@@ -1781,6 +1782,7 @@ detect_html_document <- function(lines) {
 #' @rdname include
 #' @export
 includeText <- function(path) {
+  check_include_path(path, "Text file")
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
   return(paste8(lines, collapse='\n'))
 }
@@ -1790,6 +1792,7 @@ includeText <- function(path) {
 #' @rdname include
 #' @export
 includeMarkdown <- function(path) {
+  check_include_path(path, "Markdown file")
   # markdown >= v1.3 switched from markdownToHTML() to mark()
   html <- if (packageVersion("markdown") < "1.3") {
     markdown::markdownToHTML(path, fragment.only = TRUE)
@@ -1804,12 +1807,7 @@ includeMarkdown <- function(path) {
 #' @rdname include
 #' @export
 includeCSS <- function(path, ...) {
-  if (!file.exists(path)) {
-    rlang::abort(c(
-      "CSS file does not exist.",
-      "x" = paste0("Path: ", path)
-    ))
-  }
+  check_include_path(path, "CSS file")
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
   args <- dots_list(...)
   if (is.null(args$type))
@@ -1821,8 +1819,18 @@ includeCSS <- function(path, ...) {
 #' @rdname include
 #' @export
 includeScript <- function(path, ...) {
+  check_include_path(path, "Script file")
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
   return(tags$script(HTML(paste8(lines, collapse='\n')), ...))
+}
+
+check_include_path <- function(path, what = "File") {
+  if (!file.exists(path)) {
+    rlang::abort(c(
+      paste0(what, " does not exist."),
+      "x" = paste0("Path: ", path)
+    ))
+  }
 }
 
 #' Include content only once

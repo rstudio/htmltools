@@ -1,6 +1,6 @@
 # htmltools (development version)
 
-* `includeCSS()` now raises a clear error naming the missing file when `path` does not exist, instead of the vague "cannot open the connection" message from `readLines()`. (rstudio/shiny#1757)
+* `includeCSS()`, `includeHTML()`, `includeText()`, `includeMarkdown()`, and `includeScript()` now raise a clear error naming the missing file when `path` does not exist, instead of the vague "cannot open the connection" message from `readLines()`. (rstudio/shiny#1757)
 
 # htmltools 0.5.9
 
