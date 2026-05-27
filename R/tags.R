@@ -1804,6 +1804,12 @@ includeMarkdown <- function(path) {
 #' @rdname include
 #' @export
 includeCSS <- function(path, ...) {
+  if (!file.exists(path)) {
+    rlang::abort(c(
+      "CSS file does not exist.",
+      "x" = paste0("Path: ", path)
+    ))
+  }
   lines <- readLines(path, warn=FALSE, encoding='UTF-8')
   args <- dots_list(...)
   if (is.null(args$type))
