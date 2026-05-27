@@ -28,7 +28,9 @@ myDivDep <- tagFunction(function() {
 })
 myDiv <- attachDependencies(div(), myDivDep)
 renderTags(myDiv)
-withr::with_options(list(useDep = FALSE), renderTags(myDiv))
+if (requireNamespace("withr", quietly = TRUE)) {
+  withr::with_options(list(useDep = FALSE), renderTags(myDiv))
+}
 
 }
 \seealso{
