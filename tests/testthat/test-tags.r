@@ -218,13 +218,17 @@ test_that("Adding child tags", {
   expect_identical(t2a, t2)
 
 
-  # tagSetChildren preserves attributes
-  x <- tagSetChildren(div(), HTML("text"))
-  expect_identical(attr(x$children[[1]], "html", TRUE), TRUE)
+  # tagSetChildren preserves classes and attributes
+  txt <- HTML("text")
+  attr(txt, "myattr") <- "foo"
+  x <- tagSetChildren(div(), txt)
+  expect_true(inherits(x$children[[1]], "html"))
+  expect_identical(attr(x$children[[1]], "myattr", TRUE), "foo")
 
   # tagAppendChildren preserves attributes
-  x <- tagAppendChildren(div(), HTML("text"))
-  expect_identical(attr(x$children[[1]], "html", TRUE), TRUE)
+  x <- tagAppendChildren(div(), txt)
+  expect_true(inherits(x$children[[1]], "html"))
+  expect_identical(attr(x$children[[1]], "myattr", TRUE), "foo")
 })
 
 
@@ -396,22 +400,25 @@ test_that("tag/s with invalid noWS fails fast", {
 })
 
 test_that("Attributes are preserved", {
-  # HTML() adds an attribute to the data structure (note that this is
-  # different from the 'attribs' field in the list)
-  x <- HTML("<tag>&&</tag>")
-  expect_identical(attr(x, "html", TRUE), TRUE)
-  expect_equivalent(format(x), "<tag>&&</tag>")
+  html_txt <- HTML("<tag>&&</tag>")
+  attr(html_txt, "myattr") <- "foo"
+
+  expect_true(inherits(html_txt, "html"))
+  expect_identical(attr(html_txt, "myattr", TRUE), "foo")
+  expect_equivalent(format(html_txt), "<tag>&&</tag>")
 
   # Make sure attributes are preserved when wrapped in other tags
-  x <- div(HTML("<tag>&&</tag>"))
-  expect_equivalent(x$children[[1]], HTML("<tag>&&</tag>"))
-  expect_identical(attr(x$children[[1]], "html", TRUE), TRUE)
+  x <- div(html_txt)
+  expect_equivalent(x$children[[1]], html_txt)
+  expect_true(inherits(x$children[[1]], "html"))
+  expect_identical(attr(x$children[[1]], "myattr", TRUE), "foo")
   expect_equivalent(format(x), "<div><tag>&&</tag></div>")
 
   # Deeper nesting
-  x <- div(p(HTML("<tag>&&</tag>")))
-  expect_equivalent(x$children[[1]]$children[[1]], HTML("<tag>&&</tag>"))
-  expect_identical(attr(x$children[[1]]$children[[1]], "html", TRUE), TRUE)
+  x <- div(p(html_txt))
+  expect_equivalent(x$children[[1]]$children[[1]], html_txt)
+  expect_true(inherits(x$children[[1]]$children[[1]], "html"))
+  expect_identical(attr(x$children[[1]]$children[[1]], "myattr", TRUE), "foo")
   expect_equivalent(format(x), "<div>\n  <p><tag>&&</tag></p>\n</div>")
 })
 

@@ -4,13 +4,11 @@
 \alias{HTML}
 \title{Mark Characters as HTML}
 \usage{
-HTML(text, ..., .noWS = NULL)
+HTML(..., .noWS = NULL)
 }
 \arguments{
-\item{text}{The text value to mark with HTML}
-
-\item{...}{Any additional values to be converted to character and
-concatenated together}
+\item{...}{Text to mark with HTML. Any additional values after the first will
+to be converted to character, and all will be concatenated together.}
 
 \item{.noWS}{Character vector used to omit some of the whitespace that would
 normally be written around this HTML. Valid options include \code{before},
