@@ -765,7 +765,7 @@ hr <- tags$hr
 #' @param varArgs List of tag attributes and children.
 #' @param .noWS Character vector used to omit some of the whitespace that would
 #'   normally be written around this tag. Valid options include `before`,
-#'   `after`, `outside`, `after-begin`, and `before-end`.
+#'   `after`, `outside`, `after-begin`, `before-end`, and `inside`.
 #'   Any number of these options can be specified.
 #' @param .renderHook A function (or list of functions) to call when the `tag` is rendered. This
 #'   function should have at least one argument (the `tag`) and return anything
@@ -1157,7 +1157,7 @@ resolveFunctionalDependencies <- function(dependencies) {
 #' @param .noWS Character vector used to omit some of the whitespace that would
 #'   normally be written around this HTML. Valid options include `before`,
 #'   `after`, and `outside` (equivalent to `before` and
-#'   `end`).
+#'   `after`).
 #' @return The input `text`, but marked as HTML.
 #'
 #' @examples
