@@ -75,7 +75,7 @@ A named argument with an \code{NA} value is rendered as a boolean attributes
 
 \item{.noWS}{Character vector used to omit some of the whitespace that would
 normally be written around this tag. Valid options include \code{before},
-\code{after}, \code{outside}, \code{after-begin}, and \code{before-end}.
+\code{after}, \code{outside}, \code{after-begin}, \code{before-end}, and \code{inside}.
 Any number of these options can be specified.}
 
 \item{.renderHook}{A function (or list of functions) to call when the \code{tag} is rendered. This

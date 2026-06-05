@@ -15,7 +15,7 @@ concatenated together}
 \item{.noWS}{Character vector used to omit some of the whitespace that would
 normally be written around this HTML. Valid options include \code{before},
 \code{after}, and \code{outside} (equivalent to \code{before} and
-\code{end}).}
+\code{after}).}
 }
 \value{
 The input \code{text}, but marked as HTML.

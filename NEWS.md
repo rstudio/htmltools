@@ -1,5 +1,8 @@
 # htmltools (development version)
 
+* The `.noWS` documentation now lists `inside` for tags and correctly describes
+  `outside` for `HTML()` (#303).
+
 * `includeCSS()`, `includeHTML()`, `includeText()`, `includeMarkdown()`, and `includeScript()` now raise a clear error naming the missing file when `path` does not exist, instead of the vague "cannot open the connection" message from `readLines()`. (rstudio/shiny#1757)
 
 
