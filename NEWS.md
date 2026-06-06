@@ -1,5 +1,9 @@
 # htmltools (development version)
 
+* `htmlDependency()` now includes examples showing dependencies from local
+  files, URL-based dependencies with script attributes, and package-bundled
+  dependencies created from a runtime wrapper (#362).
+
 * The `.noWS` documentation now lists `inside` for tags and correctly describes
   `outside` for `HTML()` (#303).
 
