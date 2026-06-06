@@ -112,6 +112,49 @@ calling \code{htmlDependency} at build-time, it should be called at
 run-time. This can be done by wrapping the \code{htmlDependency} call in a
 function.
 }
+\examples{
+# A dependency from files on disk. The script and stylesheet paths are
+# relative to the dependency's `src` directory.
+dir <- tempfile("html-dependency-")
+dir.create(dir)
+writeLines("console.log('demo dependency');", file.path(dir, "demo.js"))
+writeLines(".demo { color: steelblue; }", file.path(dir, "demo.css"))
+
+htmlDependency(
+  name = "demo",
+  version = "1.0.0",
+  src = dir,
+  script = "demo.js",
+  stylesheet = "demo.css"
+)
+
+# A dependency loaded from a URL can use `href` and script attributes such as
+# integrity and crossorigin.
+htmlDependency(
+  name = "demo-cdn",
+  version = "1.0.0",
+  src = c(href = "https://example.com/demo/1.0.0"),
+  script = list(
+    src = "demo.min.js",
+    integrity = "sha384-...",
+    crossorigin = "anonymous"
+  )
+)
+
+# If dependency files live under a package's inst/ directory, wrap the
+# dependency in a function and use a relative `src` with `package`.
+myDependency <- function() {
+  htmlDependency(
+    name = "my-package-assets",
+    version = "1.0.0",
+    src = "www",
+    package = "mypackage",
+    script = "app.js",
+    stylesheet = "app.css"
+  )
+}
+
+}
 \seealso{
 Use \code{\link[=attachDependencies]{attachDependencies()}} to associate a list of
 dependencies with the HTML it belongs with.

@@ -88,6 +88,48 @@
 #'   The shape of the `htmlDependency` object is described (in TypeScript code)
 #'   [here](https://github.com/rstudio/shiny/blob/474f1400/srcts/src/shiny/render.ts#L79-L115).
 #'
+#' @examples
+#' # A dependency from files on disk. The script and stylesheet paths are
+#' # relative to the dependency's `src` directory.
+#' dir <- tempfile("html-dependency-")
+#' dir.create(dir)
+#' writeLines("console.log('demo dependency');", file.path(dir, "demo.js"))
+#' writeLines(".demo { color: steelblue; }", file.path(dir, "demo.css"))
+#'
+#' htmlDependency(
+#'   name = "demo",
+#'   version = "1.0.0",
+#'   src = dir,
+#'   script = "demo.js",
+#'   stylesheet = "demo.css"
+#' )
+#'
+#' # A dependency loaded from a URL can use `href` and script attributes such as
+#' # integrity and crossorigin.
+#' htmlDependency(
+#'   name = "demo-cdn",
+#'   version = "1.0.0",
+#'   src = c(href = "https://example.com/demo/1.0.0"),
+#'   script = list(
+#'     src = "demo.min.js",
+#'     integrity = "sha384-...",
+#'     crossorigin = "anonymous"
+#'   )
+#' )
+#'
+#' # If dependency files live under a package's inst/ directory, wrap the
+#' # dependency in a function and use a relative `src` with `package`.
+#' myDependency <- function() {
+#'   htmlDependency(
+#'     name = "my-package-assets",
+#'     version = "1.0.0",
+#'     src = "www",
+#'     package = "mypackage",
+#'     script = "app.js",
+#'     stylesheet = "app.css"
+#'   )
+#' }
+#'
 #' @export
 htmlDependency <- function(name,
                            version,
