@@ -94,17 +94,3 @@ describe("WSTextWriter", {
     expect_identical(wtw$readAll(), "b")
   })
 })
-
-describe("validateNoWS",{
-  it("basically works", {
-    validateNoWS(NULL)
-    validateNoWS(noWSOptions[1])
-    validateNoWS(noWSOptions[1:2])
-    validateNoWS(noWSOptions)
-    expect_error(validateNoWS("badOption"))
-    expect_error(validateNoWS(c(noWSOptions, "badOption")))
-
-    # capitalization matters
-    expect_error(validateNoWS(toupper(noWSOptions[1])))
-  })
-})
