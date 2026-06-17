@@ -23,7 +23,7 @@ Depends:
     R (>= 2.14.1)
 Imports:
     base64enc,
-    digest,
+    digest (>= 0.6.37),
     fastmap (>= 1.1.0),
     grDevices,
     rlang (>= 1.0.0),
