@@ -1,5 +1,8 @@
 # htmltools (development version)
 
+* `tag()` now documents how to supply attributes and children in `varArgs`
+  and includes a custom element example (#431).
+
 * The `.noWS` documentation now lists `inside` for tags and correctly describes
   `outside` for `HTML()` (#303).
 

@@ -85,7 +85,10 @@ added to a particular \code{tag} via \code{\link[=tagAddRenderHook]{tagAddRender
 
 \item{_tag_name}{A character string to use for the tag name.}
 
-\item{varArgs}{List of tag attributes and children.}
+\item{varArgs}{A list of attributes and children for \code{tag()}. Named
+elements become attributes and unnamed elements become children.
+Supply each text child as a single string. To use a character vector
+\code{x} as a list of text children, use \code{as.list(unname(x))}.}
 }
 \value{
 A \code{list()} with a \code{shiny.tag} class that can be converted into an
@@ -127,6 +130,9 @@ tags$audio(
 tags$span(
   tags$strong("I'm strong", .noWS="outside")
 )
+
+# Create a custom element with an attribute, a nested tag, and text.
+tag("user-card", list(class = "featured", span("Ada"), "Member"))
 
 }
 \seealso{
