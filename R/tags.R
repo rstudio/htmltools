@@ -667,6 +667,9 @@ names(known_tags) <- known_tags
 #'   tags$strong("I'm strong", .noWS="outside")
 #' )
 #'
+#' # Create a custom element with an attribute, a nested tag, and text.
+#' tag("user-card", list(class = "featured", span("Ada"), "Member"))
+#'
 NULL
 
 #' @rdname builder
@@ -762,7 +765,10 @@ hr <- tags$hr
 
 #' @rdname builder
 #' @param _tag_name A character string to use for the tag name.
-#' @param varArgs List of tag attributes and children.
+#' @param varArgs A list of attributes and children for `tag()`. Named
+#'   elements become attributes and unnamed elements become children.
+#'   Supply each text child as a single string. To use a character vector
+#'   `x` as a list of text children, use `as.list(unname(x))`.
 #' @param .noWS Character vector used to omit some of the whitespace that would
 #'   normally be written around this tag. Valid options include `before`,
 #'   `after`, `outside`, `after-begin`, `before-end`, and `inside`.
