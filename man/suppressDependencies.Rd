@@ -15,6 +15,13 @@ This suppresses one or more web dependencies. It is meant to be used when a
 dependency (like a JavaScript or CSS file) is declared in raw HTML, in an
 HTML template.
 }
+\details{
+For each name, \code{suppressDependencies()} adds a placeholder with version
+\code{9999} and no resources. \code{\link[=resolveDependencies]{resolveDependencies()}} selects the highest version
+for each name, so the placeholder supersedes dependencies with lower
+versions. When dependencies share the highest version, resolution keeps
+the first one in input order.
+}
 \seealso{
 \code{\link[=htmlTemplate]{htmlTemplate()}} for more information about using HTML
 templates.

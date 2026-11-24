@@ -1,5 +1,8 @@
 # htmltools (development version)
 
+* Documented how `suppressDependencies()` uses a placeholder with version `9999`
+  during dependency resolution (#353).
+
 * The `.noWS` documentation now lists `inside` for tags and correctly describes
   `outside` for `HTML()` (#303).
 
