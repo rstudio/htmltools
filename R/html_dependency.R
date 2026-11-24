@@ -244,6 +244,13 @@ is_tag_function <- function(x) {
 #' @param ... Names of the dependencies to suppress. For example,
 #'   `"jquery"` or `"bootstrap"`.
 #'
+#' @details
+#' For each name, `suppressDependencies()` adds a placeholder with version
+#' `9999` and no resources. [resolveDependencies()] selects the highest version
+#' for each name, so the placeholder supersedes dependencies with lower
+#' versions. When dependencies share the highest version, resolution keeps
+#' the first one in input order.
+#'
 #' @seealso [htmlTemplate()] for more information about using HTML
 #'   templates.
 #' @seealso [htmltools::htmlDependency()]
